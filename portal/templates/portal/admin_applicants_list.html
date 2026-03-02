@@ -1,0 +1,598 @@
+{% extends "portal/base.html" %}
+{% block title %}إدارة المتقدمين{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Applicants List — Unified Ministerial Light Style
+     موحّد مع لوحة القرار + نموذج المتقدم
+  ========================================================= */
+
+  :root{
+    --min-bg:#f4f7f3;
+    --min-bg-2:#eef3ef;
+
+    --min-surface:#ffffff;
+    --min-surface-2:#fbfcfa;
+    --min-surface-3:#f8fbf8;
+
+    --min-ink:#17261f;
+    --min-ink-2:#23382d;
+    --min-muted:#6f8177;
+
+    --min-green-1:#163126;
+    --min-green-2:#234536;
+    --min-green-3:#2f5e4a;
+    --min-green-4:#4e7b68;
+
+    --min-gold-1:#a98235;
+    --min-gold-2:#c8a04a;
+    --min-gold-3:#efe1bb;
+
+    --min-line:#dbe3db;
+    --min-line-2:#cdd8ce;
+
+    --min-shadow:0 12px 28px rgba(16,34,27,.07);
+    --min-shadow-soft:0 8px 18px rgba(16,34,27,.05);
+    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+
+    --min-ok:#166534;
+    --min-ok-soft:#eefbf3;
+    --min-ok-line:#b7e4c7;
+
+    --min-warn:#92400e;
+    --min-warn-soft:#fff8ed;
+    --min-warn-line:#f4cf9b;
+
+    --min-danger:#991b1b;
+    --min-danger-soft:#fef2f2;
+    --min-danger-line:#fecaca;
+  }
+
+  .ui{
+    position:relative;
+    background:
+      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
+      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
+      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
+    color:var(--min-ink);
+  }
+
+  .ui-page{
+    position:relative;
+  }
+
+  /* =========================
+     Header
+  ========================= */
+  .ui-top{
+    margin-bottom:12px;
+    padding:14px 18px;
+    border:1px solid rgba(205,216,206,.95);
+    border-radius:20px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    box-shadow:var(--min-shadow-strong);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .ui-top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .ui-top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .ui-title{
+    font-size:20px !important;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff !important;
+  }
+
+  .ui-subtitle{
+    margin-top:4px;
+    color:rgba(255,255,255,.82) !important;
+    font-size:10.8px !important;
+    line-height:1.6 !important;
+  }
+
+  .ui-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  /* =========================
+     Cards / toolbar
+  ========================= */
+  .ui-card{
+    border:1px solid rgba(211,221,212,.95) !important;
+    border-radius:22px !important;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
+    box-shadow:var(--min-shadow) !important;
+    overflow:hidden;
+  }
+
+  .ui-toolbar{
+    padding:8px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .ui-toolbar-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+    align-items:center;
+  }
+
+  .ui-toolbar-left,
+  .ui-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .ui-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-top:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .ui-muted{
+    color:var(--min-muted) !important;
+    font-size:9.8px;
+  }
+
+  .ui-pill{
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:800;
+    color:var(--min-green-2);
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .ui-pill-ok{
+    color:var(--min-ok) !important;
+    border-color:var(--min-ok-line) !important;
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
+  }
+
+  .ui-pill-danger{
+    color:var(--min-danger) !important;
+    border-color:var(--min-danger-line) !important;
+    background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
+  }
+
+  .ui-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#16a34a;
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  /* =========================
+     Buttons / inputs
+  ========================= */
+  .ui-btn{
+    min-height:30px;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:800;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    justify-content:center;
+  }
+
+  .ui-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .ui-btn-primary{
+    color:#fff !important;
+    border-color:var(--min-green-2) !important;
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-btn-warn{
+    color:#fff !important;
+    border-color:#b45309 !important;
+    background:linear-gradient(180deg,#d97706,#b45309) !important;
+    box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-btn-danger{
+    color:#fff !important;
+    border-color:#b91c1c !important;
+    background:linear-gradient(180deg,#dc2626,#b91c1c) !important;
+    box-shadow:0 10px 18px rgba(185,28,28,.14), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-btn-sm{
+    min-height:27px;
+    padding:5px 9px;
+    font-size:9.4px;
+    border-radius:10px;
+  }
+
+  .ui-btn-icon{
+    font-size:11px;
+    line-height:1;
+  }
+
+  .ui-input,
+  .ui-select{
+    min-height:38px;
+    height:38px;
+    padding:8px 12px;
+    font-size:10.5px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-ink);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    outline:none;
+  }
+
+  .ui-input:focus,
+  .ui-select:focus{
+    border-color:rgba(169,130,53,.36);
+    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  /* =========================
+     Table
+  ========================= */
+  .app-list-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid rgba(219,227,219,.92);
+    position:relative;
+  }
+
+  .app-list-table{
+    width:100%;
+    min-width:1160px;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:fixed;
+  }
+
+  .app-list-table th,
+  .app-list-table td{
+    overflow:visible;
+  }
+
+  .app-list-table thead th{
+    position:sticky;
+    top:0;
+    z-index:4;
+    background:#eef3ee !important;
+    color:var(--min-green-2);
+    font-size:10.1px;
+    font-weight:800;
+    padding:10px 8px;
+    border-bottom:1px solid #d7e0d7 !important;
+    white-space:nowrap;
+  }
+
+  .app-list-table tbody td{
+    padding:8px 8px;
+    font-size:10.4px;
+    vertical-align:middle;
+    border-bottom:1px solid #e7ede7 !important;
+    background:#ffffff;
+    color:var(--min-ink-2);
+  }
+
+  .app-list-table tbody tr:nth-child(even) td{
+    background:#fbfcfa;
+  }
+
+  .app-list-table tbody tr:hover td{
+    background:#f8faf7;
+  }
+
+  .app-col-name{
+    width:340px;
+  }
+
+  .app-col-actions{
+    width:300px;
+    position:sticky;
+    left:0;
+    z-index:3;
+    background:#fff !important;
+    box-shadow:10px 0 14px rgba(16,34,27,.04);
+  }
+
+  .app-list-table thead .app-col-actions{
+    z-index:7;
+    background:#eef3ee !important;
+  }
+
+  .ui-name .n1{
+    font-size:11px;
+    line-height:1.35;
+    font-weight:800;
+    color:var(--min-green-1);
+    letter-spacing:-.1px;
+  }
+
+  .ui-name .n2{
+    margin-top:3px;
+    font-size:9.2px;
+    color:var(--min-muted);
+    direction:ltr;
+    text-align:right;
+    font-weight:700;
+  }
+
+  .app-act{
+    display:flex;
+    gap:8px;
+    flex-wrap:nowrap;
+    align-items:center;
+    justify-content:flex-start;
+    min-width:280px;
+  }
+
+  .app-act form{
+    display:inline-block;
+    margin:0;
+  }
+
+  .app-act .ui-btn{
+    min-width:78px;
+    justify-content:center;
+  }
+
+  /* =========================
+     Responsive
+  ========================= */
+  @media (max-width: 900px){
+    .ui-toolbar-row{
+      grid-template-columns:1fr;
+      align-items:stretch;
+    }
+
+    .ui-foot{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .app-list-table{
+      min-width:1040px;
+    }
+
+    .app-col-actions{
+      width:270px;
+    }
+
+    .app-act{
+      min-width:250px;
+    }
+
+    .app-act .ui-btn{
+      min-width:70px;
+    }
+  }
+
+  @media (max-width: 640px){
+    .ui-top{
+      border-radius:18px;
+      padding:13px 14px;
+    }
+
+    .ui-title{
+      font-size:18px !important;
+    }
+
+    .ui-toolbar{
+      padding:8px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ui">
+  <div class="ui-page">
+
+    <div class="ui-top">
+      <div class="ui-title-wrap">
+        <h1 class="ui-title">إدارة المتقدمين</h1>
+        <p class="ui-subtitle">إضافة، تعديل، تعطيل أو تفعيل المتقدمين — الحذف النهائي للسوبر فقط.</p>
+      </div>
+
+      <div class="ui-actions">
+        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+          <span class="ui-btn-icon">▦</span>
+          لوحة القرار
+        </a>
+
+        <a class="ui-btn ui-btn-primary" href="{% url 'portal:admin_applicants_create' %}">
+          <span class="ui-btn-icon">＋</span>
+          إضافة متقدم
+        </a>
+
+        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
+          <span class="ui-btn-icon">🧩</span>
+          إدارة الشواغر
+        </a>
+      </div>
+    </div>
+
+    <div class="ui-card">
+
+      <div class="ui-toolbar">
+        <form method="get" class="ui-toolbar-row">
+          <div class="ui-toolbar-left">
+            <input
+              class="ui-input"
+              name="q"
+              value="{{ q }}"
+              placeholder="بحث بالاسم / السجل / القطاع / الجوال / المدرسة الحالية"
+              style="width:min(420px,100%)"
+            >
+
+            <select class="ui-select" name="status" style="width:160px">
+              <option value="" {% if not status %}selected{% endif %}>الكل</option>
+              <option value="active" {% if status == "active" %}selected{% endif %}>نشط</option>
+              <option value="inactive" {% if status == "inactive" %}selected{% endif %}>معطل</option>
+            </select>
+          </div>
+
+          <div class="ui-toolbar-right">
+            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
+            <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">مسح</a>
+            <span class="ui-pill">
+              <span class="ui-dot"></span>
+              الإجمالي: <b>{{ total }}</b>
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-list-wrap">
+        <table class="ui-table app-list-table">
+          <thead>
+            <tr>
+              <th class="app-col-name">الاسم</th>
+              <th style="width:170px">القطاع</th>
+              <th style="width:90px">الجنس</th>
+              <th style="width:150px">الجوال</th>
+              <th style="width:110px">الحالة</th>
+              <th class="app-col-actions">إجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for a in rows %}
+            <tr>
+              <td class="app-col-name" title="{{ a.full_name }}">
+                <div class="ui-name">
+                  <div class="n1">{{ a.full_name|default:"—" }}</div>
+                  <div class="n2">{{ a.national_id|default:"—" }}</div>
+                </div>
+              </td>
+
+              <td title="{{ a.sector }}">
+                {% if a.sector %}
+                  <span class="ui-pill">{{ a.sector }}</span>
+                {% else %}
+                  <span class="ui-pill ui-muted">—</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if a.gender %}
+                  <span class="ui-pill">{{ a.gender }}</span>
+                {% else %}
+                  <span class="ui-pill ui-muted">—</span>
+                {% endif %}
+              </td>
+
+              <td class="ui-muted" style="direction:ltr; text-align:right;">
+                {{ a.mobile|default:"—" }}
+              </td>
+
+              <td>
+                {% if a.is_active %}
+                  <span class="ui-pill ui-pill-ok">نشط</span>
+                {% else %}
+                  <span class="ui-pill ui-pill-danger">معطل</span>
+                {% endif %}
+              </td>
+
+              <td class="app-col-actions">
+                <div class="app-act">
+                  <a class="ui-btn ui-btn-sm" href="{% url 'portal:admin_applicants_edit' a.id %}">
+                    تعديل
+                  </a>
+
+                  <form method="post" action="{% url 'portal:admin_applicants_toggle' a.id %}">
+                    {% csrf_token %}
+                    <button class="ui-btn ui-btn-sm ui-btn-warn" type="submit">
+                      {% if a.is_active %}تعطيل{% else %}تفعيل{% endif %}
+                    </button>
+                  </form>
+
+                  <form
+                    method="post"
+                    action="{% url 'portal:admin_applicants_delete' a.id %}"
+                    onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كان لديه طلبات.');"
+                  >
+                    {% csrf_token %}
+                    <button class="ui-btn ui-btn-sm ui-btn-danger" type="submit">
+                      حذف
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" style="padding:16px; color:var(--min-muted); background:#fff;">
+                لا توجد بيانات.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ui-foot">
+        <div class="ui-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          {% if rows.has_previous %}
+            <a class="ui-btn" href="?q={{ q }}&status={{ status }}&page={{ rows.previous_page_number }}">السابق</a>
+          {% endif %}
+
+          {% if rows.has_next %}
+            <a class="ui-btn" href="?q={{ q }}&status={{ status }}&page={{ rows.next_page_number }}">التالي</a>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,975 @@
+{% extends "portal/base.html" %}
+{% block title %}ترتيب الرغبات{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Preferences — Unified Ministerial Light Style
+     + Unified Custom Modal
+  ========================================================= */
+
+  .prx, .prx *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-weight:400 !important;
+  }
+
+  .prx{
+    direction:rtl;
+    font-size:13px;
+    color:var(--min-ink);
+  }
+
+  .prx .shell{
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow);
+    overflow:hidden;
+  }
+
+  .prx .top{
+    position:relative;
+    padding:16px 18px 14px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .prx .top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .prx .top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .prx .top > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .prx h1{
+    margin:0;
+    font-size:18px;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff;
+    line-height:1.35;
+  }
+
+  .prx .sub{
+    margin:5px 0 0;
+    color:rgba(255,255,255,.82);
+    line-height:1.75;
+    font-size:10.6px;
+    max-width:64ch;
+  }
+
+  .prx .sub b{
+    font-weight:800 !important;
+  }
+
+  .prx .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid rgba(239,225,187,.95);
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-size:9.8px;
+    font-weight:800 !important;
+    white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .prx .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .prx .grid{
+    padding:12px;
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:12px;
+    align-items:start;
+  }
+
+  .prx .card{
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .prx .ch{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .prx .ch h3{
+    margin:0;
+    font-size:11px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .prx .tag{
+    padding:4px 10px;
+    min-height:28px;
+    border-radius:999px;
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-muted);
+    font-size:9.3px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    white-space:nowrap;
+  }
+
+  .prx .tag b{
+    font-weight:800 !important;
+    color:var(--min-green-1);
+  }
+
+  .prx .cb{
+    padding:12px;
+  }
+
+  .prx .alert{
+    border:1px solid var(--min-danger-line);
+    background:var(--min-danger-soft);
+    color:#991b1b;
+    padding:10px 12px;
+    border-radius:14px;
+    margin-bottom:10px;
+    line-height:1.7;
+    font-size:10px;
+  }
+
+  .prx .alert.warn{
+    border-color:var(--min-warn-line);
+    background:var(--min-warn-soft);
+    color:#7c2d12;
+  }
+
+  .prx .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+
+  .prx .kpi{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .prx .k{
+    padding:4px 10px;
+    min-height:28px;
+    border-radius:999px;
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-muted);
+    font-size:9.4px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+  }
+
+  .prx .k b{
+    color:var(--min-green-1);
+    font-weight:800 !important;
+  }
+
+  .prx .btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    padding:6px 12px;
+    min-height:32px;
+    border-radius:999px;
+    font-size:10.2px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .prx .btn.primary{
+    color:#fff;
+    border-color:var(--min-green-2);
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .prx .btn.secondary{
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+  }
+
+  .prx .btn:active{
+    transform:translateY(1px);
+  }
+
+  .prx .btn[disabled]{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .prx .list{
+    display:grid;
+    gap:10px;
+  }
+
+  .prx .item{
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .prx .item:hover{
+    background:rgba(20,83,45,.03);
+    border-color:rgba(22,163,74,.20);
+  }
+
+  .prx .left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+
+  .prx .rank{
+    min-width:40px;
+    height:34px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    border:1px solid rgba(239,225,187,.95);
+    color:#7f5d1a;
+    font-weight:800 !important;
+    font-size:10px;
+  }
+
+  .prx .meta{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+
+  .prx .nm{
+    font-weight:800 !important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:var(--min-green-1);
+    font-size:10.8px;
+  }
+
+  .prx .sm{
+    color:var(--min-muted);
+    font-size:9.4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:1.7;
+  }
+
+  .prx .right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex:0 0 auto;
+  }
+
+  .prx .handle{
+    width:36px;
+    height:36px;
+    border-radius:14px;
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+    cursor:grab;
+    font-weight:900 !important;
+    color:var(--min-muted);
+  }
+
+  .prx .handle:active{
+    cursor:grabbing;
+  }
+
+  .prx .mini{
+    width:34px;
+    height:34px;
+    border-radius:12px;
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--min-muted);
+    font-weight:900 !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .prx .mini:hover{
+    background:rgba(148,163,184,.08);
+  }
+
+  .prx .mini[disabled]{
+    opacity:.4;
+    cursor:not-allowed;
+  }
+
+  .prx .dragging{
+    opacity:.70;
+    transform:scale(.995);
+    border-color:rgba(22,163,74,.30) !important;
+  }
+
+  .prx .drop-here{
+    outline:2px dashed rgba(22,163,74,.38);
+    outline-offset:4px;
+    background:rgba(22,163,74,.06);
+  }
+
+  .prx .side{
+    position:sticky;
+    top:12px;
+  }
+
+  .prx .radio{
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .prx .radio input{
+    margin-top:5px;
+    width:16px;
+    height:16px;
+    accent-color:var(--min-green-3);
+    flex:0 0 auto;
+  }
+
+  .prx .radio label{
+    display:block;
+    font-size:10.2px;
+    line-height:1.8;
+    color:var(--min-ink-2);
+    cursor:pointer;
+  }
+
+  .prx .radio b{
+    font-weight:800 !important;
+    color:var(--min-green-1);
+  }
+
+  .prx .hint{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
+    font-size:9.6px;
+    line-height:1.8;
+  }
+
+  /* =========================
+     Custom Modal
+  ========================= */
+
+  .prx-modal{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(15,23,42,.30);
+    backdrop-filter:blur(4px);
+  }
+
+  .prx-modal.show{
+    display:flex;
+  }
+
+  .prx-dialog{
+    width:min(100%, 560px);
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:0 30px 70px rgba(15,23,42,.22);
+    animation:prxPop .18s ease-out;
+  }
+
+  @keyframes prxPop{
+    from{
+      opacity:0;
+      transform:translateY(8px) scale(.98);
+    }
+    to{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+  }
+
+  .prx-dialog-head{
+    position:relative;
+    padding:14px 16px 12px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .prx-dialog-head::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .prx-dialog-head::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(320px 120px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .prx-dialog-head > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .prx-dialog-title{
+    margin:0;
+    color:#fff;
+    font-size:14px;
+    font-weight:800 !important;
+    line-height:1.4;
+  }
+
+  .prx-dialog-body{
+    padding:16px;
+  }
+
+  .prx-dialog-text{
+    margin:0;
+    color:var(--min-ink-2);
+    font-size:11px;
+    line-height:2;
+  }
+
+  .prx-dialog-actions{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+  }
+
+  .prx-dialog-btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    min-height:36px;
+    padding:7px 16px;
+    border-radius:999px;
+    font-size:10.5px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .prx-dialog-btn.primary{
+    color:#fff;
+    border-color:var(--min-green-2);
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .prx-dialog-btn.secondary{
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+  }
+
+  body.prx-modal-open{
+    overflow:hidden;
+  }
+
+  @media (max-width: 980px){
+    .prx .grid{
+      grid-template-columns:1fr;
+    }
+
+    .prx .side{
+      position:static;
+    }
+  }
+
+  @media (max-width: 640px){
+    .prx .top{
+      padding:13px 14px;
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .prx h1{
+      font-size:16px;
+    }
+
+    .prx .pill{
+      display:none;
+    }
+
+    .prx .grid{
+      padding:10px;
+    }
+
+    .prx .cb{
+      padding:10px;
+    }
+
+    .prx .item{
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    .prx .right{
+      justify-content:flex-start;
+    }
+
+    .prx-dialog{
+      border-radius:18px;
+    }
+
+    .prx-dialog-actions{
+      flex-direction:column;
+    }
+
+    .prx-dialog-btn{
+      width:100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_head %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const list = document.querySelector("[data-sortable]");
+  const form = document.querySelector("form[data-form]");
+  const idsCsv = document.querySelector("#ids_csv");
+  const countEl = document.querySelector("[data-count]");
+  const submitBtn = document.querySelector("[data-submit]");
+
+  const modal = document.querySelector("[data-modal]");
+  const modalTitle = document.querySelector("[data-modal-title]");
+  const modalText = document.querySelector("[data-modal-text]");
+  const modalOk = document.querySelector("[data-modal-ok]");
+  const modalCancel = document.querySelector("[data-modal-cancel]");
+
+  if(!form || !idsCsv) return;
+
+  let dragEl = null;
+  let modalResolver = null;
+
+  function openModal(opts = {}){
+    if(!modal) return Promise.resolve(false);
+
+    const {
+      title = "تنبيه",
+      message = "",
+      okText = "موافق",
+      cancelText = "إلغاء",
+      showCancel = false
+    } = opts;
+
+    modalTitle.textContent = title;
+    modalText.textContent = message;
+    modalOk.textContent = okText;
+    modalCancel.textContent = cancelText;
+    modalCancel.style.display = showCancel ? "inline-flex" : "none";
+
+    modal.classList.add("show");
+    document.body.classList.add("prx-modal-open");
+
+    return new Promise(resolve => {
+      modalResolver = resolve;
+    });
+  }
+
+  function closeModal(result){
+    if(!modal) return;
+    modal.classList.remove("show");
+    document.body.classList.remove("prx-modal-open");
+
+    if(modalResolver){
+      const fn = modalResolver;
+      modalResolver = null;
+      fn(result);
+    }
+  }
+
+  function showAlert(message, title = "تنبيه"){
+    return openModal({
+      title,
+      message,
+      okText: "حسنًا",
+      showCancel: false
+    });
+  }
+
+  function showConfirm(message, title = "تأكيد الإرسال"){
+    return openModal({
+      title,
+      message,
+      okText: "تأكيد الإرسال",
+      cancelText: "رجوع",
+      showCancel: true
+    });
+  }
+
+  if(modalOk){
+    modalOk.addEventListener("click", () => closeModal(true));
+  }
+
+  if(modalCancel){
+    modalCancel.addEventListener("click", () => closeModal(false));
+  }
+
+  if(modal){
+    modal.addEventListener("click", (e) => {
+      if(e.target === modal){
+        closeModal(false);
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if(!modal || !modal.classList.contains("show")) return;
+    if(e.key === "Escape"){
+      e.preventDefault();
+      closeModal(false);
+    }
+  });
+
+  function items(){
+    if(!list) return [];
+    return [...list.querySelectorAll("[data-item]")];
+  }
+
+  function setCount(){
+    const n = items().length;
+    if(countEl) countEl.textContent = String(n);
+    if(submitBtn) submitBtn.disabled = (n === 0);
+  }
+
+  function renumber(){
+    const its = items();
+    its.forEach((it, idx) => {
+      const r = it.querySelector("[data-rank]");
+      if(r) r.textContent = (idx + 1);
+
+      const up = it.querySelector("[data-up]");
+      const dn = it.querySelector("[data-down]");
+
+      if(up) up.disabled = (idx === 0);
+      if(dn) dn.disabled = (idx === its.length - 1);
+    });
+
+    idsCsv.value = its.map(x => x.getAttribute("data-id")).join(",");
+    setCount();
+  }
+
+  if(list){
+    items().forEach(el => {
+      el.addEventListener("dragstart", e => {
+        dragEl = el;
+        el.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        try{ e.dataTransfer.setData("text/plain", el.getAttribute("data-id") || ""); }catch(_){}
+      });
+
+      el.addEventListener("dragend", () => {
+        items().forEach(x => x.classList.remove("drop-here"));
+        if(dragEl) dragEl.classList.remove("dragging");
+        dragEl = null;
+      });
+
+      el.addEventListener("dragover", e => {
+        e.preventDefault();
+        if(!dragEl || dragEl === el) return;
+        el.classList.add("drop-here");
+      });
+
+      el.addEventListener("dragleave", () => el.classList.remove("drop-here"));
+
+      el.addEventListener("drop", e => {
+        e.preventDefault();
+        items().forEach(x => x.classList.remove("drop-here"));
+        if(!dragEl || dragEl === el) return;
+
+        const r = el.getBoundingClientRect();
+        const after = (e.clientY - r.top) > (r.height / 2);
+        el.parentNode.insertBefore(dragEl, after ? el.nextSibling : el);
+        renumber();
+      });
+
+      const up = el.querySelector("[data-up]");
+      const dn = el.querySelector("[data-down]");
+
+      if(up){
+        up.addEventListener("click", () => {
+          const prev = el.previousElementSibling;
+          if(prev) el.parentNode.insertBefore(el, prev);
+          renumber();
+        });
+      }
+
+      if(dn){
+        dn.addEventListener("click", () => {
+          const next = el.nextElementSibling;
+          if(next) el.parentNode.insertBefore(next, el);
+          renumber();
+        });
+      }
+    });
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fb = form.querySelector("input[name='fallback_choice']:checked");
+    if(!fb){
+      await showAlert("فضلاً اختر الإقرار في حال عدم توفر فرصة ضمن رغباتك.", "بيان مطلوب");
+      return;
+    }
+
+    if(items().length === 0){
+      await showAlert("لا توجد رغبات لإرسال الطلب.", "لا يمكن الإرسال");
+      return;
+    }
+
+    form.querySelectorAll("input[name='vacancy_ids']").forEach(x => x.remove());
+    (idsCsv.value || "").split(",").filter(Boolean).forEach(id => {
+      const inp = document.createElement("input");
+      inp.type = "hidden";
+      inp.name = "vacancy_ids";
+      inp.value = id;
+      form.appendChild(inp);
+    });
+
+    const agreed = await showConfirm(
+      "هل أنت متأكد من إرسال الطلب نهائيًا؟ لن تتمكن من التعديل بعد الإرسال.",
+      "تأكيد نهائي"
+    );
+
+    if(!agreed) return;
+
+    form.submit();
+  });
+
+  renumber();
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="prx">
+  <div class="shell">
+
+    <div class="top">
+      <div>
+        <h1>ترتيب الرغبات</h1>
+        <p class="sub">
+          المدارس المتاحة لك حسب الضوابط (<b>القطاع</b> + <b>الجنس</b> + <b>الاحتياج</b>).
+          اسحب العناصر لترتيبها، أو استخدم أزرار الرفع والخفض.
+        </p>
+      </div>
+      <div class="pill"><span class="dot"></span>واجهة ترتيب ذكية</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- LEFT: list -->
+      <div class="card">
+        <div class="ch">
+          <h3>قائمة المدارس المتاحة</h3>
+          <span class="tag">عدد الرغبات: <b data-count>0</b></span>
+        </div>
+        <div class="cb">
+
+          {% if error %}
+            <div class="alert">{{ error }}</div>
+          {% endif %}
+
+          {% if schools %}
+            <div class="toolbar">
+              <div class="kpi">
+                <div class="k">تلميح: <b>اسحب</b> أو استخدم ↑ ↓</div>
+                <div class="k">الترتيب يُحفظ عند الإرسال</div>
+              </div>
+            </div>
+
+            <div class="list" data-sortable>
+              {% for s in schools %}
+              <div class="item" data-item data-id="{{ s.id }}" draggable="true">
+                <div class="left">
+                  <div class="rank" data-rank>1</div>
+                  <div class="meta">
+                    <div class="nm">{{ s.school_name }}</div>
+                    <div class="sm">{{ s.stage }} — {{ s.sector }}</div>
+                  </div>
+                </div>
+
+                <div class="right">
+                  <button type="button" class="mini" data-up title="رفع">↑</button>
+                  <button type="button" class="mini" data-down title="خفض">↓</button>
+                  <div class="handle" title="اسحب لترتيب">⋮⋮</div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="alert warn">
+              لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <!-- RIGHT: submit + fallback -->
+      <div class="side">
+        <div class="card">
+          <div class="ch">
+            <h3>إقرار وإرسال</h3>
+            <span class="tag">خطوة نهائية</span>
+          </div>
+          <div class="cb">
+            <form method="post" action="{% url 'portal:submit' %}" data-form>
+              {% csrf_token %}
+              <input type="hidden" id="ids_csv" value="">
+
+              <div class="radio">
+                <input type="radio" name="fallback_choice" value="admin_assign" id="fb1">
+                <label for="fb1">
+                  <b>في حال عدم توفر فرصة ضمن رغباتي</b>
+                  <div class="sm">أوافق على توجيهي من قبل الإدارة وفق الاحتياج.</div>
+                </label>
+              </div>
+
+              <div class="radio" style="margin-top:10px">
+                <input type="radio" name="fallback_choice" value="stay_current" id="fb2">
+                <label for="fb2">
+                  <b>في حال عدم توفر فرصة ضمن رغباتي</b>
+                  <div class="sm">أقر بالبقاء في مدرستي الحالية.</div>
+                </label>
+              </div>
+
+              <div class="hint">
+                بعد الإرسال سيتم قفل الطلب. تأكد من ترتيب الرغبات واختيار الإقرار المناسب.
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                <a class="btn secondary" href="{% url 'portal:confirm' %}" style="flex:1">رجوع</a>
+                <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {% if not schools %}
+        <div class="alert warn" style="margin-top:12px">
+          لا يمكنك الإرسال لأن قائمة المدارس فارغة وفق ضوابطك الحالية.
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Custom Modal -->
+<div class="prx-modal" data-modal>
+  <div class="prx-dialog" role="dialog" aria-modal="true" aria-labelledby="prxDialogTitle">
+    <div class="prx-dialog-head">
+      <h3 class="prx-dialog-title" id="prxDialogTitle" data-modal-title>تأكيد نهائي</h3>
+    </div>
+    <div class="prx-dialog-body">
+      <p class="prx-dialog-text" data-modal-text>...</p>
+      <div class="prx-dialog-actions">
+        <button type="button" class="prx-dialog-btn secondary" data-modal-cancel>رجوع</button>
+        <button type="button" class="prx-dialog-btn primary" data-modal-ok>تأكيد الإرسال</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

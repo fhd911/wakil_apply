@@ -1,0 +1,359 @@
+{% extends "portal/base.html" %}
+{% block title %}تأكيد البيانات{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Confirm Data — Unified Ministerial Light Style
+     بيانات المتقدم يمين — الإجراءات يسار
+  ========================================================= */
+
+  .cf, .cf *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-weight:400 !important;
+  }
+
+  .cf{
+    color:var(--min-ink);
+    direction:rtl;
+  }
+
+  .cf .wrap{
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .cf .shell{
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow);
+    overflow:hidden;
+  }
+
+  .cf .top{
+    position:relative;
+    padding:16px 18px 14px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .cf .top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .cf .top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .cf .top > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .cf h1{
+    margin:0;
+    font-size:18px;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff;
+    line-height:1.35;
+  }
+
+  .cf .sub{
+    margin:5px 0 0;
+    color:rgba(255,255,255,.82);
+    font-size:10.6px;
+    line-height:1.75;
+    max-width:62ch;
+  }
+
+  .cf .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid rgba(239,225,187,.95);
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-size:9.8px;
+    font-weight:800 !important;
+    white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .cf .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .cf .grid{
+    padding:12px;
+    display:grid;
+    grid-template-columns:1.4fr .9fr;
+    gap:12px;
+    align-items:start;
+  }
+
+  .cf .card{
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .cf .ch{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .cf .ch h3{
+    margin:0;
+    font-size:11px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .cf .tag{
+    padding:4px 10px;
+    min-height:28px;
+    border-radius:999px;
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-muted);
+    font-size:9.3px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    white-space:nowrap;
+  }
+
+  .cf .cb{
+    padding:12px;
+  }
+
+  .cf .btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    width:100%;
+    min-height:32px;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:10.2px;
+    font-weight:800 !important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    text-decoration:none;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .cf .btn.primary{
+    color:#fff;
+    border-color:var(--min-green-2);
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .cf .btn.secondary{
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+  }
+
+  .cf .btn:active{
+    transform:translateY(1px);
+  }
+
+  .cf .hint{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
+    font-size:9.6px;
+    line-height:1.8;
+  }
+
+  .cf .fields{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .cf .f{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .cf .lbl{
+    font-size:9.8px;
+    color:var(--min-green-2);
+    font-weight:800 !important;
+    padding-inline:2px;
+    line-height:1.4;
+  }
+
+  .cf .val{
+    width:100%;
+    min-height:40px;
+    padding:9px 11px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    font-size:10.4px;
+    line-height:1.6;
+    color:var(--min-ink-2);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    display:flex;
+    align-items:center;
+    word-break:break-word;
+  }
+
+  .cf .note{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px solid var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    color:#14532d;
+    font-size:9.8px;
+    line-height:1.8;
+  }
+
+  .cf .note b{
+    font-weight:800 !important;
+  }
+
+  @media (max-width: 980px){
+    .cf .grid{
+      grid-template-columns:1fr;
+    }
+
+    .cf .fields{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 640px){
+    .cf .top{
+      padding:13px 14px;
+      border-radius:0;
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .cf h1{
+      font-size:16px;
+    }
+
+    .cf .pill{
+      display:none;
+    }
+
+    .cf .grid{
+      padding:10px;
+    }
+
+    .cf .cb{
+      padding:10px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cf">
+  <div class="wrap">
+    <div class="shell">
+
+      <div class="top">
+        <div>
+          <h1>تأكيد البيانات</h1>
+          <p class="sub">
+            هذه البيانات معروضة من ملف الإكسل (بعد الاستيراد) حسب رقم الهوية.
+            يرجى التأكد من صحتها قبل المتابعة لاختيار الرغبات.
+          </p>
+        </div>
+        <div class="pill"><span class="dot"></span>بيانات مستوردة من الإكسل</div>
+      </div>
+
+      <div class="grid">
+
+        <!-- RIGHT: data -->
+        <div class="card">
+          <div class="ch">
+            <h3>بيانات المتقدم</h3>
+            <span class="tag">ID: {{ a.id|default:"-" }}</span>
+          </div>
+          <div class="cb">
+            <div class="fields">
+              {% for f in fields %}
+                <div class="f">
+                  <div class="lbl">{{ f.label }}</div>
+                  <div class="val">{{ f.value }}</div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="note">
+              <b>ملاحظة:</b>
+              إذا كان هناك خطأ في رقم الجوال أو البيانات، الرجاء مراجعة الجهة المختصة قبل اعتماد الطلب.
+            </div>
+          </div>
+        </div>
+
+        <!-- LEFT: actions -->
+        <div class="card">
+          <div class="ch">
+            <h3>إجراءات</h3>
+            <span class="tag">خطوة 1/3</span>
+          </div>
+          <div class="cb">
+            <form method="post" style="display:grid;gap:10px;">
+              {% csrf_token %}
+              <button class="btn primary" type="submit">أؤكد صحة البيانات وأتابع</button>
+              <a class="btn secondary" href="{% url 'portal:login' %}">رجوع</a>
+            </form>
+
+            <div class="hint">
+              بعد التأكيد سيتم فتح صفحة اختيار الرغبات، ولن تظهر هذه الخطوة مرة أخرى لنفس المتقدم.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

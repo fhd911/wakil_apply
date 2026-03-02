@@ -1,0 +1,641 @@
+{% extends "portal/base.html" %}
+{% block title %}تم الاستلام{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Receipt Page — Unified Ministerial Light Style
+     نسخة نهائية + طباعة مختصرة من صفحة واحدة
+  ========================================================= */
+
+  .rc, .rc *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-weight:400 !important;
+  }
+
+  .rc{
+    direction:rtl;
+    color:var(--min-ink);
+    font-size:13px;
+  }
+
+  .rc .wrap{
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .rc .shell{
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow);
+    overflow:hidden;
+  }
+
+  .rc .top{
+    position:relative;
+    padding:16px 18px 14px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .rc .top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .rc .top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .rc .top > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .rc .title{
+    margin:0;
+    font-size:18px;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff;
+    line-height:1.35;
+  }
+
+  .rc .sub{
+    margin:5px 0 0;
+    color:rgba(255,255,255,.82);
+    font-size:10.6px;
+    line-height:1.8;
+    max-width:62ch;
+  }
+
+  .rc .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid rgba(239,225,187,.95);
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-size:9.8px;
+    font-weight:800 !important;
+    white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .rc .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .rc .body{
+    padding:12px;
+    display:grid;
+    gap:12px;
+  }
+
+  .rc .card{
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:18px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .rc .ch{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .rc .ch h3{
+    margin:0;
+    font-size:11px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .rc .tag{
+    padding:4px 10px;
+    min-height:28px;
+    border-radius:999px;
+    border:1px solid var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    color:#14532d;
+    font-size:9.2px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    white-space:nowrap;
+  }
+
+  .rc .cb{
+    padding:12px;
+  }
+
+  .rc .alert{
+    border:1px solid var(--min-danger-line);
+    background:var(--min-danger-soft);
+    color:#991b1b;
+    padding:10px 12px;
+    border-radius:14px;
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  .rc .hero{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:start;
+  }
+
+  .rc .badge{
+    width:62px;
+    height:62px;
+    border-radius:18px;
+    border:1px solid var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#15803d;
+    font-size:28px;
+    font-weight:900 !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .rc .hero-title{
+    margin:0;
+    font-size:16px;
+    line-height:1.5;
+    color:var(--min-green-1);
+    font-weight:800 !important;
+  }
+
+  .rc .hero-sub{
+    margin:5px 0 0;
+    color:var(--min-muted);
+    font-size:10.1px;
+    line-height:1.9;
+  }
+
+  .rc .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .rc .field{
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:16px;
+    padding:10px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .rc .field label{
+    display:block;
+    margin-bottom:6px;
+    font-size:10.4px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+    line-height:1.4;
+  }
+
+  .rc .input{
+    width:100%;
+    min-height:40px;
+    padding:9px 11px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-ink);
+    font-size:10.4px;
+    outline:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .rc .list{
+    display:grid;
+    gap:10px;
+  }
+
+  .rc .item{
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .rc .rank{
+    min-width:40px;
+    height:34px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-weight:800 !important;
+    border:1px solid rgba(239,225,187,.95);
+    flex:0 0 auto;
+    font-size:10px;
+  }
+
+  .rc .meta{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    min-width:0;
+  }
+
+  .rc .nm{
+    font-weight:800 !important;
+    line-height:1.5;
+    font-size:10.8px;
+    color:var(--min-green-1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .rc .sm{
+    color:var(--min-muted);
+    font-size:9.4px;
+    line-height:1.8;
+  }
+
+  .rc .note{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px solid var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    color:#14532d;
+    font-size:9.8px;
+    line-height:1.9;
+  }
+
+  .rc .note b{
+    font-weight:800 !important;
+  }
+
+  .rc .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+
+  .rc .btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    min-height:34px;
+    padding:7px 14px;
+    border-radius:999px;
+    font-size:10.3px;
+    font-weight:800 !important;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .rc .btn.gold{
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    border-color:rgba(239,225,187,.95);
+  }
+
+  /* =========================================================
+     PRINT
+     يطبع فقط: إشعار الاستلام + ملخص الطلب
+     ويخفي قائمة الرغبات وزر الطباعة
+  ========================================================= */
+  @media print {
+    @page{
+      size:A4;
+      margin:12mm;
+    }
+
+    html, body{
+      background:#fff !important;
+      margin:0 !important;
+      padding:0 !important;
+    }
+
+    body *{
+      visibility:hidden;
+    }
+
+    .rc, .rc *{
+      visibility:visible;
+    }
+
+    .rc{
+      font-size:12px !important;
+      color:#000 !important;
+    }
+
+    .rc .wrap{
+      max-width:100% !important;
+      margin:0 !important;
+    }
+
+    .rc .shell{
+      border:0 !important;
+      box-shadow:none !important;
+      border-radius:0 !important;
+      background:#fff !important;
+      overflow:visible !important;
+    }
+
+    .rc .top{
+      background:#fff !important;
+      color:#000 !important;
+      padding:0 0 10px 0 !important;
+      border-bottom:2px solid #d1d5db !important;
+      display:block !important;
+    }
+
+    .rc .top::before,
+    .rc .top::after,
+    .rc .pill,
+    .rc .actions{
+      display:none !important;
+    }
+
+    .rc .title{
+      color:#000 !important;
+      font-size:18px !important;
+    }
+
+    .rc .sub{
+      color:#444 !important;
+      font-size:11px !important;
+      max-width:none !important;
+    }
+
+    .rc .body{
+      padding:10px 0 0 0 !important;
+      gap:10px !important;
+    }
+
+    .rc .card{
+      border:1px solid #d1d5db !important;
+      box-shadow:none !important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+      background:#fff !important;
+      border-radius:12px !important;
+    }
+
+    .rc .ch{
+      background:#fff !important;
+      border-bottom:1px solid #d1d5db !important;
+    }
+
+    .rc .ch h3,
+    .rc .hero-title,
+    .rc .field label{
+      color:#000 !important;
+    }
+
+    .rc .tag,
+    .rc .badge,
+    .rc .note{
+      background:#fff !important;
+      color:#000 !important;
+      border:1px solid #d1d5db !important;
+      box-shadow:none !important;
+    }
+
+    .rc .hero{
+      grid-template-columns:1fr !important;
+      gap:8px !important;
+    }
+
+    .rc .badge{
+      width:46px !important;
+      height:46px !important;
+      font-size:22px !important;
+      border-radius:12px !important;
+    }
+
+    .rc .hero-sub{
+      color:#444 !important;
+      font-size:10px !important;
+    }
+
+    .rc .grid{
+      grid-template-columns:1fr 1fr !important;
+      gap:8px !important;
+    }
+
+    .rc .field{
+      box-shadow:none !important;
+      background:#fff !important;
+      border:1px solid #d1d5db !important;
+      border-radius:10px !important;
+    }
+
+    .rc .input{
+      background:#fff !important;
+      border:1px solid #d1d5db !important;
+      color:#000 !important;
+      box-shadow:none !important;
+      min-height:36px !important;
+    }
+
+    /* إخفاء بطاقة الرغبات بالكامل عند الطباعة */
+    .rc .prefs-card{
+      display:none !important;
+    }
+
+    /* ضمان عدم تقطيع البطاقات */
+    .rc .receipt-card,
+    .rc .summary-card{
+      display:block !important;
+    }
+  }
+
+  @media (max-width: 700px){
+    .rc .grid{
+      grid-template-columns:1fr;
+    }
+
+    .rc .top{
+      padding:13px 14px;
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .rc .title{
+      font-size:16px;
+    }
+
+    .rc .body{
+      padding:10px;
+    }
+
+    .rc .hero{
+      grid-template-columns:1fr;
+    }
+
+    .rc .actions{
+      flex-direction:column;
+    }
+
+    .rc .btn{
+      width:100%;
+    }
+
+    .rc .pill{
+      display:none;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rc">
+  <div class="wrap">
+    <div class="shell">
+
+      <div class="top">
+        <div>
+          <h1 class="title">تم إرسال طلبك بنجاح</h1>
+          <p class="sub">
+            تم حفظ رغباتك واعتماد الإرسال النهائي بنجاح. يرجى الاحتفاظ بهذه الصفحة كإشعار استلام لطلبك.
+          </p>
+        </div>
+        <div class="pill"><span class="dot"></span>تم الاستلام</div>
+      </div>
+
+      <div class="body">
+        {% if app %}
+
+          <div class="card receipt-card">
+            <div class="ch">
+              <h3>إشعار الاستلام</h3>
+              <span class="tag">تم الإرسال</span>
+            </div>
+            <div class="cb">
+              <div class="hero">
+                <div class="badge">✓</div>
+                <div>
+                  <h2 class="hero-title">اكتملت عملية التقديم بنجاح</h2>
+                  <p class="hero-sub">
+                    تم استلام طلبك وإقفاله للتعديل، ولا يلزم أي إجراء إضافي من المتقدم بعد هذه المرحلة.
+                  </p>
+                </div>
+              </div>
+
+              <div class="note">
+                <b>تنبيه مهم:</b>
+                بعد الإرسال النهائي لا يمكن تعديل الرغبات أو تغيير الإقرار.
+              </div>
+            </div>
+          </div>
+
+          <div class="card summary-card">
+            <div class="ch">
+              <h3>ملخص الطلب</h3>
+              <span class="tag">بيانات معتمدة</span>
+            </div>
+            <div class="cb">
+              <div class="grid">
+                <div class="field">
+                  <label>رقم الطلب</label>
+                  <input class="input" value="{{ app.id }}" readonly>
+                </div>
+
+                <div class="field">
+                  <label>رقم الهوية</label>
+                  <input class="input" value="{{ a.national_id }}" readonly>
+                </div>
+
+                <div class="field">
+                  <label>تاريخ الإرسال</label>
+                  <input class="input" value="{{ app.submitted_at|date:'Y-m-d H:i' }}" readonly>
+                </div>
+
+                <div class="field">
+                  <label>نوع الإقرار</label>
+                  <input class="input" value="{{ app.get_fallback_choice_display }}" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card prefs-card">
+            <div class="ch">
+              <h3>رغباتك المعتمدة</h3>
+              <span class="tag">مرتبة</span>
+            </div>
+            <div class="cb">
+              {% if prefs %}
+                <div class="list">
+                  {% for p in prefs %}
+                  <div class="item">
+                    <div class="rank">{{ p.rank }}</div>
+                    <div class="meta">
+                      <div class="nm">{{ p.vacancy.school_name }}</div>
+                      <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="field">
+                  <div class="sm">لم يتم العثور على رغبات مرتبطة بهذا الطلب.</div>
+                </div>
+              {% endif %}
+
+              <div class="actions">
+                <button class="btn gold" type="button" onclick="window.print()">طباعة الإيصال</button>
+              </div>
+            </div>
+          </div>
+
+        {% else %}
+          <div class="alert">لا يوجد طلب مرتبط.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

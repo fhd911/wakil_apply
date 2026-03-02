@@ -1,0 +1,342 @@
+{% extends "portal/base.html" %}
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Login — Unified Ministerial Light Style
+     موحّد مع base الجديد
+  ========================================================= */
+
+  .loginX, .loginX *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+  }
+
+  .loginX{
+    direction:rtl;
+    color:var(--min-ink);
+    font-size:13px;
+  }
+
+  /* منع أي أيقونات كبيرة موروثة */
+  .loginX svg,
+  .loginX i,
+  .loginX [class*="icon"]{
+    display:none !important;
+  }
+
+  .loginX .wrap{
+    min-height:calc(100vh - 140px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px 10px;
+  }
+
+  .loginX .card{
+    width:min(560px, 96vw);
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-strong);
+    overflow:hidden;
+    position:relative;
+  }
+
+  .loginX .card::before{
+    content:"";
+    position:absolute;
+    inset:-140px -140px auto auto;
+    width:360px;
+    height:360px;
+    border-radius:999px;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(200,160,74,.14), rgba(47,94,74,.06), transparent 70%);
+    opacity:.8;
+    pointer-events:none;
+  }
+
+  .loginX .top{
+    position:relative;
+    padding:16px 18px 14px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .loginX .top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .loginX .top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .loginX .top > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .loginX .brand{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .loginX .title{
+    margin:0;
+    font-size:18px;
+    font-weight:800;
+    letter-spacing:-.2px;
+    color:#fff;
+    line-height:1.35;
+  }
+
+  .loginX .sub{
+    margin:0;
+    color:rgba(255,255,255,.82);
+    line-height:1.75;
+    max-width:52ch;
+    font-size:10.6px;
+  }
+
+  .loginX .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid rgba(239,225,187,.95);
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-size:9.8px;
+    font-weight:800;
+    white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .loginX .dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    flex:0 0 auto;
+  }
+
+  .loginX .body{
+    padding:16px 18px 18px;
+    position:relative;
+    z-index:1;
+  }
+
+  .loginX .alert{
+    border:1px solid var(--min-danger-line);
+    background:var(--min-danger-soft);
+    color:#7f1d1d;
+    border-radius:14px;
+    padding:10px 12px;
+    line-height:1.7;
+    margin-bottom:12px;
+    font-size:10px;
+  }
+
+  .loginX .alert b{
+    font-weight:800;
+  }
+
+  .loginX .field{
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:16px;
+    padding:10px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .loginX .field + .field{
+    margin-top:10px;
+  }
+
+  .loginX label{
+    display:block;
+    margin-bottom:6px;
+    color:var(--min-green-2);
+    font-weight:800;
+    font-size:10.6px;
+  }
+
+  .loginX .input{
+    width:100%;
+    min-height:40px;
+    padding:8px 12px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    outline:none;
+    font-size:10.8px;
+    color:var(--min-ink);
+    transition:border-color .15s ease, box-shadow .15s ease;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .loginX .input::placeholder{
+    color:rgba(111,129,119,.72);
+  }
+
+  .loginX .input:focus{
+    border-color:rgba(169,130,53,.36);
+    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .loginX .actions{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+  }
+
+  .loginX .btn{
+    appearance:none;
+    border:1px solid var(--min-green-2);
+    cursor:pointer;
+    padding:6px 14px;
+    min-height:32px;
+    border-radius:999px;
+    font-size:10.2px;
+    font-weight:800;
+    color:#fff;
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    min-width:120px;
+  }
+
+  .loginX .btn:hover{
+    transform:translateY(-1px);
+  }
+
+  .loginX .btn:active{
+    transform:translateY(1px);
+  }
+
+  @media (max-width: 520px){
+    .loginX .btn{
+      width:100%;
+    }
+
+    .loginX .pill{
+      display:none;
+    }
+
+    .loginX .wrap{
+      min-height:calc(100vh - 120px);
+      padding:12px 4px;
+    }
+
+    .loginX .top,
+    .loginX .body{
+      padding-inline:14px;
+    }
+
+    .loginX .title{
+      font-size:16px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loginX">
+  <div class="wrap">
+    <div class="card">
+
+      <div class="top">
+        <div class="brand">
+          <h1 class="title">تسجيل الدخول</h1>
+          <p class="sub">أدخل السجل المدني للتحقق من وجودك ضمن بيانات المرشحين.</p>
+        </div>
+        <div class="pill">
+          <span class="dot"></span>
+          <span>تحقق سريع</span>
+        </div>
+      </div>
+
+      <div class="body">
+        {% if error %}
+          <div class="alert"><b>تنبيه:</b> {{ error }}</div>
+        {% endif %}
+
+        <form method="post" id="loginForm" novalidate>
+          {% csrf_token %}
+
+          <div class="field">
+            <label for="nid">السجل المدني</label>
+            <input
+              id="nid"
+              class="input"
+              name="national_id"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="10xxxxxxxx"
+              maxlength="10"
+              value="{{ national_id|default:'' }}"
+            />
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit">دخول</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const nid = document.getElementById("nid");
+  const form = document.getElementById("loginForm");
+
+  if (nid){
+    nid.addEventListener("input", () => {
+      const v = nid.value || "";
+      nid.value = v.replace(/\D+/g, "").slice(0, 10);
+    });
+  }
+
+  if (form && nid){
+    form.addEventListener("submit", (e) => {
+      const v = (nid.value || "").trim();
+      if (v.length !== 10){
+        e.preventDefault();
+        nid.focus();
+        nid.style.borderColor = "rgba(185,28,28,.45)";
+        nid.style.boxShadow = "0 0 0 4px rgba(185,28,28,.08)";
+        setTimeout(() => {
+          nid.style.borderColor = "";
+          nid.style.boxShadow = "";
+        }, 1400);
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,488 @@
+{% extends "portal/base.html" %}
+{% block title %}تفاصيل الطلب{% endblock %}
+
+{% block extra_css %}
+<style>
+  .detail-grid{
+    display:grid;
+    grid-template-columns:1.55fr 1fr;
+    gap:12px;
+    align-items:start;
+  }
+
+  .detail-side{
+    position:sticky;
+    top:12px;
+  }
+
+  .detail-note{
+    margin-top:10px;
+    padding:10px 11px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:rgba(148,163,184,.05);
+    line-height:1.75;
+    font-size:12px;
+  }
+
+  .detail-note b{
+    font-weight:600;
+  }
+
+  .detail-prefs{
+    display:grid;
+    gap:10px;
+  }
+
+  .detail-pref{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .detail-pref:hover{
+    background:#f9fbff;
+  }
+
+  .detail-pref-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+
+  .detail-rank{
+    width:32px;
+    height:32px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:600;
+    color:var(--pri);
+    background:rgba(20,83,45,.08);
+    border:1px solid rgba(20,83,45,.16);
+    flex:0 0 auto;
+  }
+
+  .detail-pref-meta{
+    min-width:0;
+  }
+
+  .detail-pref-name{
+    font-size:12.3px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .detail-pref-sub{
+    margin-top:3px;
+    color:var(--mut);
+    font-size:11.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .detail-box{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#fff;
+    overflow:hidden;
+    margin-top:10px;
+  }
+
+  .detail-box-head{
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fff,#fbfdff);
+  }
+
+  .detail-box-body{
+    padding:12px;
+  }
+
+  .detail-summary{
+    list-style:none;
+    cursor:pointer;
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-weight:600;
+  }
+
+  .detail-summary::-webkit-details-marker{
+    display:none;
+  }
+
+  .detail-hint{
+    color:var(--mut);
+    font-size:11px;
+    line-height:1.7;
+    margin-bottom:8px;
+  }
+
+  .detail-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .copy-btns{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  @media (max-width: 980px){
+    .detail-grid{
+      grid-template-columns:1fr;
+    }
+    .detail-side{
+      position:static;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ui">
+  <div class="ui-page">
+
+    <div class="ui-top">
+      <div class="ui-title-wrap">
+        <h1 class="ui-title">تفاصيل الطلب رقم #{{ app.id }}</h1>
+        <p class="ui-subtitle">عرض بيانات المتقدم، الرغبات، وقرار الإدارة بشكل موحّد ومختصر.</p>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+            <span class="ui-btn-icon">↩</span>
+            رجوع
+          </a>
+
+          <button class="ui-btn" type="button" onclick="copyTextValue('{{ app.id }}')">
+            <span class="ui-btn-icon">⧉</span>
+            نسخ رقم الطلب
+          </button>
+
+          <button class="ui-btn" type="button" onclick="copyTextValue('{{ a.national_id|default:'' }}')">
+            <span class="ui-btn-icon">⧉</span>
+            نسخ الهوية
+          </button>
+        </div>
+      </div>
+
+      <div class="ui-actions">
+        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+          <span class="ui-btn-icon">▦</span>
+          لوحة الإدارة
+        </a>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+      <span class="ui-pill"><span class="ui-dot"></span>تفاصيل الطلب</span>
+
+      {% if app.status == "submitted" %}
+        <span class="ui-pill ui-pill-ok">الحالة: مُرسل</span>
+      {% elif app.status == "draft" %}
+        <span class="ui-pill">الحالة: مسودة</span>
+      {% elif app.status %}
+        <span class="ui-pill ui-pill-warn">الحالة: {{ app.status }}</span>
+      {% else %}
+        <span class="ui-pill ui-pill-warn">الحالة: -</span>
+      {% endif %}
+
+      {% if app.admin_decision %}
+        {% if app.admin_decision == "approved" %}
+          <span class="ui-pill ui-pill-ok">قرار الإدارة: معتمد</span>
+        {% elif app.admin_decision == "rejected" %}
+          <span class="ui-pill ui-pill-danger">قرار الإدارة: مرفوض</span>
+        {% elif app.admin_decision == "returned" %}
+          <span class="ui-pill ui-pill-warn">قرار الإدارة: مُعاد للتعديل</span>
+        {% else %}
+          <span class="ui-pill">قرار الإدارة: {{ app.admin_decision }}</span>
+        {% endif %}
+      {% else %}
+        <span class="ui-pill">قرار الإدارة: -</span>
+      {% endif %}
+
+      <span class="ui-pill">آخر تحديث: {{ app.admin_decided_at|date:"Y-m-d H:i"|default:"-" }}</span>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- MAIN -->
+      <div>
+
+        <div class="ui-card">
+          <div class="ui-card-head">
+            <div class="ui-title" style="font-size:13px;">بيانات الطلب</div>
+            <span class="ui-pill">ID: #{{ app.id }}</span>
+          </div>
+
+          <div class="ui-card-body">
+            <div class="ui-grid-2">
+              <div class="ui-field">
+                <div class="ui-label">السجل المدني</div>
+                <input class="ui-input" value="{{ a.national_id|default:'-' }}" readonly>
+              </div>
+
+              <div class="ui-field">
+                <div class="ui-label">الاسم</div>
+                <input class="ui-input" value="{{ a.full_name|default:'-' }}" readonly>
+              </div>
+
+              <div class="ui-field">
+                <div class="ui-label">القطاع</div>
+                <input class="ui-input" value="{{ a.sector|default:'-' }}" readonly>
+              </div>
+
+              <div class="ui-field">
+                <div class="ui-label">الجنس</div>
+                <input class="ui-input" value="{{ a.gender|default:'-' }}" readonly>
+              </div>
+
+              <div class="ui-field">
+                <div class="ui-label">حالة الطلب</div>
+                <input class="ui-input"
+                       value="{% if app.status == 'submitted' %}مُرسل{% elif app.status == 'draft' %}مسودة{% else %}{{ app.status|default:'-' }}{% endif %}"
+                       readonly>
+              </div>
+
+              <div class="ui-field">
+                <div class="ui-label">تاريخ الإرسال</div>
+                <input class="ui-input" value="{{ app.submitted_at|date:'Y-m-d H:i'|default:'-' }}" readonly>
+              </div>
+            </div>
+
+            <div class="detail-note">
+              <b>الخيار البديل / الإقرار</b>
+              <div style="margin-top:4px; color:var(--mut);">
+                {{ app.get_fallback_choice_display|default:app.fallback_choice|default:"-" }}
+              </div>
+              <div style="color:var(--mut);">خيار المتقدم في حال عدم توفر فرصة ضمن رغباته.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-card" style="margin-top:12px;">
+          <div class="ui-card-head">
+            <div class="ui-title" style="font-size:13px;">الرغبات المرتبة</div>
+            <span class="ui-pill">عدد الرغبات: {{ prefs|length }}</span>
+          </div>
+
+          <div class="ui-card-body">
+            {% if prefs %}
+              <div class="detail-prefs">
+                {% for p in prefs %}
+                  <div class="detail-pref">
+                    <div class="detail-pref-left">
+                      <div class="detail-rank">{{ p.rank|default:forloop.counter }}</div>
+
+                      <div class="detail-pref-meta">
+                        <div class="detail-pref-name">{{ p.vacancy.school_name|default:"-" }}</div>
+                        <div class="detail-pref-sub">
+                          {{ p.vacancy.stage|default:"-" }} — {{ p.vacancy.sector|default:"-" }}
+                        </div>
+                      </div>
+                    </div>
+
+                    {% if app.achieved_pref_id == p.id %}
+                      <span class="ui-pill ui-pill-ok">متحققة</span>
+                    {% else %}
+                      <span class="ui-pill">رغبة #{{ p.rank|default:forloop.counter }}</span>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="detail-note">
+                <b>تنبيه</b>
+                <div style="color:var(--mut);">لم يتم اختيار رغبات لهذا الطلب.</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="detail-side">
+
+        <div class="ui-card">
+          <div class="ui-card-head">
+            <div class="ui-title" style="font-size:13px;">قرار الإدارة</div>
+            <span class="ui-pill">تحكم</span>
+          </div>
+
+          <div class="ui-card-body">
+
+            <div class="ui-field">
+              <div class="ui-label">القرار الحالي</div>
+              <input class="ui-input"
+                     value="{% if app.admin_decision == 'approved' %}معتمد{% elif app.admin_decision == 'rejected' %}مرفوض{% elif app.admin_decision == 'returned' %}مُعاد للتعديل{% else %}{{ app.admin_decision|default:'-' }}{% endif %}"
+                     readonly>
+            </div>
+
+            <div class="ui-field" style="margin-top:10px;">
+              <div class="ui-label">تاريخ القرار</div>
+              <input class="ui-input" value="{{ app.admin_decided_at|date:'Y-m-d H:i'|default:'-' }}" readonly>
+            </div>
+
+            <div class="ui-field" style="margin-top:10px;">
+              <div class="ui-label">ملاحظة القرار</div>
+              <textarea class="ui-textarea" readonly>{{ app.admin_note|default:'' }}</textarea>
+            </div>
+
+            <!-- الرغبة المتحققة -->
+            <div class="detail-box">
+              <div class="detail-box-head">
+                <div class="ui-title" style="font-size:12.5px;">الرغبة المتحققة</div>
+                <span class="ui-pill">اختياري</span>
+              </div>
+
+              <div class="detail-box-body">
+                <div class="detail-hint">اختر الرغبة التي تحققت للمتقدم، أو اتركها بدون تحديد.</div>
+
+                <form method="post" action="{% url 'portal:admin_set_achieved' app.id %}">
+                  {% csrf_token %}
+
+                  <div class="ui-field" style="padding:0; border:none; background:transparent;">
+                    <div class="ui-label">اختر الرغبة المتحققة</div>
+                    <select class="ui-select" name="achieved_pref_id">
+                      <option value="">— بدون تحديد —</option>
+                      {% for p in prefs %}
+                        <option value="{{ p.id }}" {% if app.achieved_pref_id == p.id %}selected{% endif %}>
+                          رغبة #{{ p.rank|default:forloop.counter }} — {{ p.vacancy.school_name|default:"-" }} ({{ p.vacancy.stage|default:"-" }})
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="detail-row" style="margin-top:10px;">
+                    <button class="ui-btn ui-btn-primary" type="submit">حفظ التحديد</button>
+                  </div>
+
+                  {% if app.achieved_pref %}
+                    <div class="detail-note">
+                      <b>الحالة الحالية</b>
+                      <div style="margin-top:4px; color:var(--mut);">
+                        تم تحديد: رغبة #{{ app.achieved_pref.rank|default:"-" }} — {{ app.achieved_pref.vacancy.school_name|default:"-" }}
+                      </div>
+                      <div style="margin-top:2px; color:var(--mut);">
+                        وقت التحديد: {{ app.achieved_at|date:"Y-m-d H:i"|default:"-" }}
+                      </div>
+                    </div>
+                  {% endif %}
+                </form>
+              </div>
+            </div>
+
+            <!-- اعتماد -->
+            <details class="detail-box" open>
+              <summary class="detail-summary">
+                اعتماد الطلب
+                <span class="ui-pill">اختياري</span>
+              </summary>
+              <div class="detail-box-body">
+                <div class="detail-hint">يمكن إضافة سبب مختصر للاعتماد (اختياري).</div>
+
+                <form method="post" action="{% url 'portal:admin_approve' app.id %}">
+                  {% csrf_token %}
+                  <input class="ui-input" name="note" placeholder="سبب الاعتماد (اختياري)">
+                  <div class="detail-row" style="margin-top:10px;">
+                    <button class="ui-btn ui-btn-primary" type="submit">اعتماد</button>
+                  </div>
+                </form>
+              </div>
+            </details>
+
+            <!-- رفض -->
+            <details class="detail-box">
+              <summary class="detail-summary">
+                رفض الطلب
+                <span class="ui-pill ui-pill-danger">إجباري</span>
+              </summary>
+              <div class="detail-box-body">
+                <div class="detail-hint">سبب الرفض إلزامي.</div>
+
+                <form method="post" action="{% url 'portal:admin_reject' app.id %}">
+                  {% csrf_token %}
+                  <input class="ui-input" name="note" placeholder="سبب الرفض (إجباري)" required>
+                  <div class="detail-row" style="margin-top:10px;">
+                    <button class="ui-btn ui-btn-danger" type="submit">رفض</button>
+                  </div>
+                </form>
+              </div>
+            </details>
+
+            <!-- إرجاع -->
+            <details class="detail-box">
+              <summary class="detail-summary">
+                إرجاع للتعديل
+                <span class="ui-pill ui-pill-warn">إجباري</span>
+              </summary>
+              <div class="detail-box-body">
+                <div class="detail-hint">فتح التعديل للمتقدم مع توثيق سبب الإرجاع.</div>
+
+                <form method="post" action="{% url 'portal:admin_unlock' app.id %}">
+                  {% csrf_token %}
+                  <input class="ui-input" name="note" placeholder="سبب الإرجاع للتعديل (إجباري)" required>
+                  <div class="detail-row" style="margin-top:10px;">
+                    <button class="ui-btn ui-btn-warn" type="submit">فتح التعديل</button>
+                  </div>
+                </form>
+              </div>
+            </details>
+
+            <div style="margin-top:12px;">
+              <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+                رجوع للوحة
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyTextValue(txt){
+  try{
+    const val = String(txt || "").trim();
+    if(!val) return;
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(val);
+    }else{
+      const t = document.createElement("textarea");
+      t.value = val;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand("copy");
+      document.body.removeChild(t);
+    }
+  }catch(e){}
+}
+</script>
+{% endblock %}

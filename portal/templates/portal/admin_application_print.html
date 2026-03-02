@@ -1,0 +1,552 @@
+{% extends "portal/base.html" %}
+{% block title %}طباعة الرغبة المعتمدة{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root{
+    --bg:#f3f6f3;
+    --paper:#ffffff;
+    --ink:#17231c;
+    --muted:#6f7d74;
+
+    --green-1:#17382d;
+    --green-2:#224a3a;
+    --green-3:#315b49;
+
+    --gold-1:#9b7833;
+    --gold-2:#b78f4b;
+
+    --line:#dde6de;
+    --line-2:#d2dbd3;
+
+    --shadow:0 10px 28px rgba(18,34,26,.07);
+  }
+
+  .prn, .prn *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
+
+  .prn{
+    direction:rtl;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 220px at 100% 0, rgba(183,143,75,.04), transparent 60%),
+      radial-gradient(700px 200px at 0 12%, rgba(34,74,58,.03), transparent 62%);
+    padding:18px;
+  }
+
+  .prn-wrap{
+    width:min(100%,980px);
+    margin:0 auto;
+    display:grid;
+    gap:14px;
+  }
+
+  .prn-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .prn-actions-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .prn-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:38px;
+    padding:7px 14px;
+    border-radius:10px;
+    border:1px solid var(--line-2);
+    background:linear-gradient(180deg,#fff,#fafcf9);
+    color:var(--green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:700;
+  }
+
+  .prn-btn-main{
+    color:#fff;
+    border-color:rgba(34,74,58,.1);
+    background:linear-gradient(180deg,var(--green-3),var(--green-2));
+  }
+
+  .prn-paper{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .prn-head{
+    position:relative;
+    padding:18px 20px 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+      linear-gradient(180deg,var(--green-2),var(--green-1));
+    color:#f8fbf8;
+  }
+
+  .prn-head::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:3px;
+    background:linear-gradient(90deg,var(--gold-2),var(--gold-1),rgba(155,120,51,.2));
+  }
+
+  .prn-head-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+  }
+
+  .prn-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.2;
+    font-weight:800;
+  }
+
+  .prn-sub{
+    margin:6px 0 0;
+    font-size:11px;
+    line-height:1.8;
+    color:rgba(244,248,245,.82);
+    font-weight:500;
+  }
+
+  .prn-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+    padding:5px 12px;
+    border-radius:999px;
+    border:1px solid rgba(231,219,188,.82);
+    background:linear-gradient(180deg,#fffef9,#fff8ee);
+    color:#294339;
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  .prn-body{
+    padding:18px;
+    display:grid;
+    gap:14px;
+  }
+
+  .prn-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .prn-card{
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:linear-gradient(180deg,#fff,#fcfdfc);
+    padding:11px 12px;
+  }
+
+  .prn-k{
+    font-size:10px;
+    color:var(--muted);
+    margin-bottom:5px;
+    font-weight:700;
+  }
+
+  .prn-v{
+    font-size:11px;
+    color:var(--ink);
+    font-weight:700;
+    line-height:1.7;
+    word-break:break-word;
+  }
+
+  .prn-section{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  .prn-section-head{
+    padding:11px 14px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#fbfcfb,#f5f8f5);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .prn-section-title{
+    margin:0;
+    font-size:12px;
+    color:var(--green-2);
+    font-weight:800;
+  }
+
+  .prn-section-sub{
+    font-size:10px;
+    color:var(--muted);
+    font-weight:600;
+  }
+
+  .prn-table-wrap{
+    overflow:auto;
+  }
+
+  .prn-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    min-width:760px;
+  }
+
+  .prn-table th{
+    padding:10px 8px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#fafcf9,#f1f5f1);
+    color:var(--green-2);
+    font-size:10px;
+    font-weight:800;
+    white-space:nowrap;
+    text-align:center;
+  }
+
+  .prn-table td{
+    padding:10px 8px;
+    border-bottom:1px solid #eef3ee;
+    background:#fff;
+    font-size:11px;
+    line-height:1.6;
+    vertical-align:middle;
+    text-align:center;
+    font-weight:600;
+  }
+
+  .prn-table tbody tr:nth-child(even) td{ background:#fcfdfc; }
+
+  .c-rank{ width:70px; }
+  .c-school{ min-width:260px; text-align:right !important; }
+  .c-sector{ min-width:150px; }
+  .c-kind{ min-width:140px; }
+  .c-status{ min-width:130px; }
+
+  .prn-rank{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:30px;
+    height:28px;
+    padding:0 10px;
+    border-radius:999px;
+    border:1px solid rgba(183,143,75,.45);
+    background:linear-gradient(180deg,#fffef9,#fff8eb);
+    color:#6b521c;
+    font-size:10px;
+    font-weight:800;
+  }
+
+  .prn-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:24px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,#fff,#fafcf9);
+    color:#66746c;
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  .prn-status.ok{
+    border-color:#cfe9d8;
+    background:linear-gradient(180deg,#f8fff9,#effcf3);
+    color:#166534;
+  }
+
+  .prn-status.warn{
+    border-color:#f0dcc0;
+    background:linear-gradient(180deg,#fffbf7,#fff8f1);
+    color:#8a5a12;
+  }
+
+  .prn-notes{
+    border:1px dashed rgba(183,143,75,.34);
+    border-radius:12px;
+    background:linear-gradient(180deg,#fffefb,#fffbf5);
+    padding:12px 14px;
+  }
+
+  .prn-empty{
+    padding:26px;
+    text-align:center;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:600;
+  }
+
+  .prn-foot{
+    padding:12px 18px 18px;
+    font-size:10px;
+    color:var(--muted);
+    text-align:center;
+    line-height:1.8;
+    font-weight:600;
+  }
+
+  @media (max-width:900px){
+    .prn-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+  }
+
+  @media (max-width:640px){
+    .prn{
+      padding:12px;
+    }
+
+    .prn-grid{
+      grid-template-columns:1fr;
+    }
+
+    .prn-head-grid{
+      grid-template-columns:1fr;
+    }
+
+    .prn-title{
+      font-size:18px;
+    }
+  }
+
+  @media print{
+    @page{
+      size:A4;
+      margin:12mm;
+    }
+
+    html, body{
+      background:#fff !important;
+    }
+
+    body *{
+      visibility:hidden;
+    }
+
+    .prn-paper, .prn-paper *{
+      visibility:visible;
+    }
+
+    .prn{
+      padding:0 !important;
+      background:#fff !important;
+    }
+
+    .prn-wrap{
+      width:100% !important;
+      max-width:none !important;
+      margin:0 !important;
+      gap:0 !important;
+    }
+
+    .prn-actions{
+      display:none !important;
+    }
+
+    .prn-paper{
+      border:none !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      overflow:visible !important;
+    }
+
+    .prn-head{
+      border-radius:0 !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    .prn-section-head,
+    .prn-table th,
+    .prn-rank,
+    .prn-status,
+    .prn-badge{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    .prn-btn{
+      display:none !important;
+    }
+
+    a{
+      text-decoration:none !important;
+      color:inherit !important;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prn">
+  <div class="prn-wrap">
+
+    <div class="prn-actions">
+      <div class="prn-actions-right">
+        <button type="button" class="prn-btn prn-btn-main" onclick="window.print()">طباعة</button>
+        <button type="button" class="prn-btn" onclick="window.close()">إغلاق</button>
+      </div>
+
+      <a href="{% url 'portal:admin_dashboard' %}" class="prn-btn">العودة للوحة القرار</a>
+    </div>
+
+    <div class="prn-paper">
+      <div class="prn-head">
+        <div class="prn-head-grid">
+          <div>
+            <h1 class="prn-title">طباعة الرغبة المعتمدة</h1>
+            <p class="prn-sub">عرض رسمي للرغبة النهائية المعتمدة من قبل الإدارة، مهيأ للطباعة والاعتماد الداخلي.</p>
+          </div>
+
+          <div class="prn-badge">
+            رقم الطلب:
+            <b style="margin-inline-start:6px;">#{{ application.id }}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="prn-body">
+
+        <div class="prn-grid">
+          <div class="prn-card">
+            <div class="prn-k">اسم المرشح</div>
+            <div class="prn-v">{{ application.applicant.full_name|default:"—" }}</div>
+          </div>
+
+          <div class="prn-card">
+            <div class="prn-k">السجل المدني</div>
+            <div class="prn-v">{{ application.applicant.national_id|default:"—" }}</div>
+          </div>
+
+          <div class="prn-card">
+            <div class="prn-k">القطاع</div>
+            <div class="prn-v">{{ application.applicant.sector|default:"—" }}</div>
+          </div>
+
+          <div class="prn-card">
+            <div class="prn-k">حالة الطلب</div>
+            <div class="prn-v">
+              {% if application.status == "submitted" %}
+                مُرسل
+              {% elif application.status == "draft" %}
+                مسودة
+              {% else %}
+                {{ application.status|default:"—" }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="prn-section">
+          <div class="prn-section-head">
+            <div>
+              <h3 class="prn-section-title">الرغبة المعتمدة</h3>
+              <div class="prn-section-sub">هذه هي الرغبة المحددة نهائيًا من قبل الإدارة.</div>
+            </div>
+
+            <div class="prn-badge">
+              الحالة:
+              <b style="margin-inline-start:6px;">
+                {% if selected_pref %}معتمدة{% else %}غير محددة{% endif %}
+              </b>
+            </div>
+          </div>
+
+          {% if selected_pref and selected_pref.vacancy %}
+            <div class="prn-table-wrap">
+              <table class="prn-table">
+                <thead>
+                  <tr>
+                    <th class="c-rank">الترتيب</th>
+                    <th class="c-school">المدرسة / الشاغر</th>
+                    <th class="c-sector">القطاع</th>
+                    <th class="c-kind">نوع الشاغر</th>
+                    <th class="c-status">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="c-rank">
+                      <span class="prn-rank">{{ selected_pref.rank|default:"—" }}</span>
+                    </td>
+
+                    <td class="c-school">
+                      {% if selected_pref.vacancy.school_name %}
+                        {{ selected_pref.vacancy.school_name }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+
+                    <td class="c-sector">
+                      {% if selected_pref.vacancy.sector %}
+                        {{ selected_pref.vacancy.sector }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+
+                    <td class="c-kind">
+                      {% if selected_pref.vacancy.gender %}
+                        {{ selected_pref.vacancy.gender }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+
+                    <td class="c-status">
+                      <span class="prn-status ok">معتمدة نهائيًا</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="prn-empty">لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب بعد.</div>
+          {% endif %}
+        </div>
+
+        <div class="prn-notes">
+          <div class="prn-k">ملاحظة</div>
+          <div class="prn-v">
+            هذا المستند مخصص للعرض والطباعة الداخلية، ويعكس الرغبة النهائية المعتمدة وقت توليد الصفحة.
+          </div>
+        </div>
+      </div>
+
+      <div class="prn-foot">
+        تم إنشاء هذا الكشف من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
