@@ -1,4 +1,3 @@
-# config/settings.py  (استبدله بالكامل)
 from pathlib import Path
 import os
 
@@ -9,8 +8,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # =========================
 # .env loader (بدون مكتبات إضافية)
-# - إذا كنت مركّب python-dotenv، ما راح يضر
-# - وإذا ما ركّبته، الملف يشتغل عادي
 # =========================
 ENV_FILE = BASE_DIR / ".env"
 if ENV_FILE.exists():
@@ -25,13 +22,45 @@ if ENV_FILE.exists():
 # Security
 # =========================
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
-DEBUG = os.getenv("DEBUG", "1") == "1"
-ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()]
+
+# في Render اجعلها 0
+DEBUG = os.getenv("DEBUG", "0") == "1"
+
+# ALLOWED_HOSTS:
+# - يمكن ضبطها يدويًا من Render
+# - وإذا لم تضبطها، نستخدم دومين Render تلقائيًا إن وجد
+render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
+allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
+
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+if render_hostname:
+    ALLOWED_HOSTS.append(render_hostname)
+
+if allowed_hosts_env:
+    ALLOWED_HOSTS += [h.strip() for h in allowed_hosts_env.split(",") if h.strip()]
+else:
+    ALLOWED_HOSTS.append("*")
+
+ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS))  # إزالة التكرار
+
+# إذا كنت تستخدم دومين HTTPS على Render
+CSRF_TRUSTED_ORIGINS = []
+if render_hostname:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
+
+csrf_env = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+if csrf_env:
+    CSRF_TRUSTED_ORIGINS += [u.strip() for u in csrf_env.split(",") if u.strip()]
+
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
 
 # =========================
 # Apps
 # =========================
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",  # يساعد محليًا مع WhiteNoise
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,6 +77,8 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ملفات static على Render
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -64,7 +95,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # =========================
 # Templates
-# - نضيف مجلد templates العام لو احتجته لاحقاً
 # =========================
 TEMPLATES = [
     {
@@ -82,17 +112,45 @@ TEMPLATES = [
 ]
 
 # =========================
-# Database (SQLite كبداية)
+# Database
+# - PostgreSQL من DATABASE_URL إذا كانت موجودة
+# - وإلا يرجع إلى SQLite
 # =========================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+
+if DATABASE_URL:
+    # يحتاج psycopg2-binary في requirements.txt
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+    from urllib.parse import urlparse
+
+    db = urlparse(DATABASE_URL)
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": db.path[1:],
+            "USER": db.username,
+            "PASSWORD": db.password,
+            "HOST": db.hostname,
+            "PORT": db.port or 5432,
+            "CONN_MAX_AGE": 600,
+            "OPTIONS": {
+                "sslmode": "require",
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # =========================
-# Password validation (اتركها كما هي)
+# Password validation
 # =========================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -112,11 +170,14 @@ USE_TZ = True
 # =========================
 # Static / Media
 # =========================
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]  # مجلد static العام
-STATIC_ROOT = BASE_DIR / "staticfiles"    # للتجميع عند النشر
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "media/"
+# WhiteNoise
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # =========================
@@ -125,7 +186,19 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# Sessions (نحتاجها لتخزين national_id مؤقتاً)
+# Sessions
 # =========================
 SESSION_COOKIE_AGE = 60 * 60 * 6  # 6 ساعات
 SESSION_SAVE_EVERY_REQUEST = True
+
+# =========================
+# Security headers للإنتاج
+# =========================
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
