@@ -65,8 +65,8 @@ class SchoolVacancy(TimeStampedModel):
     establishment_status = models.CharField(max_length=100, blank=True, default="")  # E
     gender = models.CharField(max_length=10, blank=True, default="")           # F
     education_type = models.CharField(max_length=100, blank=True, default="")  # G
-    manager_national_id = models.CharField(max_length=20, blank=True, default="")   # H
-    manager_name = models.CharField(max_length=255, blank=True, default="")         # I
+    manager_national_id = models.CharField(max_length=20, blank=True, default="")    # H
+    manager_name = models.CharField(max_length=255, blank=True, default="")          # I
 
     students_total = models.IntegerField(default=0)                            # J
     classes_total = models.IntegerField(default=0)                             # K
@@ -173,7 +173,7 @@ class Application(TimeStampedModel):
             # ✅ إذا تحقق ترشيح نهائي achieved_pref لازم يكون قرار الإدارة approved
             models.CheckConstraint(
                 name="achieved_requires_admin_approved",
-                check=Q(achieved_pref__isnull=True) | Q(admin_decision="approved"),
+                condition=Q(achieved_pref__isnull=True) | Q(admin_decision="approved"),
             ),
         ]
 
