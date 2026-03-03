@@ -1,9 +1,3 @@
-# portal/views.py  — FULL (Clean + Latest)
-# ✅ يضم كل ما أرسلته + إضافة “إدارة المتقدمين والشواغر” داخل نفس الملف
-# ✅ متوافق مع urls.py الأخير (الذي يستدعي views.admin_applicants_* و views.admin_vacancies_*)
-# ✅ حماية: staff_member_required + حذف نهائي للسوبر فقط + منع حذف مرتبط بطلب/رغبة
-# ✅ تمت إضافة: admin_application_print_view
-
 from __future__ import annotations
 
 import os
@@ -61,12 +55,13 @@ def _eligible_schools_for(applicant: Applicant):
     - نفس القطاع
     - نفس الجنس
     - مفتوحة
-    - الاحتياج: >0 أو -1
+    - الاحتياج: أي قيمة غير صفر
+      (لأن نظامكم يعتمد الاحتياج بالسالب أيضًا مثل -1 و -2 ...)
     """
     return (
         SchoolVacancy.objects
         .filter(is_open=True, sector=applicant.sector, gender=applicant.gender)
-        .filter(Q(deputy_need__gt=0) | Q(deputy_need=-1))
+        .exclude(deputy_need=0)
         .order_by("school_name")
     )
 
@@ -91,7 +86,7 @@ def _set_admin_decision(app: Application, user, decision: str, note: str):
     """
     يثبت قرار الإدارة ويحدث حقول التدقيق.
     ✅ منطق قوي: إذا كان القرار (rejected/returned/فارغ) يتم إلغاء achieved_pref
-       حتى لا يبقى “ترشيح نهائي” على طلب غير معتمد (ويمنع كسر CHECK إن وُجد).
+       حتى لا يبقى “ترشيح نهائي” على طلب غير معتمد.
     """
     decision = (decision or "").strip()
 
@@ -113,7 +108,6 @@ def _set_admin_decision(app: Application, user, decision: str, note: str):
 
 
 def _admin_base_qs():
-    # ✅ نضيف achieved_pref__vacancy لتقليل الاستعلامات (لوحة القرار)
     return (
         Application.objects
         .select_related("applicant", "achieved_pref__vacancy")
@@ -139,16 +133,9 @@ def _apply_admin_filters(qs, status: str, sector: str, gender: str):
 
 
 # =========================================================
-# ✅ Report Helpers (Nominations = Achieved)
+# Report Helpers
 # =========================================================
 def _nominations_filters_from_request(request):
-    """
-    فلاتر تقرير المرشحين النهائيين:
-    - q: بحث عام (اسم/هوية/قطاع/جنس/مدرسة/رقم وزارة/مرحلة)
-    - sector, gender: قطاع/جنس المتقدم
-    - school: اسم مدرسة الترشيح
-    - from_date, to_date: على achieved_at (YYYY-MM-DD)
-    """
     q = (request.GET.get("q") or "").strip()
     sector = (request.GET.get("sector") or "").strip()
     gender = (request.GET.get("gender") or "").strip()
@@ -159,9 +146,6 @@ def _nominations_filters_from_request(request):
 
 
 def _nominations_qs(request):
-    """
-    ✅ الترشيح النهائي = achieved_pref != NULL
-    """
     q, sector, gender, school, from_date, to_date = _nominations_filters_from_request(request)
 
     qs = (
@@ -352,7 +336,7 @@ def done_view(request):
 
 
 # =========================================================
-# ✅ Admin: Manage Applicants (CRUD safe)
+# Admin: Manage Applicants
 # =========================================================
 @staff_member_required
 def admin_applicants_list(request):
@@ -442,7 +426,7 @@ def admin_applicants_delete(request, pk: int):
 
 
 # =========================================================
-# ✅ Admin: Manage Vacancies (CRUD safe)
+# Admin: Manage Vacancies
 # =========================================================
 @staff_member_required
 def admin_vacancies_list(request):
@@ -662,16 +646,8 @@ def admin_application_detail_view(request, app_id: int):
     return render(request, "portal/admin_application_detail.html", {"app": app, "a": app.applicant, "prefs": prefs})
 
 
-# =========================================================
-# ✅ NEW: Admin Application Print View
-# =========================================================
 @staff_member_required
 def admin_application_print_view(request, app_id: int):
-    """
-    طباعة الرغبة المعتمدة من قبل الإدارة فقط.
-    - يعتمد على achieved_pref
-    - إذا لم توجد رغبة معتمدة، تُعرض الصفحة مع رسالة مناسبة
-    """
     application = get_object_or_404(
         Application.objects.select_related(
             "applicant",
@@ -742,7 +718,7 @@ def admin_application_detail_json_view(request, app_id: int):
 
 
 # =========================================================
-# Admin: Decision Actions (AJAX-friendly)
+# Admin: Decision Actions
 # =========================================================
 @staff_member_required
 @require_POST
@@ -803,7 +779,7 @@ def admin_decide_unlock_view(request, app_id: int):
 
 
 # =========================================================
-# ✅ Admin: Bulk Decision
+# Admin: Bulk Decision
 # =========================================================
 @staff_member_required
 @require_POST
@@ -853,7 +829,7 @@ def admin_decide_bulk_view(request):
 
 
 # =========================================================
-# ✅ Admin: Reports (Existing)
+# Admin: Reports
 # =========================================================
 @staff_member_required
 def admin_report_print_view(request):
@@ -923,16 +899,11 @@ def admin_report_csv_visible_view(request):
 
 
 # =========================================================
-# ✅ Admin: Set Achieved (Final nomination)
+# Admin: Set Achieved
 # =========================================================
 @staff_member_required
 @require_POST
 def admin_set_achieved_view(request, app_id: int):
-    """
-    يحدد (أو يلغي) الرغبة المتحققة = الترشيح النهائي.
-    ✅ إذا تم اختيار achieved_pref سيتم ضمان أن admin_decision = approved
-       بدون العبث بملاحظة الإدارة.
-    """
     app = get_object_or_404(Application, id=app_id)
     pref_id_raw = (request.POST.get("achieved_pref_id") or "").strip()
 
@@ -980,7 +951,7 @@ def admin_set_achieved_view(request, app_id: int):
 
 
 # =========================================================
-# ✅ Admin: Nominations Report
+# Admin: Nominations Report
 # =========================================================
 @staff_member_required
 def admin_nominations_report_view(request):
@@ -1134,8 +1105,8 @@ def admin_nominations_excel_view(request):
         ])
 
     widths = [5, 10, 28, 16, 18, 12, 14, 32, 14, 16, 18, 12, 18, 14, 14, 40]
-    for idx, w in enumerate(widths, start=1):
-        ws.column_dimensions[get_column_letter(idx)].width = w
+    for idx, width in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(idx)].width = width
 
     bio = BytesIO()
     wb.save(bio)
@@ -1151,7 +1122,7 @@ def admin_nominations_excel_view(request):
 
 
 # =========================================================
-# Admin: Export Excel (Existing)
+# Admin: Export Excel
 # =========================================================
 @staff_member_required
 def admin_export_excel_view(request):
@@ -1185,7 +1156,7 @@ def admin_export_excel_view(request):
         cell.alignment = Alignment(horizontal="center", vertical="center")
 
     for app in qs:
-        prefs = sorted(list(app.prefs.all()), key=lambda p: p.rank)  # type: ignore
+        prefs = sorted(list(app.prefs.all()), key=lambda p: p.rank)
 
         pref_names: list[str] = []
         for p in prefs[:10]:
@@ -1218,10 +1189,10 @@ def admin_export_excel_view(request):
     for col in range(1, ws.max_column + 1):
         max_len = 10
         for rowi in range(1, ws.max_row + 1):
-            v = ws.cell(row=rowi, column=col).value
-            if v is None:
+            value = ws.cell(row=rowi, column=col).value
+            if value is None:
                 continue
-            max_len = max(max_len, len(str(v)))
+            max_len = max(max_len, len(str(value)))
         ws.column_dimensions[get_column_letter(col)].width = min(max_len + 2, 60)
 
     bio = BytesIO()
