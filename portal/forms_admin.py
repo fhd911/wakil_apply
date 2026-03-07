@@ -1,4 +1,3 @@
-# portal/forms_admin.py
 from __future__ import annotations
 
 from django import forms
@@ -26,7 +25,7 @@ class ApplicantAdminForm(forms.ModelForm):
             "national_id": forms.TextInput(attrs={"class": "inp", "placeholder": "السجل المدني"}),
             "mobile": forms.TextInput(attrs={"class": "inp", "placeholder": "الجوال"}),
             "gender": forms.TextInput(attrs={"class": "inp", "placeholder": "بنين/بنات"}),
-            "current_job": forms.TextInput(attrs={"class": "inp", "placeholder": "العمل الحالي"}),
+            "current_job": forms.TextInput(attrs={"class": "inp", "placeholder": "العمل الحالي في نور"}),
             "sector": forms.TextInput(attrs={"class": "inp", "placeholder": "القطاع"}),
             "rank": forms.TextInput(attrs={"class": "inp", "placeholder": "الرتبة"}),
             "start_date": forms.TextInput(attrs={"class": "inp", "placeholder": "تاريخ المباشرة"}),

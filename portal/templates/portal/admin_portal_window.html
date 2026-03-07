@@ -3,10 +3,6 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Portal Window — Ministerial Light (Unified)
-  ========================================================= */
-
   :root{
     --min-bg:#f4f7f3;
     --min-bg-2:#eef3ef;
@@ -39,6 +35,14 @@
     --min-danger:#991b1b;
     --min-danger-soft:#fef2f2;
     --min-danger-line:#fecaca;
+
+    --min-info:#1d4ed8;
+    --min-info-soft:#eff6ff;
+    --min-info-line:#bfdbfe;
+
+    --min-warn:#92400e;
+    --min-warn-soft:#fffbeb;
+    --min-warn-line:#fde68a;
   }
 
   .ui{
@@ -161,6 +165,18 @@
     background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
   }
 
+  .ui-pill-info{
+    color:var(--min-info) !important;
+    border-color:var(--min-info-line) !important;
+    background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;
+  }
+
+  .ui-pill-warn{
+    color:var(--min-warn) !important;
+    border-color:var(--min-warn-line) !important;
+    background:linear-gradient(180deg,#fffdf7,#fffbeb) !important;
+  }
+
   .ui-dot{
     width:8px;
     height:8px;
@@ -199,9 +215,11 @@
     box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
   }
 
-  .ui-input{
+  .ui-input,
+  .ui-select,
+  .ui-textarea{
+    width:100%;
     min-height:38px;
-    height:38px;
     padding:8px 12px;
     font-size:10.5px;
     border-radius:14px;
@@ -212,7 +230,14 @@
     outline:none;
   }
 
-  .ui-input:focus{
+  .ui-textarea{
+    min-height:72px;
+    resize:vertical;
+  }
+
+  .ui-input:focus,
+  .ui-select:focus,
+  .ui-textarea:focus{
     border-color:rgba(169,130,53,.36);
     box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
@@ -223,7 +248,7 @@
 
   .grid{
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:1fr 1fr;
     gap:12px;
   }
 
@@ -231,6 +256,10 @@
     display:flex;
     flex-direction:column;
     gap:6px;
+  }
+
+  .field-full{
+    grid-column:1 / -1;
   }
 
   .lbl{
@@ -297,8 +326,30 @@
     background:#ef4444;
   }
 
+  .phase-box{
+    padding:12px;
+    border:1px solid rgba(219,227,219,.95);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+  }
+
+  .phase-box-title{
+    font-size:10.4px;
+    font-weight:900;
+    color:var(--min-green-2);
+    margin-bottom:8px;
+  }
+
+  .phase-note{
+    margin-top:8px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
   @media (max-width: 900px){
-    .grid{ grid-template-columns: 1fr; }
+    .grid{ grid-template-columns:1fr; }
+    .field-full{ grid-column:auto; }
   }
 </style>
 {% endblock %}
@@ -311,7 +362,7 @@
       <div class="ui-title-wrap">
         <h1 class="ui-title">ضابط فترة التقديم</h1>
         <p class="ui-subtitle">
-          تحكم مركزي لفتح/إغلاق التقديم (يدويًا أو بزمن محدد) — الإغلاق يطبق مباشرة على زر الإرسال.
+          تحكم مركزي لفتح/إغلاق التقديم حسب المرحلة: مغلق / الوكلاء الرسميون / المتقدمون الجدد — ويطبق مباشرة على الدخول والإرسال.
         </p>
       </div>
 
@@ -333,17 +384,28 @@
       </div>
 
       <div class="status-badge" style="margin-top:10px;">
-        {% if win.is_open_now %}
-          <div class="status-line">
-            <span class="light"></span>
-            الحالة الحالية: مفتوح
-          </div>
-        {% else %}
+        {% if not win.is_enabled or win.phase == "closed" %}
           <div class="status-line off">
             <span class="light"></span>
             الحالة الحالية: مغلق
           </div>
+        {% elif win.phase == "official_only" %}
+          <div class="status-line">
+            <span class="light"></span>
+            الحالة الحالية: الوكلاء الرسميون
+          </div>
+        {% elif win.phase == "new_only" %}
+          <div class="status-line">
+            <span class="light"></span>
+            الحالة الحالية: المتقدمون الجدد
+          </div>
+        {% else %}
+          <div class="status-line off">
+            <span class="light"></span>
+            الحالة الحالية: غير محددة
+          </div>
         {% endif %}
+
         <span class="ui-pill" style="border-color:rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#fff;">
           آخر تحديث: <b>{{ win.updated_at|date:"Y-m-d H:i" }}</b>
         </span>
@@ -353,7 +415,7 @@
     <div class="ui-card">
       <div class="ui-toolbar">
         <div class="ui-muted">
-          ملاحظة: إذا لم تحدد بداية/نهاية، يعتمد النظام على (تفعيل/تعطيل) فقط.
+          ملاحظة: إذا لم تحدد بداية/نهاية، يعتمد النظام على (التفعيل + المرحلة) فقط.
         </div>
         <div class="ui-pill">
           <span class="ui-dot"></span>
@@ -367,10 +429,35 @@
         <div class="switch">
           <input type="checkbox" name="is_enabled" value="1" {% if win.is_enabled %}checked{% endif %}>
           <div>
-            <div class="lbl">تفعيل التقديم</div>
+            <div class="lbl">تفعيل النظام</div>
             <div class="hint">
-              عند التعطيل يصبح التقديم مغلقًا حتى لو كانت التواريخ محددة.
+              عند إلغاء التفعيل تصبح البوابة مغلقة بالكامل مهما كانت المرحلة أو التواريخ.
             </div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="phase-box">
+          <div class="phase-box-title">مرحلة التقديم الحالية</div>
+
+          <div class="field">
+            <label class="lbl" for="phase">اختر المرحلة</label>
+            <select class="ui-select" id="phase" name="phase">
+              <option value="closed" {% if win.phase == "closed" or not win.phase %}selected{% endif %}>مغلق</option>
+              <option value="official_only" {% if win.phase == "official_only" %}selected{% endif %}>الوكلاء الرسميون فقط</option>
+              <option value="new_only" {% if win.phase == "new_only" %}selected{% endif %}>المتقدمون الجدد فقط</option>
+            </select>
+            <div class="hint">
+              هذا هو العنصر الأهم في النظام الجديد.  
+              عند اختيار "الوكلاء الرسميون فقط" يسمح فقط لمن وُصفهم يحتوي على "وكيل"، وعند اختيار "المتقدمون الجدد فقط" يسمح لغيرهم.
+            </div>
+          </div>
+
+          <div class="phase-note">
+            <span class="ui-pill ui-pill-danger">مغلق = لا أحد يدخل</span>
+            <span class="ui-pill ui-pill-warn">الوكلاء الرسميون = المرحلة الأولى</span>
+            <span class="ui-pill ui-pill-info">المتقدمون الجدد = المرحلة الثانية</span>
           </div>
         </div>
 
@@ -390,17 +477,31 @@
               value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}">
             <div class="hint">اختياري — إذا تركته فارغًا لا يتم إغلاق التقديم تلقائيًا بوقت.</div>
           </div>
-        </div>
 
-        <div style="height:12px;"></div>
+          <div class="field field-full">
+            <div class="lbl">رسالة الإغلاق العامة</div>
+            <input class="ui-input" type="text" name="closed_message"
+                   value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
+                   placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان.">
+            <div class="hint">
+              تظهر عند الإغلاق الكامل أو عند تعطيل النظام.
+            </div>
+          </div>
 
-        <div class="field">
-          <div class="lbl">رسالة الإغلاق (تظهر للمتقدم عند محاولة الإرسال)</div>
-          <input class="ui-input" type="text" name="closed_message"
-                 value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
-                 placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان.">
-          <div class="hint">
-            تظهر في صفحة الرغبات عند الإغلاق (وتظهر أيضًا كرسالة خطأ عند محاولة الإرسال).
+          <div class="field">
+            <div class="lbl">رسالة مرحلة الوكلاء الرسميين</div>
+            <textarea class="ui-textarea" name="official_only_message" placeholder="مثال: التقديم متاح حالياً للوكلاء الرسميين فقط.">{{ win.official_only_message|default:'التقديم متاح حالياً للوكلاء الرسميين فقط.' }}</textarea>
+            <div class="hint">
+              تظهر لغير الوكلاء عند تفعيل مرحلة "الوكلاء الرسميون فقط".
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">رسالة مرحلة المتقدمين الجدد</div>
+            <textarea class="ui-textarea" name="new_only_message" placeholder="مثال: التقديم متاح حالياً للمتقدمين الجدد فقط.">{{ win.new_only_message|default:'التقديم متاح حالياً للمتقدمين الجدد فقط.' }}</textarea>
+            <div class="hint">
+              تظهر للوكلاء الرسميين عند تفعيل مرحلة "المتقدمون الجدد فقط".
+            </div>
           </div>
         </div>
 
@@ -408,9 +509,9 @@
 
         <div class="ui-foot" style="padding:10px 0 0; border-top:0; background:transparent;">
           <div class="ui-muted">
-            {{ win.opens_at|date:"Y-m-d H:i"|default:"" }}
-            {% if win.opens_at or win.closes_at %} | {% endif %}
-            {{ win.closes_at|date:"Y-m-d H:i"|default:"" }}
+            {% if win.opens_at %}من: {{ win.opens_at|date:"Y-m-d H:i" }}{% endif %}
+            {% if win.opens_at and win.closes_at %} | {% endif %}
+            {% if win.closes_at %}إلى: {{ win.closes_at|date:"Y-m-d H:i" }}{% endif %}
           </div>
 
           <button class="ui-btn ui-btn-primary" type="submit">

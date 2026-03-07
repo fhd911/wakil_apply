@@ -10,7 +10,7 @@ from django.utils import timezone
 # Abstract mixin: timestamps
 # =========================
 class TimeStampedModel(models.Model):
-    """حقول عامة للتتبع (مفيدة للطباعة والتقارير)."""
+    """حقول عامة للتتبع."""
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
@@ -19,19 +19,36 @@ class TimeStampedModel(models.Model):
 
 
 # =========================
-# Portal Window (Open/Close)
+# Portal Window (Open/Close + Phase)
 # =========================
 class PortalWindow(TimeStampedModel):
     """
     ضابط عام لفتح/إغلاق التقديم:
     - إغلاق/فتح يدوي (is_enabled)
     - أو نافذة زمنية opens_at / closes_at
-    - رسالة إغلاق موحدة
+    - مرحلة البوابة:
+        * closed
+        * official_only
+        * new_only
     """
+
+    PHASES = [
+        ("closed", "مغلق"),
+        ("official_only", "الوكلاء الرسميون فقط"),
+        ("new_only", "المتقدمون الجدد فقط"),
+    ]
+
     is_enabled = models.BooleanField(default=True)
 
     opens_at = models.DateTimeField(null=True, blank=True)
     closes_at = models.DateTimeField(null=True, blank=True)
+
+    phase = models.CharField(
+        max_length=20,
+        choices=PHASES,
+        default="closed",
+        db_index=True,
+    )
 
     closed_message = models.CharField(
         max_length=255,
@@ -39,9 +56,25 @@ class PortalWindow(TimeStampedModel):
         default="التقديم مغلق حالياً.",
     )
 
+    official_only_message = models.CharField(
+        max_length=255,
+        blank=True,
+        default="التقديم متاح حالياً للوكلاء الرسميين فقط.",
+    )
+
+    new_only_message = models.CharField(
+        max_length=255,
+        blank=True,
+        default="التقديم متاح حالياً للمتقدمين الجدد فقط.",
+    )
+
     def is_open_now(self) -> bool:
         if not self.is_enabled:
             return False
+
+        if self.phase == "closed":
+            return False
+
         now = timezone.now()
         if self.opens_at and now < self.opens_at:
             return False
@@ -53,11 +86,11 @@ class PortalWindow(TimeStampedModel):
     def get(cls) -> "PortalWindow":
         obj = cls.objects.order_by("-id").first()
         if not obj:
-            obj = cls.objects.create(is_enabled=True)
+            obj = cls.objects.create(is_enabled=True, phase="closed")
         return obj
 
     def __str__(self) -> str:
-        return "Portal Window"
+        return f"Portal Window ({self.phase})"
 
 
 class ImportBatch(TimeStampedModel):
@@ -72,16 +105,16 @@ class ImportBatch(TimeStampedModel):
 
 
 class Applicant(TimeStampedModel):
-    # ملف المتقدمين (A..I) — الإدارة ترى الكل، المتقدم يرى B-C-D فقط
-    full_name = models.CharField(max_length=255, blank=True, default="")       # A
-    national_id = models.CharField(max_length=20, unique=True)                 # B
-    mobile = models.CharField(max_length=30, blank=True, default="")           # C
-    gender = models.CharField(max_length=10, blank=True, default="")           # D
-    current_job = models.CharField(max_length=255, blank=True, default="")     # E
-    sector = models.CharField(max_length=255, blank=True, default="")          # F
-    rank = models.CharField(max_length=100, blank=True, default="")            # G
-    start_date = models.CharField(max_length=50, blank=True, default="")       # H
-    current_school = models.CharField(max_length=255, blank=True, default="")  # I
+    # ملف المتقدمين
+    full_name = models.CharField(max_length=255, blank=True, default="")
+    national_id = models.CharField(max_length=20, unique=True)
+    mobile = models.CharField(max_length=30, blank=True, default="")
+    gender = models.CharField(max_length=10, blank=True, default="")
+    current_job = models.CharField(max_length=255, blank=True, default="")
+    sector = models.CharField(max_length=255, blank=True, default="")
+    rank = models.CharField(max_length=100, blank=True, default="")
+    start_date = models.CharField(max_length=50, blank=True, default="")
+    current_school = models.CharField(max_length=255, blank=True, default="")
 
     is_active = models.BooleanField(default=True)
     batch = models.ForeignKey(ImportBatch, null=True, blank=True, on_delete=models.SET_NULL)
@@ -92,36 +125,61 @@ class Applicant(TimeStampedModel):
             models.Index(fields=["sector", "gender"]),
             models.Index(fields=["full_name"]),
             models.Index(fields=["is_active"]),
+            models.Index(fields=["current_job"]),
         ]
 
     def __str__(self) -> str:
         return f"{self.national_id} - {self.full_name}".strip()
 
+    @property
+    def is_official_agent(self) -> bool:
+        """
+        يعتمد على حقل العمل الحالي القادم من ملف الإكسل.
+        أي نص يحتوي (وكيل) أو (وكيلة) يعتبر وكيلًا رسميًا.
+        """
+        txt = (self.current_job or "").strip()
+        return ("وكيل" in txt) or ("وكيلة" in txt)
+
+    @property
+    def is_new_applicant(self) -> bool:
+        return not self.is_official_agent
+
 
 class SchoolVacancy(TimeStampedModel):
-    # ملف المدارس/الشواغر (A..R)
-    ministry_no = models.CharField(max_length=50, blank=True, default="")      # A
-    school_name = models.CharField(max_length=255)                             # B
-    stage = models.CharField(max_length=100, blank=True, default="")           # C
-    sector = models.CharField(max_length=255, blank=True, default="")          # D
-    establishment_status = models.CharField(max_length=100, blank=True, default="")  # E
-    gender = models.CharField(max_length=10, blank=True, default="")           # F
-    education_type = models.CharField(max_length=100, blank=True, default="")  # G
-    manager_national_id = models.CharField(max_length=20, blank=True, default="")    # H
-    manager_name = models.CharField(max_length=255, blank=True, default="")          # I
+    # ملف المدارس/الشواغر
+    ministry_no = models.CharField(max_length=50, blank=True, default="")
+    school_name = models.CharField(max_length=255)
+    stage = models.CharField(max_length=100, blank=True, default="")
+    sector = models.CharField(max_length=255, blank=True, default="")
+    establishment_status = models.CharField(max_length=100, blank=True, default="")
+    gender = models.CharField(max_length=10, blank=True, default="")
+    education_type = models.CharField(max_length=100, blank=True, default="")
+    manager_national_id = models.CharField(max_length=20, blank=True, default="")
+    manager_name = models.CharField(max_length=255, blank=True, default="")
 
-    students_total = models.IntegerField(default=0)                            # J
-    classes_total = models.IntegerField(default=0)                             # K
-    students_metric = models.IntegerField(default=0)                           # L
-    class_metric = models.IntegerField(default=0)                              # M
-    stage_code = models.CharField(max_length=50, blank=True, default="")       # N
-    stage_metric = models.IntegerField(default=0)                              # O
+    students_total = models.IntegerField(default=0)
+    classes_total = models.IntegerField(default=0)
+    students_metric = models.IntegerField(default=0)
+    class_metric = models.IntegerField(default=0)
+    stage_code = models.CharField(max_length=50, blank=True, default="")
+    stage_metric = models.IntegerField(default=0)
 
-    deputy_staff = models.IntegerField(default=0)                              # P
-    deputy_existing = models.IntegerField(default=0)                           # Q
-    deputy_need = models.IntegerField(default=0)                               # R (الاحتياج وكيل)
+    deputy_staff = models.IntegerField(default=0)
+    deputy_existing = models.IntegerField(default=0)
+    deputy_need = models.IntegerField(default=0)
 
     is_open = models.BooleanField(default=True)
+
+    # يحجز الشاغر عند اعتماد وكيل رسمي عليه
+    reserved_application = models.ForeignKey(
+        "Application",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reserved_vacancies",
+    )
+    reserved_at = models.DateTimeField(null=True, blank=True)
+
     batch = models.ForeignKey(ImportBatch, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
@@ -132,17 +190,26 @@ class SchoolVacancy(TimeStampedModel):
             models.Index(fields=["deputy_need"]),
             models.Index(fields=["is_open"]),
             models.Index(fields=["is_open", "sector", "gender"]),
+            models.Index(fields=["reserved_application"]),
         ]
 
     def __str__(self) -> str:
         return self.school_name
+
+    @property
+    def is_reserved(self) -> bool:
+        return self.reserved_application_id is not None
+
+    @property
+    def is_available_for_application(self) -> bool:
+        return self.is_open and not self.is_reserved and self.deputy_need != 0
 
 
 class Application(TimeStampedModel):
     STATUS = [
         ("draft", "Draft"),
         ("submitted", "Submitted"),
-        ("returned", "Returned"),   # للتوافق
+        ("returned", "Returned"),
         ("approved", "Approved"),
         ("rejected", "Rejected"),
     ]
@@ -152,7 +219,6 @@ class Application(TimeStampedModel):
         ("stay_current", "البقاء في المدرسة الحالية"),
     ]
 
-    # قرار الإدارة (منفصل عن status)
     ADMIN_DECISION = [
         ("", "—"),
         ("approved", "معتمد"),
@@ -168,7 +234,6 @@ class Application(TimeStampedModel):
     submitted_at = models.DateTimeField(null=True, blank=True)
     locked = models.BooleanField(default=False)
 
-    # ✅ حقول قرارات الإدارة
     admin_decision = models.CharField(
         max_length=20,
         choices=ADMIN_DECISION,
@@ -185,7 +250,6 @@ class Application(TimeStampedModel):
         related_name="wakil_admin_decisions",
     )
 
-    # ✅ الرغبة المتحققة — الترشيح النهائي
     achieved_pref = models.ForeignKey(
         "ApplicationPreference",
         null=True,
@@ -212,7 +276,6 @@ class Application(TimeStampedModel):
             models.Index(fields=["admin_decision", "achieved_at"]),
         ]
         constraints = [
-            # ✅ إذا تحقق ترشيح نهائي achieved_pref لازم يكون قرار الإدارة approved
             models.CheckConstraint(
                 name="achieved_requires_admin_approved",
                 condition=Q(achieved_pref__isnull=True) | Q(admin_decision="approved"),
@@ -222,27 +285,18 @@ class Application(TimeStampedModel):
     def __str__(self) -> str:
         return f"طلب {self.id} - {self.applicant.national_id}"
 
-    # =========================
-    # Integrity: ensure achieved_at is set when achieved_pref exists
-    # =========================
     def save(self, *args, **kwargs):
-        # إذا تم وضع achieved_pref ولم يتم تحديد achieved_at → عيّنه تلقائيًا
         if self.achieved_pref_id and not self.achieved_at:
             self.achieved_at = timezone.now()
 
-        # إذا تم إزالة achieved_pref → نظف بيانات الترشيح النهائي
         if not self.achieved_pref_id:
             self.achieved_at = None
             self.achieved_by = None
 
         super().save(*args, **kwargs)
 
-    # =========================
-    # Helpers for reports
-    # =========================
     @property
     def is_nominated_final(self) -> bool:
-        """مرشح نهائيًا = لديه achieved_pref"""
         return self.achieved_pref_id is not None
 
     @property

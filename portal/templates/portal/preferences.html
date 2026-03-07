@@ -6,6 +6,7 @@
   /* =========================================================
      Preferences — Unified Ministerial Light Style
      + Unified Custom Modal
+     + Portal Countdown
   ========================================================= */
 
   .prx, .prx *{
@@ -229,6 +230,7 @@
     gap:8px;
     text-decoration:none;
     box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    transition:transform .15s ease, opacity .15s ease, filter .15s ease;
   }
 
   .prx .btn.primary{
@@ -247,10 +249,13 @@
     transform:translateY(1px);
   }
 
-  .prx .btn[disabled]{
+  .prx .btn[disabled],
+  .prx .btn.is-disabled{
     opacity:.55;
     cursor:not-allowed;
     transform:none;
+    pointer-events:none;
+    filter:grayscale(.10);
   }
 
   .prx .list{
@@ -267,13 +272,17 @@
     align-items:center;
     justify-content:space-between;
     gap:12px;
-    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease;
     box-shadow:var(--min-shadow-soft);
   }
 
   .prx .item:hover{
     background:rgba(20,83,45,.03);
     border-color:rgba(22,163,74,.20);
+  }
+
+  .prx .item.is-locked{
+    opacity:.78;
   }
 
   .prx .left{
@@ -348,6 +357,11 @@
     cursor:grabbing;
   }
 
+  .prx .handle.is-disabled{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+
   .prx .mini{
     width:34px;
     height:34px;
@@ -367,9 +381,11 @@
     background:rgba(148,163,184,.08);
   }
 
-  .prx .mini[disabled]{
+  .prx .mini[disabled],
+  .prx .mini.is-disabled{
     opacity:.4;
     cursor:not-allowed;
+    pointer-events:none;
   }
 
   .prx .dragging{
@@ -408,6 +424,11 @@
     flex:0 0 auto;
   }
 
+  .prx .radio input[disabled]{
+    opacity:.6;
+    cursor:not-allowed;
+  }
+
   .prx .radio label{
     display:block;
     font-size:10.2px;
@@ -430,6 +451,176 @@
     color:var(--min-muted);
     font-size:9.6px;
     line-height:1.8;
+  }
+
+  /* =========================
+     Countdown
+  ========================= */
+
+  .prx .timer{
+    margin:12px;
+    margin-bottom:0;
+    border:1px solid rgba(214,223,214,.96);
+    background:linear-gradient(180deg, #fffdfa 0%, #f9fbf8 100%);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .prx .timer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .prx .timer-title{
+    margin:0;
+    font-size:10.6px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .prx .timer-state{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.2px;
+    font-weight:800 !important;
+    border:1px solid rgba(209,220,210,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    color:var(--min-ink-2);
+    white-space:nowrap;
+  }
+
+  .prx .timer-state::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:#15803d;
+    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    flex:0 0 auto;
+  }
+
+  .prx .timer-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:8px;
+  }
+
+  .prx .time-box{
+    border:1px solid rgba(218,226,218,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:14px;
+    padding:10px 8px;
+    text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .prx .time-num{
+    display:block;
+    font-size:18px;
+    line-height:1;
+    font-weight:900 !important;
+    letter-spacing:-.4px;
+    color:var(--min-green-2);
+  }
+
+  .prx .time-label{
+    display:block;
+    margin-top:6px;
+    font-size:9px;
+    color:var(--min-muted);
+    font-weight:700 !important;
+  }
+
+  .prx .timer-note{
+    margin-top:8px;
+    font-size:9.6px;
+    color:var(--min-muted);
+    line-height:1.8;
+  }
+
+  .prx .timer.is-warn{
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
+  }
+
+  .prx .timer.is-warn .timer-state{
+    color:#9a6708;
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  }
+
+  .prx .timer.is-warn .timer-state::before{
+    background:#d97706;
+    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  }
+
+  .prx .timer.is-warn .time-num{
+    color:#9a6708;
+  }
+
+  .prx .timer.is-danger{
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
+  }
+
+  .prx .timer.is-danger .timer-state{
+    color:#991b1b;
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffdfd,#fff7f7);
+  }
+
+  .prx .timer.is-danger .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .prx .timer.is-danger .time-num{
+    color:#991b1b;
+  }
+
+  .prx .timer.is-expired{
+    border-color:var(--min-danger-line);
+    background:var(--min-danger-soft);
+  }
+
+  .prx .timer.is-expired .timer-state{
+    color:#7f1d1d;
+    border-color:rgba(185,28,28,.16);
+    background:#fff;
+  }
+
+  .prx .timer.is-expired .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .prx .timer.is-expired .time-num{
+    color:#991b1b;
+  }
+
+  .prx .expired-inline{
+    display:none;
+    margin-top:12px;
+    border:1px solid var(--min-danger-line);
+    background:var(--min-danger-soft);
+    color:#7f1d1d;
+    border-radius:14px;
+    padding:10px 12px;
+    line-height:1.7;
+    font-size:10px;
+    font-weight:700 !important;
+  }
+
+  .prx .expired-inline.show{
+    display:block;
   }
 
   /* =========================
@@ -604,6 +795,15 @@
       justify-content:flex-start;
     }
 
+    .prx .timer{
+      margin:10px;
+      margin-bottom:0;
+    }
+
+    .prx .timer-grid{
+      grid-template-columns:repeat(2, minmax(0,1fr));
+    }
+
     .prx-dialog{
       border-radius:18px;
     }
@@ -634,10 +834,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalOk = document.querySelector("[data-modal-ok]");
   const modalCancel = document.querySelector("[data-modal-cancel]");
 
+  const timer = document.querySelector("[data-portal-timer]");
+  const timerState = document.querySelector("[data-timer-state]");
+  const timerNote = document.querySelector("[data-timer-note]");
+  const expiredInline = document.querySelector("[data-expired-inline]");
+
+  const dEl = document.getElementById("cdDays");
+  const hEl = document.getElementById("cdHours");
+  const mEl = document.getElementById("cdMinutes");
+  const sEl = document.getElementById("cdSeconds");
+
   if(!form || !idsCsv) return;
 
   let dragEl = null;
   let modalResolver = null;
+  let portalExpired = false;
 
   function openModal(opts = {}){
     if(!modal) return Promise.resolve(false);
@@ -727,7 +938,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function setCount(){
     const n = items().length;
     if(countEl) countEl.textContent = String(n);
-    if(submitBtn) submitBtn.disabled = (n === 0);
+    if(submitBtn) submitBtn.disabled = (n === 0) || portalExpired;
   }
 
   function renumber(){
@@ -739,17 +950,67 @@ document.addEventListener("DOMContentLoaded", () => {
       const up = it.querySelector("[data-up]");
       const dn = it.querySelector("[data-down]");
 
-      if(up) up.disabled = (idx === 0);
-      if(dn) dn.disabled = (idx === its.length - 1);
+      if(up) up.disabled = portalExpired || (idx === 0);
+      if(dn) dn.disabled = portalExpired || (idx === its.length - 1);
     });
 
     idsCsv.value = its.map(x => x.getAttribute("data-id")).join(",");
     setCount();
   }
 
+  function disablePreferencesUi(){
+    portalExpired = true;
+
+    items().forEach(it => {
+      it.setAttribute("draggable", "false");
+      it.classList.add("is-locked");
+
+      const up = it.querySelector("[data-up]");
+      const dn = it.querySelector("[data-down]");
+      const handle = it.querySelector(".handle");
+
+      if(up){
+        up.disabled = true;
+        up.classList.add("is-disabled");
+      }
+      if(dn){
+        dn.disabled = true;
+        dn.classList.add("is-disabled");
+      }
+      if(handle){
+        handle.classList.add("is-disabled");
+      }
+    });
+
+    form.querySelectorAll("input[name='fallback_choice']").forEach(el => {
+      el.disabled = true;
+    });
+
+    const backBtn = document.querySelector("[data-back-btn]");
+    if(backBtn){
+      backBtn.classList.remove("is-disabled");
+      backBtn.style.pointerEvents = "auto";
+      backBtn.style.opacity = "";
+    }
+
+    if(submitBtn){
+      submitBtn.disabled = true;
+      submitBtn.textContent = "انتهى وقت التقديم";
+      submitBtn.classList.add("is-disabled");
+    }
+
+    if(expiredInline){
+      expiredInline.classList.add("show");
+    }
+  }
+
   if(list){
     items().forEach(el => {
       el.addEventListener("dragstart", e => {
+        if (portalExpired){
+          e.preventDefault();
+          return;
+        }
         dragEl = el;
         el.classList.add("dragging");
         e.dataTransfer.effectAllowed = "move";
@@ -763,6 +1024,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       el.addEventListener("dragover", e => {
+        if (portalExpired) return;
         e.preventDefault();
         if(!dragEl || dragEl === el) return;
         el.classList.add("drop-here");
@@ -771,6 +1033,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.addEventListener("dragleave", () => el.classList.remove("drop-here"));
 
       el.addEventListener("drop", e => {
+        if (portalExpired) return;
         e.preventDefault();
         items().forEach(x => x.classList.remove("drop-here"));
         if(!dragEl || dragEl === el) return;
@@ -786,6 +1049,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if(up){
         up.addEventListener("click", () => {
+          if (portalExpired) return;
           const prev = el.previousElementSibling;
           if(prev) el.parentNode.insertBefore(el, prev);
           renumber();
@@ -794,6 +1058,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if(dn){
         dn.addEventListener("click", () => {
+          if (portalExpired) return;
           const next = el.nextElementSibling;
           if(next) el.parentNode.insertBefore(next, el);
           renumber();
@@ -804,6 +1069,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (portalExpired){
+      await showAlert("انتهت مهلة التقديم، سيتم تحديث الصفحة الآن.", "انتهى وقت التقديم");
+      window.location.reload();
+      return;
+    }
 
     const fb = form.querySelector("input[name='fallback_choice']:checked");
     if(!fb){
@@ -835,7 +1106,81 @@ document.addEventListener("DOMContentLoaded", () => {
     form.submit();
   });
 
+  function pad(n){
+    return String(n).padStart(2, "0");
+  }
+
+  function handleExpired(){
+    if (portalExpired) return;
+    portalExpired = true;
+
+    if (timer){
+      timer.classList.remove("is-warn", "is-danger");
+      timer.classList.add("is-expired");
+    }
+    if (timerState) timerState.textContent = "انتهى الوقت";
+    if (timerNote) timerNote.textContent = "تم الوصول إلى وقت إغلاق التقديم.";
+    if (dEl) dEl.textContent = "00";
+    if (hEl) hEl.textContent = "00";
+    if (mEl) mEl.textContent = "00";
+    if (sEl) sEl.textContent = "00";
+
+    disablePreferencesUi();
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1600);
+  }
+
+  function updateTimer(){
+    if (!timer) return;
+
+    const closesAtRaw = timer.getAttribute("data-closes-at");
+    if (!closesAtRaw) return;
+
+    const target = new Date(closesAtRaw).getTime();
+    if (Number.isNaN(target)) return;
+
+    const now = Date.now();
+    const diff = target - now;
+
+    if (diff <= 0){
+      handleExpired();
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (dEl) dEl.textContent = pad(days);
+    if (hEl) hEl.textContent = pad(hours);
+    if (mEl) mEl.textContent = pad(minutes);
+    if (sEl) sEl.textContent = pad(seconds);
+
+    timer.classList.remove("is-warn", "is-danger", "is-expired");
+
+    if (diff <= 3600 * 1000){
+      timer.classList.add("is-danger");
+      if (timerState) timerState.textContent = "أقل من ساعة";
+      if (timerNote) timerNote.textContent = "المهلة أوشكت على الانتهاء، يرجى إكمال الترتيب والإرسال قبل الإغلاق.";
+    } else if (diff <= 24 * 3600 * 1000){
+      timer.classList.add("is-warn");
+      if (timerState) timerState.textContent = "أقل من 24 ساعة";
+      if (timerNote) timerNote.textContent = "الوقت المتبقي محدود، وسيتم إغلاق التقديم تلقائيًا عند انتهاء المدة.";
+    } else {
+      if (timerState) timerState.textContent = "مفتوح الآن";
+      if (timerNote) timerNote.textContent = "سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.";
+    }
+  }
+
   renumber();
+  updateTimer();
+  if (timer){
+    setInterval(updateTimer, 1000);
+  }
 });
 </script>
 {% endblock %}
@@ -854,6 +1199,42 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="pill"><span class="dot"></span>واجهة ترتيب ذكية</div>
     </div>
+
+    {% if portal_show_countdown %}
+    <div
+      class="timer"
+      data-portal-timer
+      data-closes-at="{{ portal_closes_at_iso }}"
+    >
+      <div class="timer-head">
+        <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
+        <div class="timer-state" data-timer-state>مفتوح الآن</div>
+      </div>
+
+      <div class="timer-grid">
+        <div class="time-box">
+          <span class="time-num" id="cdDays">00</span>
+          <span class="time-label">يوم</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="cdHours">00</span>
+          <span class="time-label">ساعة</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="cdMinutes">00</span>
+          <span class="time-label">دقيقة</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="cdSeconds">00</span>
+          <span class="time-label">ثانية</span>
+        </div>
+      </div>
+
+      <div class="timer-note" data-timer-note>
+        سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
+      </div>
+    </div>
+    {% endif %}
 
     <div class="grid">
 
@@ -937,8 +1318,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 بعد الإرسال سيتم قفل الطلب. تأكد من ترتيب الرغبات واختيار الإقرار المناسب.
               </div>
 
+              <div class="expired-inline" data-expired-inline>
+                انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
+              </div>
+
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-                <a class="btn secondary" href="{% url 'portal:confirm' %}" style="flex:1">رجوع</a>
+                <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}" style="flex:1">رجوع</a>
                 <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
               </div>
             </form>

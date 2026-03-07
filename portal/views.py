@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import os
 import csv
-from io import BytesIO
+import os
 from datetime import datetime
+from io import BytesIO
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -21,7 +22,7 @@ from django.db.models import (
     When,
     IntegerField,
 )
-from django.db.models.functions import Coalesce, Concat
+from django.db.models.functions import Coalesce, Concat, Cast
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -49,6 +50,18 @@ SESSION_KEY = "applicant_nid"
 # =========================================================
 # Helpers
 # =========================================================
+def _fmt_dt(dt) -> str:
+    if not dt:
+        return ""
+    try:
+        return timezone.localtime(dt).strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        try:
+            return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            return str(dt)
+
+
 def _get_applicant(request):
     nid = request.session.get(SESSION_KEY)
     if not nid:
@@ -57,25 +70,106 @@ def _get_applicant(request):
 
 
 def _portal_gate():
-    """Return (open_now, msg, win)."""
+    """
+    يرجع:
+    (open_now, msg, win)
+
+    open_now هنا = الحارس العام فقط:
+    - النظام مفعّل؟
+    - داخل النافذة الزمنية؟
+    """
     win = PortalWindow.get()
-    open_now = win.is_open_now()
-    msg = (win.closed_message or "التقديم مغلق حالياً.").strip()
-    return open_now, msg, win
+    msg = (getattr(win, "closed_message", "") or "التقديم مغلق حالياً.").strip()
+
+    if not getattr(win, "is_enabled", True):
+        return False, msg, win
+
+    now = timezone.now()
+    opens_at = getattr(win, "opens_at", None)
+    closes_at = getattr(win, "closes_at", None)
+
+    if opens_at and now < opens_at:
+        return False, msg, win
+
+    if closes_at and now > closes_at:
+        return False, msg, win
+
+    return True, "", win
+
+
+def _portal_timer_context(win: PortalWindow) -> dict:
+    opens_at = getattr(win, "opens_at", None)
+    closes_at = getattr(win, "closes_at", None)
+    phase = getattr(win, "phase", "closed")
+    is_enabled = getattr(win, "is_enabled", False)
+
+    now = timezone.now()
+    now_local = timezone.localtime(now)
+
+    open_by_time = True
+    if opens_at and now < opens_at:
+        open_by_time = False
+    if closes_at and now > closes_at:
+        open_by_time = False
+
+    is_portal_open_now = bool(is_enabled and phase != "closed" and open_by_time)
+
+    return {
+        "portal_phase": phase,
+        "portal_is_enabled": is_enabled,
+        "portal_is_open_now": is_portal_open_now,
+        "portal_show_countdown": is_portal_open_now and bool(closes_at),
+        "portal_opens_at": opens_at,
+        "portal_closes_at": closes_at,
+        "portal_opens_at_iso": timezone.localtime(opens_at).isoformat() if opens_at else "",
+        "portal_closes_at_iso": timezone.localtime(closes_at).isoformat() if closes_at else "",
+        "portal_now_iso": now_local.isoformat(),
+    }
+
+
+def _is_official_proxy(applicant: Applicant) -> bool:
+    return bool(getattr(applicant, "is_official_agent", False))
+
+
+def _portal_access_for_applicant(applicant: Applicant, win: PortalWindow):
+    open_now, msg, _ = _portal_gate()
+    if not open_now:
+        return False, msg or "التقديم مغلق حالياً."
+
+    phase = (getattr(win, "phase", "") or "closed").strip()
+    is_official = _is_official_proxy(applicant)
+
+    if phase == "official_only":
+        if not is_official:
+            return False, (
+                (getattr(win, "official_only_message", "") or "").strip()
+                or "التقديم متاح حالياً للوكلاء الرسميين فقط."
+            )
+        return True, ""
+
+    if phase == "new_only":
+        if is_official:
+            return False, (
+                (getattr(win, "new_only_message", "") or "").strip()
+                or "التقديم متاح حالياً للمتقدمين الجدد فقط."
+            )
+        return True, ""
+
+    return False, (
+        (getattr(win, "closed_message", "") or "").strip()
+        or "التقديم مغلق حالياً."
+    )
 
 
 def _eligible_schools_for(applicant: Applicant):
-    """
-    المدارس المتاحة حسب الضوابط:
-    - نفس القطاع
-    - نفس الجنس
-    - مفتوحة
-    - الاحتياج: أي قيمة غير صفر
-      (لأن نظامكم يعتمد الاحتياج بالسالب أيضًا مثل -1 و -2 ...)
-    """
     return (
         SchoolVacancy.objects
-        .filter(is_open=True, sector=applicant.sector, gender=applicant.gender)
+        .filter(
+            is_open=True,
+            sector=applicant.sector,
+            gender=applicant.gender,
+            reserved_application__isnull=True,
+        )
         .exclude(deputy_need=0)
         .order_by("school_name")
     )
@@ -98,11 +192,6 @@ def _paginate(request, qs, per_page: int = 40):
 
 
 def _set_admin_decision(app: Application, user, decision: str, note: str):
-    """
-    يثبت قرار الإدارة ويحدث حقول التدقيق.
-    ✅ منطق قوي: إذا كان القرار (rejected/returned/فارغ) يتم إلغاء achieved_pref
-       حتى لا يبقى “ترشيح نهائي” على طلب غير معتمد.
-    """
     decision = (decision or "").strip()
 
     app.admin_decision = decision
@@ -114,10 +203,18 @@ def _set_admin_decision(app: Application, user, decision: str, note: str):
 
     if decision in ("rejected", "returned", ""):
         if getattr(app, "achieved_pref_id", None):
+            old_pref = app.achieved_pref
+            old_vacancy = old_pref.vacancy if old_pref and getattr(old_pref, "vacancy", None) else None
+
             app.achieved_pref = None
             app.achieved_at = None
             app.achieved_by = None
             update_fields += ["achieved_pref", "achieved_at", "achieved_by"]
+
+            if old_vacancy and old_vacancy.reserved_application_id == app.id:
+                old_vacancy.reserved_application = None
+                old_vacancy.reserved_at = None
+                old_vacancy.save(update_fields=["reserved_application", "reserved_at"])
 
     app.save(update_fields=update_fields)
 
@@ -125,25 +222,46 @@ def _set_admin_decision(app: Application, user, decision: str, note: str):
 def _admin_base_qs():
     return (
         Application.objects
-        .select_related("applicant", "achieved_pref__vacancy")
+        .select_related("applicant", "achieved_pref__vacancy", "admin_decided_by", "achieved_by")
         .order_by("-submitted_at", "-id")
     )
 
 
 def _admin_filters_from_request(request):
+    q = (request.GET.get("q") or "").strip()
     status = (request.GET.get("status") or "").strip()
     sector = (request.GET.get("sector") or "").strip()
     gender = (request.GET.get("gender") or "").strip()
-    return status, sector, gender
+    decision = (request.GET.get("decision") or "").strip()
+    return q, status, sector, gender, decision
 
 
-def _apply_admin_filters(qs, status: str, sector: str, gender: str):
+def _apply_admin_filters(qs, q: str, status: str, sector: str, gender: str, decision: str):
     if status:
         qs = qs.filter(status=status)
+
     if sector:
         qs = qs.filter(applicant__sector__icontains=sector)
+
     if gender:
         qs = qs.filter(applicant__gender__icontains=gender)
+
+    if decision:
+        if decision == "pending":
+            qs = qs.filter(Q(admin_decision__isnull=True) | Q(admin_decision__exact=""))
+        else:
+            qs = qs.filter(admin_decision=decision)
+
+    if q:
+        qs = qs.filter(
+            Q(applicant__full_name__icontains=q)
+            | Q(applicant__national_id__icontains=q)
+            | Q(applicant__sector__icontains=q)
+            | Q(applicant__gender__icontains=q)
+            | Q(achieved_pref__vacancy__school_name__icontains=q)
+            | Q(achieved_pref__vacancy__stage__icontains=q)
+        )
+
     return qs
 
 
@@ -212,10 +330,22 @@ def _nominations_qs(request):
 # =========================================================
 @require_GET
 def closed_view(request):
-    open_now, msg, _win = _portal_gate()
-    if open_now:
+    win = PortalWindow.get()
+    open_now, msg, _ = _portal_gate()
+
+    a = _get_applicant(request)
+    if a:
+        allowed, deny_msg = _portal_access_for_applicant(a, win)
+        if allowed:
+            return redirect("portal:login")
+        msg = deny_msg or msg
+
+    if open_now and not a:
         return redirect("portal:login")
-    return render(request, "portal/closed.html", {"msg": msg})
+
+    ctx = {"msg": msg}
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/closed.html", ctx)
 
 
 # =========================================================
@@ -223,43 +353,56 @@ def closed_view(request):
 # =========================================================
 @require_http_methods(["GET", "POST"])
 def login_view(request):
-    # ✅ GET يعرض صفحة الدخول (حتى لو مغلق)
+    win = PortalWindow.get()
+
     if request.method == "POST":
-        open_now, _msg, _win = _portal_gate()
+        open_now, msg, win = _portal_gate()
         if not open_now:
+            messages.error(request, msg)
             return redirect("portal:closed")
 
         nid = (request.POST.get("national_id") or "").strip().replace(" ", "")
 
         if not nid:
-            return render(request, "portal/login.html", {"error": "فضلاً أدخل السجل المدني"})
+            ctx = {"error": "فضلاً أدخل السجل المدني"}
+            ctx.update(_portal_timer_context(win))
+            return render(request, "portal/login.html", ctx)
 
         if (not nid.isdigit()) or (len(nid) != 10):
-            return render(request, "portal/login.html", {"error": "فضلاً أدخل السجل المدني بشكل صحيح"})
+            ctx = {"error": "فضلاً أدخل السجل المدني بشكل صحيح"}
+            ctx.update(_portal_timer_context(win))
+            return render(request, "portal/login.html", ctx)
 
         applicant = Applicant.objects.filter(national_id=nid, is_active=True).first()
         if not applicant:
-            return render(
-                request,
-                "portal/login.html",
-                {"error": "لا يوجد بيانات. هذه الصفة لمن قدم من الوكلاء الرسميين على رابط الموارد البشرية"},
-            )
+            ctx = {"error": "لا يوجد بيانات لهذا السجل المدني."}
+            ctx.update(_portal_timer_context(win))
+            return render(request, "portal/login.html", ctx)
+
+        allowed, deny_msg = _portal_access_for_applicant(applicant, win)
+        if not allowed:
+            ctx = {"error": deny_msg}
+            ctx.update(_portal_timer_context(win))
+            return render(request, "portal/login.html", ctx)
 
         request.session[SESSION_KEY] = applicant.national_id
         return redirect("portal:confirm")
 
-    return render(request, "portal/login.html")
+    ctx = {}
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/login.html", ctx)
 
 
 def confirm_view(request):
-    # ✅ redirect أنظف إذا مغلق
-    open_now, _msg, _win = _portal_gate()
-    if not open_now:
-        return redirect("portal:closed")
-
     a = _get_applicant(request)
     if not a:
         return redirect("portal:login")
+
+    win = PortalWindow.get()
+    allowed, deny_msg = _portal_access_for_applicant(a, win)
+    if not allowed:
+        messages.error(request, deny_msg)
+        return redirect("portal:closed")
 
     def gv(attr: str, dash: str = "-"):
         v = getattr(a, attr, None)
@@ -294,18 +437,21 @@ def confirm_view(request):
         app.save(update_fields=["confirmed_at", "status"])
         return redirect("portal:preferences")
 
-    return render(request, "portal/confirm.html", {"a": a, "fields": fields})
+    ctx = {"a": a, "fields": fields}
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/confirm.html", ctx)
 
 
 def preferences_view(request):
-    # ✅ redirect أنظف إذا مغلق
-    open_now, _msg, _win = _portal_gate()
-    if not open_now:
-        return redirect("portal:closed")
-
     a = _get_applicant(request)
     if not a:
         return redirect("portal:login")
+
+    win = PortalWindow.get()
+    allowed, deny_msg = _portal_access_for_applicant(a, win)
+    if not allowed:
+        messages.error(request, deny_msg)
+        return redirect("portal:closed")
 
     app, _ = Application.objects.get_or_create(applicant=a)
 
@@ -313,7 +459,15 @@ def preferences_view(request):
         return redirect("portal:done")
 
     schools = _eligible_schools_for(a)
-    return render(request, "portal/preferences.html", {"a": a, "app": app, "schools": schools, "closed_msg": ""})
+
+    ctx = {
+        "a": a,
+        "app": app,
+        "schools": schools,
+        "closed_msg": "",
+    }
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/preferences.html", ctx)
 
 
 @transaction.atomic
@@ -325,10 +479,10 @@ def submit_view(request):
 
     app = get_object_or_404(Application, applicant=a)
 
-    # ✅ حارس نهائي: redirect إلى closed + message
-    open_now, msg, _win = _portal_gate()
-    if not open_now:
-        messages.error(request, msg)
+    win = PortalWindow.get()
+    allowed, deny_msg = _portal_access_for_applicant(a, win)
+    if not allowed:
+        messages.error(request, deny_msg)
         return redirect("portal:closed")
 
     ids = request.POST.getlist("vacancy_ids")
@@ -336,11 +490,14 @@ def submit_view(request):
 
     if fallback not in ("admin_assign", "stay_current"):
         schools = _eligible_schools_for(a)
-        return render(
-            request,
-            "portal/preferences.html",
-            {"a": a, "app": app, "schools": schools, "error": "اختر خيار الإقرار في حال عدم توفر فرصة"},
-        )
+        ctx = {
+            "a": a,
+            "app": app,
+            "schools": schools,
+            "error": "اختر خيار الإقرار في حال عدم توفر فرصة",
+        }
+        ctx.update(_portal_timer_context(win))
+        return render(request, "portal/preferences.html", ctx)
 
     allowed_ids = set(_eligible_schools_for(a).values_list("id", flat=True))
 
@@ -371,6 +528,8 @@ def done_view(request):
     if not a:
         return redirect("portal:login")
 
+    win = PortalWindow.get()
+
     app = (
         Application.objects
         .select_related("applicant", "achieved_pref__vacancy")
@@ -379,7 +538,10 @@ def done_view(request):
         .first()
     )
     prefs = list(app.prefs.select_related("vacancy").all()) if app else []
-    return render(request, "portal/done.html", {"a": a, "app": app, "prefs": prefs})
+
+    ctx = {"a": a, "app": app, "prefs": prefs}
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/done.html", ctx)
 
 
 # =========================================================
@@ -392,11 +554,27 @@ def admin_portal_window_view(request):
 
     if request.method == "POST":
         win.is_enabled = (request.POST.get("is_enabled") == "1")
+        win.phase = (request.POST.get("phase") or "closed").strip() or "closed"
 
         opens_at = (request.POST.get("opens_at") or "").strip()
         closes_at = (request.POST.get("closes_at") or "").strip()
-        msg = (request.POST.get("closed_message") or "").strip()
-        win.closed_message = msg or "التقديم مغلق حالياً."
+
+        win.closed_message = (
+            (request.POST.get("closed_message") or "").strip()
+            or "التقديم مغلق حالياً."
+        )
+
+        if hasattr(win, "official_only_message"):
+            win.official_only_message = (
+                (request.POST.get("official_only_message") or "").strip()
+                or "التقديم متاح حالياً للوكلاء الرسميين فقط."
+            )
+
+        if hasattr(win, "new_only_message"):
+            win.new_only_message = (
+                (request.POST.get("new_only_message") or "").strip()
+                or "التقديم متاح حالياً للمتقدمين الجدد فقط."
+            )
 
         def parse_dt(v: str):
             if not v:
@@ -415,7 +593,9 @@ def admin_portal_window_view(request):
         messages.success(request, "تم حفظ إعدادات فترة التقديم.")
         return redirect("portal:admin_portal_window")
 
-    return render(request, "portal/admin_portal_window.html", {"win": win})
+    ctx = {"win": win}
+    ctx.update(_portal_timer_context(win))
+    return render(request, "portal/admin_portal_window.html", ctx)
 
 
 # =========================================================
@@ -424,7 +604,7 @@ def admin_portal_window_view(request):
 @staff_member_required
 def admin_applicants_list(request):
     q = (request.GET.get("q") or "").strip()
-    status = (request.GET.get("status") or "").strip()  # active / inactive / all
+    status = (request.GET.get("status") or "").strip()
 
     qs = Applicant.objects.all().order_by("-id")
 
@@ -440,6 +620,7 @@ def admin_applicants_list(request):
             | Q(sector__icontains=q)
             | Q(mobile__icontains=q)
             | Q(current_school__icontains=q)
+            | Q(current_job__icontains=q)
         )
 
     page_obj = _paginate(request, qs, per_page=40)
@@ -513,7 +694,7 @@ def admin_applicants_delete(request, pk: int):
 @staff_member_required
 def admin_vacancies_list(request):
     q = (request.GET.get("q") or "").strip()
-    open_state = (request.GET.get("open") or "").strip()  # open / closed / all
+    open_state = (request.GET.get("open") or "").strip()
     gender = (request.GET.get("gender") or "").strip()
     sector = (request.GET.get("sector") or "").strip()
 
@@ -529,9 +710,12 @@ def admin_vacancies_list(request):
         SchoolVacancy.objects
         .all()
         .annotate(
-            # ✅ reverse الصحيح عندك حسب الخطأ: applicationpreference
             interested_total=Count("applicationpreference", distinct=True),
-            interested_rank1=Count("applicationpreference", filter=Q(applicationpreference__rank=1), distinct=True),
+            interested_rank1=Count(
+                "applicationpreference",
+                filter=Q(applicationpreference__rank=1),
+                distinct=True,
+            ),
             achieved_total=Coalesce(Subquery(achieved_sq, output_field=IntegerField()), Value(0)),
         )
         .order_by("-id")
@@ -562,7 +746,14 @@ def admin_vacancies_list(request):
     return render(
         request,
         "portal/admin_vacancies_list.html",
-        {"rows": page_obj, "q": q, "open": open_state, "gender": gender, "sector": sector, "total": qs.count()},
+        {
+            "rows": page_obj,
+            "q": q,
+            "open": open_state,
+            "gender": gender,
+            "sector": sector,
+            "total": qs.count(),
+        },
     )
 
 
@@ -618,15 +809,217 @@ def admin_vacancies_delete(request, pk: int):
 
 
 # =========================================================
-# Admin: Vacancies Pressure Report (Report + Print + CSV + Excel)
+# Admin: Final Approvals Helpers
+# =========================================================
+def _final_approvals_filters_from_request(request):
+    q = (request.GET.get("q") or "").strip()
+    sector = (request.GET.get("sector") or "").strip()
+    gender = (request.GET.get("gender") or "").strip()
+    achieved_only = (request.GET.get("achieved_only") or "").strip()
+    return q, sector, gender, achieved_only
+
+
+def _final_approvals_qs(request):
+    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+
+    qs = (
+        Application.objects
+        .select_related(
+            "applicant",
+            "achieved_pref__vacancy",
+            "admin_decided_by",
+            "achieved_by",
+        )
+        .filter(admin_decision="approved")
+        .order_by("-admin_decided_at", "-id")
+    )
+
+    if achieved_only == "1":
+        qs = qs.filter(achieved_pref__isnull=False)
+
+    if sector:
+        qs = qs.filter(applicant__sector__icontains=sector)
+
+    if gender:
+        qs = qs.filter(applicant__gender__icontains=gender)
+
+    if q:
+        qs = qs.filter(
+            Q(applicant__full_name__icontains=q)
+            | Q(applicant__national_id__icontains=q)
+            | Q(applicant__sector__icontains=q)
+            | Q(applicant__gender__icontains=q)
+            | Q(achieved_pref__vacancy__school_name__icontains=q)
+            | Q(achieved_pref__vacancy__stage__icontains=q)
+            | Q(achieved_pref__vacancy__sector__icontains=q)
+        )
+
+    return qs
+
+
+# =========================================================
+# Admin: Final Approvals
+# =========================================================
+@staff_member_required
+def admin_final_approvals_view(request):
+    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+    qs = _final_approvals_qs(request)
+
+    page_obj = _paginate(request, qs, per_page=40)
+
+    total = qs.count()
+    total_achieved = qs.filter(achieved_pref__isnull=False).count()
+    total_pending_achieved = qs.filter(achieved_pref__isnull=True).count()
+
+    sectors = list(
+        Applicant.objects
+        .exclude(sector__isnull=True)
+        .exclude(sector__exact="")
+        .values_list("sector", flat=True)
+        .distinct()
+        .order_by("sector")
+    )
+
+    ctx = {
+        "rows": page_obj,
+        "q": q,
+        "sector": sector,
+        "gender": gender,
+        "achieved_only": achieved_only,
+        "total": total,
+        "total_achieved": total_achieved,
+        "total_pending_achieved": total_pending_achieved,
+        "sectors": sectors,
+    }
+    return render(request, "portal/admin_final_approvals.html", ctx)
+
+
+@staff_member_required
+def admin_final_approvals_print_view(request):
+    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+    qs = _final_approvals_qs(request)
+
+    total = qs.count()
+    total_achieved = qs.filter(achieved_pref__isnull=False).count()
+    total_pending_achieved = qs.filter(achieved_pref__isnull=True).count()
+
+    ctx = {
+        "rows": list(qs[:5000]),
+        "q": q,
+        "sector": sector,
+        "gender": gender,
+        "achieved_only": achieved_only,
+        "total": total,
+        "total_achieved": total_achieved,
+        "total_pending_achieved": total_pending_achieved,
+        "now": timezone.localtime(),
+        "print_mode": True,
+    }
+    return render(request, "portal/admin_final_approvals.html", ctx)
+
+
+@staff_member_required
+def admin_final_approvals_excel_view(request):
+    qs = _final_approvals_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Final Approvals"
+
+    headers = [
+        "#",
+        "رقم الطلب",
+        "الاسم",
+        "السجل المدني",
+        "القطاع",
+        "الجنس",
+        "قرار الإدارة",
+        "الرغبة المتحققة",
+        "المدرسة النهائية",
+        "مرحلة المدرسة",
+        "قطاع المدرسة",
+        "تاريخ الاعتماد",
+        "اعتمد بواسطة",
+        "تاريخ التحقق النهائي",
+        "تحقق بواسطة",
+    ]
+    ws.append(headers)
+
+    header_font = Font(bold=True)
+    for col in range(1, len(headers) + 1):
+        c = ws.cell(row=1, column=col)
+        c.font = header_font
+        c.alignment = Alignment(horizontal="center", vertical="center")
+
+    for i, app in enumerate(qs, start=1):
+        vac = app.achieved_pref.vacancy if app.achieved_pref else None
+        ws.append([
+            i,
+            app.id,
+            getattr(app.applicant, "full_name", "") or "",
+            getattr(app.applicant, "national_id", "") or "",
+            getattr(app.applicant, "sector", "") or "",
+            getattr(app.applicant, "gender", "") or "",
+            "معتمد",
+            getattr(app.achieved_pref, "rank", "") if app.achieved_pref else "",
+            getattr(vac, "school_name", "") if vac else "",
+            getattr(vac, "stage", "") if vac else "",
+            getattr(vac, "sector", "") if vac else "",
+            _fmt_dt(app.admin_decided_at),
+            getattr(app.admin_decided_by, "username", "") if app.admin_decided_by else "",
+            _fmt_dt(app.achieved_at),
+            getattr(app.achieved_by, "username", "") if app.achieved_by else "",
+        ])
+
+    widths = [6, 10, 28, 18, 18, 12, 14, 14, 34, 16, 18, 20, 16, 20, 16]
+    for idx, width in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(idx)].width = width
+
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+
+    filename = f"final_approvals_{timezone.now().strftime('%Y%m%d_%H%M')}.xlsx"
+    resp = HttpResponse(
+        bio.getvalue(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return resp
+
+
+@staff_member_required
+def admin_final_approvals_to_dashboard_view(request):
+    """
+    تحويل الفلاتر الحالية من صفحة الطلبات المعتمدة إلى لوحة القرارات.
+    """
+    q, sector, gender, _ = _final_approvals_filters_from_request(request)
+
+    params = {
+        "decision": "approved",
+    }
+    if q:
+        params["q"] = q
+    if sector:
+        params["sector"] = sector
+    if gender:
+        params["gender"] = gender
+
+    url = f'{redirect("portal:admin_dashboard").url}?{urlencode(params)}'
+    return redirect(url)
+
+
+# =========================================================
+# Admin: Vacancies Pressure Report
 # =========================================================
 def _vacancies_pressure_ctx(request):
     q = (request.GET.get("q") or "").strip()
     gender = (request.GET.get("gender") or "").strip()
     sector = (request.GET.get("sector") or "").strip()
-    open_state = (request.GET.get("open") or "").strip()  # open/closed/all
-    sort = (request.GET.get("sort") or "rank1").strip()   # total / rank1 / achieved / need
+    open_state = (request.GET.get("open") or "").strip()
+    sort = (request.GET.get("sort") or "rank1").strip()
     top_raw = (request.GET.get("top") or "0").strip()
+
     try:
         top = int(top_raw) if top_raw else 0
     except Exception:
@@ -645,7 +1038,11 @@ def _vacancies_pressure_ctx(request):
         .all()
         .annotate(
             interested_total=Count("applicationpreference", distinct=True),
-            interested_rank1=Count("applicationpreference", filter=Q(applicationpreference__rank=1), distinct=True),
+            interested_rank1=Count(
+                "applicationpreference",
+                filter=Q(applicationpreference__rank=1),
+                distinct=True,
+            ),
             achieved_total=Coalesce(Subquery(achieved_sq, output_field=IntegerField()), Value(0)),
         )
     )
@@ -657,8 +1054,10 @@ def _vacancies_pressure_ctx(request):
 
     if gender:
         qs = qs.filter(gender__icontains=gender)
+
     if sector:
         qs = qs.filter(sector__icontains=sector)
+
     if q:
         qs = qs.filter(
             Q(school_name__icontains=q)
@@ -673,7 +1072,7 @@ def _vacancies_pressure_ctx(request):
         qs = qs.order_by("-achieved_total", "-interested_rank1", "-interested_total", "school_name")
     elif sort == "need":
         qs = qs.order_by("-deputy_need", "-interested_rank1", "-interested_total", "school_name")
-    else:  # rank1
+    else:
         qs = qs.order_by("-interested_rank1", "-interested_total", "-achieved_total", "school_name")
 
     rows = list(qs[:top] if top and top > 0 else qs[:5000])
@@ -690,7 +1089,14 @@ def _vacancies_pressure_ctx(request):
         "sum_rank1": sum_rank1,
         "sum_achieved": sum_achieved,
         "now": timezone.localtime(),
-        "f": {"q": q, "sector": sector, "gender": gender, "open": open_state, "sort": sort, "top": top},
+        "f": {
+            "q": q,
+            "sector": sector,
+            "gender": gender,
+            "open": open_state,
+            "sort": sort,
+            "top": top,
+        },
     }
 
 
@@ -756,17 +1162,8 @@ def admin_vacancies_pressure_excel_view(request):
     ws.title = "Pressure"
 
     headers = [
-        "#",
-        "المدرسة",
-        "رقم الوزارة",
-        "القطاع",
-        "الجنس",
-        "المرحلة",
-        "الاحتياج",
-        "الراغبون",
-        "رغبة أولى",
-        "ترشيحات نهائية",
-        "الحالة",
+        "#", "المدرسة", "رقم الوزارة", "القطاع", "الجنس", "المرحلة",
+        "الاحتياج", "الراغبون", "رغبة أولى", "ترشيحات نهائية", "الحالة",
     ]
     ws.append(headers)
 
@@ -813,10 +1210,10 @@ def admin_vacancies_pressure_excel_view(request):
 # =========================================================
 @staff_member_required
 def admin_dashboard_view(request):
-    status, sector, gender = _admin_filters_from_request(request)
+    q, status, sector, gender, decision = _admin_filters_from_request(request)
 
     qs0 = _admin_base_qs()
-    qs = _apply_admin_filters(qs0, status, sector, gender)
+    qs = _apply_admin_filters(qs0, q, status, sector, gender, decision)
 
     pref_rank1 = (
         ApplicationPreference.objects
@@ -847,7 +1244,7 @@ def admin_dashboard_view(request):
             When(achieved_pref__isnull=True, then=Value("")),
             default=Concat(
                 Value("رغبة "),
-                Coalesce("achieved_pref__rank", Value(0)),
+                Cast(Coalesce("achieved_pref__rank", Value(0)), output_field=CharField()),
                 Value(" — "),
                 Coalesce("achieved_pref__vacancy__school_name", Value("")),
                 Value(" ("),
@@ -891,6 +1288,17 @@ def admin_dashboard_view(request):
     count_draft = qs.filter(status="draft").count()
     nominated_count = qs.filter(achieved_pref__isnull=False).count()
 
+    sectors = list(
+        Applicant.objects
+        .exclude(sector__isnull=True)
+        .exclude(sector__exact="")
+        .values_list("sector", flat=True)
+        .distinct()
+        .order_by("sector")
+    )
+
+    portal_window = PortalWindow.get()
+
     ctx = {
         "rows": rows,
         "total_apps": total_apps,
@@ -901,9 +1309,13 @@ def admin_dashboard_view(request):
         "count_submitted": count_submitted,
         "count_draft": count_draft,
         "nominated_count": nominated_count,
+        "f_q": q,
         "f_status": status,
         "f_sector": sector,
         "f_gender": gender,
+        "f_decision": decision,
+        "sectors": sectors,
+        "portal_window": portal_window,
     }
     return render(request, "portal/admin_dashboard.html", ctx)
 
@@ -977,11 +1389,11 @@ def admin_application_detail_json_view(request, app_id: int):
     data = {
         "id": app.id,
         "status": app.status,
-        "submitted_at": app.submitted_at.strftime("%Y-%m-%d %H:%M") if app.submitted_at else "",
+        "submitted_at": _fmt_dt(app.submitted_at),
         "fallback_choice": getattr(app, "fallback_choice", "") or "",
         "admin_decision": getattr(app, "admin_decision", "") or "",
         "admin_note": getattr(app, "admin_note", "") or "",
-        "admin_decided_at": app.admin_decided_at.strftime("%Y-%m-%d %H:%M") if getattr(app, "admin_decided_at", None) else "",
+        "admin_decided_at": _fmt_dt(getattr(app, "admin_decided_at", None)),
         "achieved": achieved,
         "applicant": {
             "national_id": app.applicant.national_id,
@@ -1056,25 +1468,52 @@ def admin_decide_unlock_view(request, app_id: int):
 
 
 # =========================================================
-# Admin: Undo Last Decision (SERVER SIDE)
+# Admin: Undo Last Decision
 # =========================================================
 @staff_member_required
 @require_POST
 def admin_undo_view(request, app_id: int):
-    """
-    Undo سريع:
-    - يرجع status + locked للحالة السابقة
-    - يرجع admin_decision/admin_note/admin_decided_* للوضع السابق إن أُرسل
-      وإلا: يرجعها للوضع "pending" (فارغ)
-    - يعيد achieved_pref إذا أُرسل achieved_pref_id وكان تابعًا لنفس الطلب
-      (اختياري)
-    """
     if not _is_ajax(request):
-     return JsonResponse(
-        {"ok": False, "error": "AJAX فقط."},
-        status=400,
+        return JsonResponse(
+            {"ok": False, "error": "AJAX فقط."},
+            status=400,
+            json_dumps_params={"ensure_ascii": False},
+        )
+
+    app = get_object_or_404(Application, id=app_id)
+
+    prev_status = (request.POST.get("prev_status") or "").strip()
+    if prev_status not in {"draft", "submitted", "returned", "approved", "rejected"}:
+        prev_status = "submitted"
+
+    with transaction.atomic():
+        app.status = prev_status
+        app.locked = (prev_status == "submitted")
+
+        app.admin_decision = ""
+        app.admin_note = ""
+        app.admin_decided_at = None
+        app.admin_decided_by = None
+
+        app.save(update_fields=[
+            "status",
+            "locked",
+            "admin_decision",
+            "admin_note",
+            "admin_decided_at",
+            "admin_decided_by",
+        ])
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "id": app.id,
+            "status": app.status,
+            "admin_decision": "",
+        },
         json_dumps_params={"ensure_ascii": False},
     )
+
 
 # =========================================================
 # Admin: Bulk Decision
@@ -1127,11 +1566,11 @@ def admin_decide_bulk_view(request):
 
 
 # =========================================================
-# Admin: Reports (Print + CSV Visible)
+# Admin: Reports
 # =========================================================
 @staff_member_required
 def admin_report_print_view(request):
-    status, sector, gender = _admin_filters_from_request(request)
+    q, status, sector, gender, decision = _admin_filters_from_request(request)
 
     qs0 = (
         Application.objects
@@ -1139,21 +1578,21 @@ def admin_report_print_view(request):
         .annotate(prefs_count=Count("prefs", distinct=True))
         .order_by("-submitted_at", "-id")
     )
-    qs = _apply_admin_filters(qs0, status, sector, gender)
+    qs = _apply_admin_filters(qs0, q, status, sector, gender, decision)
     rows = list(qs[:5000])
 
     ctx = {
         "rows": rows,
         "total": len(rows),
         "now": timezone.localtime(),
-        "f": {"status": status, "sector": sector, "gender": gender},
+        "f": {"q": q, "status": status, "sector": sector, "gender": gender, "decision": decision},
     }
     return render(request, "portal/admin_report_print.html", ctx)
 
 
 @staff_member_required
 def admin_report_csv_visible_view(request):
-    status, sector, gender = _admin_filters_from_request(request)
+    q, status, sector, gender, decision = _admin_filters_from_request(request)
 
     ids = (request.GET.get("ids") or "").strip()
     id_list = [int(x) for x in ids.split(",") if x.strip().isdigit()]
@@ -1164,7 +1603,7 @@ def admin_report_csv_visible_view(request):
         .annotate(prefs_count=Count("prefs", distinct=True))
         .order_by("-submitted_at", "-id")
     )
-    qs = _apply_admin_filters(qs0, status, sector, gender)
+    qs = _apply_admin_filters(qs0, q, status, sector, gender, decision)
     if id_list:
         qs = qs.filter(id__in=id_list)
 
@@ -1190,7 +1629,7 @@ def admin_report_csv_visible_view(request):
             getattr(app, "prefs_count", 0) or 0,
             getattr(app, "admin_decision", "") or "",
             getattr(app, "admin_note", "") or "",
-            timezone.localtime(app.submitted_at).strftime("%Y-%m-%d %H:%M") if getattr(app, "submitted_at", None) else "",
+            _fmt_dt(getattr(app, "submitted_at", None)),
         ])
 
     return resp
@@ -1201,15 +1640,29 @@ def admin_report_csv_visible_view(request):
 # =========================================================
 @staff_member_required
 @require_POST
+@transaction.atomic
 def admin_set_achieved_view(request, app_id: int):
-    app = get_object_or_404(Application, id=app_id)
+    app = get_object_or_404(
+        Application.objects.select_related("applicant", "achieved_pref__vacancy"),
+        id=app_id,
+    )
     pref_id_raw = (request.POST.get("achieved_pref_id") or "").strip()
 
+    old_vacancy = None
+    if app.achieved_pref_id and app.achieved_pref and getattr(app.achieved_pref, "vacancy", None):
+        old_vacancy = app.achieved_pref.vacancy
+
     if not pref_id_raw:
+        if old_vacancy and old_vacancy.reserved_application_id == app.id:
+            old_vacancy.reserved_application = None
+            old_vacancy.reserved_at = None
+            old_vacancy.save(update_fields=["reserved_application", "reserved_at"])
+
         app.achieved_pref = None
         app.achieved_at = None
         app.achieved_by = None
         app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
+
         messages.success(request, "تم إلغاء تحديد الرغبة المتحققة.")
         return redirect("portal:admin_app_detail", app_id=app.id)
 
@@ -1229,27 +1682,41 @@ def admin_set_achieved_view(request, app_id: int):
         messages.error(request, "الرغبة المحددة غير تابعة لهذا الطلب.")
         return redirect("portal:admin_app_detail", app_id=app.id)
 
+    vacancy = pref.vacancy
+
+    if vacancy.reserved_application_id and vacancy.reserved_application_id != app.id:
+        messages.error(request, "هذا الشاغر محجوز بالفعل لطلب آخر.")
+        return redirect("portal:admin_app_detail", app_id=app.id)
+
     if (app.admin_decision or "").strip() != "approved":
         app.admin_decision = "approved"
         if not app.admin_decided_at:
             app.admin_decided_at = timezone.now()
+        if not app.admin_decided_by_id:
             app.admin_decided_by = request.user
-        else:
-            if not app.admin_decided_by_id:
-                app.admin_decided_by = request.user
         app.save(update_fields=["admin_decision", "admin_decided_at", "admin_decided_by"])
+
+    if old_vacancy and old_vacancy.id != vacancy.id and old_vacancy.reserved_application_id == app.id:
+        old_vacancy.reserved_application = None
+        old_vacancy.reserved_at = None
+        old_vacancy.save(update_fields=["reserved_application", "reserved_at"])
 
     app.achieved_pref = pref
     app.achieved_at = timezone.now()
     app.achieved_by = request.user
     app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
 
+    if getattr(app.applicant, "is_official_agent", False):
+        vacancy.reserved_application = app
+        vacancy.reserved_at = timezone.now()
+        vacancy.save(update_fields=["reserved_application", "reserved_at"])
+
     messages.success(request, f"تم تحديد الرغبة المتحققة: رغبة #{pref.rank}")
     return redirect("portal:admin_app_detail", app_id=app.id)
 
 
 # =========================================================
-# Admin: Nominations Report + Print + CSV + Excel
+# Admin: Nominations
 # =========================================================
 @staff_member_required
 def admin_nominations_report_view(request):
@@ -1336,7 +1803,7 @@ def admin_nominations_csv_view(request):
             getattr(vac, "stage", "") if vac else "",
             getattr(vac, "sector", "") if vac else "",
             getattr(vac, "gender", "") if vac else "",
-            timezone.localtime(app.achieved_at).strftime("%Y-%m-%d %H:%M") if app.achieved_at else "",
+            _fmt_dt(app.achieved_at),
             getattr(app.achieved_by, "username", "") if app.achieved_by else "",
             (app.admin_decision or "").strip(),
             (app.admin_note or "").strip(),
@@ -1396,7 +1863,7 @@ def admin_nominations_excel_view(request):
             getattr(vac, "stage", "") if vac else "",
             getattr(vac, "sector", "") if vac else "",
             getattr(vac, "gender", "") if vac else "",
-            timezone.localtime(app.achieved_at).strftime("%Y-%m-%d %H:%M") if app.achieved_at else "",
+            _fmt_dt(app.achieved_at),
             getattr(app.achieved_by, "username", "") if app.achieved_by else "",
             (app.admin_decision or "").strip(),
             (app.admin_note or "").strip(),
@@ -1420,11 +1887,11 @@ def admin_nominations_excel_view(request):
 
 
 # =========================================================
-# Admin: Export Excel (Applications)
+# Admin: Export Excel
 # =========================================================
 @staff_member_required
 def admin_export_excel_view(request):
-    status, sector, gender = _admin_filters_from_request(request)
+    q, status, sector, gender, decision = _admin_filters_from_request(request)
 
     qs0 = (
         Application.objects
@@ -1432,7 +1899,7 @@ def admin_export_excel_view(request):
         .prefetch_related("prefs", "prefs__vacancy")
         .order_by("-submitted_at", "-id")
     )
-    qs = _apply_admin_filters(qs0, status, sector, gender)
+    qs = _apply_admin_filters(qs0, q, status, sector, gender, decision)
 
     wb = Workbook()
     ws = wb.active
@@ -1474,11 +1941,11 @@ def admin_export_excel_view(request):
             app.applicant.sector,
             app.applicant.gender,
             app.status,
-            app.submitted_at.strftime("%Y-%m-%d %H:%M") if app.submitted_at else "",
+            _fmt_dt(app.submitted_at),
             getattr(app, "fallback_choice", "") or "",
             getattr(app, "admin_decision", "") or "",
             getattr(app, "admin_note", "") or "",
-            app.admin_decided_at.strftime("%Y-%m-%d %H:%M") if getattr(app, "admin_decided_at", None) else "",
+            _fmt_dt(getattr(app, "admin_decided_at", None)),
             achieved_text,
         ] + pref_names
 
@@ -1528,7 +1995,12 @@ def admin_import_view(request):
                     out.write(chunk)
 
             batch, res = import_applicants_xlsx(path)
-            result["applicants"] = {"batch": batch.id, "created": res.created, "updated": res.updated, "skipped": res.skipped}
+            result["applicants"] = {
+                "batch": batch.id,
+                "created": res.created,
+                "updated": res.updated,
+                "skipped": res.skipped,
+            }
             messages.success(request, f"تم استيراد المتقدمين بنجاح (Batch #{batch.id})")
 
         if schools_file:
@@ -1538,19 +2010,24 @@ def admin_import_view(request):
                     out.write(chunk)
 
             batch, res = import_schools_xlsx(path)
-            result["schools"] = {"batch": batch.id, "created": res.created, "updated": res.updated, "skipped": res.skipped}
+            result["schools"] = {
+                "batch": batch.id,
+                "created": res.created,
+                "updated": res.updated,
+                "skipped": res.skipped,
+            }
             messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{batch.id})")
 
     return render(request, "portal/admin_import.html", {"form": form, "result": result})
 
 
 # =========================================================
-# Admin: Non Applicants (who didn't apply)
+# Admin: Non Applicants
 # =========================================================
 @staff_member_required
 def admin_non_applicants_view(request):
     q = (request.GET.get("q") or "").strip()
-    mode = (request.GET.get("mode") or "not_submitted").strip()  # none / not_submitted / started
+    mode = (request.GET.get("mode") or "not_submitted").strip()
 
     qs = Applicant.objects.filter(is_active=True)
 
@@ -1584,7 +2061,11 @@ def admin_non_applicants_view(request):
         "q": q,
         "mode": mode,
         "total": qs.count(),
-        "kpi": {"active": total_active, "submitted": total_submitted, "not_submitted": total_not_submitted},
+        "kpi": {
+            "active": total_active,
+            "submitted": total_submitted,
+            "not_submitted": total_not_submitted,
+        },
     }
     return render(request, "portal/admin_non_applicants.html", ctx)
 

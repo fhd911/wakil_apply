@@ -1,0 +1,610 @@
+{% extends "portal/base.html" %}
+{% block title %}الطلبات المعتمدة{% endblock %}
+
+{% block extra_css %}
+<style>
+  .faX, .faX *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
+
+  .faX{
+    direction:rtl;
+    color:var(--min-ink);
+    font-size:13px;
+  }
+
+  .faX .shell{
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow);
+    overflow:hidden;
+  }
+
+  .faX .top{
+    position:relative;
+    padding:16px 18px 14px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    overflow:hidden;
+  }
+
+  .faX .top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .faX .top > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .faX h1{
+    margin:0;
+    font-size:18px;
+    font-weight:800;
+    color:#fff;
+    line-height:1.35;
+  }
+
+  .faX .sub{
+    margin:5px 0 0;
+    color:rgba(255,255,255,.84);
+    font-size:10.6px;
+    line-height:1.8;
+    max-width:70ch;
+  }
+
+  .faX .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid rgba(239,225,187,.95);
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    font-size:9.8px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .faX .body{
+    padding:12px;
+    display:grid;
+    gap:12px;
+  }
+
+  .faX .kpis{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+  }
+
+  .faX .kpi{
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-soft);
+    padding:12px;
+  }
+
+  .faX .kpi .label{
+    color:var(--min-muted);
+    font-size:9.6px;
+    margin-bottom:6px;
+  }
+
+  .faX .kpi .num{
+    color:var(--min-green-1);
+    font-size:22px;
+    font-weight:800;
+    line-height:1;
+  }
+
+  .faX .card{
+    border:1px solid rgba(217,226,217,.95);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--min-shadow-soft);
+    overflow:hidden;
+  }
+
+  .faX .ch{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .faX .ch h3{
+    margin:0;
+    font-size:11px;
+    font-weight:800;
+    color:var(--min-green-2);
+  }
+
+  .faX .cb{
+    padding:12px;
+  }
+
+  .faX .tools{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .faX .filters{
+    display:grid;
+    grid-template-columns:1.2fr 1fr 1fr auto auto;
+    gap:10px;
+    align-items:end;
+  }
+
+  .faX label{
+    display:block;
+    margin-bottom:6px;
+    color:var(--min-green-2);
+    font-size:10px;
+    font-weight:800;
+  }
+
+  .faX .inp, .faX .sel{
+    width:100%;
+    min-height:38px;
+    padding:8px 10px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-ink);
+    font-size:10.4px;
+    outline:none;
+  }
+
+  .faX .check{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-height:38px;
+    padding:0 6px;
+    font-size:10px;
+    color:var(--min-ink-2);
+    white-space:nowrap;
+  }
+
+  .faX .btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    min-height:38px;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:10.2px;
+    font-weight:800;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    gap:8px;
+  }
+
+  .faX .btn.primary{
+    color:#fff;
+    border-color:var(--min-green-2);
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+  }
+
+  .faX .btn.secondary{
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+  }
+
+  .faX .btn.gold{
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    color:#7f5d1a;
+    border-color:rgba(239,225,187,.95);
+  }
+
+  .faX .table-wrap{
+    width:100%;
+    overflow:auto;
+  }
+
+  .faX table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    min-width:980px;
+  }
+
+  .faX th, .faX td{
+    padding:10px 8px;
+    text-align:right;
+    vertical-align:middle;
+    border-bottom:1px solid rgba(233,239,234,.96);
+    font-size:10px;
+  }
+
+  .faX th{
+    background:#f8fbf8;
+    color:var(--min-green-2);
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .faX tr:last-child td{
+    border-bottom:none;
+  }
+
+  .faX .name{
+    font-weight:800;
+    color:var(--min-green-1);
+  }
+
+  .faX .muted{
+    color:var(--min-muted);
+  }
+
+  .faX .badge{
+    display:inline-flex;
+    align-items:center;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9px;
+    font-weight:800;
+    white-space:nowrap;
+    border:1px solid rgba(209,220,210,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    color:var(--min-ink-2);
+  }
+
+  .faX .badge.ok{
+    border-color:var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    color:#14532d;
+  }
+
+  .faX .badge.warn{
+    border-color:var(--min-warn-line);
+    background:linear-gradient(180deg,#fffaf3,#fff7ed);
+    color:#9a3412;
+  }
+
+  .faX .empty{
+    padding:18px;
+    text-align:center;
+    color:var(--min-muted);
+    font-size:10.4px;
+  }
+
+  .faX .pager{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    margin-top:12px;
+  }
+
+  .faX .pager a,
+  .faX .pager span{
+    min-width:34px;
+    min-height:34px;
+    padding:6px 10px;
+    border-radius:12px;
+    border:1px solid rgba(211,221,212,.95);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:10px;
+    color:var(--min-green-2);
+    background:#fff;
+  }
+
+  .faX .pager .current{
+    background:linear-gradient(180deg,#1f5a45,#184736);
+    color:#fff;
+    border-color:#184736;
+  }
+
+  .faX .print-note{
+    display:none;
+  }
+
+  @media print{
+    .faX .top{
+      background:#fff !important;
+      color:#000 !important;
+      border-bottom:1px solid #d1d5db !important;
+    }
+
+    .faX .top::before,
+    .faX .pill,
+    .faX .tools,
+    .faX .filters-wrap,
+    .faX .pager{
+      display:none !important;
+    }
+
+    .faX .print-note{
+      display:block;
+      margin-top:8px;
+      color:#000 !important;
+      font-size:11px;
+    }
+
+    .faX h1,
+    .faX .sub,
+    .faX .ch h3,
+    .faX th,
+    .faX td,
+    .faX .name{
+      color:#000 !important;
+    }
+
+    .faX .shell,
+    .faX .card,
+    .faX .kpi{
+      box-shadow:none !important;
+      background:#fff !important;
+    }
+
+    .faX .table-wrap{
+      overflow:visible !important;
+    }
+
+    .faX table{
+      min-width:auto !important;
+    }
+  }
+
+  @media (max-width: 980px){
+    .faX .filters{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .faX .kpis{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 640px){
+    .faX .top{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .faX .pill{
+      display:none;
+    }
+
+    .faX .tools{
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    .faX .tools .btn{
+      width:100%;
+    }
+
+    .faX .filters{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="faX">
+  <div class="shell">
+
+    <div class="top">
+      <div>
+        <h1>الطلبات المعتمدة</h1>
+        <p class="sub">
+          شاشة مستقلة لعرض الطلبات التي تم اعتمادها من الإدارة، مع إمكانية الطباعة والتصدير والانتقال إلى لوحة القرارات.
+        </p>
+        {% if print_mode %}
+          <div class="print-note">
+            تم تجهيز الصفحة للطباعة.
+          </div>
+        {% endif %}
+      </div>
+      <div class="pill">موافقات نهائية</div>
+    </div>
+
+    <div class="body">
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">إجمالي الطلبات المعتمدة</div>
+          <div class="num">{{ total }}</div>
+        </div>
+        <div class="kpi">
+          <div class="label">مع رغبة متحققة</div>
+          <div class="num">{{ total_achieved }}</div>
+        </div>
+        <div class="kpi">
+          <div class="label">معتمدة بانتظار التحديد النهائي</div>
+          <div class="num">{{ total_pending_achieved }}</div>
+        </div>
+      </div>
+
+      {% if not print_mode %}
+      <div class="card filters-wrap">
+        <div class="ch">
+          <h3>مرشحات البحث والأدوات</h3>
+          <div class="tools">
+            <a class="btn secondary"
+               href="{% url 'portal:admin_final_approvals_to_dashboard' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">
+              لوحة القرارات
+            </a>
+
+            <a class="btn gold"
+               href="{% url 'portal:admin_final_approvals_print' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}"
+               target="_blank"
+               rel="noopener">
+              طباعة
+            </a>
+
+            <a class="btn primary"
+               href="{% url 'portal:admin_final_approvals_excel' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">
+              تصدير Excel
+            </a>
+          </div>
+        </div>
+
+        <div class="cb">
+          <form method="get" class="filters">
+            <div>
+              <label>بحث</label>
+              <input class="inp" type="text" name="q" value="{{ q }}" placeholder="اسم المتقدم / السجل / المدرسة">
+            </div>
+
+            <div>
+              <label>القطاع</label>
+              <select class="sel" name="sector">
+                <option value="">الكل</option>
+                {% for s in sectors %}
+                  <option value="{{ s }}" {% if sector == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label>الجنس</label>
+              <input class="inp" type="text" name="gender" value="{{ gender }}" placeholder="بنين / بنات">
+            </div>
+
+            <div class="check">
+              <input type="checkbox" id="achieved_only" name="achieved_only" value="1" {% if achieved_only == "1" %}checked{% endif %}>
+              <label for="achieved_only" style="margin:0;">المتحققة فقط</label>
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <button class="btn primary" type="submit">تطبيق</button>
+              <a class="btn secondary" href="{% url 'portal:admin_final_approvals' %}">إعادة ضبط</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="card">
+        <div class="ch">
+          <h3>قائمة الطلبات المعتمدة</h3>
+          {% if print_mode %}
+            <button type="button" class="btn gold" onclick="window.print();">طباعة الآن</button>
+          {% endif %}
+        </div>
+
+        <div class="cb">
+          {% if rows %}
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>المتقدم</th>
+                    <th>السجل</th>
+                    <th>القطاع</th>
+                    <th>الجنس</th>
+                    <th>قرار الإدارة</th>
+                    <th>الرغبة المتحققة</th>
+                    <th>المدرسة النهائية</th>
+                    <th>تاريخ الاعتماد</th>
+                    {% if not print_mode %}
+                      <th>إجراء</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for app in rows %}
+                  <tr>
+                    <td>{{ app.id }}</td>
+                    <td class="name">{{ app.applicant.full_name }}</td>
+                    <td>{{ app.applicant.national_id }}</td>
+                    <td>{{ app.applicant.sector|default:"-" }}</td>
+                    <td>{{ app.applicant.gender|default:"-" }}</td>
+                    <td><span class="badge ok">معتمد</span></td>
+                    <td>
+                      {% if app.achieved_pref %}
+                        <span class="badge ok">رغبة {{ app.achieved_pref.rank }}</span>
+                      {% else %}
+                        <span class="badge warn">لم تحدد بعد</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if app.achieved_pref %}
+                        {{ app.achieved_pref.vacancy.school_name }}
+                      {% else %}
+                        <span class="muted">—</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ app.admin_decided_at|date:"Y-m-d H:i"|default:"-" }}</td>
+                    {% if not print_mode %}
+                    <td>
+                      <a class="btn secondary" href="{% url 'portal:admin_app_detail' app.id %}">فتح</a>
+                    </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            {% if not print_mode and rows.paginator.num_pages > 1 %}
+            <div class="pager">
+              {% if rows.has_previous %}
+                <a href="?page={{ rows.previous_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">السابق</a>
+              {% endif %}
+
+              {% for n in rows.paginator.page_range %}
+                {% if n == rows.number %}
+                  <span class="current">{{ n }}</span>
+                {% elif n >= rows.number|add:-2 and n <= rows.number|add:2 %}
+                  <a href="?page={{ n }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">{{ n }}</a>
+                {% endif %}
+              {% endfor %}
+
+              {% if rows.has_next %}
+                <a href="?page={{ rows.next_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">التالي</a>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="empty">لا توجد طلبات معتمدة مطابقة للمرشحات الحالية.</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if print_mode %}
+<script>
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      window.print();
+    }, 300);
+  });
+</script>
+{% endif %}
+{% endblock %}
