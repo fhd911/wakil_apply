@@ -1,0 +1,426 @@
+{% extends "portal/base.html" %}
+{% block title %}ضابط فترة التقديم{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Portal Window — Ministerial Light (Unified)
+  ========================================================= */
+
+  :root{
+    --min-bg:#f4f7f3;
+    --min-bg-2:#eef3ef;
+
+    --min-surface:#ffffff;
+    --min-surface-2:#fbfcfa;
+
+    --min-ink:#17261f;
+    --min-ink-2:#23382d;
+    --min-muted:#6f8177;
+
+    --min-green-1:#163126;
+    --min-green-2:#234536;
+    --min-green-3:#2f5e4a;
+
+    --min-gold-1:#a98235;
+    --min-gold-2:#c8a04a;
+    --min-gold-3:#efe1bb;
+
+    --min-line:#dbe3db;
+    --min-line-2:#cdd8ce;
+
+    --min-shadow:0 12px 28px rgba(16,34,27,.07);
+    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+
+    --min-ok:#166534;
+    --min-ok-soft:#eefbf3;
+    --min-ok-line:#b7e4c7;
+
+    --min-danger:#991b1b;
+    --min-danger-soft:#fef2f2;
+    --min-danger-line:#fecaca;
+  }
+
+  .ui{
+    position:relative;
+    background:
+      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
+      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
+      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
+    color:var(--min-ink);
+  }
+
+  .ui-top{
+    margin-bottom:12px;
+    padding:14px 18px;
+    border:1px solid rgba(205,216,206,.95);
+    border-radius:20px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    box-shadow:var(--min-shadow-strong);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .ui-top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .ui-top::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+  }
+
+  .ui-title{
+    font-size:20px !important;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff !important;
+  }
+
+  .ui-subtitle{
+    margin-top:4px;
+    color:rgba(255,255,255,.82) !important;
+    font-size:10.8px !important;
+    line-height:1.6 !important;
+  }
+
+  .ui-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .ui-card{
+    border:1px solid rgba(211,221,212,.95) !important;
+    border-radius:22px !important;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
+    box-shadow:var(--min-shadow) !important;
+    overflow:hidden;
+  }
+
+  .ui-toolbar{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .ui-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-top:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .ui-muted{
+    color:var(--min-muted) !important;
+    font-size:9.8px;
+  }
+
+  .ui-pill{
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:800;
+    color:var(--min-green-2);
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .ui-pill-ok{
+    color:var(--min-ok) !important;
+    border-color:var(--min-ok-line) !important;
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
+  }
+
+  .ui-pill-danger{
+    color:var(--min-danger) !important;
+    border-color:var(--min-danger-line) !important;
+    background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
+  }
+
+  .ui-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#16a34a;
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .ui-btn{
+    min-height:30px;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:800;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    justify-content:center;
+  }
+
+  .ui-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .ui-btn-primary{
+    color:#fff !important;
+    border-color:var(--min-green-2) !important;
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-input{
+    min-height:38px;
+    height:38px;
+    padding:8px 12px;
+    font-size:10.5px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-ink);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    outline:none;
+  }
+
+  .ui-input:focus{
+    border-color:rgba(169,130,53,.36);
+    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .panel{
+    padding:14px 14px 8px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .lbl{
+    font-size:10px;
+    font-weight:900;
+    color:var(--min-green-2);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .hint{
+    font-size:9.3px;
+    color:var(--min-muted);
+    line-height:1.5;
+  }
+
+  .switch{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border:1px solid rgba(219,227,219,.95);
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+  }
+
+  .switch input{
+    width:18px;
+    height:18px;
+    accent-color:#1f7a4d;
+    cursor:pointer;
+  }
+
+  .status-badge{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .status-line{
+    font-size:10px;
+    font-weight:900;
+    color:#fff;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    padding:6px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.20);
+  }
+
+  .status-line .light{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .status-line.off .light{
+    background:#ef4444;
+  }
+
+  @media (max-width: 900px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ui">
+  <div class="ui-page">
+
+    <div class="ui-top">
+      <div class="ui-title-wrap">
+        <h1 class="ui-title">ضابط فترة التقديم</h1>
+        <p class="ui-subtitle">
+          تحكم مركزي لفتح/إغلاق التقديم (يدويًا أو بزمن محدد) — الإغلاق يطبق مباشرة على زر الإرسال.
+        </p>
+      </div>
+
+      <div class="ui-actions">
+        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+          <span>▦</span>
+          لوحة القرار
+        </a>
+
+        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
+          <span>🏫</span>
+          إدارة الشواغر
+        </a>
+
+        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
+          <span>👤</span>
+          إدارة المتقدمين
+        </a>
+      </div>
+
+      <div class="status-badge" style="margin-top:10px;">
+        {% if win.is_open_now %}
+          <div class="status-line">
+            <span class="light"></span>
+            الحالة الحالية: مفتوح
+          </div>
+        {% else %}
+          <div class="status-line off">
+            <span class="light"></span>
+            الحالة الحالية: مغلق
+          </div>
+        {% endif %}
+        <span class="ui-pill" style="border-color:rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#fff;">
+          آخر تحديث: <b>{{ win.updated_at|date:"Y-m-d H:i" }}</b>
+        </span>
+      </div>
+    </div>
+
+    <div class="ui-card">
+      <div class="ui-toolbar">
+        <div class="ui-muted">
+          ملاحظة: إذا لم تحدد بداية/نهاية، يعتمد النظام على (تفعيل/تعطيل) فقط.
+        </div>
+        <div class="ui-pill">
+          <span class="ui-dot"></span>
+          إعدادات عامة
+        </div>
+      </div>
+
+      <form method="post" class="panel">
+        {% csrf_token %}
+
+        <div class="switch">
+          <input type="checkbox" name="is_enabled" value="1" {% if win.is_enabled %}checked{% endif %}>
+          <div>
+            <div class="lbl">تفعيل التقديم</div>
+            <div class="hint">
+              عند التعطيل يصبح التقديم مغلقًا حتى لو كانت التواريخ محددة.
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="grid">
+          <div class="field">
+            <div class="lbl">بداية التقديم</div>
+            <input class="ui-input" type="datetime-local" name="opens_at"
+              value="{% if win.opens_at %}{{ win.opens_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+            <div class="hint">اختياري — إذا تركته فارغًا لا يتم منع التقديم قبل موعد معين.</div>
+          </div>
+
+          <div class="field">
+            <div class="lbl">نهاية التقديم</div>
+            <input class="ui-input" type="datetime-local" name="closes_at"
+              value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+            <div class="hint">اختياري — إذا تركته فارغًا لا يتم إغلاق التقديم تلقائيًا بوقت.</div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="field">
+          <div class="lbl">رسالة الإغلاق (تظهر للمتقدم عند محاولة الإرسال)</div>
+          <input class="ui-input" type="text" name="closed_message"
+                 value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
+                 placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان.">
+          <div class="hint">
+            تظهر في صفحة الرغبات عند الإغلاق (وتظهر أيضًا كرسالة خطأ عند محاولة الإرسال).
+          </div>
+        </div>
+
+        <div style="height:14px;"></div>
+
+        <div class="ui-foot" style="padding:10px 0 0; border-top:0; background:transparent;">
+          <div class="ui-muted">
+            {{ win.opens_at|date:"Y-m-d H:i"|default:"" }}
+            {% if win.opens_at or win.closes_at %} | {% endif %}
+            {{ win.closes_at|date:"Y-m-d H:i"|default:"" }}
+          </div>
+
+          <button class="ui-btn ui-btn-primary" type="submit">
+            💾 حفظ الإعدادات
+          </button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

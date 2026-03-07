@@ -8,6 +8,7 @@ urlpatterns = [
     # المتقدم
     # =========================
     path("", views.login_view, name="login"),
+    path("closed/", views.closed_view, name="closed"),  # ✅ صفحة التقديم مغلق
     path("confirm/", views.confirm_view, name="confirm"),
     path("preferences/", views.preferences_view, name="preferences"),
     path("submit/", views.submit_view, name="submit"),
@@ -18,6 +19,25 @@ urlpatterns = [
     # =========================
     path("admin/import/", views.admin_import_view, name="admin_import"),
     path("admin/dashboard/", views.admin_dashboard_view, name="admin_dashboard"),
+
+    # =========================
+    # ✅ (1) ضابط فترة التقديم
+    # =========================
+    path("admin/portal-window/", views.admin_portal_window_view, name="admin_portal_window"),
+
+    # =========================
+    # ✅ (3) تقرير غير المتقدمين + CSV
+    # =========================
+    path("admin/non-applicants/", views.admin_non_applicants_view, name="admin_non_applicants"),
+    path("admin/non-applicants.csv", views.admin_non_applicants_csv_view, name="admin_non_applicants_csv"),
+
+    # =========================
+    # ✅ تقرير ضغط/إقبال المدارس + الترشيحات (Print/CSV/Excel)
+    # =========================
+    path("admin/vacancies/pressure/", views.admin_vacancies_pressure_report_view, name="admin_vacancies_pressure"),
+    path("admin/vacancies/pressure/print/", views.admin_vacancies_pressure_print_view, name="admin_vacancies_pressure_print"),
+    path("admin/vacancies/pressure/csv/", views.admin_vacancies_pressure_csv_view, name="admin_vacancies_pressure_csv"),
+    path("admin/vacancies/pressure/excel/", views.admin_vacancies_pressure_excel_view, name="admin_vacancies_pressure_excel"),
 
     # =========================
     # ✅ إدارة البيانات (المتقدمين + الشواغر/المدارس)
@@ -53,6 +73,9 @@ urlpatterns = [
     path("admin/app/<int:app_id>/approve/", views.admin_decide_approve_view, name="admin_approve"),
     path("admin/app/<int:app_id>/reject/", views.admin_decide_reject_view, name="admin_reject"),
     path("admin/app/<int:app_id>/unlock/", views.admin_decide_unlock_view, name="admin_unlock"),
+
+    # ✅ Undo (تراجع) — يرجع الحالة السابقة (SERVER-SIDE)
+    path("admin/app/<int:app_id>/undo/", views.admin_undo_view, name="admin_undo"),
 
     # =========================
     # ✅ قرار جماعي

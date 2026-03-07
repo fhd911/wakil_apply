@@ -1,0 +1,353 @@
+{% extends "portal/base.html" %}
+{% block title %}تقرير ضغط المدارس{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================================
+     Vacancies Pressure Report — Ministerial Light (Unified)
+  ========================================================= */
+  :root{
+    --min-bg:#f4f7f3;
+    --min-bg-2:#eef3ef;
+
+    --min-surface:#ffffff;
+    --min-surface-2:#fbfcfa;
+
+    --min-ink:#17261f;
+    --min-ink-2:#23382d;
+    --min-muted:#6f8177;
+
+    --min-green-1:#163126;
+    --min-green-2:#234536;
+    --min-green-3:#2f5e4a;
+
+    --min-gold-1:#a98235;
+    --min-gold-2:#c8a04a;
+
+    --min-line:#dbe3db;
+    --min-shadow:0 12px 28px rgba(16,34,27,.07);
+    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+  }
+
+  .ui{
+    position:relative;
+    background:
+      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
+      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
+      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
+    color:var(--min-ink);
+  }
+
+  .ui-top{
+    margin-bottom:12px;
+    padding:14px 18px;
+    border:1px solid rgba(205,216,206,.95);
+    border-radius:20px;
+    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    box-shadow:var(--min-shadow-strong);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .ui-top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+  }
+
+  .ui-title{
+    font-size:20px !important;
+    font-weight:800 !important;
+    letter-spacing:-.2px;
+    color:#fff !important;
+    margin:0;
+  }
+
+  .ui-subtitle{
+    margin-top:4px;
+    color:rgba(255,255,255,.82) !important;
+    font-size:10.8px !important;
+    line-height:1.6 !important;
+  }
+
+  .ui-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:10px;
+  }
+
+  .ui-card{
+    border:1px solid rgba(211,221,212,.95) !important;
+    border-radius:22px !important;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
+    box-shadow:var(--min-shadow) !important;
+    overflow:hidden;
+  }
+
+  .ui-toolbar{
+    padding:8px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .ui-toolbar-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+    align-items:center;
+  }
+
+  .ui-toolbar-left,
+  .ui-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .ui-pill{
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:900;
+    color:var(--min-green-2);
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .ui-btn{
+    min-height:30px;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:900;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:var(--min-green-2);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    justify-content:center;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+  .ui-btn:hover{ transform:translateY(-1px); }
+
+  .ui-btn-primary{
+    color:#fff !important;
+    border-color:var(--min-green-2) !important;
+    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-input,
+  .ui-select{
+    min-height:38px;
+    height:38px;
+    padding:8px 12px;
+    font-size:10.5px;
+    border-radius:14px;
+    border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-ink);
+    outline:none;
+  }
+
+  .tbl-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid rgba(219,227,219,.92);
+  }
+
+  table.tbl{
+    width:100%;
+    min-width:1280px;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:fixed;
+  }
+
+  table.tbl thead th{
+    position:sticky;
+    top:0;
+    z-index:4;
+    background:#eef3ee !important;
+    color:var(--min-green-2);
+    font-size:10.1px;
+    font-weight:900;
+    padding:10px 8px;
+    border-bottom:1px solid #d7e0d7 !important;
+    white-space:nowrap;
+  }
+
+  table.tbl tbody td{
+    padding:8px 8px;
+    font-size:10.4px;
+    vertical-align:middle;
+    border-bottom:1px solid #e7ede7 !important;
+    background:#ffffff;
+    color:var(--min-ink-2);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  table.tbl tbody tr:nth-child(even) td{ background:#fbfcfa; }
+  table.tbl tbody tr:hover td{ background:#f8faf7; }
+
+  .mut{ color:var(--min-muted); }
+
+  .kpis{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+  .kpis .pill{
+    border:1px solid rgba(255,255,255,.22);
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:10px;
+    font-weight:900;
+    display:inline-flex;
+    gap:6px;
+    align-items:center;
+  }
+
+  @media (max-width: 900px){
+    .ui-toolbar-row{ grid-template-columns:1fr; }
+    table.tbl{ min-width:1200px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ui">
+  <div class="ui-page">
+
+    <div class="ui-top">
+      <h1 class="ui-title">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
+      <div class="ui-subtitle">
+        يعرض عدد الراغبين على كل مدرسة (إجمالي + رغبة أولى) وعدد الترشيحات النهائية.
+      </div>
+
+      <div class="kpis">
+        <span class="pill">المدارس: <b>{{ total_schools }}</b></span>
+        <span class="pill">إجمالي الراغبين: <b>{{ sum_total }}</b></span>
+        <span class="pill">إجمالي رغبة أولى: <b>{{ sum_rank1 }}</b></span>
+        <span class="pill">إجمالي الترشيحات: <b>{{ sum_achieved }}</b></span>
+      </div>
+
+      <div class="ui-actions">
+        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
+        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
+
+        <!-- ✅ زر الطباعة (المطلوب) -->
+        <a class="ui-btn ui-btn-primary"
+           href="{% url 'portal:admin_vacancies_pressure_print' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+          🖨️ طباعة
+        </a>
+
+        <a class="ui-btn"
+           href="{% url 'portal:admin_vacancies_pressure_csv' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+          ⬇ CSV
+        </a>
+
+        <a class="ui-btn"
+           href="{% url 'portal:admin_vacancies_pressure_excel' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+          ⬇ Excel
+        </a>
+      </div>
+    </div>
+
+    <div class="ui-card">
+      <div class="ui-toolbar">
+        <form method="get" class="ui-toolbar-row">
+          <div class="ui-toolbar-left">
+            <input class="ui-input" name="q" value="{{ f.q }}" placeholder="بحث: مدرسة / رقم الوزارة / القطاع / المدير"
+                   style="width:min(360px,100%)">
+
+            <input class="ui-input" name="sector" value="{{ f.sector }}" placeholder="فلتر قطاع" style="width:170px">
+            <input class="ui-input" name="gender" value="{{ f.gender }}" placeholder="فلتر جنس" style="width:140px">
+
+            <select class="ui-select" name="open" style="width:150px">
+              <option value="" {% if not f.open %}selected{% endif %}>الكل</option>
+              <option value="open" {% if f.open == "open" %}selected{% endif %}>مفتوح</option>
+              <option value="closed" {% if f.open == "closed" %}selected{% endif %}>مغلق</option>
+            </select>
+
+            <select class="ui-select" name="sort" style="width:170px">
+              <option value="rank1" {% if f.sort == "rank1" %}selected{% endif %}>فرز: رغبة أولى</option>
+              <option value="total" {% if f.sort == "total" %}selected{% endif %}>فرز: إجمالي الراغبين</option>
+              <option value="achieved" {% if f.sort == "achieved" %}selected{% endif %}>فرز: الترشيحات</option>
+              <option value="need" {% if f.sort == "need" %}selected{% endif %}>فرز: الاحتياج</option>
+            </select>
+
+            <input class="ui-input" name="top" value="{{ f.top }}" placeholder="TOP (0=الكل)" style="width:140px">
+          </div>
+
+          <div class="ui-toolbar-right">
+            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
+            <a class="ui-btn" href="{% url 'portal:admin_vacancies_pressure' %}">مسح</a>
+            <span class="ui-pill">النتائج: <b>{{ rows|length }}</b></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:60px">#</th>
+              <th style="width:340px">المدرسة</th>
+              <th style="width:130px">رقم الوزارة</th>
+              <th style="width:190px">القطاع</th>
+              <th style="width:90px">الجنس</th>
+              <th style="width:120px">المرحلة</th>
+              <th style="width:95px">الاحتياج</th>
+              <th style="width:110px">الراغبون</th>
+              <th style="width:110px">رغبة أولى</th>
+              <th style="width:130px">ترشيحات نهائية</th>
+              <th style="width:90px">الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in rows %}
+              <tr>
+                <td class="mut">{{ forloop.counter }}</td>
+                <td title="{{ v.school_name }}">{{ v.school_name }}</td>
+                <td class="mut">{{ v.ministry_no|default:"—" }}</td>
+                <td class="mut">{{ v.sector|default:"—" }}</td>
+                <td class="mut">{{ v.gender|default:"—" }}</td>
+                <td class="mut">{{ v.stage|default:"—" }}</td>
+                <td>{{ v.deputy_need|default:"0" }}</td>
+                <td>{{ v.interested_total|default:0 }}</td>
+                <td>{{ v.interested_rank1|default:0 }}</td>
+                <td>{{ v.achieved_total|default:0 }}</td>
+                <td>{% if v.is_open %}مفتوح{% else %}مغلق{% endif %}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="11" class="mut" style="padding:14px;">لا توجد بيانات.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

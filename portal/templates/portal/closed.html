@@ -1,0 +1,18 @@
+{% extends "portal/base.html" %}
+{% block title %}التقديم مغلق{% endblock %}
+
+{% block content %}
+<div style="max-width:960px; margin:28px auto; padding:18px;">
+  <div style="background:#fff; border:1px solid #dbe3db; border-radius:18px; padding:18px;">
+    <h2 style="margin:0 0 8px; color:#163126; font-weight:900;">التقديم مغلق حالياً</h2>
+    <p style="margin:0; color:#6f8177; line-height:1.9; font-size:14px;">
+      {{ msg|default:"نحيطكم علمًا بأن فترة التقديم مغلقة حالياً." }}
+    </p>
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="{% url 'portal:login' %}" style="display:inline-block; padding:9px 14px; border-radius:999px; border:1px solid #cdd8ce; text-decoration:none; color:#234536; font-weight:800;">
+        رجوع لصفحة الدخول
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

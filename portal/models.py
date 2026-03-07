@@ -18,6 +18,48 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+# =========================
+# Portal Window (Open/Close)
+# =========================
+class PortalWindow(TimeStampedModel):
+    """
+    ضابط عام لفتح/إغلاق التقديم:
+    - إغلاق/فتح يدوي (is_enabled)
+    - أو نافذة زمنية opens_at / closes_at
+    - رسالة إغلاق موحدة
+    """
+    is_enabled = models.BooleanField(default=True)
+
+    opens_at = models.DateTimeField(null=True, blank=True)
+    closes_at = models.DateTimeField(null=True, blank=True)
+
+    closed_message = models.CharField(
+        max_length=255,
+        blank=True,
+        default="التقديم مغلق حالياً.",
+    )
+
+    def is_open_now(self) -> bool:
+        if not self.is_enabled:
+            return False
+        now = timezone.now()
+        if self.opens_at and now < self.opens_at:
+            return False
+        if self.closes_at and now > self.closes_at:
+            return False
+        return True
+
+    @classmethod
+    def get(cls) -> "PortalWindow":
+        obj = cls.objects.order_by("-id").first()
+        if not obj:
+            obj = cls.objects.create(is_enabled=True)
+        return obj
+
+    def __str__(self) -> str:
+        return "Portal Window"
+
+
 class ImportBatch(TimeStampedModel):
     kind = models.CharField(
         max_length=20,

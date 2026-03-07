@@ -5,7 +5,8 @@
 <style>
   /* =========================================================
      Vacancies List — Unified Ministerial Light Style
-     موحّد مع لوحة القرار + إدارة المتقدمين + نموذج المتقدم
+     ✅ تحديث:
+     - إضافة أعمدة الإقبال: (إجمالي الراغبين / رغبة أولى / ترشيحات نهائية)
   ========================================================= */
 
   :root{
@@ -288,7 +289,7 @@
 
   .vac-list-table{
     width:100%;
-    min-width:1240px;
+    min-width:1460px; /* ✅ زادت بسبب أعمدة الإقبال */
     border-collapse:separate;
     border-spacing:0;
     table-layout:fixed;
@@ -381,6 +382,36 @@
     justify-content:center;
   }
 
+  /* ✅ Chips counts */
+  .cnt{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:48px;
+    height:28px;
+    padding:0 10px;
+    border-radius:999px;
+    font-weight:900;
+    font-size:10px;
+    letter-spacing:-.1px;
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--min-green-2);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .cnt-strong{
+    border-color:rgba(200,160,74,.30);
+    background:linear-gradient(180deg,#fffdf6,#fbf6e8);
+    color:#7a5b14;
+  }
+
+  .cnt-ok{
+    border-color:var(--min-ok-line);
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+    color:var(--min-ok);
+  }
+
   /* =========================
      Responsive
   ========================= */
@@ -396,7 +427,7 @@
     }
 
     .vac-list-table{
-      min-width:1120px;
+      min-width:1360px;
     }
 
     .vac-col-actions{
@@ -514,6 +545,12 @@
               <th style="width:90px">الجنس</th>
               <th style="width:120px">المرحلة</th>
               <th style="width:95px">الاحتياج</th>
+
+              <!-- ✅ أعمدة الإقبال -->
+              <th style="width:110px">الراغبون</th>
+              <th style="width:110px">رغبة أولى</th>
+              <th style="width:120px">ترشيحات نهائية</th>
+
               <th style="width:100px">الحالة</th>
               <th class="vac-col-actions">إجراءات</th>
             </tr>
@@ -553,6 +590,23 @@
                 <span class="ui-pill">{{ v.deputy_need|default:"0" }}</span>
               </td>
 
+              <!-- ✅ counts -->
+              <td>
+                <span class="cnt">{{ v.interested_total|default:0 }}</span>
+              </td>
+
+              <td>
+                <span class="cnt cnt-strong">{{ v.interested_rank1|default:0 }}</span>
+              </td>
+
+              <td>
+                {% if v.achieved_total|default:0|add:0 > 0 %}
+                  <span class="cnt cnt-ok">{{ v.achieved_total }}</span>
+                {% else %}
+                  <span class="cnt">{{ v.achieved_total|default:0 }}</span>
+                {% endif %}
+              </td>
+
               <td>
                 {% if v.is_open %}
                   <span class="ui-pill ui-pill-ok">مفتوح</span>
@@ -589,7 +643,7 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="8" style="padding:16px; color:var(--min-muted); background:#fff;">
+              <td colspan="11" style="padding:16px; color:var(--min-muted); background:#fff;">
                 لا توجد بيانات.
               </td>
             </tr>

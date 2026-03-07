@@ -19,12 +19,13 @@ from django.db.models import (
     CharField,
     Case,
     When,
+    IntegerField,
 )
 from django.db.models.functions import Coalesce, Concat
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods, require_POST
+from django.views.decorators.http import require_http_methods, require_POST, require_GET
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
@@ -32,7 +33,13 @@ from openpyxl.utils import get_column_letter
 
 from .forms import ImportExcelForm
 from .forms_admin import ApplicantAdminForm, VacancyAdminForm
-from .models import Applicant, SchoolVacancy, Application, ApplicationPreference
+from .models import (
+    Applicant,
+    SchoolVacancy,
+    Application,
+    ApplicationPreference,
+    PortalWindow,
+)
 from .services_import import import_applicants_xlsx, import_schools_xlsx
 
 
@@ -47,6 +54,14 @@ def _get_applicant(request):
     if not nid:
         return None
     return Applicant.objects.filter(national_id=nid, is_active=True).first()
+
+
+def _portal_gate():
+    """Return (open_now, msg, win)."""
+    win = PortalWindow.get()
+    open_now = win.is_open_now()
+    msg = (win.closed_message or "التقديم مغلق حالياً.").strip()
+    return open_now, msg, win
 
 
 def _eligible_schools_for(applicant: Applicant):
@@ -133,7 +148,7 @@ def _apply_admin_filters(qs, status: str, sector: str, gender: str):
 
 
 # =========================================================
-# Report Helpers
+# Report Helpers (Nominations)
 # =========================================================
 def _nominations_filters_from_request(request):
     q = (request.GET.get("q") or "").strip()
@@ -193,11 +208,27 @@ def _nominations_qs(request):
 
 
 # =========================================================
+# Portal: Closed Page
+# =========================================================
+@require_GET
+def closed_view(request):
+    open_now, msg, _win = _portal_gate()
+    if open_now:
+        return redirect("portal:login")
+    return render(request, "portal/closed.html", {"msg": msg})
+
+
+# =========================================================
 # Applicant Portal
 # =========================================================
 @require_http_methods(["GET", "POST"])
 def login_view(request):
+    # ✅ GET يعرض صفحة الدخول (حتى لو مغلق)
     if request.method == "POST":
+        open_now, _msg, _win = _portal_gate()
+        if not open_now:
+            return redirect("portal:closed")
+
         nid = (request.POST.get("national_id") or "").strip().replace(" ", "")
 
         if not nid:
@@ -221,6 +252,11 @@ def login_view(request):
 
 
 def confirm_view(request):
+    # ✅ redirect أنظف إذا مغلق
+    open_now, _msg, _win = _portal_gate()
+    if not open_now:
+        return redirect("portal:closed")
+
     a = _get_applicant(request)
     if not a:
         return redirect("portal:login")
@@ -262,6 +298,11 @@ def confirm_view(request):
 
 
 def preferences_view(request):
+    # ✅ redirect أنظف إذا مغلق
+    open_now, _msg, _win = _portal_gate()
+    if not open_now:
+        return redirect("portal:closed")
+
     a = _get_applicant(request)
     if not a:
         return redirect("portal:login")
@@ -272,7 +313,7 @@ def preferences_view(request):
         return redirect("portal:done")
 
     schools = _eligible_schools_for(a)
-    return render(request, "portal/preferences.html", {"a": a, "app": app, "schools": schools})
+    return render(request, "portal/preferences.html", {"a": a, "app": app, "schools": schools, "closed_msg": ""})
 
 
 @transaction.atomic
@@ -283,6 +324,12 @@ def submit_view(request):
         return redirect("portal:login")
 
     app = get_object_or_404(Application, applicant=a)
+
+    # ✅ حارس نهائي: redirect إلى closed + message
+    open_now, msg, _win = _portal_gate()
+    if not open_now:
+        messages.error(request, msg)
+        return redirect("portal:closed")
 
     ids = request.POST.getlist("vacancy_ids")
     fallback = (request.POST.get("fallback_choice") or "").strip()
@@ -336,6 +383,42 @@ def done_view(request):
 
 
 # =========================================================
+# Admin: Portal Window (Open/Close)
+# =========================================================
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def admin_portal_window_view(request):
+    win = PortalWindow.get()
+
+    if request.method == "POST":
+        win.is_enabled = (request.POST.get("is_enabled") == "1")
+
+        opens_at = (request.POST.get("opens_at") or "").strip()
+        closes_at = (request.POST.get("closes_at") or "").strip()
+        msg = (request.POST.get("closed_message") or "").strip()
+        win.closed_message = msg or "التقديم مغلق حالياً."
+
+        def parse_dt(v: str):
+            if not v:
+                return None
+            try:
+                naive = datetime.strptime(v, "%Y-%m-%dT%H:%M")
+            except Exception:
+                return None
+            tz = timezone.get_current_timezone()
+            return timezone.make_aware(naive, tz)
+
+        win.opens_at = parse_dt(opens_at)
+        win.closes_at = parse_dt(closes_at)
+        win.save()
+
+        messages.success(request, "تم حفظ إعدادات فترة التقديم.")
+        return redirect("portal:admin_portal_window")
+
+    return render(request, "portal/admin_portal_window.html", {"win": win})
+
+
+# =========================================================
 # Admin: Manage Applicants
 # =========================================================
 @staff_member_required
@@ -375,7 +458,6 @@ def admin_applicants_create(request):
         form.save()
         messages.success(request, "تم إضافة المتقدم.")
         return redirect("portal:admin_applicants_list")
-
     return render(request, "portal/admin_applicants_form.html", {"form": form, "mode": "create"})
 
 
@@ -426,7 +508,7 @@ def admin_applicants_delete(request, pk: int):
 
 
 # =========================================================
-# Admin: Manage Vacancies
+# Admin: Manage Vacancies + Counts
 # =========================================================
 @staff_member_required
 def admin_vacancies_list(request):
@@ -435,7 +517,25 @@ def admin_vacancies_list(request):
     gender = (request.GET.get("gender") or "").strip()
     sector = (request.GET.get("sector") or "").strip()
 
-    qs = SchoolVacancy.objects.all().order_by("-id")
+    achieved_sq = (
+        Application.objects
+        .filter(achieved_pref__vacancy_id=OuterRef("pk"))
+        .values("achieved_pref__vacancy_id")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
+    qs = (
+        SchoolVacancy.objects
+        .all()
+        .annotate(
+            # ✅ reverse الصحيح عندك حسب الخطأ: applicationpreference
+            interested_total=Count("applicationpreference", distinct=True),
+            interested_rank1=Count("applicationpreference", filter=Q(applicationpreference__rank=1), distinct=True),
+            achieved_total=Coalesce(Subquery(achieved_sq, output_field=IntegerField()), Value(0)),
+        )
+        .order_by("-id")
+    )
 
     if open_state == "open":
         qs = qs.filter(is_open=True)
@@ -462,14 +562,7 @@ def admin_vacancies_list(request):
     return render(
         request,
         "portal/admin_vacancies_list.html",
-        {
-            "rows": page_obj,
-            "q": q,
-            "open": open_state,
-            "gender": gender,
-            "sector": sector,
-            "total": qs.count(),
-        },
+        {"rows": page_obj, "q": q, "open": open_state, "gender": gender, "sector": sector, "total": qs.count()},
     )
 
 
@@ -480,7 +573,6 @@ def admin_vacancies_create(request):
         form.save()
         messages.success(request, "تم إضافة الشاغر/المدرسة.")
         return redirect("portal:admin_vacancies_list")
-
     return render(request, "portal/admin_vacancies_form.html", {"form": form, "mode": "create"})
 
 
@@ -523,6 +615,197 @@ def admin_vacancies_delete(request, pk: int):
     obj.delete()
     messages.success(request, "تم حذف الشاغر نهائيًا.")
     return redirect("portal:admin_vacancies_list")
+
+
+# =========================================================
+# Admin: Vacancies Pressure Report (Report + Print + CSV + Excel)
+# =========================================================
+def _vacancies_pressure_ctx(request):
+    q = (request.GET.get("q") or "").strip()
+    gender = (request.GET.get("gender") or "").strip()
+    sector = (request.GET.get("sector") or "").strip()
+    open_state = (request.GET.get("open") or "").strip()  # open/closed/all
+    sort = (request.GET.get("sort") or "rank1").strip()   # total / rank1 / achieved / need
+    top_raw = (request.GET.get("top") or "0").strip()
+    try:
+        top = int(top_raw) if top_raw else 0
+    except Exception:
+        top = 0
+
+    achieved_sq = (
+        Application.objects
+        .filter(achieved_pref__vacancy_id=OuterRef("pk"))
+        .values("achieved_pref__vacancy_id")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
+    qs = (
+        SchoolVacancy.objects
+        .all()
+        .annotate(
+            interested_total=Count("applicationpreference", distinct=True),
+            interested_rank1=Count("applicationpreference", filter=Q(applicationpreference__rank=1), distinct=True),
+            achieved_total=Coalesce(Subquery(achieved_sq, output_field=IntegerField()), Value(0)),
+        )
+    )
+
+    if open_state == "open":
+        qs = qs.filter(is_open=True)
+    elif open_state == "closed":
+        qs = qs.filter(is_open=False)
+
+    if gender:
+        qs = qs.filter(gender__icontains=gender)
+    if sector:
+        qs = qs.filter(sector__icontains=sector)
+    if q:
+        qs = qs.filter(
+            Q(school_name__icontains=q)
+            | Q(ministry_no__icontains=q)
+            | Q(sector__icontains=q)
+            | Q(manager_name__icontains=q)
+        )
+
+    if sort == "total":
+        qs = qs.order_by("-interested_total", "-interested_rank1", "-achieved_total", "school_name")
+    elif sort == "achieved":
+        qs = qs.order_by("-achieved_total", "-interested_rank1", "-interested_total", "school_name")
+    elif sort == "need":
+        qs = qs.order_by("-deputy_need", "-interested_rank1", "-interested_total", "school_name")
+    else:  # rank1
+        qs = qs.order_by("-interested_rank1", "-interested_total", "-achieved_total", "school_name")
+
+    rows = list(qs[:top] if top and top > 0 else qs[:5000])
+
+    total_schools = qs.count()
+    sum_total = sum(int(getattr(x, "interested_total", 0) or 0) for x in rows)
+    sum_rank1 = sum(int(getattr(x, "interested_rank1", 0) or 0) for x in rows)
+    sum_achieved = sum(int(getattr(x, "achieved_total", 0) or 0) for x in rows)
+
+    return {
+        "rows": rows,
+        "total_schools": total_schools,
+        "sum_total": sum_total,
+        "sum_rank1": sum_rank1,
+        "sum_achieved": sum_achieved,
+        "now": timezone.localtime(),
+        "f": {"q": q, "sector": sector, "gender": gender, "open": open_state, "sort": sort, "top": top},
+    }
+
+
+@staff_member_required
+def admin_vacancies_pressure_report_view(request):
+    return render(request, "portal/admin_vacancies_pressure_report.html", _vacancies_pressure_ctx(request))
+
+
+@staff_member_required
+def admin_vacancies_pressure_print_view(request):
+    return render(request, "portal/admin_vacancies_pressure_print.html", _vacancies_pressure_ctx(request))
+
+
+@staff_member_required
+def admin_vacancies_pressure_csv_view(request):
+    ctx = _vacancies_pressure_ctx(request)
+    rows = ctx["rows"]
+
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    resp["Content-Disposition"] = 'attachment; filename="vacancies_pressure.csv"'
+    resp.write("\ufeff")
+
+    w = csv.writer(resp)
+    w.writerow([
+        "#",
+        "المدرسة",
+        "رقم الوزارة",
+        "القطاع",
+        "الجنس",
+        "المرحلة",
+        "الاحتياج",
+        "الراغبون",
+        "رغبة أولى",
+        "ترشيحات نهائية",
+        "الحالة",
+    ])
+
+    for i, v in enumerate(rows, start=1):
+        w.writerow([
+            i,
+            v.school_name,
+            v.ministry_no,
+            v.sector,
+            v.gender,
+            v.stage,
+            v.deputy_need,
+            getattr(v, "interested_total", 0) or 0,
+            getattr(v, "interested_rank1", 0) or 0,
+            getattr(v, "achieved_total", 0) or 0,
+            "مفتوح" if v.is_open else "مغلق",
+        ])
+
+    return resp
+
+
+@staff_member_required
+def admin_vacancies_pressure_excel_view(request):
+    ctx = _vacancies_pressure_ctx(request)
+    rows = ctx["rows"]
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Pressure"
+
+    headers = [
+        "#",
+        "المدرسة",
+        "رقم الوزارة",
+        "القطاع",
+        "الجنس",
+        "المرحلة",
+        "الاحتياج",
+        "الراغبون",
+        "رغبة أولى",
+        "ترشيحات نهائية",
+        "الحالة",
+    ]
+    ws.append(headers)
+
+    header_font = Font(bold=True)
+    for col in range(1, len(headers) + 1):
+        c = ws.cell(row=1, column=col)
+        c.font = header_font
+        c.alignment = Alignment(horizontal="center", vertical="center")
+
+    for i, v in enumerate(rows, start=1):
+        ws.append([
+            i,
+            v.school_name,
+            v.ministry_no,
+            v.sector,
+            v.gender,
+            v.stage,
+            v.deputy_need,
+            getattr(v, "interested_total", 0) or 0,
+            getattr(v, "interested_rank1", 0) or 0,
+            getattr(v, "achieved_total", 0) or 0,
+            "مفتوح" if v.is_open else "مغلق",
+        ])
+
+    widths = [5, 42, 14, 20, 10, 14, 10, 12, 12, 14, 10]
+    for idx, width in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(idx)].width = width
+
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+
+    filename = f"vacancies_pressure_{timezone.now().strftime('%Y%m%d_%H%M')}.xlsx"
+    resp = HttpResponse(
+        bio.getvalue(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return resp
 
 
 # =========================================================
@@ -663,10 +946,7 @@ def admin_application_print_view(request, app_id: int):
     return render(
         request,
         "portal/admin_application_print.html",
-        {
-            "application": application,
-            "selected_pref": selected_pref,
-        },
+        {"application": application, "selected_pref": selected_pref},
     )
 
 
@@ -709,10 +989,7 @@ def admin_application_detail_json_view(request, app_id: int):
             "sector": app.applicant.sector,
             "gender": app.applicant.gender,
         },
-        "prefs": [
-            {"id": p.id, "rank": p.rank, "label": f"{p.vacancy.school_name} — {p.vacancy.stage}"}
-            for p in prefs
-        ],
+        "prefs": [{"id": p.id, "rank": p.rank, "label": f"{p.vacancy.school_name} — {p.vacancy.stage}"} for p in prefs],
     }
     return JsonResponse(data, json_dumps_params={"ensure_ascii": False})
 
@@ -779,6 +1056,27 @@ def admin_decide_unlock_view(request, app_id: int):
 
 
 # =========================================================
+# Admin: Undo Last Decision (SERVER SIDE)
+# =========================================================
+@staff_member_required
+@require_POST
+def admin_undo_view(request, app_id: int):
+    """
+    Undo سريع:
+    - يرجع status + locked للحالة السابقة
+    - يرجع admin_decision/admin_note/admin_decided_* للوضع السابق إن أُرسل
+      وإلا: يرجعها للوضع "pending" (فارغ)
+    - يعيد achieved_pref إذا أُرسل achieved_pref_id وكان تابعًا لنفس الطلب
+      (اختياري)
+    """
+    if not _is_ajax(request):
+     return JsonResponse(
+        {"ok": False, "error": "AJAX فقط."},
+        status=400,
+        json_dumps_params={"ensure_ascii": False},
+    )
+
+# =========================================================
 # Admin: Bulk Decision
 # =========================================================
 @staff_member_required
@@ -829,7 +1127,7 @@ def admin_decide_bulk_view(request):
 
 
 # =========================================================
-# Admin: Reports
+# Admin: Reports (Print + CSV Visible)
 # =========================================================
 @staff_member_required
 def admin_report_print_view(request):
@@ -951,7 +1249,7 @@ def admin_set_achieved_view(request, app_id: int):
 
 
 # =========================================================
-# Admin: Nominations Report
+# Admin: Nominations Report + Print + CSV + Excel
 # =========================================================
 @staff_member_required
 def admin_nominations_report_view(request):
@@ -1122,7 +1420,7 @@ def admin_nominations_excel_view(request):
 
 
 # =========================================================
-# Admin: Export Excel
+# Admin: Export Excel (Applications)
 # =========================================================
 @staff_member_required
 def admin_export_excel_view(request):
@@ -1230,12 +1528,7 @@ def admin_import_view(request):
                     out.write(chunk)
 
             batch, res = import_applicants_xlsx(path)
-            result["applicants"] = {
-                "batch": batch.id,
-                "created": res.created,
-                "updated": res.updated,
-                "skipped": res.skipped,
-            }
+            result["applicants"] = {"batch": batch.id, "created": res.created, "updated": res.updated, "skipped": res.skipped}
             messages.success(request, f"تم استيراد المتقدمين بنجاح (Batch #{batch.id})")
 
         if schools_file:
@@ -1245,12 +1538,91 @@ def admin_import_view(request):
                     out.write(chunk)
 
             batch, res = import_schools_xlsx(path)
-            result["schools"] = {
-                "batch": batch.id,
-                "created": res.created,
-                "updated": res.updated,
-                "skipped": res.skipped,
-            }
+            result["schools"] = {"batch": batch.id, "created": res.created, "updated": res.updated, "skipped": res.skipped}
             messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{batch.id})")
 
     return render(request, "portal/admin_import.html", {"form": form, "result": result})
+
+
+# =========================================================
+# Admin: Non Applicants (who didn't apply)
+# =========================================================
+@staff_member_required
+def admin_non_applicants_view(request):
+    q = (request.GET.get("q") or "").strip()
+    mode = (request.GET.get("mode") or "not_submitted").strip()  # none / not_submitted / started
+
+    qs = Applicant.objects.filter(is_active=True)
+
+    if q:
+        qs = qs.filter(
+            Q(full_name__icontains=q)
+            | Q(national_id__icontains=q)
+            | Q(sector__icontains=q)
+            | Q(mobile__icontains=q)
+            | Q(current_school__icontains=q)
+        )
+
+    if mode == "none":
+        qs = qs.filter(application__isnull=True)
+    elif mode == "started":
+        qs = qs.filter(application__confirmed_at__isnull=False).exclude(application__status="submitted")
+    else:
+        qs = qs.filter(Q(application__isnull=True) | ~Q(application__status="submitted"))
+
+    qs = qs.order_by("-id")
+    page_obj = _paginate(request, qs, per_page=50)
+
+    total_active = Applicant.objects.filter(is_active=True).count()
+    total_submitted = Applicant.objects.filter(is_active=True, application__status="submitted").count()
+    total_not_submitted = Applicant.objects.filter(is_active=True).filter(
+        Q(application__isnull=True) | ~Q(application__status="submitted")
+    ).count()
+
+    ctx = {
+        "rows": page_obj,
+        "q": q,
+        "mode": mode,
+        "total": qs.count(),
+        "kpi": {"active": total_active, "submitted": total_submitted, "not_submitted": total_not_submitted},
+    }
+    return render(request, "portal/admin_non_applicants.html", ctx)
+
+
+@staff_member_required
+def admin_non_applicants_csv_view(request):
+    q = (request.GET.get("q") or "").strip()
+    mode = (request.GET.get("mode") or "not_submitted").strip()
+
+    qs = Applicant.objects.filter(is_active=True)
+
+    if q:
+        qs = qs.filter(
+            Q(full_name__icontains=q)
+            | Q(national_id__icontains=q)
+            | Q(sector__icontains=q)
+            | Q(mobile__icontains=q)
+            | Q(current_school__icontains=q)
+        )
+
+    if mode == "none":
+        qs = qs.filter(application__isnull=True)
+    elif mode == "started":
+        qs = qs.filter(application__confirmed_at__isnull=False).exclude(application__status="submitted")
+    else:
+        qs = qs.filter(Q(application__isnull=True) | ~Q(application__status="submitted"))
+
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    resp["Content-Disposition"] = 'attachment; filename="non_applicants.csv"'
+    resp.write("\ufeff")
+
+    w = csv.writer(resp)
+    w.writerow(["#", "الاسم", "السجل", "الجوال", "القطاع", "الجنس", "المدرسة الحالية", "لديه طلب؟", "حالة الطلب"])
+
+    for i, a in enumerate(qs.order_by("-id"), start=1):
+        app = Application.objects.filter(applicant=a).order_by("-id").first()
+        has_app = "نعم" if app else "لا"
+        status = getattr(app, "status", "") if app else ""
+        w.writerow([i, a.full_name, a.national_id, a.mobile, a.sector, a.gender, a.current_school, has_app, status])
+
+    return resp

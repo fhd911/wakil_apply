@@ -1,0 +1,167 @@
+{% extends "portal/base.html" %}
+{% block title %}طباعة تقرير ضغط المدارس{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media print{
+    .no-print{ display:none !important; }
+    body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  :root{
+    --ink:#17261f;
+    --mut:#6f8177;
+    --line:#dbe3db;
+    --head:#eef3ee;
+  }
+
+  .wrap{
+    max-width: 1100px;
+    margin: 18px auto;
+    padding: 0 12px 24px;
+  }
+
+  .head{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 14px;
+    background:#fff;
+    margin-bottom:10px;
+  }
+
+  .t1{
+    margin:0;
+    font-size:16px;
+    font-weight:900;
+    color:var(--ink);
+  }
+
+  .t2{
+    margin:6px 0 0;
+    font-size:11px;
+    color:var(--mut);
+    line-height:1.7;
+  }
+
+  .kpi{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+
+  .pill{
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:11px;
+    font-weight:900;
+    color:var(--ink);
+    background:#fff;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border:1px solid var(--line);
+  }
+
+  th, td{
+    border-bottom:1px solid var(--line);
+    padding:8px 8px;
+    font-size:11px;
+    vertical-align:middle;
+    color:var(--ink);
+  }
+
+  th{
+    background:var(--head);
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  td.mut{ color:var(--mut); }
+
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+
+  .btn{
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 11px;
+    font-size:11px;
+    font-weight:900;
+    text-decoration:none;
+    color:var(--ink);
+    background:#fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="head">
+    <h1 class="t1">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
+    <div class="t2">
+      تاريخ الإصدار: <b>{{ now|date:"Y-m-d H:i" }}</b>
+      {% if f.sector %} — القطاع: <b>{{ f.sector }}</b>{% endif %}
+      {% if f.gender %} — الجنس: <b>{{ f.gender }}</b>{% endif %}
+      {% if f.open %} — الحالة: <b>{{ f.open }}</b>{% endif %}
+    </div>
+
+    <div class="kpi">
+      <span class="pill">عدد المدارس: {{ total_schools }}</span>
+      <span class="pill">إجمالي الراغبين: {{ sum_total }}</span>
+      <span class="pill">إجمالي رغبة أولى: {{ sum_rank1 }}</span>
+      <span class="pill">إجمالي الترشيحات النهائية: {{ sum_achieved }}</span>
+    </div>
+
+    <div class="actions no-print">
+      <a class="btn" href="{% url 'portal:admin_vacancies_pressure' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">رجوع للتقرير</a>
+      <a class="btn" href="#" onclick="window.print();return false;">🖨️ طباعة</a>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:50px">#</th>
+        <th>المدرسة</th>
+        <th style="width:120px">رقم الوزارة</th>
+        <th style="width:170px">القطاع</th>
+        <th style="width:80px">الجنس</th>
+        <th style="width:120px">المرحلة</th>
+        <th style="width:85px">الاحتياج</th>
+        <th style="width:95px">الراغبون</th>
+        <th style="width:95px">رغبة أولى</th>
+        <th style="width:110px">ترشيحات</th>
+        <th style="width:85px">الحالة</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in rows %}
+        <tr>
+          <td class="mut">{{ forloop.counter }}</td>
+          <td>{{ v.school_name }}</td>
+          <td class="mut">{{ v.ministry_no|default:"—" }}</td>
+          <td class="mut">{{ v.sector|default:"—" }}</td>
+          <td class="mut">{{ v.gender|default:"—" }}</td>
+          <td class="mut">{{ v.stage|default:"—" }}</td>
+          <td>{{ v.deputy_need|default:"0" }}</td>
+          <td>{{ v.interested_total|default:0 }}</td>
+          <td>{{ v.interested_rank1|default:0 }}</td>
+          <td>{{ v.achieved_total|default:0 }}</td>
+          <td>{% if v.is_open %}مفتوح{% else %}مغلق{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="11" class="mut">لا توجد بيانات.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
