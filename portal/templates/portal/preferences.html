@@ -5,7 +5,9 @@
 <style>
   /* =========================================================
      Preferences — Unified Ministerial Light Style
-     + Unified Custom Modal
+     + Select Only What You Want
+     + Remove with X
+     + No Vacancies Option
      + Portal Countdown
   ========================================================= */
 
@@ -75,9 +77,9 @@
   .prx .sub{
     margin:5px 0 0;
     color:rgba(255,255,255,.82);
-    line-height:1.75;
+    line-height:1.85;
     font-size:10.6px;
-    max-width:64ch;
+    max-width:72ch;
   }
 
   .prx .sub b{
@@ -111,9 +113,14 @@
   .prx .grid{
     padding:12px;
     display:grid;
-    grid-template-columns:1.55fr .95fr;
+    grid-template-columns:1.45fr .95fr;
     gap:12px;
     align-items:start;
+  }
+
+  .prx .stack{
+    display:grid;
+    gap:12px;
   }
 
   .prx .card{
@@ -245,6 +252,12 @@
     color:var(--min-green-2);
   }
 
+  .prx .btn.ghost{
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    color:#7f1d1d;
+    border-color:rgba(248,113,113,.22);
+  }
+
   .prx .btn:active{
     transform:translateY(1px);
   }
@@ -283,6 +296,11 @@
 
   .prx .item.is-locked{
     opacity:.78;
+  }
+
+  .prx .item.is-selected{
+    border-color:rgba(22,163,74,.22);
+    background:linear-gradient(180deg,#fcfffd,#f7fbf8);
   }
 
   .prx .left{
@@ -381,6 +399,16 @@
     background:rgba(148,163,184,.08);
   }
 
+  .prx .mini.danger{
+    color:#991b1b;
+    border-color:rgba(248,113,113,.20);
+  }
+
+  .prx .mini.ok{
+    color:#166534;
+    border-color:rgba(34,197,94,.22);
+  }
+
   .prx .mini[disabled],
   .prx .mini.is-disabled{
     opacity:.4;
@@ -451,6 +479,51 @@
     color:var(--min-muted);
     font-size:9.6px;
     line-height:1.8;
+  }
+
+  .prx .split-note{
+    display:grid;
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  .prx .empty-box{
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
+    padding:16px 12px;
+    border-radius:16px;
+    text-align:center;
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  .prx .empty-box b{
+    color:var(--min-green-1);
+    font-weight:800 !important;
+  }
+
+  .prx .search-wrap{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  .prx .search{
+    width:100%;
+    min-height:38px;
+    border-radius:14px;
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    padding:0 12px;
+    outline:none;
+    color:var(--min-ink-2);
+    font-size:10px;
+  }
+
+  .prx .search:focus{
+    border-color:rgba(22,163,74,.28);
+    box-shadow:0 0 0 4px rgba(22,163,74,.06);
   }
 
   /* =========================
@@ -822,11 +895,14 @@
 {% block extra_head %}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const list = document.querySelector("[data-sortable]");
   const form = document.querySelector("form[data-form]");
-  const idsCsv = document.querySelector("#ids_csv");
-  const countEl = document.querySelector("[data-count]");
+  const availableList = document.querySelector("[data-available-list]");
+  const selectedList = document.querySelector("[data-selected-list]");
+  const selectedCountEl = document.querySelector("[data-selected-count]");
+  const availableCountEl = document.querySelector("[data-available-count]");
   const submitBtn = document.querySelector("[data-submit]");
+  const noVacanciesInput = document.querySelector("[data-no-vacancies]");
+  const searchInput = document.querySelector("[data-search-input]");
 
   const modal = document.querySelector("[data-modal]");
   const modalTitle = document.querySelector("[data-modal-title]");
@@ -844,7 +920,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mEl = document.getElementById("cdMinutes");
   const sEl = document.getElementById("cdSeconds");
 
-  if(!form || !idsCsv) return;
+  if(!form || !selectedList || !availableList) return;
 
   let dragEl = null;
   let modalResolver = null;
@@ -930,22 +1006,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function items(){
-    if(!list) return [];
-    return [...list.querySelectorAll("[data-item]")];
+  function selectedItems(){
+    return [...selectedList.querySelectorAll("[data-item='selected']")];
   }
 
-  function setCount(){
-    const n = items().length;
-    if(countEl) countEl.textContent = String(n);
-    if(submitBtn) submitBtn.disabled = (n === 0) || portalExpired;
+  function availableItems(){
+    return [...availableList.querySelectorAll("[data-item='available']")];
   }
 
-  function renumber(){
-    const its = items();
+  function setCounts(){
+    const selectedCount = selectedItems().length;
+    const availableVisibleCount = availableItems().filter(el => el.style.display !== "none").length;
+
+    if(selectedCountEl) selectedCountEl.textContent = String(selectedCount);
+    if(availableCountEl) availableCountEl.textContent = String(availableVisibleCount);
+
+    if(submitBtn){
+      submitBtn.disabled = portalExpired;
+    }
+  }
+
+  function renumberSelected(){
+    const its = selectedItems();
+
     its.forEach((it, idx) => {
-      const r = it.querySelector("[data-rank]");
-      if(r) r.textContent = (idx + 1);
+      const rankEl = it.querySelector("[data-rank]");
+      if(rankEl) rankEl.textContent = String(idx + 1);
 
       const up = it.querySelector("[data-up]");
       const dn = it.querySelector("[data-down]");
@@ -954,37 +1040,243 @@ document.addEventListener("DOMContentLoaded", () => {
       if(dn) dn.disabled = portalExpired || (idx === its.length - 1);
     });
 
-    idsCsv.value = its.map(x => x.getAttribute("data-id")).join(",");
-    setCount();
+    setCounts();
+    refreshNoVacanciesState();
+    syncHiddenInputs();
+  }
+
+  function syncHiddenInputs(){
+    form.querySelectorAll("input[name='vacancy_ids']").forEach(el => el.remove());
+
+    selectedItems().forEach(it => {
+      const inp = document.createElement("input");
+      inp.type = "hidden";
+      inp.name = "vacancy_ids";
+      inp.value = it.getAttribute("data-id");
+      form.appendChild(inp);
+    });
+  }
+
+  function refreshNoVacanciesState(){
+    const hasSelected = selectedItems().length > 0;
+
+    if(noVacanciesInput){
+      if(hasSelected){
+        noVacanciesInput.checked = false;
+        noVacanciesInput.disabled = true;
+      } else {
+        noVacanciesInput.disabled = portalExpired ? true : false;
+      }
+    }
+  }
+
+  function makeSelectedItem(id, name, metaText){
+    const div = document.createElement("div");
+    div.className = "item is-selected";
+    div.setAttribute("data-item", "selected");
+    div.setAttribute("data-id", id);
+    div.setAttribute("draggable", portalExpired ? "false" : "true");
+    div.innerHTML = `
+      <div class="left">
+        <div class="rank" data-rank>1</div>
+        <div class="meta">
+          <div class="nm">${name}</div>
+          <div class="sm">${metaText}</div>
+        </div>
+      </div>
+      <div class="right">
+        <button type="button" class="mini" data-up title="رفع">↑</button>
+        <button type="button" class="mini" data-down title="خفض">↓</button>
+        <button type="button" class="mini danger" data-remove title="حذف">×</button>
+        <div class="handle" title="اسحب لترتيب">⋮⋮</div>
+      </div>
+    `;
+    bindSelectedItem(div);
+    return div;
+  }
+
+  function addToSelectedFromAvailable(availableEl){
+    if(portalExpired || !availableEl) return;
+
+    const id = availableEl.getAttribute("data-id");
+    const name = availableEl.getAttribute("data-name") || "";
+    const metaText = availableEl.getAttribute("data-meta") || "";
+
+    if(selectedList.querySelector(`[data-item='selected'][data-id='${CSS.escape(id)}']`)){
+      return;
+    }
+
+    const selectedEl = makeSelectedItem(id, name, metaText);
+    selectedList.appendChild(selectedEl);
+    availableEl.remove();
+    renumberSelected();
+    filterAvailable();
+  }
+
+  function moveBackToAvailable(selectedEl){
+    if(portalExpired || !selectedEl) return;
+
+    const id = selectedEl.getAttribute("data-id");
+    const name = selectedEl.querySelector(".nm")?.textContent?.trim() || "";
+    const metaText = selectedEl.querySelector(".sm")?.textContent?.trim() || "";
+
+    const div = document.createElement("div");
+    div.className = "item";
+    div.setAttribute("data-item", "available");
+    div.setAttribute("data-id", id);
+    div.setAttribute("data-name", name);
+    div.setAttribute("data-meta", metaText);
+    div.innerHTML = `
+      <div class="left">
+        <div class="rank">+</div>
+        <div class="meta">
+          <div class="nm">${name}</div>
+          <div class="sm">${metaText}</div>
+        </div>
+      </div>
+      <div class="right">
+        <button type="button" class="btn secondary" data-add>إضافة</button>
+      </div>
+    `;
+    bindAvailableItem(div);
+    availableList.appendChild(div);
+    selectedEl.remove();
+    sortAvailableList();
+    renumberSelected();
+    filterAvailable();
+  }
+
+  function sortAvailableList(){
+    const els = availableItems().sort((a, b) => {
+      const an = (a.getAttribute("data-name") || "").localeCompare((b.getAttribute("data-name") || ""), "ar");
+      return an;
+    });
+    els.forEach(el => availableList.appendChild(el));
+  }
+
+  function bindAvailableItem(el){
+    const addBtn = el.querySelector("[data-add]");
+    if(addBtn){
+      addBtn.addEventListener("click", () => addToSelectedFromAvailable(el));
+    }
+  }
+
+  function bindSelectedItem(el){
+    el.addEventListener("dragstart", e => {
+      if(portalExpired){
+        e.preventDefault();
+        return;
+      }
+      dragEl = el;
+      el.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      try{ e.dataTransfer.setData("text/plain", el.getAttribute("data-id") || ""); }catch(_){}
+    });
+
+    el.addEventListener("dragend", () => {
+      selectedItems().forEach(x => x.classList.remove("drop-here"));
+      if(dragEl) dragEl.classList.remove("dragging");
+      dragEl = null;
+    });
+
+    el.addEventListener("dragover", e => {
+      if(portalExpired) return;
+      e.preventDefault();
+      if(!dragEl || dragEl === el) return;
+      el.classList.add("drop-here");
+    });
+
+    el.addEventListener("dragleave", () => el.classList.remove("drop-here"));
+
+    el.addEventListener("drop", e => {
+      if(portalExpired) return;
+      e.preventDefault();
+      selectedItems().forEach(x => x.classList.remove("drop-here"));
+      if(!dragEl || dragEl === el) return;
+
+      const r = el.getBoundingClientRect();
+      const after = (e.clientY - r.top) > (r.height / 2);
+      el.parentNode.insertBefore(dragEl, after ? el.nextSibling : el);
+      renumberSelected();
+    });
+
+    const up = el.querySelector("[data-up]");
+    const dn = el.querySelector("[data-down]");
+    const remove = el.querySelector("[data-remove]");
+
+    if(up){
+      up.addEventListener("click", () => {
+        if(portalExpired) return;
+        const prev = el.previousElementSibling;
+        if(prev) el.parentNode.insertBefore(el, prev);
+        renumberSelected();
+      });
+    }
+
+    if(dn){
+      dn.addEventListener("click", () => {
+        if(portalExpired) return;
+        const next = el.nextElementSibling;
+        if(next) el.parentNode.insertBefore(next, el);
+        renumberSelected();
+      });
+    }
+
+    if(remove){
+      remove.addEventListener("click", () => {
+        if(portalExpired) return;
+        moveBackToAvailable(el);
+      });
+    }
+  }
+
+  function filterAvailable(){
+    const q = (searchInput?.value || "").trim().toLowerCase();
+    availableItems().forEach(el => {
+      const hay = `${el.getAttribute("data-name") || ""} ${el.getAttribute("data-meta") || ""}`.toLowerCase();
+      el.style.display = (!q || hay.includes(q)) ? "" : "none";
+    });
+    setCounts();
   }
 
   function disablePreferencesUi(){
     portalExpired = true;
 
-    items().forEach(it => {
+    selectedItems().forEach(it => {
       it.setAttribute("draggable", "false");
       it.classList.add("is-locked");
 
       const up = it.querySelector("[data-up]");
       const dn = it.querySelector("[data-down]");
+      const rm = it.querySelector("[data-remove]");
       const handle = it.querySelector(".handle");
 
-      if(up){
-        up.disabled = true;
-        up.classList.add("is-disabled");
-      }
-      if(dn){
-        dn.disabled = true;
-        dn.classList.add("is-disabled");
-      }
-      if(handle){
-        handle.classList.add("is-disabled");
+      if(up){ up.disabled = true; up.classList.add("is-disabled"); }
+      if(dn){ dn.disabled = true; dn.classList.add("is-disabled"); }
+      if(rm){ rm.disabled = true; rm.classList.add("is-disabled"); }
+      if(handle){ handle.classList.add("is-disabled"); }
+    });
+
+    availableItems().forEach(it => {
+      const addBtn = it.querySelector("[data-add]");
+      it.classList.add("is-locked");
+      if(addBtn){
+        addBtn.disabled = true;
+        addBtn.classList.add("is-disabled");
       }
     });
 
     form.querySelectorAll("input[name='fallback_choice']").forEach(el => {
       el.disabled = true;
     });
+
+    if(noVacanciesInput){
+      noVacanciesInput.disabled = true;
+    }
+
+    if(searchInput){
+      searchInput.disabled = true;
+    }
 
     const backBtn = document.querySelector("[data-back-btn]");
     if(backBtn){
@@ -1004,73 +1296,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  if(list){
-    items().forEach(el => {
-      el.addEventListener("dragstart", e => {
-        if (portalExpired){
-          e.preventDefault();
-          return;
-        }
-        dragEl = el;
-        el.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "move";
-        try{ e.dataTransfer.setData("text/plain", el.getAttribute("data-id") || ""); }catch(_){}
-      });
-
-      el.addEventListener("dragend", () => {
-        items().forEach(x => x.classList.remove("drop-here"));
-        if(dragEl) dragEl.classList.remove("dragging");
-        dragEl = null;
-      });
-
-      el.addEventListener("dragover", e => {
-        if (portalExpired) return;
-        e.preventDefault();
-        if(!dragEl || dragEl === el) return;
-        el.classList.add("drop-here");
-      });
-
-      el.addEventListener("dragleave", () => el.classList.remove("drop-here"));
-
-      el.addEventListener("drop", e => {
-        if (portalExpired) return;
-        e.preventDefault();
-        items().forEach(x => x.classList.remove("drop-here"));
-        if(!dragEl || dragEl === el) return;
-
-        const r = el.getBoundingClientRect();
-        const after = (e.clientY - r.top) > (r.height / 2);
-        el.parentNode.insertBefore(dragEl, after ? el.nextSibling : el);
-        renumber();
-      });
-
-      const up = el.querySelector("[data-up]");
-      const dn = el.querySelector("[data-down]");
-
-      if(up){
-        up.addEventListener("click", () => {
-          if (portalExpired) return;
-          const prev = el.previousElementSibling;
-          if(prev) el.parentNode.insertBefore(el, prev);
-          renumber();
-        });
-      }
-
-      if(dn){
-        dn.addEventListener("click", () => {
-          if (portalExpired) return;
-          const next = el.nextElementSibling;
-          if(next) el.parentNode.insertBefore(next, el);
-          renumber();
-        });
-      }
-    });
-  }
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (portalExpired){
+    if(portalExpired){
       await showAlert("انتهت مهلة التقديم، سيتم تحديث الصفحة الآن.", "انتهى وقت التقديم");
       window.location.reload();
       return;
@@ -1082,19 +1311,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if(items().length === 0){
-      await showAlert("لا توجد رغبات لإرسال الطلب.", "لا يمكن الإرسال");
+    syncHiddenInputs();
+
+    const selectedCount = selectedItems().length;
+    const noVacanciesChecked = !!(noVacanciesInput && noVacanciesInput.checked);
+
+    if(selectedCount === 0 && !noVacanciesChecked){
+      await showAlert("اختر رغبة واحدة على الأقل، أو فعّل خيار: لا أرغب في التقديم على أي من هذه الشواغر.", "لا يمكن الإرسال");
       return;
     }
 
-    form.querySelectorAll("input[name='vacancy_ids']").forEach(x => x.remove());
-    (idsCsv.value || "").split(",").filter(Boolean).forEach(id => {
-      const inp = document.createElement("input");
-      inp.type = "hidden";
-      inp.name = "vacancy_ids";
-      inp.value = id;
-      form.appendChild(inp);
-    });
+    if(selectedCount > 0 && noVacanciesChecked){
+      await showAlert("لا يمكن الجمع بين اختيار رغبات وتفعيل خيار عدم الرغبة بأي شاغر.", "تعارض في البيانات");
+      return;
+    }
 
     const agreed = await showConfirm(
       "هل أنت متأكد من إرسال الطلب نهائيًا؟ لن تتمكن من التعديل بعد الإرسال.",
@@ -1111,19 +1341,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleExpired(){
-    if (portalExpired) return;
+    if(portalExpired) return;
     portalExpired = true;
 
-    if (timer){
+    if(timer){
       timer.classList.remove("is-warn", "is-danger");
       timer.classList.add("is-expired");
     }
-    if (timerState) timerState.textContent = "انتهى الوقت";
-    if (timerNote) timerNote.textContent = "تم الوصول إلى وقت إغلاق التقديم.";
-    if (dEl) dEl.textContent = "00";
-    if (hEl) hEl.textContent = "00";
-    if (mEl) mEl.textContent = "00";
-    if (sEl) sEl.textContent = "00";
+    if(timerState) timerState.textContent = "انتهى الوقت";
+    if(timerNote) timerNote.textContent = "تم الوصول إلى وقت إغلاق التقديم.";
+    if(dEl) dEl.textContent = "00";
+    if(hEl) hEl.textContent = "00";
+    if(mEl) mEl.textContent = "00";
+    if(sEl) sEl.textContent = "00";
 
     disablePreferencesUi();
 
@@ -1133,18 +1363,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTimer(){
-    if (!timer) return;
+    if(!timer) return;
 
     const closesAtRaw = timer.getAttribute("data-closes-at");
-    if (!closesAtRaw) return;
+    if(!closesAtRaw) return;
 
     const target = new Date(closesAtRaw).getTime();
-    if (Number.isNaN(target)) return;
+    if(Number.isNaN(target)) return;
 
     const now = Date.now();
     const diff = target - now;
 
-    if (diff <= 0){
+    if(diff <= 0){
       handleExpired();
       return;
     }
@@ -1155,30 +1385,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    if (dEl) dEl.textContent = pad(days);
-    if (hEl) hEl.textContent = pad(hours);
-    if (mEl) mEl.textContent = pad(minutes);
-    if (sEl) sEl.textContent = pad(seconds);
+    if(dEl) dEl.textContent = pad(days);
+    if(hEl) hEl.textContent = pad(hours);
+    if(mEl) mEl.textContent = pad(minutes);
+    if(sEl) sEl.textContent = pad(seconds);
 
     timer.classList.remove("is-warn", "is-danger", "is-expired");
 
-    if (diff <= 3600 * 1000){
+    if(diff <= 3600 * 1000){
       timer.classList.add("is-danger");
-      if (timerState) timerState.textContent = "أقل من ساعة";
-      if (timerNote) timerNote.textContent = "المهلة أوشكت على الانتهاء، يرجى إكمال الترتيب والإرسال قبل الإغلاق.";
-    } else if (diff <= 24 * 3600 * 1000){
+      if(timerState) timerState.textContent = "أقل من ساعة";
+      if(timerNote) timerNote.textContent = "المهلة أوشكت على الانتهاء، يرجى إكمال الاختيار والإرسال قبل الإغلاق.";
+    } else if(diff <= 24 * 3600 * 1000){
       timer.classList.add("is-warn");
-      if (timerState) timerState.textContent = "أقل من 24 ساعة";
-      if (timerNote) timerNote.textContent = "الوقت المتبقي محدود، وسيتم إغلاق التقديم تلقائيًا عند انتهاء المدة.";
+      if(timerState) timerState.textContent = "أقل من 24 ساعة";
+      if(timerNote) timerNote.textContent = "الوقت المتبقي محدود، وسيتم إغلاق التقديم تلقائيًا عند انتهاء المدة.";
     } else {
-      if (timerState) timerState.textContent = "مفتوح الآن";
-      if (timerNote) timerNote.textContent = "سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.";
+      if(timerState) timerState.textContent = "مفتوح الآن";
+      if(timerNote) timerNote.textContent = "سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.";
     }
   }
 
-  renumber();
+  if(searchInput){
+    searchInput.addEventListener("input", filterAvailable);
+  }
+
+  availableItems().forEach(bindAvailableItem);
+  selectedItems().forEach(bindSelectedItem);
+
+  if(noVacanciesInput){
+    noVacanciesInput.addEventListener("change", () => {
+      if(selectedItems().length > 0 && noVacanciesInput.checked){
+        noVacanciesInput.checked = false;
+      }
+    });
+  }
+
+  sortAvailableList();
+  renumberSelected();
+  filterAvailable();
   updateTimer();
-  if (timer){
+
+  if(timer){
     setInterval(updateTimer, 1000);
   }
 });
@@ -1191,13 +1439,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <div class="top">
       <div>
-        <h1>ترتيب الرغبات</h1>
+        <h1>اختيار وترتيب الرغبات</h1>
         <p class="sub">
-          المدارس المتاحة لك حسب الضوابط (<b>القطاع</b> + <b>الجنس</b> + <b>الاحتياج</b>).
-          اسحب العناصر لترتيبها، أو استخدم أزرار الرفع والخفض.
+          لست ملزمًا بترتيب جميع الشواغر. <b>اختر فقط ما ترغب فيه</b> من القائمة المتاحة،
+          وستظهر في قائمة مستقلة يمكنك إعادة ترتيبها أو حذف أي رغبة منها بزر <b>×</b>.
         </p>
       </div>
-      <div class="pill"><span class="dot"></span>واجهة ترتيب ذكية</div>
+      <div class="pill"><span class="dot"></span>اختيار مرن للرغبات</div>
     </div>
 
     {% if portal_show_countdown %}
@@ -1238,65 +1486,131 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <div class="grid">
 
-      <!-- LEFT: list -->
-      <div class="card">
-        <div class="ch">
-          <h3>قائمة المدارس المتاحة</h3>
-          <span class="tag">عدد الرغبات: <b data-count>0</b></span>
-        </div>
-        <div class="cb">
+      <!-- LEFT -->
+      <div class="stack">
 
-          {% if error %}
-            <div class="alert">{{ error }}</div>
-          {% endif %}
+        <!-- Selected preferences -->
+        <div class="card">
+          <div class="ch">
+            <h3>رغباتي المختارة</h3>
+            <span class="tag">العدد: <b data-selected-count>{{ selected_prefs|length }}</b></span>
+          </div>
+          <div class="cb">
 
-          {% if schools %}
-            <div class="toolbar">
+            {% if error %}
+              <div class="alert">{{ error }}</div>
+            {% endif %}
+
+            <div class="split-note">
               <div class="kpi">
-                <div class="k">تلميح: <b>اسحب</b> أو استخدم ↑ ↓</div>
-                <div class="k">الترتيب يُحفظ عند الإرسال</div>
+                <div class="k">يمكنك <b>رفع</b> و<b>خفض</b> الرغبات</div>
+                <div class="k">يمكنك حذف أي رغبة بزر <b>×</b></div>
+                <div class="k">يتم حفظ <b>المختار فقط</b></div>
               </div>
             </div>
 
-            <div class="list" data-sortable>
-              {% for s in schools %}
-              <div class="item" data-item data-id="{{ s.id }}" draggable="true">
+            <div class="list" data-selected-list>
+              {% for p in selected_prefs %}
+              <div class="item is-selected" data-item="selected" data-id="{{ p.vacancy.id }}" draggable="true">
                 <div class="left">
-                  <div class="rank" data-rank>1</div>
+                  <div class="rank" data-rank>{{ forloop.counter }}</div>
                   <div class="meta">
-                    <div class="nm">{{ s.school_name }}</div>
-                    <div class="sm">{{ s.stage }} — {{ s.sector }}</div>
+                    <div class="nm">{{ p.vacancy.school_name }}</div>
+                    <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
                   </div>
                 </div>
 
                 <div class="right">
                   <button type="button" class="mini" data-up title="رفع">↑</button>
                   <button type="button" class="mini" data-down title="خفض">↓</button>
+                  <button type="button" class="mini danger" data-remove title="حذف">×</button>
                   <div class="handle" title="اسحب لترتيب">⋮⋮</div>
                 </div>
               </div>
               {% endfor %}
             </div>
-          {% else %}
-            <div class="alert warn">
-              لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
-            </div>
-          {% endif %}
 
+            {% if not selected_prefs %}
+            <div class="empty-box">
+              لم تختر أي رغبة بعد.  
+              اختر من قائمة <b>الشواغر المتاحة</b> بالأسفل، وستظهر هنا تلقائيًا.
+            </div>
+            {% endif %}
+
+          </div>
         </div>
+
+        <!-- Available schools -->
+        <div class="card">
+          <div class="ch">
+            <h3>الشواغر المتاحة لك</h3>
+            <span class="tag">المعروض: <b data-available-count>{{ schools|length }}</b></span>
+          </div>
+          <div class="cb">
+
+            {% if schools %}
+              <div class="toolbar">
+                <div class="kpi">
+                  <div class="k">اختر فقط ما يناسبك</div>
+                  <div class="k">لا حاجة لترتيب جميع الشواغر</div>
+                </div>
+              </div>
+
+              <div class="search-wrap">
+                <input
+                  type="text"
+                  class="search"
+                  placeholder="ابحث باسم المدرسة أو المرحلة أو القطاع"
+                  data-search-input
+                >
+              </div>
+
+              <div class="list" data-available-list>
+                {% for s in schools %}
+                  {% if s.id not in selected_ids %}
+                  <div
+                    class="item"
+                    data-item="available"
+                    data-id="{{ s.id }}"
+                    data-name="{{ s.school_name }}"
+                    data-meta="{{ s.stage }} — {{ s.sector }}"
+                  >
+                    <div class="left">
+                      <div class="rank">+</div>
+                      <div class="meta">
+                        <div class="nm">{{ s.school_name }}</div>
+                        <div class="sm">{{ s.stage }} — {{ s.sector }}</div>
+                      </div>
+                    </div>
+
+                    <div class="right">
+                      <button type="button" class="btn secondary" data-add>إضافة</button>
+                    </div>
+                  </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="alert warn">
+                لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+
       </div>
 
-      <!-- RIGHT: submit + fallback -->
+      <!-- RIGHT -->
       <div class="side">
         <div class="card">
           <div class="ch">
             <h3>إقرار وإرسال</h3>
-            <span class="tag">خطوة نهائية</span>
+            <span class="tag">الخطوة النهائية</span>
           </div>
           <div class="cb">
             <form method="post" action="{% url 'portal:submit' %}" data-form>
               {% csrf_token %}
-              <input type="hidden" id="ids_csv" value="">
 
               <div class="radio">
                 <input type="radio" name="fallback_choice" value="admin_assign" id="fb1">
@@ -1314,8 +1628,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 </label>
               </div>
 
+              <div class="radio" style="margin-top:10px">
+                <input type="checkbox" name="no_vacancies" value="1" id="no_vacancies" data-no-vacancies>
+                <label for="no_vacancies">
+                  <b>لا أرغب في التقديم على أي من هذه الشواغر</b>
+                  <div class="sm">فعّل هذا الخيار فقط إذا كنت لا تريد اختيار أي رغبة من القائمة.</div>
+                </label>
+              </div>
+
               <div class="hint">
-                بعد الإرسال سيتم قفل الطلب. تأكد من ترتيب الرغبات واختيار الإقرار المناسب.
+                يمكنك اختيار رغبة واحدة أو أكثر فقط، ولا يلزم ترتيب جميع الشواغر المعروضة.
+                وإذا لم ترغب بأي منها، فعّل خيار عدم الرغبة ثم أرسل الطلب.
               </div>
 
               <div class="expired-inline" data-expired-inline>
@@ -1330,9 +1653,9 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        {% if not schools %}
+        {% if not schools and not selected_prefs %}
         <div class="alert warn" style="margin-top:12px">
-          لا يمكنك الإرسال لأن قائمة المدارس فارغة وفق ضوابطك الحالية.
+          لا توجد شواغر متاحة حاليًا لك. يمكنك الرجوع أو الانتظار حتى يتم تحديث البيانات.
         </div>
         {% endif %}
       </div>

@@ -458,12 +458,22 @@ def preferences_view(request):
     if app.locked and app.status == "submitted":
         return redirect("portal:done")
 
+    selected_prefs = list(
+        ApplicationPreference.objects
+        .filter(application=app)
+        .select_related("vacancy")
+        .order_by("rank", "id")
+    )
+    selected_ids = [p.vacancy_id for p in selected_prefs]
+
     schools = _eligible_schools_for(a)
 
     ctx = {
         "a": a,
         "app": app,
         "schools": schools,
+        "selected_prefs": selected_prefs,
+        "selected_ids": selected_ids,
         "closed_msg": "",
     }
     ctx.update(_portal_timer_context(win))
@@ -487,13 +497,24 @@ def submit_view(request):
 
     ids = request.POST.getlist("vacancy_ids")
     fallback = (request.POST.get("fallback_choice") or "").strip()
+    no_vacancies = (request.POST.get("no_vacancies") or "").strip() == "1"
+
+    selected_prefs = list(
+        ApplicationPreference.objects
+        .filter(application=app)
+        .select_related("vacancy")
+        .order_by("rank", "id")
+    )
+    selected_ids = [p.vacancy_id for p in selected_prefs]
+    schools = _eligible_schools_for(a)
 
     if fallback not in ("admin_assign", "stay_current"):
-        schools = _eligible_schools_for(a)
         ctx = {
             "a": a,
             "app": app,
             "schools": schools,
+            "selected_prefs": selected_prefs,
+            "selected_ids": selected_ids,
             "error": "اختر خيار الإقرار في حال عدم توفر فرصة",
         }
         ctx.update(_portal_timer_context(win))
@@ -510,9 +531,39 @@ def submit_view(request):
         if vid in allowed_ids and vid not in clean_ids:
             clean_ids.append(vid)
 
+    if clean_ids and no_vacancies:
+        ctx = {
+            "a": a,
+            "app": app,
+            "schools": schools,
+            "selected_prefs": selected_prefs,
+            "selected_ids": selected_ids,
+            "error": "لا يمكن الجمع بين اختيار رغبات وتحديد أنك لا ترغب في أي من هذه الشواغر.",
+        }
+        ctx.update(_portal_timer_context(win))
+        return render(request, "portal/preferences.html", ctx)
+
+    if not clean_ids and not no_vacancies:
+        ctx = {
+            "a": a,
+            "app": app,
+            "schools": schools,
+            "selected_prefs": selected_prefs,
+            "selected_ids": selected_ids,
+            "error": "اختر رغبة واحدة على الأقل، أو حدّد أنك لا ترغب في التقديم على أي من هذه الشواغر.",
+        }
+        ctx.update(_portal_timer_context(win))
+        return render(request, "portal/preferences.html", ctx)
+
     ApplicationPreference.objects.filter(application=app).delete()
-    for idx, vid in enumerate(clean_ids, start=1):
-        ApplicationPreference.objects.create(application=app, vacancy_id=vid, rank=idx)
+
+    if not no_vacancies:
+        for idx, vid in enumerate(clean_ids, start=1):
+            ApplicationPreference.objects.create(
+                application=app,
+                vacancy_id=vid,
+                rank=idx,
+            )
 
     app.fallback_choice = fallback
     app.status = "submitted"
@@ -538,8 +589,14 @@ def done_view(request):
         .first()
     )
     prefs = list(app.prefs.select_related("vacancy").all()) if app else []
+    no_vacancies = bool(app and app.status == "submitted" and not prefs)
 
-    ctx = {"a": a, "app": app, "prefs": prefs}
+    ctx = {
+        "a": a,
+        "app": app,
+        "prefs": prefs,
+        "no_vacancies": no_vacancies,
+    }
     ctx.update(_portal_timer_context(win))
     return render(request, "portal/done.html", ctx)
 

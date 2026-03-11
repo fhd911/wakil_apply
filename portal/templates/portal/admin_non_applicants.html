@@ -4,62 +4,80 @@
 {% block extra_css %}
 <style>
   /* =========================================================
-     Non Applicants Report — Ministerial Light (Unified)
+     Non Applicants Report — V3.3 Royal Executive Clean Header
   ========================================================= */
 
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
+    --royal-bg:#f3f6f2;
+    --royal-bg-2:#edf2ee;
 
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
+    --royal-surface:#ffffff;
+    --royal-surface-2:#fbfcfa;
 
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
+    --royal-ink:#13221c;
+    --royal-ink-2:#21342b;
+    --royal-muted:#708178;
 
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
+    --royal-green-1:#0f291f;
+    --royal-green-2:#183629;
+    --royal-green-3:#214637;
+    --royal-green-4:#2d5947;
+    --royal-green-5:#3d6c58;
 
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
-    --min-gold-3:#efe1bb;
+    --royal-gold-1:#8f6927;
+    --royal-gold-2:#ae8334;
+    --royal-gold-3:#c89d49;
+    --royal-gold-4:#e8d8ad;
+    --royal-gold-5:#f7efdc;
 
-    --min-line:#dbe3db;
-    --min-line-2:#cdd8ce;
+    --royal-line:#d8e2d9;
+    --royal-line-2:#cad6cc;
+    --royal-line-3:#e6ede7;
 
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+    --royal-ok:#166534;
+    --royal-ok-bg:#edf8f0;
+    --royal-ok-line:#b7e4c7;
 
-    --min-ok:#166534;
-    --min-ok-line:#b7e4c7;
+    --royal-danger:#991b1b;
+    --royal-danger-bg:#fef2f2;
+    --royal-danger-line:#fecaca;
 
-    --min-warn:#92400e;
-    --min-warn-line:#f4cf9b;
+    --royal-warn:#92400e;
+    --royal-warn-bg:#fff7ed;
+    --royal-warn-line:#efd29c;
 
-    --min-danger:#991b1b;
-    --min-danger-line:#fecaca;
+    --royal-shadow:0 12px 30px rgba(16,34,27,.06);
+    --royal-shadow-soft:0 8px 18px rgba(16,34,27,.05);
+    --royal-shadow-strong:0 20px 46px rgba(10,25,19,.14);
+    --royal-inset:inset 0 1px 0 rgba(255,255,255,.96);
   }
 
   .ui{
     position:relative;
+    min-height:100%;
+    color:var(--royal-ink);
     background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
+      radial-gradient(980px 340px at 100% 0%, rgba(200,157,73,.07), transparent 56%),
+      radial-gradient(760px 260px at 0% 14%, rgba(61,108,88,.055), transparent 62%),
+      linear-gradient(180deg, var(--royal-bg), var(--royal-bg-2));
   }
 
+  .ui-page{
+    display:grid;
+    gap:14px;
+  }
+
+  /* =========================
+     Clean Royal Hero
+  ========================= */
   .ui-top{
-    margin-bottom:12px;
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
     position:relative;
     overflow:hidden;
+    border-radius:28px;
+    border:1px solid rgba(201,211,203,.96);
+    box-shadow:var(--royal-shadow-strong);
+    background:
+      linear-gradient(135deg, #214837 0%, #17362a 44%, #10271f 100%);
   }
 
   .ui-top::before{
@@ -67,7 +85,7 @@
     position:absolute;
     inset:0 0 auto 0;
     height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    background:linear-gradient(90deg, var(--royal-gold-3), var(--royal-gold-2), rgba(200,157,73,.24));
   }
 
   .ui-top::after{
@@ -76,175 +94,363 @@
     inset:0;
     pointer-events:none;
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
+      radial-gradient(500px 175px at 86% 16%, rgba(247,239,220,.10), transparent 60%),
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
+  .ui-top-inner{
+    position:relative;
+    z-index:1;
+    padding:16px 18px 14px;
+    display:grid;
+    gap:12px;
+  }
+
+  .ui-top-head{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:14px;
+    align-items:start;
+  }
+
+  .ui-top-main{
+    min-width:0;
+  }
+
+  .ui-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:25px;
+    padding:0 11px;
+    border-radius:999px;
+    font-size:8.4px;
+    font-weight:900;
+    letter-spacing:.45px;
+    color:#f7efd9;
+    border:1px solid rgba(255,255,255,.13);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.055));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(5px);
+  }
+
   .ui-title{
+    margin:8px 0 0;
     font-size:20px !important;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
+    line-height:1.18;
+    font-weight:900 !important;
     color:#fff !important;
+    letter-spacing:-.3px;
   }
 
   .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.6 !important;
+    max-width:900px;
+    margin:6px 0 0;
+    color:rgba(255,255,255,.84) !important;
+    font-size:10.2px !important;
+    line-height:1.9 !important;
   }
 
-  .ui-actions{
+  .ui-top-meta{
     display:flex;
-    gap:8px;
     flex-wrap:wrap;
+    gap:7px;
+    margin-top:10px;
+  }
+
+  .meta-chip{
+    min-height:25px;
+    padding:0 9px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:8.6px;
+    font-weight:900;
+    color:#eef7f1;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.065);
+  }
+
+  .ui-top-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
     align-items:center;
   }
 
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:10px;
   }
 
+  .kpi-card{
+    position:relative;
+    overflow:hidden;
+    min-height:82px;
+    padding:10px 12px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05));
+    backdrop-filter:blur(6px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+  }
+
+  .kpi-card::after{
+    content:"";
+    position:absolute;
+    inset:auto auto 0 0;
+    width:100%;
+    height:2px;
+    opacity:.88;
+  }
+
+  .kpi-card.kpi-active::after{
+    background:linear-gradient(90deg, #cdebd8, transparent 78%);
+  }
+
+  .kpi-card.kpi-submitted::after{
+    background:linear-gradient(90deg, #cfe0ff, transparent 78%);
+  }
+
+  .kpi-card.kpi-missing::after{
+    background:linear-gradient(90deg, #f2ddb1, transparent 78%);
+  }
+
+  .kpi-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .kpi-label{
+    font-size:8.6px;
+    font-weight:900;
+    color:rgba(255,255,255,.78);
+  }
+
+  .kpi-icon{
+    width:23px;
+    height:23px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    font-size:10px;
+    color:#fff;
+    background:rgba(255,255,255,.09);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .kpi-value{
+    margin-top:7px;
+    font-size:16px;
+    font-weight:900;
+    line-height:1.05;
+    color:#fff;
+  }
+
+  .kpi-note{
+    margin-top:4px;
+    font-size:8.2px;
+    color:rgba(255,255,255,.67);
+    line-height:1.55;
+  }
+
+  /* =========================
+     Card
+  ========================= */
+  .ui-card{
+    overflow:hidden;
+    border:1px solid rgba(211,221,212,.95) !important;
+    border-radius:24px !important;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
+    box-shadow:var(--royal-shadow) !important;
+  }
+
+  /* =========================
+     Buttons
+  ========================= */
+  .ui-btn{
+    min-height:34px;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:9.7px;
+    font-weight:800;
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    border:1px solid rgba(211,221,212,.95);
+    color:var(--royal-green-3);
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    transition:.18s ease;
+  }
+
+  .ui-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 11px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .ui-btn-primary{
+    color:#fff !important;
+    border-color:rgba(255,255,255,.14) !important;
+    background:linear-gradient(180deg, var(--royal-green-5), var(--royal-green-4)) !important;
+    box-shadow:0 14px 24px rgba(18,45,35,.22), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-btn-hero-main{
+    color:#17382c !important;
+    border-color:rgba(255,255,255,.12) !important;
+    background:linear-gradient(180deg, #f5ecd5, #e3cf9b) !important;
+    box-shadow:0 15px 25px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.48);
+  }
+
+  .ui-btn-hero{
+    color:#fff !important;
+    border-color:rgba(255,255,255,.13) !important;
+    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07)) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+    backdrop-filter:blur(4px);
+  }
+
+  .ui-btn-hero:hover{
+    box-shadow:0 11px 18px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .ui-btn-export{
+    color:var(--royal-warn) !important;
+    border-color:#eed29c !important;
+    background:linear-gradient(180deg,#fffaf1,#fff4e3) !important;
+  }
+
+  /* =========================
+     Toolbar
+  ========================= */
   .ui-toolbar{
-    padding:8px;
-    border-bottom:1px solid rgba(219,227,219,.92);
+    padding:12px 13px;
+    border-bottom:1px solid rgba(219,227,219,.94);
     background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
   .ui-toolbar-row{
     display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
-    align-items:center;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:end;
   }
 
-  .ui-toolbar-left,
+  .ui-toolbar-left{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    align-items:end;
+    min-width:0;
+  }
+
   .ui-toolbar-right{
     display:flex;
-    gap:8px;
     flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .ui-foot{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-top:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-muted{
-    color:var(--min-muted) !important;
-    font-size:9.8px;
-  }
-
-  .ui-pill{
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  .kpi{
-    display:flex;
     gap:8px;
-    flex-wrap:wrap;
-    margin-top:10px;
+    align-items:center;
+    justify-content:flex-end;
   }
 
-  .kpi .pill{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
+  .ui-field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .ui-field-label{
+    font-size:8.6px;
     font-weight:900;
-    border:1px solid rgba(255,255,255,.20);
-    background:rgba(255,255,255,.10);
-    color:#fff;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  .kpi .pill b{
-    font-size:10.2px;
-    color:#fff;
-  }
-
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-    justify-content:center;
-  }
-
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    color:var(--royal-muted);
+    padding-inline:4px;
   }
 
   .ui-input,
   .ui-select{
-    min-height:38px;
-    height:38px;
-    padding:8px 12px;
-    font-size:10.5px;
+    min-height:40px;
+    height:40px;
+    padding:9px 13px;
+    font-size:10.2px;
     border-radius:14px;
     border:1px solid rgba(211,221,212,.95);
     background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    color:var(--royal-ink);
+    box-shadow:var(--royal-inset);
     outline:none;
+  }
+
+  .ui-input::placeholder{
+    color:#97a69e;
   }
 
   .ui-input:focus,
   .ui-select:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+    border-color:rgba(174,131,52,.38);
+    box-shadow:0 0 0 4px rgba(174,131,52,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
+  .ui-summary{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    padding:9px 13px;
+    border-bottom:1px solid rgba(231,238,232,.95);
+    background:linear-gradient(180deg, #fcfdfb, #fafcf9);
+  }
+
+  .ui-pill{
+    min-height:29px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.3px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    color:var(--royal-green-3);
+    box-shadow:var(--royal-inset);
+  }
+
+  .ui-pill-total{
+    color:var(--royal-green-3);
+    border-color:#d8e3da;
+    background:linear-gradient(180deg,#ffffff,#f6faf6);
+  }
+
+  .ui-pill-search{
+    color:#365246;
+    border-color:#dbe6de;
+    background:linear-gradient(180deg,#ffffff,#fafcfb);
+  }
+
+  .ui-pill-filter{
+    color:var(--royal-warn);
+    border-color:#efd7ab;
+    background:linear-gradient(180deg,#fffaf2,#fff5e7);
+  }
+
+  /* =========================
+     Table
+  ========================= */
   .tbl-wrap{
     overflow:auto;
     background:#fff;
-    border-top:1px solid rgba(219,227,219,.92);
   }
 
   table.tbl{
     width:100%;
-    min-width:1080px;
+    min-width:1120px;
     border-collapse:separate;
     border-spacing:0;
     table-layout:fixed;
@@ -254,25 +460,26 @@
     position:sticky;
     top:0;
     z-index:4;
-    background:#eef3ee !important;
-    color:var(--min-green-2);
-    font-size:10.1px;
-    font-weight:900;
-    padding:10px 8px;
-    border-bottom:1px solid #d7e0d7 !important;
+    padding:11px 8px;
     white-space:nowrap;
+    font-size:9.9px;
+    font-weight:900;
+    color:var(--royal-green-3);
+    background:linear-gradient(180deg, #eef4ef, #e8efe9) !important;
+    border-bottom:1px solid #d7e0d7 !important;
+    box-shadow:inset 0 -1px 0 rgba(255,255,255,.55);
   }
 
   table.tbl tbody td{
-    padding:8px 8px;
-    font-size:10.4px;
+    padding:9px 8px;
+    font-size:10.15px;
     vertical-align:middle;
-    border-bottom:1px solid #e7ede7 !important;
-    background:#ffffff;
-    color:var(--min-ink-2);
+    white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    white-space:nowrap;
+    color:var(--royal-ink-2);
+    background:#ffffff;
+    border-bottom:1px solid #e7ede7 !important;
   }
 
   table.tbl tbody tr:nth-child(even) td{
@@ -283,17 +490,128 @@
     background:#f8faf7;
   }
 
-  .name{
+  .row-no{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:34px;
+    height:24px;
+    padding:0 8px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#f8fbf8,#f0f6f1);
+    border:1px solid #dce7de;
+    color:var(--royal-green-4);
+    font-size:9px;
     font-weight:900;
-    color:var(--min-green-1);
+  }
+
+  .name{
+    display:block;
+    font-weight:900;
+    color:var(--royal-green-1);
+    font-size:10.7px;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
   .sub{
-    display:block;
-    margin-top:3px;
-    font-size:9.2px;
-    color:var(--min-muted);
-    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:4px;
+    min-width:0;
+  }
+
+  .status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:21px;
+    padding:2px 8px;
+    border-radius:999px;
+    font-size:8.5px;
+    font-weight:900;
+    border:1px solid transparent;
+  }
+
+  .status-yes{
+    color:var(--royal-ok);
+    background:var(--royal-ok-bg);
+    border-color:var(--royal-ok-line);
+  }
+
+  .status-no{
+    color:var(--royal-danger);
+    background:var(--royal-danger-bg);
+    border-color:var(--royal-danger-line);
+  }
+
+  .sub-note{
+    font-size:8.5px;
+    color:var(--royal-muted);
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cell-soft{
+    color:var(--royal-muted);
+  }
+
+  .cell-strong{
+    font-weight:900;
+    color:var(--royal-ink-2);
+  }
+
+  .empty{
+    padding:26px 18px !important;
+    background:#fff !important;
+  }
+
+  .empty-box{
+    display:grid;
+    place-items:center;
+    gap:8px;
+    text-align:center;
+    padding:14px 12px;
+  }
+
+  .empty-icon{
+    width:52px;
+    height:52px;
+    border-radius:18px;
+    display:grid;
+    place-items:center;
+    font-size:20px;
+    color:var(--royal-gold-1);
+    border:1px solid #eedcb4;
+    background:linear-gradient(180deg,#fffaf1,#fff4df);
+    box-shadow:var(--royal-shadow-soft);
+  }
+
+  .empty-title{
+    font-size:12.5px;
+    font-weight:900;
+    color:var(--royal-green-3);
+  }
+
+  .empty-sub{
+    max-width:500px;
+    font-size:9.7px;
+    line-height:1.8;
+    color:var(--royal-muted);
+  }
+
+  /* =========================
+     Footer
+  ========================= */
+  .ui-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:11px 13px;
+    border-top:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
   .pager{
@@ -303,10 +621,41 @@
     align-items:center;
   }
 
-  @media (max-width: 900px){
-    .ui-toolbar-row{ grid-template-columns:1fr; }
-    .ui-foot{ flex-direction:column; align-items:flex-start; }
-    table.tbl{ min-width:980px; }
+  .page-chip{
+    min-height:29px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.2px;
+    font-weight:900;
+    color:var(--royal-green-3);
+    border:1px solid #dce5dd;
+    background:linear-gradient(180deg,#ffffff,#f8faf7);
+    box-shadow:var(--royal-inset);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  @media (max-width: 980px){
+    .ui-top-head{
+      grid-template-columns:1fr;
+    }
+    .kpi-grid{
+      grid-template-columns:1fr;
+    }
+    .ui-toolbar-row{
+      grid-template-columns:1fr;
+    }
+    .ui-toolbar-right{
+      justify-content:flex-start;
+    }
+    .ui-foot{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    table.tbl{
+      min-width:1020px;
+    }
   }
 </style>
 {% endblock %}
@@ -316,29 +665,69 @@
   <div class="ui-page">
 
     <div class="ui-top">
-      <div class="ui-title-wrap">
-        <h1 class="ui-title">تقرير غير المتقدمين</h1>
-        <p class="ui-subtitle">
-          متابعة من لم يتقدم/لم يرسل الطلب — مع إمكانية تصدير CSV للتواصل والمتابعة.
-        </p>
+      <div class="ui-top-inner">
 
-        <div class="kpi">
-          <span class="pill">النشطون: <b>{{ kpi.active }}</b></span>
-          <span class="pill">Submitted: <b>{{ kpi.submitted }}</b></span>
-          <span class="pill">غير مرسلين: <b>{{ kpi.not_submitted }}</b></span>
+        <div class="ui-top-head">
+          <div class="ui-top-main">
+            <span class="ui-kicker">ROYAL EXECUTIVE REPORT</span>
+
+            <h1 class="ui-title">تقرير غير المتقدمين</h1>
+
+            <p class="ui-subtitle">
+              لوحة متابعة تنفيذية مضغوطة لرصد المرشحين الذين لم يتقدموا أو لم يُكملوا إرسال الطلب، مع أدوات دقيقة للبحث والتصفية والتصدير لدعم المعالجة الإدارية السريعة.
+            </p>
+
+            <div class="ui-top-meta">
+              <span class="meta-chip">متابعة تنفيذية</span>
+              <span class="meta-chip">تصفية مرنة</span>
+              <span class="meta-chip">تصدير مباشر</span>
+            </div>
+          </div>
+
+          <div class="ui-top-actions">
+            <a class="ui-btn ui-btn-hero-main" href="{% url 'portal:admin_dashboard' %}">
+              <span>▦</span> الرجوع إلى لوحة القرار
+            </a>
+
+            <a class="ui-btn ui-btn-hero" href="{% url 'portal:admin_applicants_list' %}">
+              <span>👤</span> إدارة المتقدمين
+            </a>
+
+            <a class="ui-btn ui-btn-hero" href="{% url 'portal:admin_vacancies_list' %}">
+              <span>🏫</span> إدارة الشواغر
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span>▦</span> لوحة القرار
-        </a>
-        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
-          <span>👤</span> إدارة المتقدمين
-        </a>
-        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
-          <span>🏫</span> إدارة الشواغر
-        </a>
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-active">
+            <div class="kpi-head">
+              <div class="kpi-label">النشطون</div>
+              <div class="kpi-icon">●</div>
+            </div>
+            <div class="kpi-value">{{ kpi.active }}</div>
+            <div class="kpi-note">إجمالي المرشحين النشطين</div>
+          </div>
+
+          <div class="kpi-card kpi-submitted">
+            <div class="kpi-head">
+              <div class="kpi-label">تم الإرسال</div>
+              <div class="kpi-icon">✓</div>
+            </div>
+            <div class="kpi-value">{{ kpi.submitted }}</div>
+            <div class="kpi-note">الطلبات المكتملة بنجاح</div>
+          </div>
+
+          <div class="kpi-card kpi-missing">
+            <div class="kpi-head">
+              <div class="kpi-label">غير مرسلين</div>
+              <div class="kpi-icon">!</div>
+            </div>
+            <div class="kpi-value">{{ kpi.not_submitted }}</div>
+            <div class="kpi-note">الفئة التي تتطلب متابعة</div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -347,68 +736,117 @@
       <div class="ui-toolbar">
         <form method="get" class="ui-toolbar-row">
           <div class="ui-toolbar-left">
-            <input class="ui-input" name="q" value="{{ q }}" placeholder="بحث: الاسم / السجل / القطاع / الجوال / المدرسة الحالية"
-                   style="width:min(380px,100%)">
+            <div class="ui-field">
+              <label class="ui-field-label">البحث</label>
+              <input
+                class="ui-input"
+                name="q"
+                value="{{ q }}"
+                placeholder="الاسم / السجل / القطاع / الجوال / المدرسة الحالية"
+                style="width:min(395px,100%)"
+              >
+            </div>
 
-            <select class="ui-select" name="mode" style="width:220px">
-              <option value="not_submitted" {% if mode == "not_submitted" %}selected{% endif %}>
-                لا يوجد طلب أو لم يرسل (الأوسع)
-              </option>
-              <option value="none" {% if mode == "none" %}selected{% endif %}>
-                لا يوجد له طلب (Application) نهائيًا
-              </option>
-              <option value="started" {% if mode == "started" %}selected{% endif %}>
-                بدأ (confirmed) ولم يرسل
-              </option>
-            </select>
+            <div class="ui-field">
+              <label class="ui-field-label">وضع التقرير</label>
+              <select class="ui-select" name="mode" style="width:240px">
+                <option value="not_submitted" {% if mode == "not_submitted" %}selected{% endif %}>
+                  لا يوجد طلب أو لم يُرسل
+                </option>
+                <option value="none" {% if mode == "none" %}selected{% endif %}>
+                  لا يوجد له طلب نهائيًا
+                </option>
+                <option value="started" {% if mode == "started" %}selected{% endif %}>
+                  بدأ ولم يُرسل
+                </option>
+              </select>
+            </div>
           </div>
 
           <div class="ui-toolbar-right">
             <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
-            <a class="ui-btn" href="{% url 'portal:admin_non_applicants' %}">مسح</a>
 
-            <a class="ui-btn" href="{% url 'portal:admin_non_applicants_csv' %}?q={{ q|urlencode }}&mode={{ mode|urlencode }}">
-              ⬇︎ CSV
+            <a class="ui-btn" href="{% url 'portal:admin_non_applicants' %}">
+              مسح
             </a>
 
-            <span class="ui-pill">
-              الإجمالي: <b>{{ total }}</b>
-            </span>
+            <a class="ui-btn ui-btn-export" href="{% url 'portal:admin_non_applicants_csv' %}?q={{ q|urlencode }}&mode={{ mode|urlencode }}">
+              ⬇︎ تصدير CSV
+            </a>
           </div>
         </form>
+      </div>
+
+      <div class="ui-summary">
+        <span class="ui-pill ui-pill-total">الإجمالي: <b>{{ total }}</b></span>
+
+        {% if q %}
+          <span class="ui-pill ui-pill-search">عبارة البحث: <b>{{ q }}</b></span>
+        {% endif %}
+
+        <span class="ui-pill ui-pill-filter">
+          الوضع:
+          <b>
+            {% if mode == "none" %}
+              لا يوجد له طلب نهائيًا
+            {% elif mode == "started" %}
+              بدأ ولم يُرسل
+            {% else %}
+              لا يوجد طلب أو لم يُرسل
+            {% endif %}
+          </b>
+        </span>
       </div>
 
       <div class="tbl-wrap">
         <table class="tbl">
           <thead>
             <tr>
-              <th style="width:70px">#</th>
-              <th style="width:280px">المتقدم</th>
-              <th style="width:140px">السجل</th>
-              <th style="width:140px">الجوال</th>
-              <th style="width:190px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:280px">المدرسة الحالية</th>
+              <th style="width:80px">#</th>
+              <th style="width:305px">المتقدم</th>
+              <th style="width:150px">السجل</th>
+              <th style="width:145px">الجوال</th>
+              <th style="width:200px">القطاع</th>
+              <th style="width:95px">الجنس</th>
+              <th style="width:290px">المدرسة الحالية</th>
             </tr>
           </thead>
+
           <tbody>
             {% for r in rows %}
               <tr>
-                <td class="ui-muted">{{ forloop.counter0|add:rows.start_index }}</td>
+                <td>
+                  <span class="row-no">{{ forloop.counter0|add:rows.start_index }}</span>
+                </td>
+
                 <td title="{{ r.full_name }}">
                   <span class="name">{{ r.full_name|default:"—" }}</span>
-                  <span class="sub">نشط: {% if r.is_active %}نعم{% else %}لا{% endif %}</span>
+                  <span class="sub">
+                    {% if r.is_active %}
+                      <span class="status-badge status-yes">● نشط</span>
+                    {% else %}
+                      <span class="status-badge status-no">● غير نشط</span>
+                    {% endif %}
+                    <span class="sub-note">سجل مرشح قابل للمتابعة</span>
+                  </span>
                 </td>
-                <td class="ui-muted">{{ r.national_id|default:"—" }}</td>
-                <td class="ui-muted">{{ r.mobile|default:"—" }}</td>
+
+                <td class="cell-soft">{{ r.national_id|default:"—" }}</td>
+                <td class="cell-strong">{{ r.mobile|default:"—" }}</td>
                 <td title="{{ r.sector }}">{{ r.sector|default:"—" }}</td>
                 <td>{{ r.gender|default:"—" }}</td>
                 <td title="{{ r.current_school }}">{{ r.current_school|default:"—" }}</td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="7" style="padding:16px; color:var(--min-muted); background:#fff;">
-                  لا توجد نتائج.
+                <td colspan="7" class="empty">
+                  <div class="empty-box">
+                    <div class="empty-icon">⌕</div>
+                    <div class="empty-title">لا توجد نتائج مطابقة</div>
+                    <div class="empty-sub">
+                      لم يتم العثور على بيانات ضمن وضع التقرير الحالي أو عبارة البحث المدخلة. يمكن تعديل الفلاتر أو إعادة ضبط البحث لعرض نتائج أخرى.
+                    </div>
+                  </div>
                 </td>
               </tr>
             {% endfor %}
@@ -417,15 +855,21 @@
       </div>
 
       <div class="ui-foot">
-        <div class="ui-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
+        <div class="page-chip">
+          الصفحة <b>{{ rows.number }}</b> من <b>{{ rows.paginator.num_pages }}</b>
+        </div>
 
         <div class="pager">
           {% if rows.has_previous %}
-            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">السابق</a>
+            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">
+              السابق
+            </a>
           {% endif %}
 
           {% if rows.has_next %}
-            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">التالي</a>
+            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">
+              التالي
+            </a>
           {% endif %}
         </div>
       </div>
