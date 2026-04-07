@@ -3,29 +3,23 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Confirm Data — Unified Ministerial Light Style
-     + Portal Countdown
-     بيانات المتقدم يمين — الإجراءات يسار
-  ========================================================= */
-
-  .cf, .cf *{
+  .upc, .upc *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
     font-weight:400 !important;
   }
 
-  .cf{
+  .upc{
     color:var(--min-ink);
     direction:rtl;
   }
 
-  .cf .wrap{
+  .upc .wrap{
     max-width:1100px;
     margin:0 auto;
   }
 
-  .cf .shell{
+  .upc .shell{
     border:1px solid rgba(211,221,212,.95);
     border-radius:22px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
@@ -33,26 +27,26 @@
     overflow:hidden;
   }
 
-  .cf .top{
+  .upc .top{
     position:relative;
     padding:16px 18px 14px;
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
     overflow:hidden;
   }
 
-  .cf .top::before{
+  .upc .top::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
   }
 
-  .cf .top::after{
+  .upc .top::after{
     content:"";
     position:absolute;
     inset:0;
@@ -62,12 +56,12 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
-  .cf .top > *{
+  .upc .top > *{
     position:relative;
     z-index:1;
   }
 
-  .cf h1{
+  .upc h1{
     margin:0;
     font-size:18px;
     font-weight:800 !important;
@@ -76,15 +70,15 @@
     line-height:1.35;
   }
 
-  .cf .sub{
+  .upc .sub{
     margin:5px 0 0;
     color:rgba(255,255,255,.82);
     font-size:10.6px;
-    line-height:1.75;
-    max-width:62ch;
+    line-height:1.8;
+    max-width:66ch;
   }
 
-  .cf .pill{
+  .upc .pill{
     display:inline-flex;
     align-items:center;
     gap:8px;
@@ -100,7 +94,7 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .cf .dot{
+  .upc .dot{
     width:8px;
     height:8px;
     border-radius:50%;
@@ -108,7 +102,156 @@
     box-shadow:0 0 0 3px rgba(200,160,74,.12);
   }
 
-  .cf .grid{
+  .upc .timer{
+    margin:12px;
+    margin-bottom:0;
+    border:1px solid rgba(214,223,214,.96);
+    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .upc .timer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .upc .timer-title{
+    margin:0;
+    font-size:10.6px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .upc .timer-state{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.2px;
+    font-weight:800 !important;
+    border:1px solid rgba(209,220,210,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    color:var(--min-ink-2);
+    white-space:nowrap;
+  }
+
+  .upc .timer-state::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:#15803d;
+    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    flex:0 0 auto;
+  }
+
+  .upc .timer-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:8px;
+  }
+
+  .upc .time-box{
+    border:1px solid rgba(218,226,218,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:14px;
+    padding:10px 8px;
+    text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .upc .time-num{
+    display:block;
+    font-size:18px;
+    line-height:1;
+    font-weight:900 !important;
+    letter-spacing:-.4px;
+    color:var(--min-green-2);
+  }
+
+  .upc .time-label{
+    display:block;
+    margin-top:6px;
+    font-size:9px;
+    color:var(--min-muted);
+    font-weight:700 !important;
+  }
+
+  .upc .timer-note{
+    margin-top:8px;
+    font-size:9.6px;
+    color:var(--min-muted);
+    line-height:1.8;
+  }
+
+  .upc .timer.is-warn{
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
+  }
+
+  .upc .timer.is-warn .timer-state{
+    color:#9a6708;
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  }
+
+  .upc .timer.is-warn .timer-state::before{
+    background:#d97706;
+    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  }
+
+  .upc .timer.is-warn .time-num{
+    color:#9a6708;
+  }
+
+  .upc .timer.is-danger{
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
+  }
+
+  .upc .timer.is-danger .timer-state{
+    color:#991b1b;
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffdfd,#fff7f7);
+  }
+
+  .upc .timer.is-danger .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upc .timer.is-danger .time-num{
+    color:#991b1b;
+  }
+
+  .upc .timer.is-expired{
+    border-color:var(--min-danger-line);
+    background:var(--min-danger-soft);
+  }
+
+  .upc .timer.is-expired .timer-state{
+    color:#7f1d1d;
+    border-color:rgba(185,28,28,.16);
+    background:#fff;
+  }
+
+  .upc .timer.is-expired .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upc .timer.is-expired .time-num{
+    color:#991b1b;
+  }
+
+  .upc .grid{
     padding:12px;
     display:grid;
     grid-template-columns:1.4fr .9fr;
@@ -116,7 +259,7 @@
     align-items:start;
   }
 
-  .cf .card{
+  .upc .card{
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
     border:1px solid rgba(217,226,217,.95);
     border-radius:18px;
@@ -124,7 +267,7 @@
     box-shadow:var(--min-shadow-soft);
   }
 
-  .cf .ch{
+  .upc .ch{
     padding:10px 12px;
     border-bottom:1px solid rgba(219,227,219,.92);
     display:flex;
@@ -134,14 +277,14 @@
     background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
-  .cf .ch h3{
+  .upc .ch h3{
     margin:0;
     font-size:11px;
     font-weight:800 !important;
     color:var(--min-green-2);
   }
 
-  .cf .tag{
+  .upc .tag{
     padding:4px 10px;
     min-height:28px;
     border-radius:999px;
@@ -155,78 +298,23 @@
     white-space:nowrap;
   }
 
-  .cf .cb{
+  .upc .cb{
     padding:12px;
   }
 
-  .cf .btn{
-    appearance:none;
-    border:1px solid rgba(211,221,212,.95);
-    cursor:pointer;
-    width:100%;
-    min-height:32px;
-    padding:6px 14px;
-    border-radius:999px;
-    font-size:10.2px;
-    font-weight:800 !important;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    text-decoration:none;
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    transition:transform .15s ease, opacity .15s ease, filter .15s ease;
-  }
-
-  .cf .btn.primary{
-    color:#fff;
-    border-color:var(--min-green-2);
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .cf .btn.secondary{
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-  }
-
-  .cf .btn:active{
-    transform:translateY(1px);
-  }
-
-  .cf .btn[disabled],
-  .cf .btn.is-disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    transform:none;
-    pointer-events:none;
-    filter:grayscale(.10);
-  }
-
-  .cf .hint{
-    margin-top:10px;
-    padding:10px 12px;
-    border-radius:16px;
-    border:1px dashed rgba(205,216,206,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    color:var(--min-muted);
-    font-size:9.6px;
-    line-height:1.8;
-  }
-
-  .cf .fields{
+  .upc .fields{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
-  .cf .f{
+  .upc .f{
     display:flex;
     flex-direction:column;
     gap:5px;
   }
 
-  .cf .lbl{
+  .upc .lbl{
     font-size:9.8px;
     color:var(--min-green-2);
     font-weight:800 !important;
@@ -234,7 +322,7 @@
     line-height:1.4;
   }
 
-  .cf .val{
+  .upc .val{
     width:100%;
     min-height:40px;
     padding:9px 11px;
@@ -250,175 +338,57 @@
     word-break:break-word;
   }
 
-  .cf .note{
+  .upc .note{
     margin-top:10px;
     padding:10px 12px;
     border-radius:16px;
-    border:1px solid var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
-    color:#14532d;
-    font-size:9.8px;
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
+    font-size:9.6px;
     line-height:1.8;
   }
 
-  .cf .note b{
+  .upc .btn{
+    appearance:none;
+    border:1px solid rgba(211,221,212,.95);
+    cursor:pointer;
+    width:100%;
+    min-height:36px;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:10.4px;
     font-weight:800 !important;
-  }
-
-  /* =========================
-     Countdown
-  ========================= */
-
-  .cf .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
-    background:linear-gradient(180deg, #fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
-    padding:12px;
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .cf .timer-head{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:center;
     gap:10px;
-    margin-bottom:8px;
+    text-decoration:none;
+    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    transition:transform .15s ease, opacity .15s ease, filter .15s ease;
   }
 
-  .cf .timer-title{
-    margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+  .upc .btn.primary{
+    color:#fff;
+    border-color:var(--min-green-2);
+    background:linear-gradient(180deg,var(--min-green-3),var(--min-green-2));
+    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
   }
 
-  .cf .timer-state{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:26px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
-    white-space:nowrap;
+  .upc .btn:active{
+    transform:translateY(1px);
   }
 
-  .cf .timer-state::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
-    flex:0 0 auto;
+  .upc .btn[disabled],
+  .upc .btn.is-disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+    pointer-events:none;
+    filter:grayscale(.10);
   }
 
-  .cf .timer-grid{
-    display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:8px;
-  }
-
-  .cf .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
-    padding:10px 8px;
-    text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .cf .time-num{
-    display:block;
-    font-size:18px;
-    line-height:1;
-    font-weight:900 !important;
-    letter-spacing:-.4px;
-    color:var(--min-green-2);
-  }
-
-  .cf .time-label{
-    display:block;
-    margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
-    font-weight:700 !important;
-  }
-
-  .cf .timer-note{
-    margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
-    line-height:1.8;
-  }
-
-  .cf .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
-  }
-
-  .cf .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
-  }
-
-  .cf .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
-  }
-
-  .cf .timer.is-warn .time-num{
-    color:#9a6708;
-  }
-
-  .cf .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
-  }
-
-  .cf .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
-  }
-
-  .cf .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .cf .timer.is-danger .time-num{
-    color:#991b1b;
-  }
-
-  .cf .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
-  }
-
-  .cf .timer.is-expired .timer-state{
-    color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
-    background:#fff;
-  }
-
-  .cf .timer.is-expired .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .cf .timer.is-expired .time-num{
-    color:#991b1b;
-  }
-
-  .cf .expired-inline{
+  .upc .expired-inline{
     display:none;
     margin-top:10px;
     border:1px solid var(--min-danger-line);
@@ -431,51 +401,50 @@
     font-weight:700 !important;
   }
 
-  .cf .expired-inline.show{
+  .upc .expired-inline.show{
     display:block;
   }
 
   @media (max-width: 980px){
-    .cf .grid{
+    .upc .grid{
       grid-template-columns:1fr;
     }
 
-    .cf .fields{
+    .upc .fields{
       grid-template-columns:1fr;
     }
   }
 
   @media (max-width: 640px){
-    .cf .top{
+    .upc .top{
       padding:13px 14px;
-      border-radius:0;
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .cf h1{
+    .upc h1{
       font-size:16px;
     }
 
-    .cf .pill{
+    .upc .pill{
       display:none;
     }
 
-    .cf .grid{
+    .upc .grid{
       padding:10px;
     }
 
-    .cf .cb{
+    .upc .cb{
       padding:10px;
     }
 
-    .cf .timer{
+    .upc .timer{
       margin:10px;
       margin-bottom:0;
     }
 
-    .cf .timer-grid{
-      grid-template-columns:repeat(2, minmax(0,1fr));
+    .upc .timer-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 </style>
@@ -582,7 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
 {% endblock %}
 
 {% block content %}
-<div class="cf">
+<div class="upc">
   <div class="wrap">
     <div class="shell">
 
@@ -590,19 +559,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <div>
           <h1>تأكيد البيانات</h1>
           <p class="sub">
-            هذه البيانات معروضة من ملف الإكسل (بعد الاستيراد) حسب رقم الهوية.
-            يرجى التأكد من صحتها قبل المتابعة لاختيار الرغبات.
+            هذه البيانات معروضة من ملف الإكسل حسب رقم الهوية، ويرجى التأكد من صحتها قبل الانتقال إلى خطوة ترتيب الرغبات.
           </p>
         </div>
         <div class="pill"><span class="dot"></span>بيانات المتقدم</div>
       </div>
 
       {% if portal_show_countdown %}
-      <div
-        class="timer"
-        data-portal-timer
-        data-closes-at="{{ portal_closes_at_iso }}"
-      >
+      <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
         <div class="timer-head">
           <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
           <div class="timer-state" data-timer-state>مفتوح الآن</div>
@@ -635,7 +599,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div class="grid">
 
-        <!-- RIGHT: data -->
         <div class="card">
           <div class="ch">
             <h3>بيانات المتقدم</h3>
@@ -644,39 +607,36 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="cb">
             <div class="fields">
               {% for f in fields %}
-                <div class="f">
-                  <div class="lbl">{{ f.label }}</div>
-                  <div class="val">{{ f.value }}</div>
-                </div>
+              <div class="f">
+                <div class="lbl">{{ f.label }}</div>
+                <div class="val">{{ f.value }}</div>
+              </div>
               {% endfor %}
             </div>
 
             <div class="note">
-              <b>ملاحظة:</b>
-              إذا كان هناك خطأ في رقم الجوال أو البيانات، الرجاء مراجعة الجهة المختصة قبل اعتماد الطلب.
+              إذا كان هناك خطأ في البيانات أو رقم الجوال، فيرجى مراجعة الجهة المختصة قبل اعتماد الطلب.
             </div>
           </div>
         </div>
 
-        <!-- LEFT: actions -->
         <div class="card">
           <div class="ch">
             <h3>إجراءات</h3>
-            <span class="tag">خطوة 1/3</span>
+            <span class="tag">الخطوة 1 من 2</span>
           </div>
           <div class="cb">
             <form method="post" style="display:grid;gap:10px;">
               {% csrf_token %}
               <button class="btn primary" data-next-btn type="submit">أؤكد صحة البيانات وأتابع</button>
-              <a class="btn secondary" href="{% url 'portal:login' %}">رجوع</a>
             </form>
 
             <div class="expired-inline" data-expired-inline>
               انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
             </div>
 
-            <div class="hint">
-              بعد التأكيد سيتم فتح صفحة اختيار الرغبات، ولن تظهر هذه الخطوة مرة أخرى لنفس المتقدم.
+            <div class="note">
+              بعد التأكيد سيتم فتح صفحة ترتيب الرغبات لاستكمال الطلب.
             </div>
           </div>
         </div>

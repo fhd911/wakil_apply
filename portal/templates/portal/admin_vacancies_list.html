@@ -7,6 +7,7 @@
      Vacancies List — Unified Ministerial Light Style
      ✅ تحديث:
      - إضافة أعمدة الإقبال: (إجمالي الراغبين / رغبة أولى / ترشيحات نهائية)
+     - إضافة أزرار: تعطيل جميع المدارس / تفعيل جميع المدارس
   ========================================================= */
 
   :root{
@@ -63,9 +64,6 @@
     position:relative;
   }
 
-  /* =========================
-     Header
-  ========================= */
   .ui-top{
     margin-bottom:12px;
     padding:14px 18px;
@@ -75,6 +73,11 @@
     box-shadow:var(--min-shadow-strong);
     position:relative;
     overflow:hidden;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
   }
 
   .ui-top::before{
@@ -95,11 +98,17 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
+  .ui-top > *{
+    position:relative;
+    z-index:1;
+  }
+
   .ui-title{
     font-size:20px !important;
     font-weight:800 !important;
     letter-spacing:-.2px;
     color:#fff !important;
+    margin:0;
   }
 
   .ui-subtitle{
@@ -116,9 +125,11 @@
     align-items:center;
   }
 
-  /* =========================
-     Cards / toolbar
-  ========================= */
+  .ui-inline-form{
+    margin:0;
+    display:inline-flex;
+  }
+
   .ui-card{
     border:1px solid rgba(211,221,212,.95) !important;
     border-radius:22px !important;
@@ -198,9 +209,6 @@
     box-shadow:0 0 0 3px rgba(200,160,74,.12);
   }
 
-  /* =========================
-     Buttons / inputs
-  ========================= */
   .ui-btn{
     min-height:30px;
     padding:5px 10px;
@@ -277,9 +285,6 @@
     box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  /* =========================
-     Table
-  ========================= */
   .vac-list-wrap{
     overflow:auto;
     background:#fff;
@@ -289,7 +294,7 @@
 
   .vac-list-table{
     width:100%;
-    min-width:1460px; /* ✅ زادت بسبب أعمدة الإقبال */
+    min-width:1460px;
     border-collapse:separate;
     border-spacing:0;
     table-layout:fixed;
@@ -382,7 +387,6 @@
     justify-content:center;
   }
 
-  /* ✅ Chips counts */
   .cnt{
     display:inline-flex;
     align-items:center;
@@ -412,9 +416,6 @@
     color:var(--min-ok);
   }
 
-  /* =========================
-     Responsive
-  ========================= */
   @media (max-width: 900px){
     .ui-toolbar-row{
       grid-template-columns:1fr;
@@ -467,7 +468,7 @@
     <div class="ui-top">
       <div class="ui-title-wrap">
         <h1 class="ui-title">إدارة الشواغر / المدارس</h1>
-        <p class="ui-subtitle">إضافة، تعديل، فتح وإغلاق الشاغر — الحذف النهائي للسوبر فقط.</p>
+        <p class="ui-subtitle">إضافة، تعديل، فتح وإغلاق الشاغر — مع دعم الفتح والإغلاق الجماعي، والحذف النهائي للسوبر فقط.</p>
       </div>
 
       <div class="ui-actions">
@@ -485,6 +486,22 @@
           <span class="ui-btn-icon">👤</span>
           إدارة المتقدمين
         </a>
+
+        <form method="post" action="{% url 'portal:admin_vacancies_enable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد فتح جميع المدارس؟');">
+          {% csrf_token %}
+          <button class="ui-btn ui-btn-primary" type="submit">
+            <span class="ui-btn-icon">✓</span>
+            تفعيل جميع المدارس
+          </button>
+        </form>
+
+        <form method="post" action="{% url 'portal:admin_vacancies_disable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد إغلاق جميع المدارس؟');">
+          {% csrf_token %}
+          <button class="ui-btn ui-btn-danger" type="submit">
+            <span class="ui-btn-icon">✕</span>
+            تعطيل جميع المدارس
+          </button>
+        </form>
       </div>
     </div>
 
@@ -545,12 +562,9 @@
               <th style="width:90px">الجنس</th>
               <th style="width:120px">المرحلة</th>
               <th style="width:95px">الاحتياج</th>
-
-              <!-- ✅ أعمدة الإقبال -->
               <th style="width:110px">الراغبون</th>
               <th style="width:110px">رغبة أولى</th>
               <th style="width:120px">ترشيحات نهائية</th>
-
               <th style="width:100px">الحالة</th>
               <th class="vac-col-actions">إجراءات</th>
             </tr>
@@ -590,7 +604,6 @@
                 <span class="ui-pill">{{ v.deputy_need|default:"0" }}</span>
               </td>
 
-              <!-- ✅ counts -->
               <td>
                 <span class="cnt">{{ v.interested_total|default:0 }}</span>
               </td>

@@ -3,30 +3,28 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Receipt Page — Unified Ministerial Light Style
-     + Portal Countdown
-     نسخة نهائية + طباعة مختصرة من صفحة واحدة
-  ========================================================= */
-
-  .rc, .rc *{
+  .upd, .upd *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
     font-weight:400 !important;
   }
 
-  .rc{
+  .upd{
     direction:rtl;
     color:var(--min-ink);
-    font-size:13px;
   }
 
-  .rc .wrap{
-    max-width:900px;
+  .upd .wrap{
+    max-width:1100px;
     margin:0 auto;
   }
 
-  .rc .shell{
+  .upd .panel{
+    width:min(100%, 900px);
+    margin:22px auto 0;
+  }
+
+  .upd .shell{
     border:1px solid rgba(211,221,212,.95);
     border-radius:22px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
@@ -34,26 +32,26 @@
     overflow:hidden;
   }
 
-  .rc .top{
+  .upd .top{
     position:relative;
     padding:16px 18px 14px;
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
     overflow:hidden;
   }
 
-  .rc .top::before{
+  .upd .top::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
   }
 
-  .rc .top::after{
+  .upd .top::after{
     content:"";
     position:absolute;
     inset:0;
@@ -63,12 +61,12 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
-  .rc .top > *{
+  .upd .top > *{
     position:relative;
     z-index:1;
   }
 
-  .rc .title{
+  .upd h1{
     margin:0;
     font-size:18px;
     font-weight:800 !important;
@@ -77,15 +75,15 @@
     line-height:1.35;
   }
 
-  .rc .sub{
+  .upd .sub{
     margin:5px 0 0;
     color:rgba(255,255,255,.82);
     font-size:10.6px;
     line-height:1.8;
-    max-width:62ch;
+    max-width:64ch;
   }
 
-  .rc .pill{
+  .upd .pill{
     display:inline-flex;
     align-items:center;
     gap:8px;
@@ -101,29 +99,179 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .rc .dot{
+  .upd .dot{
     width:8px;
     height:8px;
-    border-radius:50%;
+    border-radius:999px;
     background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
     box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    flex:0 0 auto;
   }
 
-  .rc .body{
+  .upd .timer{
+    margin:12px;
+    margin-bottom:0;
+    border:1px solid rgba(214,223,214,.96);
+    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .upd .timer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .upd .timer-title{
+    margin:0;
+    font-size:10.6px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .upd .timer-state{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.2px;
+    font-weight:800 !important;
+    border:1px solid rgba(209,220,210,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    color:var(--min-ink-2);
+    white-space:nowrap;
+  }
+
+  .upd .timer-state::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:#15803d;
+    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    flex:0 0 auto;
+  }
+
+  .upd .timer-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:8px;
+  }
+
+  .upd .time-box{
+    border:1px solid rgba(218,226,218,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:14px;
+    padding:10px 8px;
+    text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .upd .time-num{
+    display:block;
+    font-size:18px;
+    line-height:1;
+    font-weight:900 !important;
+    letter-spacing:-.4px;
+    color:var(--min-green-2);
+  }
+
+  .upd .time-label{
+    display:block;
+    margin-top:6px;
+    font-size:9px;
+    color:var(--min-muted);
+    font-weight:700 !important;
+  }
+
+  .upd .timer-note{
+    margin-top:8px;
+    font-size:9.6px;
+    color:var(--min-muted);
+    line-height:1.8;
+  }
+
+  .upd .timer.is-warn{
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
+  }
+
+  .upd .timer.is-warn .timer-state{
+    color:#9a6708;
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  }
+
+  .upd .timer.is-warn .timer-state::before{
+    background:#d97706;
+    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  }
+
+  .upd .timer.is-warn .time-num{
+    color:#9a6708;
+  }
+
+  .upd .timer.is-danger{
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
+  }
+
+  .upd .timer.is-danger .timer-state{
+    color:#991b1b;
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffdfd,#fff7f7);
+  }
+
+  .upd .timer.is-danger .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upd .timer.is-danger .time-num{
+    color:#991b1b;
+  }
+
+  .upd .timer.is-expired{
+    border-color:var(--min-danger-line);
+    background:var(--min-danger-soft);
+  }
+
+  .upd .timer.is-expired .timer-state{
+    color:#7f1d1d;
+    border-color:rgba(185,28,28,.16);
+    background:#fff;
+  }
+
+  .upd .timer.is-expired .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upd .timer.is-expired .time-num{
+    color:#991b1b;
+  }
+
+  .upd .body{
     padding:12px;
     display:grid;
     gap:12px;
   }
 
-  .rc .card{
+  .upd .card{
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
     border:1px solid rgba(217,226,217,.95);
     border-radius:18px;
     overflow:hidden;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
     box-shadow:var(--min-shadow-soft);
   }
 
-  .rc .ch{
+  .upd .ch{
     padding:10px 12px;
     border-bottom:1px solid rgba(219,227,219,.92);
     display:flex;
@@ -133,14 +281,14 @@
     background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
-  .rc .ch h3{
+  .upd .ch h3{
     margin:0;
     font-size:11px;
     font-weight:800 !important;
     color:var(--min-green-2);
   }
 
-  .rc .tag{
+  .upd .tag{
     padding:4px 10px;
     min-height:28px;
     border-radius:999px;
@@ -154,11 +302,11 @@
     white-space:nowrap;
   }
 
-  .rc .cb{
+  .upd .cb{
     padding:12px;
   }
 
-  .rc .alert{
+  .upd .alert{
     border:1px solid var(--min-danger-line);
     background:var(--min-danger-soft);
     color:#991b1b;
@@ -168,14 +316,14 @@
     line-height:1.8;
   }
 
-  .rc .hero{
+  .upd .hero{
     display:grid;
     grid-template-columns:auto 1fr;
     gap:12px;
     align-items:start;
   }
 
-  .rc .badge{
+  .upd .badge{
     width:62px;
     height:62px;
     border-radius:18px;
@@ -190,7 +338,7 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .rc .hero-title{
+  .upd .hero-title{
     margin:0;
     font-size:16px;
     line-height:1.5;
@@ -198,20 +346,23 @@
     font-weight:800 !important;
   }
 
-  .rc .hero-sub{
+  .upd .hero-sub{
     margin:5px 0 0;
     color:var(--min-muted);
     font-size:10.1px;
     line-height:1.9;
   }
 
-  .rc .grid{
+  .upd .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
-  .rc .field{
+  .upd .field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
     border:1px solid rgba(217,226,217,.95);
     border-radius:16px;
     padding:10px;
@@ -219,16 +370,15 @@
     box-shadow:var(--min-shadow-soft);
   }
 
-  .rc .field label{
+  .upd .field label{
     display:block;
-    margin-bottom:6px;
     font-size:10.4px;
     font-weight:800 !important;
     color:var(--min-green-2);
     line-height:1.4;
   }
 
-  .rc .input{
+  .upd .input{
     width:100%;
     min-height:40px;
     padding:9px 11px;
@@ -241,83 +391,81 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .rc .list{
+  .upd .list{
     display:grid;
     gap:10px;
   }
 
-  .rc .item{
-    border:1px solid rgba(217,226,217,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:16px;
-    padding:10px;
+  .upd .item{
     display:flex;
     align-items:center;
     gap:10px;
-    box-shadow:var(--min-shadow-soft);
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:16px;
+    padding:10px 12px;
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
   }
 
-  .rc .rank{
-    min-width:40px;
-    height:34px;
+  .upd .rank{
+    min-width:42px;
+    height:36px;
     border-radius:12px;
     display:flex;
     align-items:center;
     justify-content:center;
     background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    font-weight:800 !important;
     border:1px solid rgba(239,225,187,.95);
-    flex:0 0 auto;
+    color:#7f5d1a;
     font-size:10px;
+    font-weight:800 !important;
+    flex:0 0 auto;
   }
 
-  .rc .meta{
+  .upd .meta{
+    min-width:0;
     display:flex;
     flex-direction:column;
     gap:3px;
-    min-width:0;
   }
 
-  .rc .nm{
-    font-weight:800 !important;
-    line-height:1.5;
+  .upd .nm{
     font-size:10.8px;
+    font-weight:800 !important;
     color:var(--min-green-1);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
-  .rc .sm{
+  .upd .sm{
     color:var(--min-muted);
     font-size:9.4px;
     line-height:1.8;
   }
 
-  .rc .note{
+  .upd .note{
     margin-top:12px;
     padding:10px 12px;
     border-radius:16px;
-    border:1px solid var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
-    color:#14532d;
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
     font-size:9.8px;
     line-height:1.9;
   }
 
-  .rc .note b{
+  .upd .note b{
     font-weight:800 !important;
   }
 
-  .rc .actions{
+  .upd .actions{
     display:flex;
     gap:10px;
     flex-wrap:wrap;
     margin-top:12px;
   }
 
-  .rc .btn{
+  .upd .btn{
     appearance:none;
     border:1px solid rgba(211,221,212,.95);
     cursor:pointer;
@@ -334,170 +482,12 @@
     box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .rc .btn.gold{
+  .upd .btn.gold{
     background:linear-gradient(180deg,#fffdf7,#fff8ea);
     color:#7f5d1a;
     border-color:rgba(239,225,187,.95);
   }
 
-  /* =========================
-     Countdown
-  ========================= */
-
-  .rc .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
-    background:linear-gradient(180deg, #fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
-    padding:12px;
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .rc .timer-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:8px;
-  }
-
-  .rc .timer-title{
-    margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
-  }
-
-  .rc .timer-state{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:26px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
-    white-space:nowrap;
-  }
-
-  .rc .timer-state::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
-    flex:0 0 auto;
-  }
-
-  .rc .timer-grid{
-    display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:8px;
-  }
-
-  .rc .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
-    padding:10px 8px;
-    text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .rc .time-num{
-    display:block;
-    font-size:18px;
-    line-height:1;
-    font-weight:900 !important;
-    letter-spacing:-.4px;
-    color:var(--min-green-2);
-  }
-
-  .rc .time-label{
-    display:block;
-    margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
-    font-weight:700 !important;
-  }
-
-  .rc .timer-note{
-    margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
-    line-height:1.8;
-  }
-
-  .rc .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
-  }
-
-  .rc .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
-  }
-
-  .rc .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
-  }
-
-  .rc .timer.is-warn .time-num{
-    color:#9a6708;
-  }
-
-  .rc .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
-  }
-
-  .rc .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
-  }
-
-  .rc .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .rc .timer.is-danger .time-num{
-    color:#991b1b;
-  }
-
-  .rc .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
-  }
-
-  .rc .timer.is-expired .timer-state{
-    color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
-    background:#fff;
-  }
-
-  .rc .timer.is-expired .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .rc .timer.is-expired .time-num{
-    color:#991b1b;
-  }
-
-  /* =========================================================
-     PRINT
-     يطبع فقط: إشعار الاستلام + ملخص الطلب
-     ويخفي قائمة الرغبات وزر الطباعة والعداد
-  ========================================================= */
   @media print {
     @page{
       size:A4;
@@ -514,21 +504,23 @@
       visibility:hidden;
     }
 
-    .rc, .rc *{
+    .upd, .upd *{
       visibility:visible;
     }
 
-    .rc{
+    .upd{
       font-size:12px !important;
       color:#000 !important;
     }
 
-    .rc .wrap{
+    .upd .wrap,
+    .upd .panel{
       max-width:100% !important;
+      width:100% !important;
       margin:0 !important;
     }
 
-    .rc .shell{
+    .upd .shell{
       border:0 !important;
       box-shadow:none !important;
       border-radius:0 !important;
@@ -536,7 +528,7 @@
       overflow:visible !important;
     }
 
-    .rc .top{
+    .upd .top{
       background:#fff !important;
       color:#000 !important;
       padding:0 0 10px 0 !important;
@@ -544,31 +536,31 @@
       display:block !important;
     }
 
-    .rc .top::before,
-    .rc .top::after,
-    .rc .pill,
-    .rc .actions,
-    .rc .timer{
+    .upd .top::before,
+    .upd .top::after,
+    .upd .pill,
+    .upd .actions,
+    .upd .timer{
       display:none !important;
     }
 
-    .rc .title{
+    .upd h1{
       color:#000 !important;
       font-size:18px !important;
     }
 
-    .rc .sub{
+    .upd .sub{
       color:#444 !important;
       font-size:11px !important;
       max-width:none !important;
     }
 
-    .rc .body{
+    .upd .body{
       padding:10px 0 0 0 !important;
       gap:10px !important;
     }
 
-    .rc .card{
+    .upd .card{
       border:1px solid #d1d5db !important;
       box-shadow:none !important;
       break-inside:avoid;
@@ -577,56 +569,56 @@
       border-radius:12px !important;
     }
 
-    .rc .ch{
+    .upd .ch{
       background:#fff !important;
       border-bottom:1px solid #d1d5db !important;
     }
 
-    .rc .ch h3,
-    .rc .hero-title,
-    .rc .field label{
+    .upd .ch h3,
+    .upd .hero-title,
+    .upd .field label{
       color:#000 !important;
     }
 
-    .rc .tag,
-    .rc .badge,
-    .rc .note{
+    .upd .tag,
+    .upd .badge,
+    .upd .note{
       background:#fff !important;
       color:#000 !important;
       border:1px solid #d1d5db !important;
       box-shadow:none !important;
     }
 
-    .rc .hero{
+    .upd .hero{
       grid-template-columns:1fr !important;
       gap:8px !important;
     }
 
-    .rc .badge{
+    .upd .badge{
       width:46px !important;
       height:46px !important;
       font-size:22px !important;
       border-radius:12px !important;
     }
 
-    .rc .hero-sub{
+    .upd .hero-sub{
       color:#444 !important;
       font-size:10px !important;
     }
 
-    .rc .grid{
+    .upd .grid{
       grid-template-columns:1fr 1fr !important;
       gap:8px !important;
     }
 
-    .rc .field{
+    .upd .field{
       box-shadow:none !important;
       background:#fff !important;
       border:1px solid #d1d5db !important;
       border-radius:10px !important;
     }
 
-    .rc .input{
+    .upd .input{
       background:#fff !important;
       border:1px solid #d1d5db !important;
       color:#000 !important;
@@ -634,58 +626,63 @@
       min-height:36px !important;
     }
 
-    .rc .prefs-card{
+    .upd .prefs-card{
       display:none !important;
     }
 
-    .rc .receipt-card,
-    .rc .summary-card{
+    .upd .receipt-card,
+    .upd .summary-card{
       display:block !important;
     }
   }
 
   @media (max-width: 700px){
-    .rc .grid{
+    .upd .panel{
+      width:min(100%, 100%);
+      margin-top:10px;
+    }
+
+    .upd .grid{
       grid-template-columns:1fr;
     }
 
-    .rc .top{
+    .upd .top{
       padding:13px 14px;
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .rc .title{
+    .upd h1{
       font-size:16px;
     }
 
-    .rc .body{
+    .upd .body{
       padding:10px;
     }
 
-    .rc .hero{
+    .upd .hero{
       grid-template-columns:1fr;
     }
 
-    .rc .actions{
+    .upd .actions{
       flex-direction:column;
     }
 
-    .rc .btn{
+    .upd .btn{
       width:100%;
     }
 
-    .rc .pill{
+    .upd .pill{
       display:none;
     }
 
-    .rc .timer{
+    .upd .timer{
       margin:10px;
       margin-bottom:0;
     }
 
-    .rc .timer-grid{
-      grid-template-columns:repeat(2, minmax(0,1fr));
+    .upd .timer-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 </style>
@@ -776,58 +773,55 @@ document.addEventListener("DOMContentLoaded", () => {
 {% endblock %}
 
 {% block content %}
-<div class="rc">
+<div class="upd">
   <div class="wrap">
-    <div class="shell">
+    <div class="panel">
+      <div class="shell">
 
-      <div class="top">
-        <div>
-          <h1 class="title">تم إرسال طلبك بنجاح</h1>
-          <p class="sub">
-            تم حفظ رغباتك واعتماد الإرسال النهائي بنجاح. يرجى الاحتفاظ بهذه الصفحة كإشعار استلام لطلبك.
-          </p>
-        </div>
-        <div class="pill"><span class="dot"></span>تم الاستلام</div>
-      </div>
-
-      {% if portal_show_countdown %}
-      <div
-        class="timer"
-        data-portal-timer
-        data-closes-at="{{ portal_closes_at_iso }}"
-      >
-        <div class="timer-head">
-          <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-          <div class="timer-state" data-timer-state>مفتوح الآن</div>
+        <div class="top">
+          <div>
+            <h1>تم إرسال طلبك بنجاح</h1>
+            <p class="sub">
+              تم حفظ رغباتك واعتماد الإرسال النهائي بنجاح. يرجى الاحتفاظ بهذه الصفحة كإشعار استلام لطلبك.
+            </p>
+          </div>
+          <div class="pill"><span class="dot"></span>تم الاستلام</div>
         </div>
 
-        <div class="timer-grid">
-          <div class="time-box">
-            <span class="time-num" id="cdDays">00</span>
-            <span class="time-label">يوم</span>
+        {% if portal_show_countdown %}
+        <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
+          <div class="timer-head">
+            <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
+            <div class="timer-state" data-timer-state>مفتوح الآن</div>
           </div>
-          <div class="time-box">
-            <span class="time-num" id="cdHours">00</span>
-            <span class="time-label">ساعة</span>
+
+          <div class="timer-grid">
+            <div class="time-box">
+              <span class="time-num" id="cdDays">00</span>
+              <span class="time-label">يوم</span>
+            </div>
+            <div class="time-box">
+              <span class="time-num" id="cdHours">00</span>
+              <span class="time-label">ساعة</span>
+            </div>
+            <div class="time-box">
+              <span class="time-num" id="cdMinutes">00</span>
+              <span class="time-label">دقيقة</span>
+            </div>
+            <div class="time-box">
+              <span class="time-num" id="cdSeconds">00</span>
+              <span class="time-label">ثانية</span>
+            </div>
           </div>
-          <div class="time-box">
-            <span class="time-num" id="cdMinutes">00</span>
-            <span class="time-label">دقيقة</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdSeconds">00</span>
-            <span class="time-label">ثانية</span>
+
+          <div class="timer-note" data-timer-note">
+            يمكنك الاحتفاظ بهذه الصفحة كإشعار استلام، وسيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
           </div>
         </div>
+        {% endif %}
 
-        <div class="timer-note" data-timer-note>
-          يمكنك الاحتفاظ بهذه الصفحة كإشعار استلام، وسيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="body">
-        {% if app %}
+        <div class="body">
+          {% if app %}
 
           <div class="card receipt-card">
             <div class="ch">
@@ -884,26 +878,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="card prefs-card">
             <div class="ch">
-              <h3>رغباتك المعتمدة</h3>
+              <h3>الرغبات المعتمدة</h3>
               <span class="tag">مرتبة</span>
             </div>
             <div class="cb">
               {% if prefs %}
-                <div class="list">
-                  {% for p in prefs %}
-                  <div class="item">
-                    <div class="rank">{{ p.rank }}</div>
-                    <div class="meta">
-                      <div class="nm">{{ p.vacancy.school_name }}</div>
-                      <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
-                    </div>
+              <div class="list">
+                {% for p in prefs %}
+                <div class="item">
+                  <div class="rank">{{ p.rank }}</div>
+                  <div class="meta">
+                    <div class="nm">{{ p.vacancy.school_name }}</div>
+                    <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
                   </div>
-                  {% endfor %}
                 </div>
+                {% endfor %}
+              </div>
               {% else %}
-                <div class="field">
-                  <div class="sm">لم يتم العثور على رغبات مرتبطة بهذا الطلب.</div>
-                </div>
+              <div class="alert">لم يتم العثور على رغبات مرتبطة بهذا الطلب.</div>
               {% endif %}
 
               <div class="actions">
@@ -912,11 +904,12 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           </div>
 
-        {% else %}
+          {% else %}
           <div class="alert">لا يوجد طلب مرتبط.</div>
-        {% endif %}
-      </div>
+          {% endif %}
+        </div>
 
+      </div>
     </div>
   </div>
 </div>

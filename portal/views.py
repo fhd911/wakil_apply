@@ -175,6 +175,163 @@ def _eligible_schools_for(applicant: Applicant):
     )
 
 
+def _is_final_submission_locked(app: Application | None) -> bool:
+    return bool(app and app.locked and app.status == "submitted")
+
+
+def _build_preferences_context(*, applicant: Applicant, app: Application, win: PortalWindow, schools, selected_prefs, selected_ids, error: str = "") -> dict:
+    available_count = schools.count()
+    min_required = 5 if available_count >= 5 else available_count
+
+    if available_count == 0:
+        selection_hint = "لا توجد شواغر متاحة حاليًا في قطاعك."
+    elif available_count >= 5:
+        selection_hint = "الحد الأدنى لاختيار الرغبات هو 5 رغبات، ويمكنك اختيار أكثر من ذلك حسب الشواغر المتاحة."
+    elif available_count == 1:
+        selection_hint = "يوجد شاغر واحد فقط متاح في قطاعك، ويكفي اختيار هذه الرغبة لإكمال التقديم."
+    else:
+        selection_hint = f"عدد الشواغر المتاحة في قطاعك هو {available_count} فقط، لذا يجب اختيار جميع الشواغر المتاحة."
+
+    ctx = {
+        "a": applicant,
+        "app": app,
+        "schools": schools,
+        "selected_prefs": selected_prefs,
+        "selected_ids": selected_ids,
+        "closed_msg": "",
+        "available_count": available_count,
+        "min_required": min_required,
+        "selection_hint": selection_hint,
+    }
+    if error:
+        ctx["error"] = error
+    ctx.update(_portal_timer_context(win))
+    return ctx
+
+
+def _save_uploaded_file(uploaded_file, prefix: str) -> str:
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+    path = os.path.join(settings.MEDIA_ROOT, f"{prefix}__{uploaded_file.name}")
+    with open(path, "wb+") as out:
+        for chunk in uploaded_file.chunks():
+            out.write(chunk)
+    return path
+
+
+def _reset_new_applicants_assignments():
+    apps = list(
+        Application.objects
+        .select_related("applicant", "achieved_pref__vacancy")
+        .all()
+    )
+    apps = [app for app in apps if not _is_official_proxy(app.applicant)]
+
+    released_vacancy_ids: set[int] = set()
+    app_ids: list[int] = []
+
+    for app in apps:
+        app_ids.append(app.id)
+        if (
+            getattr(app, "achieved_pref_id", None)
+            and getattr(app, "achieved_pref", None)
+            and getattr(app.achieved_pref, "vacancy_id", None)
+        ):
+            released_vacancy_ids.add(app.achieved_pref.vacancy_id)
+
+    if released_vacancy_ids and app_ids:
+        SchoolVacancy.objects.filter(
+            id__in=released_vacancy_ids,
+            reserved_application_id__in=app_ids,
+        ).update(
+            reserved_application=None,
+            reserved_at=None,
+        )
+
+    if app_ids:
+        Application.objects.filter(id__in=app_ids).update(
+            achieved_pref=None,
+            achieved_at=None,
+            achieved_by=None,
+        )
+
+
+def _run_new_applicants_sorting(*, decided_by):
+    base_qs = (
+        Application.objects
+        .select_related("applicant")
+        .prefetch_related("prefs", "prefs__vacancy")
+        .filter(
+            applicant__is_active=True,
+            status="submitted",
+        )
+        .order_by("submitted_at", "id")
+    )
+
+    applications = [app for app in base_qs if not _is_official_proxy(app.applicant)]
+
+    if not applications:
+        return {
+            "applications": 0,
+            "assigned": 0,
+            "unassigned": 0,
+            "available_vacancies": 0,
+        }
+
+    _reset_new_applicants_assignments()
+
+    vacancy_map = {
+        v.id: v
+        for v in SchoolVacancy.objects.filter(
+            is_open=True,
+            reserved_application__isnull=True,
+        ).exclude(deputy_need=0)
+    }
+
+    assigned = 0
+
+    for app in applications:
+        applicant = app.applicant
+        prefs = list(
+            app.prefs.select_related("vacancy").order_by("rank", "id")
+        )
+
+        matched_pref = None
+        for pref in prefs:
+            vacancy = getattr(pref, "vacancy", None)
+            if not vacancy:
+                continue
+            if vacancy.id not in vacancy_map:
+                continue
+            if vacancy.sector != applicant.sector:
+                continue
+            if vacancy.gender != applicant.gender:
+                continue
+
+            matched_pref = pref
+            break
+
+        if matched_pref:
+            vacancy = matched_pref.vacancy
+            vacancy.reserved_application = app
+            vacancy.reserved_at = timezone.now()
+            vacancy.save(update_fields=["reserved_application", "reserved_at"])
+
+            app.achieved_pref = matched_pref
+            app.achieved_at = timezone.now()
+            app.achieved_by = decided_by
+            app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
+
+            vacancy_map.pop(vacancy.id, None)
+            assigned += 1
+
+    return {
+        "applications": len(applications),
+        "assigned": assigned,
+        "unassigned": len(applications) - assigned,
+        "available_vacancies": len(vacancy_map),
+    }
+
+
 def _is_ajax(request) -> bool:
     return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
@@ -386,6 +543,16 @@ def login_view(request):
             return render(request, "portal/login.html", ctx)
 
         request.session[SESSION_KEY] = applicant.national_id
+
+        existing_app = (
+            Application.objects
+            .only("id", "locked", "status")
+            .filter(applicant=applicant)
+            .first()
+        )
+        if _is_final_submission_locked(existing_app):
+            return redirect("portal:done")
+
         return redirect("portal:confirm")
 
     ctx = {}
@@ -393,6 +560,7 @@ def login_view(request):
     return render(request, "portal/login.html", ctx)
 
 
+@require_http_methods(["GET", "POST"])
 def confirm_view(request):
     a = _get_applicant(request)
     if not a:
@@ -403,6 +571,10 @@ def confirm_view(request):
     if not allowed:
         messages.error(request, deny_msg)
         return redirect("portal:closed")
+
+    app = Application.objects.filter(applicant=a).first()
+    if _is_final_submission_locked(app):
+        return redirect("portal:done")
 
     def gv(attr: str, dash: str = "-"):
         v = getattr(a, attr, None)
@@ -432,9 +604,27 @@ def confirm_view(request):
 
     if request.method == "POST":
         app, _ = Application.objects.get_or_create(applicant=a)
-        app.confirmed_at = timezone.now()
-        app.status = "draft"
-        app.save(update_fields=["confirmed_at", "status"])
+
+        if _is_final_submission_locked(app):
+            messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
+            return redirect("portal:done")
+
+        update_fields: list[str] = []
+        if not app.confirmed_at:
+            app.confirmed_at = timezone.now()
+            update_fields.append("confirmed_at")
+
+        if app.status != "draft":
+            app.status = "draft"
+            update_fields.append("status")
+
+        if getattr(app, "locked", False):
+            app.locked = False
+            update_fields.append("locked")
+
+        if update_fields:
+            app.save(update_fields=update_fields)
+
         return redirect("portal:preferences")
 
     ctx = {"a": a, "fields": fields}
@@ -453,9 +643,12 @@ def preferences_view(request):
         messages.error(request, deny_msg)
         return redirect("portal:closed")
 
-    app, _ = Application.objects.get_or_create(applicant=a)
+    app = Application.objects.filter(applicant=a).first()
+    if not app or not app.confirmed_at:
+        messages.info(request, "يلزم تأكيد البيانات أولاً قبل إدخال الرغبات.")
+        return redirect("portal:confirm")
 
-    if app.locked and app.status == "submitted":
+    if _is_final_submission_locked(app):
         return redirect("portal:done")
 
     selected_prefs = list(
@@ -465,18 +658,16 @@ def preferences_view(request):
         .order_by("rank", "id")
     )
     selected_ids = [p.vacancy_id for p in selected_prefs]
-
     schools = _eligible_schools_for(a)
 
-    ctx = {
-        "a": a,
-        "app": app,
-        "schools": schools,
-        "selected_prefs": selected_prefs,
-        "selected_ids": selected_ids,
-        "closed_msg": "",
-    }
-    ctx.update(_portal_timer_context(win))
+    ctx = _build_preferences_context(
+        applicant=a,
+        app=app,
+        win=win,
+        schools=schools,
+        selected_prefs=selected_prefs,
+        selected_ids=selected_ids,
+    )
     return render(request, "portal/preferences.html", ctx)
 
 
@@ -495,9 +686,15 @@ def submit_view(request):
         messages.error(request, deny_msg)
         return redirect("portal:closed")
 
+    if not app.confirmed_at:
+        messages.error(request, "يلزم تأكيد البيانات أولاً قبل إرسال الرغبات.")
+        return redirect("portal:confirm")
+
+    if _is_final_submission_locked(app):
+        messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
+        return redirect("portal:done")
+
     ids = request.POST.getlist("vacancy_ids")
-    fallback = (request.POST.get("fallback_choice") or "").strip()
-    no_vacancies = (request.POST.get("no_vacancies") or "").strip() == "1"
 
     selected_prefs = list(
         ApplicationPreference.objects
@@ -507,20 +704,9 @@ def submit_view(request):
     )
     selected_ids = [p.vacancy_id for p in selected_prefs]
     schools = _eligible_schools_for(a)
-
-    if fallback not in ("admin_assign", "stay_current"):
-        ctx = {
-            "a": a,
-            "app": app,
-            "schools": schools,
-            "selected_prefs": selected_prefs,
-            "selected_ids": selected_ids,
-            "error": "اختر خيار الإقرار في حال عدم توفر فرصة",
-        }
-        ctx.update(_portal_timer_context(win))
-        return render(request, "portal/preferences.html", ctx)
-
-    allowed_ids = set(_eligible_schools_for(a).values_list("id", flat=True))
+    allowed_ids = set(schools.values_list("id", flat=True))
+    available_count = len(allowed_ids)
+    min_required = 5 if available_count >= 5 else available_count
 
     clean_ids: list[int] = []
     for x in ids:
@@ -531,45 +717,38 @@ def submit_view(request):
         if vid in allowed_ids and vid not in clean_ids:
             clean_ids.append(vid)
 
-    if clean_ids and no_vacancies:
-        ctx = {
-            "a": a,
-            "app": app,
-            "schools": schools,
-            "selected_prefs": selected_prefs,
-            "selected_ids": selected_ids,
-            "error": "لا يمكن الجمع بين اختيار رغبات وتحديد أنك لا ترغب في أي من هذه الشواغر.",
-        }
-        ctx.update(_portal_timer_context(win))
-        return render(request, "portal/preferences.html", ctx)
+    if available_count > 0 and len(clean_ids) < min_required:
+        if available_count >= 5:
+            msg = "الحد الأدنى لاختيار الرغبات هو 5 مدارس."
+        elif available_count == 1:
+            msg = "يوجد شاغر واحد فقط متاح في قطاعك، ويجب اختياره لإكمال التقديم."
+        else:
+            msg = f"عدد الشواغر المتاحة في قطاعك هو {available_count} فقط، لذا يجب اختيار جميع الشواغر المتاحة."
 
-    if not clean_ids and not no_vacancies:
-        ctx = {
-            "a": a,
-            "app": app,
-            "schools": schools,
-            "selected_prefs": selected_prefs,
-            "selected_ids": selected_ids,
-            "error": "اختر رغبة واحدة على الأقل، أو حدّد أنك لا ترغب في التقديم على أي من هذه الشواغر.",
-        }
-        ctx.update(_portal_timer_context(win))
+        ctx = _build_preferences_context(
+            applicant=a,
+            app=app,
+            win=win,
+            schools=schools,
+            selected_prefs=selected_prefs,
+            selected_ids=selected_ids,
+            error=msg,
+        )
         return render(request, "portal/preferences.html", ctx)
 
     ApplicationPreference.objects.filter(application=app).delete()
 
-    if not no_vacancies:
-        for idx, vid in enumerate(clean_ids, start=1):
-            ApplicationPreference.objects.create(
-                application=app,
-                vacancy_id=vid,
-                rank=idx,
-            )
+    for idx, vid in enumerate(clean_ids, start=1):
+        ApplicationPreference.objects.create(
+            application=app,
+            vacancy_id=vid,
+            rank=idx,
+        )
 
-    app.fallback_choice = fallback
     app.status = "submitted"
     app.locked = True
     app.submitted_at = timezone.now()
-    app.save(update_fields=["fallback_choice", "status", "locked", "submitted_at"])
+    app.save(update_fields=["status", "locked", "submitted_at"])
 
     return redirect("portal:done")
 
@@ -729,6 +908,22 @@ def admin_applicants_toggle(request, pk: int):
 
 @staff_member_required
 @require_POST
+def admin_applicants_disable_all_view(request):
+    updated = Applicant.objects.filter(is_active=True).update(is_active=False)
+    messages.success(request, f"تم تعطيل جميع المتقدمين بنجاح. العدد المتأثر: {updated}")
+    return redirect("portal:admin_applicants_list")
+
+
+@staff_member_required
+@require_POST
+def admin_applicants_enable_all_view(request):
+    updated = Applicant.objects.filter(is_active=False).update(is_active=True)
+    messages.success(request, f"تم تفعيل جميع المتقدمين بنجاح. العدد المتأثر: {updated}")
+    return redirect("portal:admin_applicants_list")
+
+
+@staff_member_required
+@require_POST
 def admin_applicants_delete(request, pk: int):
     if not request.user.is_superuser:
         messages.error(request, "غير مصرح بالحذف النهائي. استخدم التعطيل.")
@@ -844,6 +1039,22 @@ def admin_vacancies_toggle(request, pk: int):
     obj.is_open = not obj.is_open
     obj.save(update_fields=["is_open"])
     messages.success(request, "تم تحديث حالة الشاغر.")
+    return redirect("portal:admin_vacancies_list")
+
+
+@staff_member_required
+@require_POST
+def admin_vacancies_disable_all_view(request):
+    updated = SchoolVacancy.objects.filter(is_open=True).update(is_open=False)
+    messages.success(request, f"تم تعطيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
+    return redirect("portal:admin_vacancies_list")
+
+
+@staff_member_required
+@require_POST
+def admin_vacancies_enable_all_view(request):
+    updated = SchoolVacancy.objects.filter(is_open=False).update(is_open=True)
+    messages.success(request, f"تم تفعيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
     return redirect("portal:admin_vacancies_list")
 
 
@@ -1447,7 +1658,6 @@ def admin_application_detail_json_view(request, app_id: int):
         "id": app.id,
         "status": app.status,
         "submitted_at": _fmt_dt(app.submitted_at),
-        "fallback_choice": getattr(app, "fallback_choice", "") or "",
         "admin_decision": getattr(app, "admin_decision", "") or "",
         "admin_note": getattr(app, "admin_note", "") or "",
         "admin_decided_at": _fmt_dt(getattr(app, "admin_decided_at", None)),
@@ -1964,7 +2174,7 @@ def admin_export_excel_view(request):
 
     headers = [
         "ID", "National ID", "Full Name", "Sector", "Gender",
-        "Status", "Submitted At", "Fallback Choice",
+        "Status", "Submitted At",
         "Admin Decision", "Admin Note", "Admin Decided At", "Achieved Pref",
     ]
     for i in range(1, 11):
@@ -1999,7 +2209,6 @@ def admin_export_excel_view(request):
             app.applicant.gender,
             app.status,
             _fmt_dt(app.submitted_at),
-            getattr(app, "fallback_choice", "") or "",
             getattr(app, "admin_decision", "") or "",
             getattr(app, "admin_note", "") or "",
             _fmt_dt(getattr(app, "admin_decided_at", None)),
@@ -2030,9 +2239,40 @@ def admin_export_excel_view(request):
     return resp
 
 
+
 # =========================================================
 # Admin: Import Excel
 # =========================================================
+def _activate_new_only_phase():
+    win = PortalWindow.get()
+    if getattr(win, "phase", "") != "new_only":
+        win.phase = "new_only"
+        win.save(update_fields=["phase"])
+
+
+def _handle_imported_applicants(uploaded_file):
+    path = _save_uploaded_file(uploaded_file, "applicants")
+    batch, res = import_applicants_xlsx(path)
+    _activate_new_only_phase()
+    return {
+        "batch": batch.id,
+        "created": res.created,
+        "updated": res.updated,
+        "skipped": res.skipped,
+    }
+
+
+def _handle_imported_schools(uploaded_file):
+    path = _save_uploaded_file(uploaded_file, "schools")
+    batch, res = import_schools_xlsx(path)
+    return {
+        "batch": batch.id,
+        "created": res.created,
+        "updated": res.updated,
+        "skipped": res.skipped,
+    }
+
+
 @staff_member_required
 @require_http_methods(["GET", "POST"])
 def admin_import_view(request):
@@ -2040,42 +2280,106 @@ def admin_import_view(request):
     result = {}
 
     if request.method == "POST" and form.is_valid():
-        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
-
         applicants_file = form.cleaned_data.get("applicants_file")
         schools_file = form.cleaned_data.get("schools_file")
 
         if applicants_file:
-            path = os.path.join(settings.MEDIA_ROOT, f"applicants__{applicants_file.name}")
-            with open(path, "wb+") as out:
-                for chunk in applicants_file.chunks():
-                    out.write(chunk)
-
-            batch, res = import_applicants_xlsx(path)
-            result["applicants"] = {
-                "batch": batch.id,
-                "created": res.created,
-                "updated": res.updated,
-                "skipped": res.skipped,
-            }
-            messages.success(request, f"تم استيراد المتقدمين بنجاح (Batch #{batch.id})")
+            result["applicants"] = _handle_imported_applicants(applicants_file)
+            messages.success(request, f"تم استيراد المتقدمين الجدد بنجاح (Batch #{result['applicants']['batch']})")
+            messages.success(request, "تم تحويل البوابة تلقائيًا إلى مرحلة المتقدمين الجدد.")
 
         if schools_file:
-            path = os.path.join(settings.MEDIA_ROOT, f"schools__{schools_file.name}")
-            with open(path, "wb+") as out:
-                for chunk in schools_file.chunks():
-                    out.write(chunk)
-
-            batch, res = import_schools_xlsx(path)
-            result["schools"] = {
-                "batch": batch.id,
-                "created": res.created,
-                "updated": res.updated,
-                "skipped": res.skipped,
-            }
-            messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{batch.id})")
+            result["schools"] = _handle_imported_schools(schools_file)
+            messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{result['schools']['batch']})")
 
     return render(request, "portal/admin_import.html", {"form": form, "result": result})
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def admin_import_new_applicants_view(request):
+    if request.method == "GET":
+        return redirect("portal:admin_import")
+
+    uploaded_file = request.FILES.get("applicants_file")
+    if not uploaded_file:
+        messages.error(request, "فضلاً اختر ملف المتقدمين الجدد أولاً.")
+        return redirect("portal:admin_import")
+
+    result = _handle_imported_applicants(uploaded_file)
+    messages.success(request, f"تم استيراد المتقدمين الجدد بنجاح (Batch #{result['batch']})")
+    messages.success(request, "تم تحويل البوابة تلقائيًا إلى مرحلة المتقدمين الجدد.")
+    return redirect("portal:admin_import")
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def admin_import_schools_view(request):
+    if request.method == "GET":
+        return redirect("portal:admin_import")
+
+    uploaded_file = request.FILES.get("schools_file")
+    if not uploaded_file:
+        messages.error(request, "فضلاً اختر ملف المدارس أولاً.")
+        return redirect("portal:admin_import")
+
+    result = _handle_imported_schools(uploaded_file)
+    messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{result['batch']})")
+    return redirect("portal:admin_import")
+
+
+@staff_member_required
+def admin_new_applicants_sorting_view(request):
+    base_qs = (
+        Application.objects
+        .select_related("applicant", "achieved_pref__vacancy")
+        .prefetch_related("prefs", "prefs__vacancy")
+        .filter(
+            applicant__is_active=True,
+            status="submitted",
+        )
+        .order_by("applicant__sector", "applicant__gender", "submitted_at", "id")
+    )
+
+    applications = [app for app in base_qs if not _is_official_proxy(app.applicant)]
+
+    rows = []
+    for app in applications:
+        prefs = list(app.prefs.select_related("vacancy").order_by("rank", "id"))
+        rows.append({
+            "app": app,
+            "applicant": app.applicant,
+            "prefs": prefs[:5],
+            "prefs_count": len(prefs),
+            "achieved_pref": getattr(app, "achieved_pref", None),
+        })
+
+    ctx = {
+        "rows": rows,
+        "total_applications": len(applications),
+        "total_open_vacancies": SchoolVacancy.objects.filter(
+            is_open=True
+        ).exclude(deputy_need=0).count(),
+        "total_assigned": sum(1 for app in applications if getattr(app, "achieved_pref_id", None)),
+        "total_unassigned": sum(1 for app in applications if not getattr(app, "achieved_pref_id", None)),
+        "message": (
+            "هذه شاشة فرز المتقدمين الجدد. "
+            "إذا كان العدد صفرًا فهذا يعني أنه لا توجد طلبات مرسلة من المتقدمين الجدد حتى الآن."
+        ),
+    }
+    return render(request, "portal/admin_new_applicants_sorting.html", ctx)
+
+
+@staff_member_required
+@require_POST
+@transaction.atomic
+def admin_run_new_applicants_sorting_view(request):
+    result = _run_new_applicants_sorting(decided_by=request.user)
+    messages.success(
+        request,
+        f"تم فرز المتقدمين الجدد بنجاح. إجمالي الطلبات: {result['applications']}، الموزع: {result['assigned']}، غير الموزع: {result['unassigned']}.",
+    )
+    return redirect("portal:admin_dashboard")
 
 
 # =========================================================

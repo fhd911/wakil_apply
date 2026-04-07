@@ -5,7 +5,9 @@
 <style>
   /* =========================================================
      Applicants List — Unified Ministerial Light Style
-     موحّد مع لوحة القرار + نموذج المتقدم
+     ✅ تحديث:
+     - إضافة زري: تفعيل جميع المتقدمين / تعطيل جميع المتقدمين
+     - مع بقاء التفعيل الفردي لكل متقدم
   ========================================================= */
 
   :root{
@@ -62,9 +64,6 @@
     position:relative;
   }
 
-  /* =========================
-     Header
-  ========================= */
   .ui-top{
     margin-bottom:12px;
     padding:14px 18px;
@@ -74,6 +73,11 @@
     box-shadow:var(--min-shadow-strong);
     position:relative;
     overflow:hidden;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
   }
 
   .ui-top::before{
@@ -94,11 +98,17 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
+  .ui-top > *{
+    position:relative;
+    z-index:1;
+  }
+
   .ui-title{
     font-size:20px !important;
     font-weight:800 !important;
     letter-spacing:-.2px;
     color:#fff !important;
+    margin:0;
   }
 
   .ui-subtitle{
@@ -115,9 +125,11 @@
     align-items:center;
   }
 
-  /* =========================
-     Cards / toolbar
-  ========================= */
+  .ui-inline-form{
+    margin:0;
+    display:inline-flex;
+  }
+
   .ui-card{
     border:1px solid rgba(211,221,212,.95) !important;
     border-radius:22px !important;
@@ -197,9 +209,6 @@
     box-shadow:0 0 0 3px rgba(200,160,74,.12);
   }
 
-  /* =========================
-     Buttons / inputs
-  ========================= */
   .ui-btn{
     min-height:30px;
     padding:5px 10px;
@@ -276,9 +285,6 @@
     box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  /* =========================
-     Table
-  ========================= */
   .app-list-wrap{
     overflow:auto;
     background:#fff;
@@ -383,9 +389,6 @@
     justify-content:center;
   }
 
-  /* =========================
-     Responsive
-  ========================= */
   @media (max-width: 900px){
     .ui-toolbar-row{
       grid-template-columns:1fr;
@@ -438,7 +441,7 @@
     <div class="ui-top">
       <div class="ui-title-wrap">
         <h1 class="ui-title">إدارة المتقدمين</h1>
-        <p class="ui-subtitle">إضافة، تعديل، تعطيل أو تفعيل المتقدمين — الحذف النهائي للسوبر فقط.</p>
+        <p class="ui-subtitle">إضافة، تعديل، تعطيل أو تفعيل المتقدمين — مع دعم التفعيل والتعطيل الجماعي، والحذف النهائي للسوبر فقط.</p>
       </div>
 
       <div class="ui-actions">
@@ -456,6 +459,22 @@
           <span class="ui-btn-icon">🧩</span>
           إدارة الشواغر
         </a>
+
+        <form method="post" action="{% url 'portal:admin_applicants_enable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد تفعيل جميع المتقدمين؟');">
+          {% csrf_token %}
+          <button class="ui-btn ui-btn-primary" type="submit">
+            <span class="ui-btn-icon">✓</span>
+            تفعيل جميع المتقدمين
+          </button>
+        </form>
+
+        <form method="post" action="{% url 'portal:admin_applicants_disable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد تعطيل جميع المتقدمين؟');">
+          {% csrf_token %}
+          <button class="ui-btn ui-btn-danger" type="submit">
+            <span class="ui-btn-icon">✕</span>
+            تعطيل جميع المتقدمين
+          </button>
+        </form>
       </div>
     </div>
 

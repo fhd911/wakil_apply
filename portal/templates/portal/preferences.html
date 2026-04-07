@@ -3,27 +3,23 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Preferences — Unified Ministerial Light Style
-     + Select Only What You Want
-     + Remove with X
-     + No Vacancies Option
-     + Portal Countdown
-  ========================================================= */
-
-  .prx, .prx *{
+  .upp, .upp *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
     font-weight:400 !important;
   }
 
-  .prx{
-    direction:rtl;
-    font-size:13px;
+  .upp{
     color:var(--min-ink);
+    direction:rtl;
   }
 
-  .prx .shell{
+  .upp .wrap{
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .upp .shell{
     border:1px solid rgba(211,221,212,.95);
     border-radius:22px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
@@ -31,26 +27,26 @@
     overflow:hidden;
   }
 
-  .prx .top{
+  .upp .top{
     position:relative;
     padding:16px 18px 14px;
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
     overflow:hidden;
   }
 
-  .prx .top::before{
+  .upp .top::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
   }
 
-  .prx .top::after{
+  .upp .top::after{
     content:"";
     position:absolute;
     inset:0;
@@ -60,12 +56,12 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
-  .prx .top > *{
+  .upp .top > *{
     position:relative;
     z-index:1;
   }
 
-  .prx h1{
+  .upp h1{
     margin:0;
     font-size:18px;
     font-weight:800 !important;
@@ -74,19 +70,15 @@
     line-height:1.35;
   }
 
-  .prx .sub{
+  .upp .sub{
     margin:5px 0 0;
     color:rgba(255,255,255,.82);
-    line-height:1.85;
     font-size:10.6px;
-    max-width:72ch;
+    line-height:1.8;
+    max-width:66ch;
   }
 
-  .prx .sub b{
-    font-weight:800 !important;
-  }
-
-  .prx .pill{
+  .upp .pill{
     display:inline-flex;
     align-items:center;
     gap:8px;
@@ -102,7 +94,7 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .prx .dot{
+  .upp .dot{
     width:8px;
     height:8px;
     border-radius:50%;
@@ -110,20 +102,174 @@
     box-shadow:0 0 0 3px rgba(200,160,74,.12);
   }
 
-  .prx .grid{
+  .upp .timer{
+    margin:12px;
+    margin-bottom:0;
+    border:1px solid rgba(214,223,214,.96);
+    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:var(--min-shadow-soft);
+  }
+
+  .upp .timer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .upp .timer-title{
+    margin:0;
+    font-size:10.6px;
+    font-weight:800 !important;
+    color:var(--min-green-2);
+  }
+
+  .upp .timer-state{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.2px;
+    font-weight:800 !important;
+    border:1px solid rgba(209,220,210,.95);
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    color:var(--min-ink-2);
+    white-space:nowrap;
+  }
+
+  .upp .timer-state::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:#15803d;
+    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    flex:0 0 auto;
+  }
+
+  .upp .timer-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .upp .time-box{
+    border:1px solid rgba(218,226,218,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:14px;
+    padding:10px 8px;
+    text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  }
+
+  .upp .time-num{
+    display:block;
+    font-size:18px;
+    line-height:1;
+    font-weight:900 !important;
+    letter-spacing:-.4px;
+    color:var(--min-green-2);
+  }
+
+  .upp .time-label{
+    display:block;
+    margin-top:6px;
+    font-size:9px;
+    color:var(--min-muted);
+    font-weight:700 !important;
+  }
+
+  .upp .timer-note{
+    margin-top:8px;
+    font-size:9.6px;
+    color:var(--min-muted);
+    line-height:1.8;
+  }
+
+  .upp .timer.is-warn{
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
+  }
+
+  .upp .timer.is-warn .timer-state{
+    color:#9a6708;
+    border-color:rgba(217,119,6,.20);
+    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  }
+
+  .upp .timer.is-warn .timer-state::before{
+    background:#d97706;
+    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  }
+
+  .upp .timer.is-warn .time-num{
+    color:#9a6708;
+  }
+
+  .upp .timer.is-danger{
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
+  }
+
+  .upp .timer.is-danger .timer-state{
+    color:#991b1b;
+    border-color:rgba(185,28,28,.18);
+    background:linear-gradient(180deg,#fffdfd,#fff7f7);
+  }
+
+  .upp .timer.is-danger .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upp .timer.is-danger .time-num{
+    color:#991b1b;
+  }
+
+  .upp .timer.is-expired{
+    border-color:var(--min-danger-line);
+    background:var(--min-danger-soft);
+  }
+
+  .upp .timer.is-expired .timer-state{
+    color:#7f1d1d;
+    border-color:rgba(185,28,28,.16);
+    background:#fff;
+  }
+
+  .upp .timer.is-expired .timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .upp .timer.is-expired .time-num{
+    color:#991b1b;
+  }
+
+  .upp .grid{
     padding:12px;
     display:grid;
-    grid-template-columns:1.45fr .95fr;
+    grid-template-columns:1.4fr .9fr;
     gap:12px;
     align-items:start;
   }
 
-  .prx .stack{
+  .upp .stack{
     display:grid;
     gap:12px;
   }
 
-  .prx .card{
+  .upp .side{
+    position:sticky;
+    top:12px;
+  }
+
+  .upp .card{
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
     border:1px solid rgba(217,226,217,.95);
     border-radius:18px;
@@ -131,7 +277,7 @@
     box-shadow:var(--min-shadow-soft);
   }
 
-  .prx .ch{
+  .upp .ch{
     padding:10px 12px;
     border-bottom:1px solid rgba(219,227,219,.92);
     display:flex;
@@ -141,14 +287,14 @@
     background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
-  .prx .ch h3{
+  .upp .ch h3{
     margin:0;
     font-size:11px;
     font-weight:800 !important;
     color:var(--min-green-2);
   }
 
-  .prx .tag{
+  .upp .tag{
     padding:4px 10px;
     min-height:28px;
     border-radius:999px;
@@ -162,16 +308,16 @@
     white-space:nowrap;
   }
 
-  .prx .tag b{
-    font-weight:800 !important;
+  .upp .tag b{
     color:var(--min-green-1);
+    font-weight:800 !important;
   }
 
-  .prx .cb{
+  .upp .cb{
     padding:12px;
   }
 
-  .prx .alert{
+  .upp .alert{
     border:1px solid var(--min-danger-line);
     background:var(--min-danger-soft);
     color:#991b1b;
@@ -182,47 +328,133 @@
     font-size:10px;
   }
 
-  .prx .alert.warn{
+  .upp .alert.warn{
     border-color:var(--min-warn-line);
     background:var(--min-warn-soft);
     color:#7c2d12;
   }
 
-  .prx .toolbar{
+  .upp .note{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px dashed rgba(205,216,206,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    color:var(--min-muted);
+    font-size:9.6px;
+    line-height:1.8;
+  }
+
+  .upp .rows{
+    display:grid;
+    gap:10px;
+  }
+
+  .upp .row{
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:12px;
+    min-height:58px;
+    padding:10px 12px;
+    border:1px solid rgba(211,221,212,.95);
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    transition:border-color .15s ease, background .15s ease, opacity .15s ease, transform .15s ease;
+  }
+
+  .upp .row:hover{
+    border-color:rgba(22,163,74,.16);
+  }
+
+  .upp .row.is-selected{
+    background:linear-gradient(180deg,#fcfffd,#f8fbf9);
+    border-color:rgba(22,163,74,.16);
+  }
+
+  .upp .row.is-locked{
+    opacity:.78;
+  }
+
+  .upp .row-main{
+    min-width:0;
+    display:flex;
+    align-items:center;
     gap:10px;
-    flex-wrap:wrap;
+    flex:1 1 auto;
+  }
+
+  .upp .rank{
+    min-width:42px;
+    height:36px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+    border:1px solid rgba(239,225,187,.95);
+    color:#7f5d1a;
+    font-size:10px;
+    font-weight:800 !important;
+    flex:0 0 auto;
+  }
+
+  .upp .meta{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+  }
+
+  .upp .ttl{
+    font-size:10.8px;
+    font-weight:800 !important;
+    color:var(--min-green-1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .upp .subt{
+    font-size:9.4px;
+    color:var(--min-muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:1.7;
+  }
+
+  .upp .row-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex:0 0 auto;
+  }
+
+  .upp .search-wrap{
+    display:flex;
+    gap:8px;
     margin-bottom:10px;
   }
 
-  .prx .kpi{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
+  .upp .search{
+    width:100%;
+    min-height:38px;
+    border-radius:14px;
+    border:1px solid rgba(217,226,217,.95);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    padding:0 12px;
+    outline:none;
+    color:var(--min-ink-2);
+    font-size:10px;
   }
 
-  .prx .k{
-    padding:4px 10px;
-    min-height:28px;
-    border-radius:999px;
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-muted);
-    font-size:9.4px;
-    font-weight:800 !important;
-    display:inline-flex;
-    align-items:center;
+  .upp .search:focus{
+    border-color:rgba(22,163,74,.24);
+    box-shadow:0 0 0 4px rgba(22,163,74,.05);
   }
 
-  .prx .k b{
-    color:var(--min-green-1);
-    font-weight:800 !important;
-  }
-
-  .prx .btn{
+  .upp .btn{
     appearance:none;
     border:1px solid rgba(211,221,212,.95);
     cursor:pointer;
@@ -240,30 +472,24 @@
     transition:transform .15s ease, opacity .15s ease, filter .15s ease;
   }
 
-  .prx .btn.primary{
+  .upp .btn.primary{
     color:#fff;
     border-color:var(--min-green-2);
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    background:linear-gradient(180deg,var(--min-green-3),var(--min-green-2));
     box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
   }
 
-  .prx .btn.secondary{
+  .upp .btn.secondary{
     background:linear-gradient(180deg,#ffffff,#f8faf7);
     color:var(--min-green-2);
   }
 
-  .prx .btn.ghost{
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:#7f1d1d;
-    border-color:rgba(248,113,113,.22);
-  }
-
-  .prx .btn:active{
+  .upp .btn:active{
     transform:translateY(1px);
   }
 
-  .prx .btn[disabled],
-  .prx .btn.is-disabled{
+  .upp .btn[disabled],
+  .upp .btn.is-disabled{
     opacity:.55;
     cursor:not-allowed;
     transform:none;
@@ -271,116 +497,7 @@
     filter:grayscale(.10);
   }
 
-  .prx .list{
-    display:grid;
-    gap:10px;
-  }
-
-  .prx .item{
-    border:1px solid rgba(217,226,217,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:16px;
-    padding:10px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    transition:background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease;
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .prx .item:hover{
-    background:rgba(20,83,45,.03);
-    border-color:rgba(22,163,74,.20);
-  }
-
-  .prx .item.is-locked{
-    opacity:.78;
-  }
-
-  .prx .item.is-selected{
-    border-color:rgba(22,163,74,.22);
-    background:linear-gradient(180deg,#fcfffd,#f7fbf8);
-  }
-
-  .prx .left{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-  }
-
-  .prx .rank{
-    min-width:40px;
-    height:34px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    border:1px solid rgba(239,225,187,.95);
-    color:#7f5d1a;
-    font-weight:800 !important;
-    font-size:10px;
-  }
-
-  .prx .meta{
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-
-  .prx .nm{
-    font-weight:800 !important;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    color:var(--min-green-1);
-    font-size:10.8px;
-  }
-
-  .prx .sm{
-    color:var(--min-muted);
-    font-size:9.4px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    line-height:1.7;
-  }
-
-  .prx .right{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex:0 0 auto;
-  }
-
-  .prx .handle{
-    width:36px;
-    height:36px;
-    border-radius:14px;
-    border:1px solid rgba(217,226,217,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    user-select:none;
-    cursor:grab;
-    font-weight:900 !important;
-    color:var(--min-muted);
-  }
-
-  .prx .handle:active{
-    cursor:grabbing;
-  }
-
-  .prx .handle.is-disabled{
-    opacity:.45;
-    cursor:not-allowed;
-  }
-
-  .prx .mini{
+  .upp .mini{
     width:34px;
     height:34px;
     border-radius:12px;
@@ -395,99 +512,59 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .prx .mini:hover{
+  .upp .mini:hover{
     background:rgba(148,163,184,.08);
   }
 
-  .prx .mini.danger{
+  .upp .mini.danger{
     color:#991b1b;
     border-color:rgba(248,113,113,.20);
   }
 
-  .prx .mini.ok{
-    color:#166534;
-    border-color:rgba(34,197,94,.22);
-  }
-
-  .prx .mini[disabled],
-  .prx .mini.is-disabled{
+  .upp .mini[disabled],
+  .upp .mini.is-disabled{
     opacity:.4;
     cursor:not-allowed;
     pointer-events:none;
   }
 
-  .prx .dragging{
-    opacity:.70;
-    transform:scale(.995);
-    border-color:rgba(22,163,74,.30) !important;
-  }
-
-  .prx .drop-here{
-    outline:2px dashed rgba(22,163,74,.38);
-    outline-offset:4px;
-    background:rgba(22,163,74,.06);
-  }
-
-  .prx .side{
-    position:sticky;
-    top:12px;
-  }
-
-  .prx .radio{
+  .upp .handle{
+    width:34px;
+    height:34px;
+    border-radius:12px;
     border:1px solid rgba(217,226,217,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:16px;
-    padding:12px;
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
     display:flex;
-    gap:10px;
-    align-items:flex-start;
-    box-shadow:var(--min-shadow-soft);
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+    cursor:grab;
+    color:var(--min-muted);
+    font-weight:900 !important;
   }
 
-  .prx .radio input{
-    margin-top:5px;
-    width:16px;
-    height:16px;
-    accent-color:var(--min-green-3);
-    flex:0 0 auto;
+  .upp .handle:active{
+    cursor:grabbing;
   }
 
-  .prx .radio input[disabled]{
-    opacity:.6;
+  .upp .handle.is-disabled{
+    opacity:.45;
     cursor:not-allowed;
   }
 
-  .prx .radio label{
-    display:block;
-    font-size:10.2px;
-    line-height:1.8;
-    color:var(--min-ink-2);
-    cursor:pointer;
+  .upp .dragging{
+    opacity:.70;
+    transform:scale(.995);
+    border-color:rgba(22,163,74,.28) !important;
   }
 
-  .prx .radio b{
-    font-weight:800 !important;
-    color:var(--min-green-1);
+  .upp .drop-here{
+    outline:2px dashed rgba(22,163,74,.30);
+    outline-offset:4px;
+    background:rgba(22,163,74,.04);
   }
 
-  .prx .hint{
-    margin-top:10px;
-    padding:10px 12px;
-    border-radius:16px;
-    border:1px dashed rgba(205,216,206,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    color:var(--min-muted);
-    font-size:9.6px;
-    line-height:1.8;
-  }
-
-  .prx .split-note{
-    display:grid;
-    gap:8px;
-    margin-bottom:10px;
-  }
-
-  .prx .empty-box{
+  .upp .empty-box{
     border:1px dashed rgba(205,216,206,.95);
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
     color:var(--min-muted);
@@ -498,190 +575,14 @@
     line-height:1.8;
   }
 
-  .prx .empty-box b{
+  .upp .empty-box b{
     color:var(--min-green-1);
     font-weight:800 !important;
   }
 
-  .prx .search-wrap{
-    display:flex;
-    gap:8px;
-    margin-bottom:10px;
-  }
-
-  .prx .search{
-    width:100%;
-    min-height:38px;
-    border-radius:14px;
-    border:1px solid rgba(217,226,217,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    padding:0 12px;
-    outline:none;
-    color:var(--min-ink-2);
-    font-size:10px;
-  }
-
-  .prx .search:focus{
-    border-color:rgba(22,163,74,.28);
-    box-shadow:0 0 0 4px rgba(22,163,74,.06);
-  }
-
-  /* =========================
-     Countdown
-  ========================= */
-
-  .prx .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
-    background:linear-gradient(180deg, #fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
-    padding:12px;
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .prx .timer-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:8px;
-  }
-
-  .prx .timer-title{
-    margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
-  }
-
-  .prx .timer-state{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:26px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
-    white-space:nowrap;
-  }
-
-  .prx .timer-state::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
-    flex:0 0 auto;
-  }
-
-  .prx .timer-grid{
-    display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:8px;
-  }
-
-  .prx .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
-    padding:10px 8px;
-    text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .prx .time-num{
-    display:block;
-    font-size:18px;
-    line-height:1;
-    font-weight:900 !important;
-    letter-spacing:-.4px;
-    color:var(--min-green-2);
-  }
-
-  .prx .time-label{
-    display:block;
-    margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
-    font-weight:700 !important;
-  }
-
-  .prx .timer-note{
-    margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
-    line-height:1.8;
-  }
-
-  .prx .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
-  }
-
-  .prx .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
-  }
-
-  .prx .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
-  }
-
-  .prx .timer.is-warn .time-num{
-    color:#9a6708;
-  }
-
-  .prx .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
-  }
-
-  .prx .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
-  }
-
-  .prx .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .prx .timer.is-danger .time-num{
-    color:#991b1b;
-  }
-
-  .prx .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
-  }
-
-  .prx .timer.is-expired .timer-state{
-    color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
-    background:#fff;
-  }
-
-  .prx .timer.is-expired .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .prx .timer.is-expired .time-num{
-    color:#991b1b;
-  }
-
-  .prx .expired-inline{
+  .upp .expired-inline{
     display:none;
-    margin-top:12px;
+    margin-top:10px;
     border:1px solid var(--min-danger-line);
     background:var(--min-danger-soft);
     color:#7f1d1d;
@@ -692,15 +593,11 @@
     font-weight:700 !important;
   }
 
-  .prx .expired-inline.show{
+  .upp .expired-inline.show{
     display:block;
   }
 
-  /* =========================
-     Custom Modal
-  ========================= */
-
-  .prx-modal{
+  .upp-modal{
     position:fixed;
     inset:0;
     z-index:9999;
@@ -708,25 +605,25 @@
     align-items:center;
     justify-content:center;
     padding:20px;
-    background:rgba(15,23,42,.30);
+    background:rgba(15,23,42,.24);
     backdrop-filter:blur(4px);
   }
 
-  .prx-modal.show{
+  .upp-modal.show{
     display:flex;
   }
 
-  .prx-dialog{
-    width:min(100%, 560px);
+  .upp-dialog{
+    width:min(100%,540px);
     border:1px solid rgba(211,221,212,.95);
     border-radius:22px;
     overflow:hidden;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:0 30px 70px rgba(15,23,42,.22);
-    animation:prxPop .18s ease-out;
+    box-shadow:0 30px 70px rgba(15,23,42,.18);
+    animation:uppPop .18s ease-out;
   }
 
-  @keyframes prxPop{
+  @keyframes uppPop{
     from{
       opacity:0;
       transform:translateY(8px) scale(.98);
@@ -737,64 +634,39 @@
     }
   }
 
-  .prx-dialog-head{
-    position:relative;
+  .upp-dialog-head{
     padding:14px 16px 12px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    overflow:hidden;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
   }
 
-  .prx-dialog-head::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
-  }
-
-  .prx-dialog-head::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-      radial-gradient(320px 120px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
-  }
-
-  .prx-dialog-head > *{
-    position:relative;
-    z-index:1;
-  }
-
-  .prx-dialog-title{
+  .upp-dialog-title{
     margin:0;
-    color:#fff;
-    font-size:14px;
+    color:var(--min-green-2);
+    font-size:13px;
     font-weight:800 !important;
     line-height:1.4;
   }
 
-  .prx-dialog-body{
+  .upp-dialog-body{
     padding:16px;
   }
 
-  .prx-dialog-text{
+  .upp-dialog-text{
     margin:0;
     color:var(--min-ink-2);
     font-size:11px;
     line-height:2;
   }
 
-  .prx-dialog-actions{
+  .upp-dialog-actions{
     margin-top:14px;
     display:flex;
     gap:10px;
     flex-wrap:wrap;
-    justify-content:flex-start;
   }
 
-  .prx-dialog-btn{
+  .upp-dialog-btn{
     appearance:none;
     border:1px solid rgba(211,221,212,.95);
     cursor:pointer;
@@ -810,82 +682,81 @@
     box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .prx-dialog-btn.primary{
+  .upp-dialog-btn.primary{
     color:#fff;
     border-color:var(--min-green-2);
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    background:linear-gradient(180deg,var(--min-green-3),var(--min-green-2));
   }
 
-  .prx-dialog-btn.secondary{
+  .upp-dialog-btn.secondary{
     background:linear-gradient(180deg,#ffffff,#f8faf7);
     color:var(--min-green-2);
   }
 
-  body.prx-modal-open{
+  body.upp-modal-open{
     overflow:hidden;
   }
 
   @media (max-width: 980px){
-    .prx .grid{
+    .upp .grid{
       grid-template-columns:1fr;
     }
 
-    .prx .side{
+    .upp .side{
       position:static;
     }
   }
 
   @media (max-width: 640px){
-    .prx .top{
+    .upp .top{
       padding:13px 14px;
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .prx h1{
+    .upp h1{
       font-size:16px;
     }
 
-    .prx .pill{
+    .upp .pill{
       display:none;
     }
 
-    .prx .grid{
+    .upp .grid{
       padding:10px;
     }
 
-    .prx .cb{
+    .upp .cb{
       padding:10px;
     }
 
-    .prx .item{
+    .upp .row{
       flex-direction:column;
       align-items:stretch;
     }
 
-    .prx .right{
+    .upp .row-actions{
       justify-content:flex-start;
     }
 
-    .prx .timer{
+    .upp .timer{
       margin:10px;
       margin-bottom:0;
     }
 
-    .prx .timer-grid{
-      grid-template-columns:repeat(2, minmax(0,1fr));
+    .upp .timer-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
-    .prx-dialog{
+    .upp-dialog{
       border-radius:18px;
     }
 
-    .prx-dialog-actions{
+    .upp-dialog-actions{
       flex-direction:column;
     }
 
-    .prx-dialog-btn{
+    .upp-dialog-btn{
       width:100%;
     }
   }
@@ -900,8 +771,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedList = document.querySelector("[data-selected-list]");
   const selectedCountEl = document.querySelector("[data-selected-count]");
   const availableCountEl = document.querySelector("[data-available-count]");
+  const selectedEmptyEl = document.querySelector("[data-selected-empty]");
   const submitBtn = document.querySelector("[data-submit]");
-  const noVacanciesInput = document.querySelector("[data-no-vacancies]");
   const searchInput = document.querySelector("[data-search-input]");
 
   const modal = document.querySelector("[data-modal]");
@@ -920,7 +791,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const mEl = document.getElementById("cdMinutes");
   const sEl = document.getElementById("cdSeconds");
 
-  if(!form || !selectedList || !availableList) return;
+  if(!form || !selectedList) return;
+
+  const minRequired = parseInt(form.getAttribute("data-min-required") || "0", 10);
+  const availableCount = parseInt(form.getAttribute("data-available-count") || "0", 10);
 
   let dragEl = null;
   let modalResolver = null;
@@ -944,7 +818,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalCancel.style.display = showCancel ? "inline-flex" : "none";
 
     modal.classList.add("show");
-    document.body.classList.add("prx-modal-open");
+    document.body.classList.add("upp-modal-open");
 
     return new Promise(resolve => {
       modalResolver = resolve;
@@ -954,7 +828,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeModal(result){
     if(!modal) return;
     modal.classList.remove("show");
-    document.body.classList.remove("prx-modal-open");
+    document.body.classList.remove("upp-modal-open");
 
     if(modalResolver){
       const fn = modalResolver;
@@ -1011,6 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function availableItems(){
+    if(!availableList) return [];
     return [...availableList.querySelectorAll("[data-item='available']")];
   }
 
@@ -1021,8 +896,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if(selectedCountEl) selectedCountEl.textContent = String(selectedCount);
     if(availableCountEl) availableCountEl.textContent = String(availableVisibleCount);
 
+    if(selectedEmptyEl){
+      selectedEmptyEl.style.display = selectedCount ? "none" : "";
+    }
+
     if(submitBtn){
-      submitBtn.disabled = portalExpired;
+      submitBtn.disabled = portalExpired || availableCount === 0;
     }
   }
 
@@ -1041,7 +920,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setCounts();
-    refreshNoVacanciesState();
     syncHiddenInputs();
   }
 
@@ -1057,34 +935,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function refreshNoVacanciesState(){
-    const hasSelected = selectedItems().length > 0;
-
-    if(noVacanciesInput){
-      if(hasSelected){
-        noVacanciesInput.checked = false;
-        noVacanciesInput.disabled = true;
-      } else {
-        noVacanciesInput.disabled = portalExpired ? true : false;
-      }
-    }
-  }
-
   function makeSelectedItem(id, name, metaText){
     const div = document.createElement("div");
-    div.className = "item is-selected";
+    div.className = "row is-selected";
     div.setAttribute("data-item", "selected");
     div.setAttribute("data-id", id);
     div.setAttribute("draggable", portalExpired ? "false" : "true");
     div.innerHTML = `
-      <div class="left">
+      <div class="row-main">
         <div class="rank" data-rank>1</div>
         <div class="meta">
-          <div class="nm">${name}</div>
-          <div class="sm">${metaText}</div>
+          <div class="ttl">${name}</div>
+          <div class="subt">${metaText}</div>
         </div>
       </div>
-      <div class="right">
+      <div class="row-actions">
         <button type="button" class="mini" data-up title="رفع">↑</button>
         <button type="button" class="mini" data-down title="خفض">↓</button>
         <button type="button" class="mini danger" data-remove title="حذف">×</button>
@@ -1096,7 +961,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function addToSelectedFromAvailable(availableEl){
-    if(portalExpired || !availableEl) return;
+    if(portalExpired || !availableEl || !availableList) return;
 
     const id = availableEl.getAttribute("data-id");
     const name = availableEl.getAttribute("data-name") || "";
@@ -1114,27 +979,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function moveBackToAvailable(selectedEl){
-    if(portalExpired || !selectedEl) return;
+    if(portalExpired || !selectedEl || !availableList) return;
 
     const id = selectedEl.getAttribute("data-id");
-    const name = selectedEl.querySelector(".nm")?.textContent?.trim() || "";
-    const metaText = selectedEl.querySelector(".sm")?.textContent?.trim() || "";
+    const name = selectedEl.querySelector(".ttl")?.textContent?.trim() || "";
+    const metaText = selectedEl.querySelector(".subt")?.textContent?.trim() || "";
 
     const div = document.createElement("div");
-    div.className = "item";
+    div.className = "row";
     div.setAttribute("data-item", "available");
     div.setAttribute("data-id", id);
     div.setAttribute("data-name", name);
     div.setAttribute("data-meta", metaText);
     div.innerHTML = `
-      <div class="left">
+      <div class="row-main">
         <div class="rank">+</div>
         <div class="meta">
-          <div class="nm">${name}</div>
-          <div class="sm">${metaText}</div>
+          <div class="ttl">${name}</div>
+          <div class="subt">${metaText}</div>
         </div>
       </div>
-      <div class="right">
+      <div class="row-actions">
         <button type="button" class="btn secondary" data-add>إضافة</button>
       </div>
     `;
@@ -1147,9 +1012,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function sortAvailableList(){
+    if(!availableList) return;
     const els = availableItems().sort((a, b) => {
-      const an = (a.getAttribute("data-name") || "").localeCompare((b.getAttribute("data-name") || ""), "ar");
-      return an;
+      return (a.getAttribute("data-name") || "").localeCompare((b.getAttribute("data-name") || ""), "ar");
     });
     els.forEach(el => availableList.appendChild(el));
   }
@@ -1163,7 +1028,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function bindSelectedItem(el){
     el.addEventListener("dragstart", e => {
-      if(portalExpired){
+      if(portalExpired || !availableList){
         e.preventDefault();
         return;
       }
@@ -1180,7 +1045,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     el.addEventListener("dragover", e => {
-      if(portalExpired) return;
+      if(portalExpired || !availableList) return;
       e.preventDefault();
       if(!dragEl || dragEl === el) return;
       el.classList.add("drop-here");
@@ -1189,7 +1054,7 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("dragleave", () => el.classList.remove("drop-here"));
 
     el.addEventListener("drop", e => {
-      if(portalExpired) return;
+      if(portalExpired || !availableList) return;
       e.preventDefault();
       selectedItems().forEach(x => x.classList.remove("drop-here"));
       if(!dragEl || dragEl === el) return;
@@ -1231,6 +1096,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function filterAvailable(){
+    if(!availableList){
+      setCounts();
+      return;
+    }
+
     const q = (searchInput?.value || "").trim().toLowerCase();
     availableItems().forEach(el => {
       const hay = `${el.getAttribute("data-name") || ""} ${el.getAttribute("data-meta") || ""}`.toLowerCase();
@@ -1266,14 +1136,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    form.querySelectorAll("input[name='fallback_choice']").forEach(el => {
-      el.disabled = true;
-    });
-
-    if(noVacanciesInput){
-      noVacanciesInput.disabled = true;
-    }
-
     if(searchInput){
       searchInput.disabled = true;
     }
@@ -1305,24 +1167,25 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const fb = form.querySelector("input[name='fallback_choice']:checked");
-    if(!fb){
-      await showAlert("فضلاً اختر الإقرار في حال عدم توفر فرصة ضمن رغباتك.", "بيان مطلوب");
+    if(availableCount === 0){
+      await showAlert("لا توجد شواغر متاحة حاليًا في قطاعك، ولا يمكن إرسال الطلب في هذه الصفحة.", "لا توجد شواغر متاحة");
       return;
     }
 
     syncHiddenInputs();
 
     const selectedCount = selectedItems().length;
-    const noVacanciesChecked = !!(noVacanciesInput && noVacanciesInput.checked);
 
-    if(selectedCount === 0 && !noVacanciesChecked){
-      await showAlert("اختر رغبة واحدة على الأقل، أو فعّل خيار: لا أرغب في التقديم على أي من هذه الشواغر.", "لا يمكن الإرسال");
-      return;
-    }
-
-    if(selectedCount > 0 && noVacanciesChecked){
-      await showAlert("لا يمكن الجمع بين اختيار رغبات وتفعيل خيار عدم الرغبة بأي شاغر.", "تعارض في البيانات");
+    if(selectedCount < minRequired){
+      let msg = "";
+      if(availableCount >= 5){
+        msg = "الحد الأدنى لاختيار الرغبات هو 5 رغبات، يرجى استكمال العدد المطلوب قبل الإرسال.";
+      } else if(availableCount === 1){
+        msg = "يوجد شاغر واحد فقط متاح في قطاعك، ويجب اختياره لإكمال التقديم.";
+      } else {
+        msg = `عدد الشواغر المتاحة في قطاعك هو ${availableCount} فقط، لذا يجب اختيار جميع الشواغر المتاحة قبل الإرسال.`;
+      }
+      await showAlert(msg, "عدد الرغبات غير مكتمل");
       return;
     }
 
@@ -1413,14 +1276,6 @@ document.addEventListener("DOMContentLoaded", () => {
   availableItems().forEach(bindAvailableItem);
   selectedItems().forEach(bindSelectedItem);
 
-  if(noVacanciesInput){
-    noVacanciesInput.addEventListener("change", () => {
-      if(selectedItems().length > 0 && noVacanciesInput.checked){
-        noVacanciesInput.checked = false;
-      }
-    });
-  }
-
   sortAvailableList();
   renumberSelected();
   filterAvailable();
@@ -1434,128 +1289,119 @@ document.addEventListener("DOMContentLoaded", () => {
 {% endblock %}
 
 {% block content %}
-<div class="prx">
-  <div class="shell">
+<div class="upp">
+  <div class="wrap">
+    <div class="shell">
 
-    <div class="top">
-      <div>
-        <h1>اختيار وترتيب الرغبات</h1>
-        <p class="sub">
-          لست ملزمًا بترتيب جميع الشواغر. <b>اختر فقط ما ترغب فيه</b> من القائمة المتاحة،
-          وستظهر في قائمة مستقلة يمكنك إعادة ترتيبها أو حذف أي رغبة منها بزر <b>×</b>.
-        </p>
-      </div>
-      <div class="pill"><span class="dot"></span>اختيار مرن للرغبات</div>
-    </div>
+      <div class="top">
+        <div>
+          <h1>ترتيب الرغبات</h1>
+          <p class="sub">
+            يرجى اختيار الرغبات المتاحة وترتيبها حسب الأولوية، تمهيدًا لاعتماد الطلب وإرساله نهائيًا.
+          </p>
+        </div>
 
-    {% if portal_show_countdown %}
-    <div
-      class="timer"
-      data-portal-timer
-      data-closes-at="{{ portal_closes_at_iso }}"
-    >
-      <div class="timer-head">
-        <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-        <div class="timer-state" data-timer-state>مفتوح الآن</div>
+        {% if available_count > 0 %}
+        <div class="pill"><span class="dot"></span>الحد الأدنى المطلوب: {{ min_required }}</div>
+        {% else %}
+        <div class="pill"><span class="dot"></span>لا توجد شواغر متاحة حاليًا</div>
+        {% endif %}
       </div>
 
-      <div class="timer-grid">
-        <div class="time-box">
-          <span class="time-num" id="cdDays">00</span>
-          <span class="time-label">يوم</span>
+      {% if portal_show_countdown %}
+      <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
+        <div class="timer-head">
+          <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
+          <div class="timer-state" data-timer-state>مفتوح الآن</div>
         </div>
-        <div class="time-box">
-          <span class="time-num" id="cdHours">00</span>
-          <span class="time-label">ساعة</span>
-        </div>
-        <div class="time-box">
-          <span class="time-num" id="cdMinutes">00</span>
-          <span class="time-label">دقيقة</span>
-        </div>
-        <div class="time-box">
-          <span class="time-num" id="cdSeconds">00</span>
-          <span class="time-label">ثانية</span>
-        </div>
-      </div>
 
-      <div class="timer-note" data-timer-note>
-        سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
-      </div>
-    </div>
-    {% endif %}
-
-    <div class="grid">
-
-      <!-- LEFT -->
-      <div class="stack">
-
-        <!-- Selected preferences -->
-        <div class="card">
-          <div class="ch">
-            <h3>رغباتي المختارة</h3>
-            <span class="tag">العدد: <b data-selected-count>{{ selected_prefs|length }}</b></span>
+        <div class="timer-grid">
+          <div class="time-box">
+            <span class="time-num" id="cdDays">00</span>
+            <span class="time-label">يوم</span>
           </div>
-          <div class="cb">
+          <div class="time-box">
+            <span class="time-num" id="cdHours">00</span>
+            <span class="time-label">ساعة</span>
+          </div>
+          <div class="time-box">
+            <span class="time-num" id="cdMinutes">00</span>
+            <span class="time-label">دقيقة</span>
+          </div>
+          <div class="time-box">
+            <span class="time-num" id="cdSeconds">00</span>
+            <span class="time-label">ثانية</span>
+          </div>
+        </div>
 
-            {% if error %}
-              <div class="alert">{{ error }}</div>
-            {% endif %}
+        <div class="timer-note" data-timer-note>
+          سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
+        </div>
+      </div>
+      {% endif %}
 
-            <div class="split-note">
-              <div class="kpi">
-                <div class="k">يمكنك <b>رفع</b> و<b>خفض</b> الرغبات</div>
-                <div class="k">يمكنك حذف أي رغبة بزر <b>×</b></div>
-                <div class="k">يتم حفظ <b>المختار فقط</b></div>
-              </div>
+      <div class="grid">
+
+        <div class="stack">
+
+          <div class="card">
+            <div class="ch">
+              <h3>الرغبات المختارة</h3>
+              <span class="tag">العدد المختار: <b data-selected-count>{{ selected_prefs|length }}</b></span>
             </div>
+            <div class="cb">
 
-            <div class="list" data-selected-list>
-              {% for p in selected_prefs %}
-              <div class="item is-selected" data-item="selected" data-id="{{ p.vacancy.id }}" draggable="true">
-                <div class="left">
-                  <div class="rank" data-rank>{{ forloop.counter }}</div>
-                  <div class="meta">
-                    <div class="nm">{{ p.vacancy.school_name }}</div>
-                    <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
+              <div class="alert warn">
+                {{ selection_hint }}
+              </div>
+
+              {% if error %}
+              <div class="alert">{{ error }}</div>
+              {% endif %}
+
+              <div class="rows" data-selected-list>
+                {% for p in selected_prefs %}
+                <div class="row is-selected" data-item="selected" data-id="{{ p.vacancy.id }}" draggable="true">
+                  <div class="row-main">
+                    <div class="rank" data-rank>{{ forloop.counter }}</div>
+                    <div class="meta">
+                      <div class="ttl">{{ p.vacancy.school_name }}</div>
+                      <div class="subt">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
+                    </div>
+                  </div>
+
+                  <div class="row-actions">
+                    <button type="button" class="mini" data-up title="رفع">↑</button>
+                    <button type="button" class="mini" data-down title="خفض">↓</button>
+                    <button type="button" class="mini danger" data-remove title="حذف">×</button>
+                    <div class="handle" title="اسحب لترتيب">⋮⋮</div>
                   </div>
                 </div>
-
-                <div class="right">
-                  <button type="button" class="mini" data-up title="رفع">↑</button>
-                  <button type="button" class="mini" data-down title="خفض">↓</button>
-                  <button type="button" class="mini danger" data-remove title="حذف">×</button>
-                  <div class="handle" title="اسحب لترتيب">⋮⋮</div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-
-            {% if not selected_prefs %}
-            <div class="empty-box">
-              لم تختر أي رغبة بعد.  
-              اختر من قائمة <b>الشواغر المتاحة</b> بالأسفل، وستظهر هنا تلقائيًا.
-            </div>
-            {% endif %}
-
-          </div>
-        </div>
-
-        <!-- Available schools -->
-        <div class="card">
-          <div class="ch">
-            <h3>الشواغر المتاحة لك</h3>
-            <span class="tag">المعروض: <b data-available-count>{{ schools|length }}</b></span>
-          </div>
-          <div class="cb">
-
-            {% if schools %}
-              <div class="toolbar">
-                <div class="kpi">
-                  <div class="k">اختر فقط ما يناسبك</div>
-                  <div class="k">لا حاجة لترتيب جميع الشواغر</div>
-                </div>
+                {% endfor %}
               </div>
 
+              <div class="empty-box" data-selected-empty {% if selected_prefs %}style="display:none"{% endif %}>
+                {% if available_count > 0 %}
+                لم يتم اختيار أي رغبة بعد. اختر من قائمة <b>الشواغر المتاحة</b> لاستكمال العدد المطلوب.
+                {% else %}
+                لا توجد رغبات متاحة للاختيار حاليًا.
+                {% endif %}
+              </div>
+
+              <div class="note">
+                بعد الإضافة يمكنك إعادة ترتيب الرغبات أو حذف أي رغبة قبل الإرسال النهائي.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <h3>الشواغر المتاحة لك</h3>
+              <span class="tag">المعروض: <b data-available-count>{{ schools|length }}</b></span>
+            </div>
+            <div class="cb">
+
+              {% if schools %}
               <div class="search-wrap">
                 <input
                   type="text"
@@ -1565,117 +1411,102 @@ document.addEventListener("DOMContentLoaded", () => {
                 >
               </div>
 
-              <div class="list" data-available-list>
+              <div class="rows" data-available-list>
                 {% for s in schools %}
                   {% if s.id not in selected_ids %}
                   <div
-                    class="item"
+                    class="row"
                     data-item="available"
                     data-id="{{ s.id }}"
                     data-name="{{ s.school_name }}"
                     data-meta="{{ s.stage }} — {{ s.sector }}"
                   >
-                    <div class="left">
+                    <div class="row-main">
                       <div class="rank">+</div>
                       <div class="meta">
-                        <div class="nm">{{ s.school_name }}</div>
-                        <div class="sm">{{ s.stage }} — {{ s.sector }}</div>
+                        <div class="ttl">{{ s.school_name }}</div>
+                        <div class="subt">{{ s.stage }} — {{ s.sector }}</div>
                       </div>
                     </div>
 
-                    <div class="right">
+                    <div class="row-actions">
                       <button type="button" class="btn secondary" data-add>إضافة</button>
                     </div>
                   </div>
                   {% endif %}
                 {% endfor %}
               </div>
-            {% else %}
+              {% else %}
               <div class="alert warn">
                 لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
               </div>
-            {% endif %}
+              {% endif %}
 
+            </div>
           </div>
+
         </div>
 
-      </div>
+        <div class="side">
+          <div class="card">
+            <div class="ch">
+              <h3>إرسال الطلب</h3>
+              <span class="tag">الخطوة 2 من 2</span>
+            </div>
+            <div class="cb">
+              <form
+                method="post"
+                action="{% url 'portal:submit' %}"
+                data-form
+                data-min-required="{{ min_required }}"
+                data-available-count="{{ available_count }}"
+              >
+                {% csrf_token %}
 
-      <!-- RIGHT -->
-      <div class="side">
-        <div class="card">
-          <div class="ch">
-            <h3>إقرار وإرسال</h3>
-            <span class="tag">الخطوة النهائية</span>
+                <div class="note">
+                  {{ selection_hint }}
+                </div>
+
+                <div class="expired-inline" data-expired-inline>
+                  انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                  <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}" style="flex:1">السابق</a>
+
+                  {% if available_count > 0 %}
+                  <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
+                  {% else %}
+                  <button class="btn primary is-disabled" data-submit type="button" style="flex:1" disabled>لا توجد شواغر متاحة</button>
+                  {% endif %}
+                </div>
+              </form>
+            </div>
           </div>
-          <div class="cb">
-            <form method="post" action="{% url 'portal:submit' %}" data-form>
-              {% csrf_token %}
 
-              <div class="radio">
-                <input type="radio" name="fallback_choice" value="admin_assign" id="fb1">
-                <label for="fb1">
-                  <b>في حال عدم توفر فرصة ضمن رغباتي</b>
-                  <div class="sm">أوافق على توجيهي من قبل الإدارة وفق الاحتياج.</div>
-                </label>
-              </div>
-
-              <div class="radio" style="margin-top:10px">
-                <input type="radio" name="fallback_choice" value="stay_current" id="fb2">
-                <label for="fb2">
-                  <b>في حال عدم توفر فرصة ضمن رغباتي</b>
-                  <div class="sm">أقر بالبقاء في مدرستي الحالية.</div>
-                </label>
-              </div>
-
-              <div class="radio" style="margin-top:10px">
-                <input type="checkbox" name="no_vacancies" value="1" id="no_vacancies" data-no-vacancies>
-                <label for="no_vacancies">
-                  <b>لا أرغب في التقديم على أي من هذه الشواغر</b>
-                  <div class="sm">فعّل هذا الخيار فقط إذا كنت لا تريد اختيار أي رغبة من القائمة.</div>
-                </label>
-              </div>
-
-              <div class="hint">
-                يمكنك اختيار رغبة واحدة أو أكثر فقط، ولا يلزم ترتيب جميع الشواغر المعروضة.
-                وإذا لم ترغب بأي منها، فعّل خيار عدم الرغبة ثم أرسل الطلب.
-              </div>
-
-              <div class="expired-inline" data-expired-inline>
-                انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
-              </div>
-
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-                <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}" style="flex:1">رجوع</a>
-                <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
-              </div>
-            </form>
+          {% if not schools and not selected_prefs %}
+          <div class="alert warn" style="margin-top:12px">
+            لا توجد شواغر متاحة حاليًا لك. يمكنك الانتظار حتى يتم تحديث البيانات أو الرجوع للصفحة السابقة.
           </div>
+          {% endif %}
         </div>
 
-        {% if not schools and not selected_prefs %}
-        <div class="alert warn" style="margin-top:12px">
-          لا توجد شواغر متاحة حاليًا لك. يمكنك الرجوع أو الانتظار حتى يتم تحديث البيانات.
-        </div>
-        {% endif %}
       </div>
 
     </div>
-
   </div>
 </div>
 
-<!-- Custom Modal -->
-<div class="prx-modal" data-modal>
-  <div class="prx-dialog" role="dialog" aria-modal="true" aria-labelledby="prxDialogTitle">
-    <div class="prx-dialog-head">
-      <h3 class="prx-dialog-title" id="prxDialogTitle" data-modal-title>تأكيد نهائي</h3>
+<div class="upp-modal" data-modal>
+  <div class="upp-dialog" role="dialog" aria-modal="true" aria-labelledby="uppDialogTitle">
+    <div class="upp-dialog-head">
+      <h3 class="upp-dialog-title" id="uppDialogTitle" data-modal-title>تأكيد نهائي</h3>
     </div>
-    <div class="prx-dialog-body">
-      <p class="prx-dialog-text" data-modal-text>...</p>
-      <div class="prx-dialog-actions">
-        <button type="button" class="prx-dialog-btn secondary" data-modal-cancel>رجوع</button>
-        <button type="button" class="prx-dialog-btn primary" data-modal-ok>تأكيد الإرسال</button>
+    <div class="upp-dialog-body">
+      <p class="upp-dialog-text" data-modal-text>...</p>
+      <div class="upp-dialog-actions">
+        <button type="button" class="upp-dialog-btn secondary" data-modal-cancel>رجوع</button>
+        <button type="button" class="upp-dialog-btn primary" data-modal-ok>تأكيد الإرسال</button>
       </div>
     </div>
   </div>

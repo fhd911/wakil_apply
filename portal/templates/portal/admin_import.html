@@ -5,7 +5,10 @@
 <style>
   /* =========================================================
      Import Excel — Unified Ministerial Light Style
-     موحّد مع لوحة القرار والإدارة
+     ✅ تحديث:
+     - فصل رفع المتقدمين الجدد عن رفع المدارس
+     - إضافة قسم واضح لفرز المتقدمين الجدد
+     - واجهة أوضح للمرحلة الثانية
   ========================================================= */
 
   :root{
@@ -40,9 +43,17 @@
     --min-ok-soft:#eefbf3;
     --min-ok-line:#b7e4c7;
 
+    --min-warn:#92400e;
+    --min-warn-soft:#fff8ed;
+    --min-warn-line:#f4cf9b;
+
     --min-danger:#991b1b;
     --min-danger-soft:#fef2f2;
     --min-danger-line:#fecaca;
+
+    --min-info:#1d4ed8;
+    --min-info-soft:#eff6ff;
+    --min-info-line:#bfdbfe;
   }
 
   .ui{
@@ -56,7 +67,7 @@
 
   .ui-page{
     position:relative;
-    max-width:980px;
+    max-width:1120px;
     margin:0 auto;
   }
 
@@ -69,6 +80,11 @@
     box-shadow:var(--min-shadow-strong);
     position:relative;
     overflow:hidden;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
   }
 
   .ui-top::before{
@@ -89,6 +105,11 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
+  .ui-top > *{
+    position:relative;
+    z-index:1;
+  }
+
   .ui-title{
     font-size:20px !important;
     font-weight:800 !important;
@@ -101,58 +122,14 @@
     margin-top:4px;
     color:rgba(255,255,255,.82) !important;
     font-size:10.8px !important;
-    line-height:1.6 !important;
+    line-height:1.7 !important;
   }
 
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
-  }
-
-  .ui-card-head{
+  .ui-actions{
     display:flex;
+    gap:8px;
+    flex-wrap:wrap;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-card-body{
-    padding:12px !important;
-  }
-
-  .ui-muted{
-    color:var(--min-muted);
-    font-size:10px;
-    line-height:1.8;
-  }
-
-  .ui-pill{
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  .ui-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#16a34a;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
   }
 
   .ui-btn{
@@ -185,9 +162,116 @@
     box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
   }
 
+  .ui-btn-warn{
+    color:#fff !important;
+    border-color:#b45309 !important;
+    background:linear-gradient(180deg,#d97706,#b45309) !important;
+    box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
   .ui-btn-icon{
     font-size:11px;
     line-height:1;
+  }
+
+  .ui-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .ui-grid-single{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-top:12px;
+  }
+
+  .ui-card{
+    border:1px solid rgba(211,221,212,.95) !important;
+    border-radius:22px !important;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
+    box-shadow:var(--min-shadow) !important;
+    overflow:hidden;
+  }
+
+  .ui-card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(219,227,219,.92);
+    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  }
+
+  .ui-card-title{
+    font-size:11px;
+    font-weight:800;
+    color:var(--min-green-2);
+    margin:0;
+  }
+
+  .ui-card-body{
+    padding:12px !important;
+  }
+
+  .ui-muted{
+    color:var(--min-muted);
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  .ui-pill{
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:9.8px;
+    font-weight:800;
+    color:var(--min-green-2);
+    border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .ui-pill-ok{
+    color:var(--min-ok) !important;
+    border-color:var(--min-ok-line) !important;
+    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
+  }
+
+  .ui-pill-info{
+    color:var(--min-info) !important;
+    border-color:var(--min-info-line) !important;
+    background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;
+  }
+
+  .ui-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#16a34a;
+    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+  }
+
+  .ui-alert{
+    border:1px solid var(--min-info-line);
+    background:var(--min-info-soft);
+    color:#1e3a8a;
+    padding:10px 12px;
+    border-radius:14px;
+    line-height:1.8;
+    font-size:9.8px;
+    margin-bottom:10px;
+  }
+
+  .ui-alert.warn{
+    border-color:var(--min-warn-line);
+    background:var(--min-warn-soft);
+    color:var(--min-warn);
   }
 
   .ui-field{
@@ -215,7 +299,7 @@
     margin-top:4px;
     font-size:9px;
     color:#87968c;
-    line-height:1.5;
+    line-height:1.6;
   }
 
   .ui-error{
@@ -227,11 +311,6 @@
     color:var(--min-danger);
     font-size:9.4px;
     line-height:1.6;
-  }
-
-  .ui-error ul{
-    margin:0;
-    padding:0 16px 0 0;
   }
 
   .ui-field input[type="file"]{
@@ -311,6 +390,12 @@
     line-height:1.8;
   }
 
+  @media (max-width: 860px){
+    .ui-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
   @media (max-width: 640px){
     .ui-top{
       border-radius:18px;
@@ -339,88 +424,199 @@
     <div class="ui-top">
       <div class="ui-title-wrap">
         <h1 class="ui-title">استيراد ملفات الإكسل</h1>
-        <p class="ui-subtitle">ارفع ملف المتقدمين و/أو ملف المدارس، وسيتم الاستيراد مباشرة مع عرض ملخص واضح للنتائج.</p>
+        <p class="ui-subtitle">إدارة رفع بيانات المتقدمين الجدد والمدارس، ثم الانتقال إلى فرز المرحلة الثانية بصورة واضحة ومنظمة.</p>
+      </div>
+
+      <div class="ui-actions">
+        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
+          <span class="ui-btn-icon">▦</span>
+          لوحة الإدارة
+        </a>
+
+        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
+          <span class="ui-btn-icon">👤</span>
+          إدارة المتقدمين
+        </a>
+
+        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
+          <span class="ui-btn-icon">🧩</span>
+          إدارة الشواغر
+        </a>
       </div>
     </div>
 
-    <div class="ui-card">
+    <div class="ui-alert warn">
+      <b>تنبيه:</b>
+      رفع ملف <b>المتقدمين الجدد</b> يخص المرحلة الثانية، ويفترض بعده مراجعة البيانات ثم تنفيذ الفرز وفق الشواغر المتاحة.
+    </div>
 
-      <div class="ui-card-head">
-        <div class="ui-muted">
-          يمكنك رفع ملف واحد أو الملفين معًا، وسيتم تنفيذ الاستيراد على نفس الصفحة.
+    <div class="ui-grid">
+
+      <!-- المتقدمون الجدد -->
+      <div class="ui-card">
+        <div class="ui-card-head">
+          <h3 class="ui-card-title">رفع المتقدمين الجدد</h3>
+          <span class="ui-pill ui-pill-info">
+            <span class="ui-dot"></span>
+            المرحلة الثانية
+          </span>
         </div>
-        <span class="ui-pill">
-          <span class="ui-dot"></span>
-          استيراد البيانات
-        </span>
+
+        <div class="ui-card-body">
+          {% if form.applicants_file.errors %}
+            <div class="ui-error">{{ form.applicants_file.errors }}</div>
+          {% endif %}
+
+          <form method="post" enctype="multipart/form-data" action="{% url 'portal:admin_import_new_applicants' %}">
+            {% csrf_token %}
+
+            <div class="ui-field">
+              <label class="ui-label">ملف المتقدمين الجدد</label>
+              {{ form.applicants_file }}
+              <div class="ui-help">
+                ارفع ملف المتقدمين الجدد بصيغة Excel. سيتم التعامل معه باعتباره ملف المرحلة الثانية.
+              </div>
+            </div>
+
+            <div class="ui-actions-row">
+              <button class="ui-btn ui-btn-primary" type="submit">
+                <span class="ui-btn-icon">⤴</span>
+                رفع المتقدمين الجدد
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <div class="ui-card-body">
+      <!-- المدارس / الشواغر -->
+      <div class="ui-card">
+        <div class="ui-card-head">
+          <h3 class="ui-card-title">رفع المدارس / الشواغر</h3>
+          <span class="ui-pill">
+            <span class="ui-dot"></span>
+            الشواغر المعتمدة
+          </span>
+        </div>
 
-        {% if form.non_field_errors %}
-          <div class="ui-error">{{ form.non_field_errors }}</div>
-        {% endif %}
+        <div class="ui-card-body">
+          {% if form.schools_file.errors %}
+            <div class="ui-error">{{ form.schools_file.errors }}</div>
+          {% endif %}
 
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
+          <form method="post" enctype="multipart/form-data" action="{% url 'portal:admin_import_schools' %}">
+            {% csrf_token %}
 
-          <div class="ui-field">
-            <label class="ui-label">{{ form.applicants_file.label }}</label>
-            {{ form.applicants_file }}
-            <div class="ui-help">ارفع ملف المتقدمين بصيغة Excel.</div>
-          </div>
+            <div class="ui-field">
+              <label class="ui-label">ملف المدارس / الشواغر</label>
+              {{ form.schools_file }}
+              <div class="ui-help">
+                ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث بيانات المدارس المفتوحة والمغلقة وفق الملف.
+              </div>
+            </div>
 
-          <div class="ui-field">
-            <label class="ui-label">{{ form.schools_file.label }}</label>
-            {{ form.schools_file }}
-            <div class="ui-help">ارفع ملف المدارس/الشواغر بصيغة Excel.</div>
+            <div class="ui-actions-row">
+              <button class="ui-btn ui-btn-primary" type="submit">
+                <span class="ui-btn-icon">⤴</span>
+                رفع المدارس / الشواغر
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ui-grid-single">
+
+      <!-- الفرز -->
+      <div class="ui-card">
+        <div class="ui-card-head">
+          <h3 class="ui-card-title">فرز المتقدمين الجدد</h3>
+          <span class="ui-pill ui-pill-ok">
+            <span class="ui-dot"></span>
+            بعد اكتمال الرفع
+          </span>
+        </div>
+
+        <div class="ui-card-body">
+          <div class="ui-alert">
+            يتم تنفيذ الفرز بعد التأكد من رفع:
+            <b>ملف المتقدمين الجدد</b>
+            و
+            <b>ملف المدارس / الشواغر</b>
+            بصورة صحيحة. يوصى بمراجعة البيانات قبل بدء الفرز.
           </div>
 
           <div class="ui-actions-row">
-            <button class="ui-btn ui-btn-primary" type="submit">
-              <span class="ui-btn-icon">⤴</span>
-              بدء الاستيراد
-            </button>
+            <a class="ui-btn" href="{% url 'portal:admin_new_applicants_sorting' %}">
+              <span class="ui-btn-icon">≣</span>
+              فتح شاشة الفرز
+            </a>
 
-            <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-              <span class="ui-btn-icon">▦</span>
-              لوحة الإدارة
+            <a class="ui-btn ui-btn-warn" href="{% url 'portal:admin_new_applicants_sorting' %}">
+              <span class="ui-btn-icon">⚙</span>
+              بدء الفرز
             </a>
           </div>
-        </form>
+        </div>
+      </div>
 
-        {% if result %}
+      {% if result %}
+      <div class="ui-card">
+        <div class="ui-card-head">
+          <h3 class="ui-card-title">ملخص آخر عملية</h3>
+          <span class="ui-pill">
+            <span class="ui-dot"></span>
+            نتائج الاستيراد
+          </span>
+        </div>
+
+        <div class="ui-card-body">
           <div class="ui-summary">
-            <div class="ui-summary-title">ملخص الاستيراد</div>
-
-            {% if result.applicants %}
+            {% if result.applicants or result.new_applicants %}
               <div class="ui-item">
-                <div class="nm">المتقدمين</div>
+                <div class="nm">المتقدمون الجدد</div>
                 <div class="sm">
-                  Batch #{{ result.applicants.batch }}
-                  — Created: {{ result.applicants.created }}
-                  — Updated: {{ result.applicants.updated }}
-                  — Skipped: {{ result.applicants.skipped }}
+                  {% if result.new_applicants %}
+                    Batch #{{ result.new_applicants.batch }}
+                    — Added: {{ result.new_applicants.created }}
+                    — Updated: {{ result.new_applicants.updated }}
+                    — Skipped: {{ result.new_applicants.skipped }}
+                  {% else %}
+                    Batch #{{ result.applicants.batch }}
+                    — Added: {{ result.applicants.created }}
+                    — Updated: {{ result.applicants.updated }}
+                    — Skipped: {{ result.applicants.skipped }}
+                  {% endif %}
                 </div>
               </div>
             {% endif %}
 
             {% if result.schools %}
               <div class="ui-item">
-                <div class="nm">المدارس/الشواغر</div>
+                <div class="nm">المدارس / الشواغر</div>
                 <div class="sm">
                   Batch #{{ result.schools.batch }}
-                  — Created: {{ result.schools.created }}
+                  — Added: {{ result.schools.created }}
                   — Updated: {{ result.schools.updated }}
                   — Skipped: {{ result.schools.skipped }}
                 </div>
               </div>
             {% endif %}
-          </div>
-        {% endif %}
 
+            {% if not result.applicants and not result.new_applicants and not result.schools %}
+              <div class="ui-item">
+                <div class="nm">لا يوجد ملخص متاح</div>
+                <div class="sm">لم يتم العثور على نتائج استيراد لعرضها حاليًا.</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
       </div>
+      {% endif %}
+
     </div>
+
   </div>
 </div>
 {% endblock %}
