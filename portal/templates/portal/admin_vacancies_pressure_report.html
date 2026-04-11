@@ -3,310 +3,426 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Vacancies Pressure Report — Ministerial Light (Unified)
-  ========================================================= */
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
 
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
 
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
 
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
 
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
 
-    --min-line:#dbe3db;
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
+
+    --ok:#215f39;
+    --ok-bg:#eff8f3;
+    --ok-bd:#cfe6d8;
+
+    --warn:#8e6113;
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
+
+    --danger:#8f2f2f;
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --moe-mid:#1f7a62;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
   }
 
-  .ui{
-    position:relative;
-    background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
+  .vpr, .vpr *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .ui-top{
-    margin-bottom:12px;
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
+  .vpr{
+    direction:rtl;
+    color:var(--ink);
+  }
+
+  .vpr-page{
+    display:grid;
+    gap:12px;
+  }
+
+  .vpr-top,
+  .vpr-card{
     position:relative;
     overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
   }
 
-  .ui-top::before{
+  .vpr-top::before,
+  .vpr-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
-  .ui-title{
-    font-size:20px !important;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff !important;
-    margin:0;
+  .vpr-top{
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
   }
 
-  .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.6 !important;
-  }
-
-  .ui-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-    margin-top:10px;
-  }
-
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
-  }
-
-  .ui-toolbar{
-    padding:8px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-toolbar-row{
+  .vpr-top-row{
     display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
-    align-items:center;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:start;
   }
 
-  .ui-toolbar-left,
-  .ui-toolbar-right{
+  .vpr-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.2;
+    font-weight:900 !important;
+    color:var(--green-1);
+    letter-spacing:0;
+  }
+
+  .vpr-subtitle{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.9;
+    font-weight:800 !important;
+    max-width:860px;
+  }
+
+  .vpr-actions{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
     align-items:center;
+    justify-content:flex-end;
   }
 
-  .ui-pill{
-    min-height:30px;
+  .vpr-kpis{
+    margin-top:12px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .vpr-pill{
+    min-height:28px;
     padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:900;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900 !important;
     display:inline-flex;
     align-items:center;
     gap:6px;
-  }
-
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:900;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-    justify-content:center;
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-  }
-  .ui-btn:hover{ transform:translateY(-1px); }
-
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-input,
-  .ui-select{
-    min-height:38px;
-    height:38px;
-    padding:8px 12px;
-    font-size:10.5px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    outline:none;
-  }
-
-  .tbl-wrap{
-    overflow:auto;
-    background:#fff;
-    border-top:1px solid rgba(219,227,219,.92);
-  }
-
-  table.tbl{
-    width:100%;
-    min-width:1280px;
-    border-collapse:separate;
-    border-spacing:0;
-    table-layout:fixed;
-  }
-
-  table.tbl thead th{
-    position:sticky;
-    top:0;
-    z-index:4;
-    background:#eef3ee !important;
-    color:var(--min-green-2);
-    font-size:10.1px;
-    font-weight:900;
-    padding:10px 8px;
-    border-bottom:1px solid #d7e0d7 !important;
     white-space:nowrap;
   }
 
-  table.tbl tbody td{
-    padding:8px 8px;
-    font-size:10.4px;
+  .vpr-pill.gold{
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
+    color:#8a6526;
+  }
+
+  .vpr-btn{
+    min-height:35px;
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:9.4px;
+    font-weight:900 !important;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    justify-content:center;
+    box-shadow:none;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+  }
+
+  .vpr-btn:hover{
+    transform:translateY(-1px);
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+  }
+
+  .vpr-btn:active{
+    transform:translateY(0);
+  }
+
+  .vpr-btn-primary{
+    color:#fff !important;
+    border-color:var(--green-2) !important;
+    background:var(--green-2) !important;
+  }
+
+  .vpr-card{
+    overflow:hidden;
+  }
+
+  .vpr-toolbar{
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .vpr-toolbar-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    align-items:end;
+  }
+
+  .vpr-toolbar-left,
+  .vpr-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:end;
+  }
+
+  .vpr-input,
+  .vpr-select{
+    min-height:39px;
+    height:39px;
+    padding:7px 10px;
+    font-size:9.5px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--ink);
+    outline:none;
+    box-shadow:none;
+  }
+
+  .vpr-input:focus,
+  .vpr-select:focus{
+    border-color:var(--gold-2);
+    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  }
+
+  .vpr-table-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid var(--line);
+  }
+
+  table.vpr-table{
+    width:100%;
+    min-width:1280px;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  table.vpr-table thead th{
+    position:sticky;
+    top:0;
+    z-index:4;
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
+    color:var(--green-1);
+    font-size:8.8px;
+    font-weight:900;
+    padding:12px 8px;
+    border-bottom:1px solid var(--line-2) !important;
+    white-space:nowrap;
+    text-align:right;
+  }
+
+  table.vpr-table tbody td{
+    padding:10px 8px;
+    font-size:9.3px;
     vertical-align:middle;
-    border-bottom:1px solid #e7ede7 !important;
+    border-bottom:1px solid #edf1ed !important;
     background:#ffffff;
-    color:var(--min-ink-2);
+    color:var(--ink);
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
   }
 
-  table.tbl tbody tr:nth-child(even) td{ background:#fbfcfa; }
-  table.tbl tbody tr:hover td{ background:#f8faf7; }
-
-  .mut{ color:var(--min-muted); }
-
-  .kpis{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:10px;
+  table.vpr-table tbody tr:nth-child(even) td{
+    background:#fcfdfc;
   }
-  .kpis .pill{
-    border:1px solid rgba(255,255,255,.22);
-    background:rgba(255,255,255,.10);
-    color:#fff;
-    border-radius:999px;
-    padding:6px 10px;
-    font-size:10px;
-    font-weight:900;
+
+  table.vpr-table tbody tr:hover td{
+    background:#f8faf8;
+  }
+
+  .vpr-muted{
+    color:var(--muted);
+    font-weight:800;
+  }
+
+  .vpr-badge{
     display:inline-flex;
-    gap:6px;
     align-items:center;
+    min-height:24px;
+    padding:3px 9px;
+    border-radius:999px;
+    font-size:8.5px;
+    font-weight:900;
+    white-space:nowrap;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+  }
+
+  .vpr-badge.ok{
+    border-color:var(--ok-bd);
+    background:var(--ok-bg);
+    color:var(--ok);
+  }
+
+  .vpr-badge.danger{
+    border-color:var(--danger-bd);
+    background:var(--danger-bg);
+    color:var(--danger);
+  }
+
+  .vpr-empty{
+    padding:18px 14px;
+    text-align:center;
+    color:var(--muted);
+    font-size:9px;
+    font-weight:800;
   }
 
   @media (max-width: 900px){
-    .ui-toolbar-row{ grid-template-columns:1fr; }
-    table.tbl{ min-width:1200px; }
+    .vpr-toolbar-row{
+      grid-template-columns:1fr;
+    }
+
+    table.vpr-table{
+      min-width:1200px;
+    }
+  }
+
+  @media (max-width: 640px){
+    .vpr-top-row{
+      grid-template-columns:1fr;
+    }
+
+    .vpr-actions{
+      justify-content:flex-start;
+    }
+
+    .vpr-title{
+      font-size:18px;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="vpr">
+  <div class="vpr-page">
 
-    <div class="ui-top">
-      <h1 class="ui-title">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
-      <div class="ui-subtitle">
-        يعرض عدد الراغبين على كل مدرسة (إجمالي + رغبة أولى) وعدد الترشيحات النهائية.
-      </div>
+    <div class="vpr-top">
+      <div class="vpr-top-row">
+        <div>
+          <h1 class="vpr-title">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
+          <div class="vpr-subtitle">
+            يعرض عدد الراغبين على كل مدرسة (إجمالي + رغبة أولى) وعدد الترشيحات النهائية.
+          </div>
 
-      <div class="kpis">
-        <span class="pill">المدارس: <b>{{ total_schools }}</b></span>
-        <span class="pill">إجمالي الراغبين: <b>{{ sum_total }}</b></span>
-        <span class="pill">إجمالي رغبة أولى: <b>{{ sum_rank1 }}</b></span>
-        <span class="pill">إجمالي الترشيحات: <b>{{ sum_achieved }}</b></span>
-      </div>
+          <div class="vpr-kpis">
+            <span class="vpr-pill gold">المدارس: <b>{{ total_schools }}</b></span>
+            <span class="vpr-pill">إجمالي الراغبين: <b>{{ sum_total }}</b></span>
+            <span class="vpr-pill">إجمالي رغبة أولى: <b>{{ sum_rank1 }}</b></span>
+            <span class="vpr-pill">إجمالي الترشيحات: <b>{{ sum_achieved }}</b></span>
+          </div>
+        </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
-        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
+        <div class="vpr-actions">
+          <a class="vpr-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
+          <a class="vpr-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
 
-        <!-- ✅ زر الطباعة (المطلوب) -->
-        <a class="ui-btn ui-btn-primary"
-           href="{% url 'portal:admin_vacancies_pressure_print' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-          🖨️ طباعة
-        </a>
+          <a class="vpr-btn vpr-btn-primary"
+             href="{% url 'portal:admin_vacancies_pressure_print' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+            🖨️ طباعة
+          </a>
 
-        <a class="ui-btn"
-           href="{% url 'portal:admin_vacancies_pressure_csv' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-          ⬇ CSV
-        </a>
+          <a class="vpr-btn"
+             href="{% url 'portal:admin_vacancies_pressure_csv' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+            ⬇ CSV
+          </a>
 
-        <a class="ui-btn"
-           href="{% url 'portal:admin_vacancies_pressure_excel' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-          ⬇ Excel
-        </a>
+          <a class="vpr-btn"
+             href="{% url 'portal:admin_vacancies_pressure_excel' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+            ⬇ Excel
+          </a>
+        </div>
       </div>
     </div>
 
-    <div class="ui-card">
-      <div class="ui-toolbar">
-        <form method="get" class="ui-toolbar-row">
-          <div class="ui-toolbar-left">
-            <input class="ui-input" name="q" value="{{ f.q }}" placeholder="بحث: مدرسة / رقم الوزارة / القطاع / المدير"
+    <div class="vpr-card">
+      <div class="vpr-toolbar">
+        <form method="get" class="vpr-toolbar-row">
+          <div class="vpr-toolbar-left">
+            <input class="vpr-input" name="q" value="{{ f.q }}" placeholder="بحث: مدرسة / رقم الوزارة / القطاع / المدير"
                    style="width:min(360px,100%)">
 
-            <input class="ui-input" name="sector" value="{{ f.sector }}" placeholder="فلتر قطاع" style="width:170px">
-            <input class="ui-input" name="gender" value="{{ f.gender }}" placeholder="فلتر جنس" style="width:140px">
+            <input class="vpr-input" name="sector" value="{{ f.sector }}" placeholder="فلتر قطاع" style="width:170px">
+            <input class="vpr-input" name="gender" value="{{ f.gender }}" placeholder="فلتر جنس" style="width:140px">
 
-            <select class="ui-select" name="open" style="width:150px">
+            <select class="vpr-select" name="open" style="width:150px">
               <option value="" {% if not f.open %}selected{% endif %}>الكل</option>
               <option value="open" {% if f.open == "open" %}selected{% endif %}>مفتوح</option>
               <option value="closed" {% if f.open == "closed" %}selected{% endif %}>مغلق</option>
             </select>
 
-            <select class="ui-select" name="sort" style="width:170px">
+            <select class="vpr-select" name="sort" style="width:170px">
               <option value="rank1" {% if f.sort == "rank1" %}selected{% endif %}>فرز: رغبة أولى</option>
               <option value="total" {% if f.sort == "total" %}selected{% endif %}>فرز: إجمالي الراغبين</option>
               <option value="achieved" {% if f.sort == "achieved" %}selected{% endif %}>فرز: الترشيحات</option>
               <option value="need" {% if f.sort == "need" %}selected{% endif %}>فرز: الاحتياج</option>
             </select>
 
-            <input class="ui-input" name="top" value="{{ f.top }}" placeholder="TOP (0=الكل)" style="width:140px">
+            <input class="vpr-input" name="top" value="{{ f.top }}" placeholder="TOP (0=الكل)" style="width:140px">
           </div>
 
-          <div class="ui-toolbar-right">
-            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
-            <a class="ui-btn" href="{% url 'portal:admin_vacancies_pressure' %}">مسح</a>
-            <span class="ui-pill">النتائج: <b>{{ rows|length }}</b></span>
+          <div class="vpr-toolbar-right">
+            <button class="vpr-btn vpr-btn-primary" type="submit">بحث</button>
+            <a class="vpr-btn" href="{% url 'portal:admin_vacancies_pressure' %}">مسح</a>
+            <span class="vpr-pill">النتائج: <b>{{ rows|length }}</b></span>
           </div>
         </form>
       </div>
 
-      <div class="tbl-wrap">
-        <table class="tbl">
+      <div class="vpr-table-wrap">
+        <table class="vpr-table">
           <thead>
             <tr>
               <th style="width:60px">#</th>
@@ -325,21 +441,27 @@
           <tbody>
             {% for v in rows %}
               <tr>
-                <td class="mut">{{ forloop.counter }}</td>
+                <td class="vpr-muted">{{ forloop.counter }}</td>
                 <td title="{{ v.school_name }}">{{ v.school_name }}</td>
-                <td class="mut">{{ v.ministry_no|default:"—" }}</td>
-                <td class="mut">{{ v.sector|default:"—" }}</td>
-                <td class="mut">{{ v.gender|default:"—" }}</td>
-                <td class="mut">{{ v.stage|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.ministry_no|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.sector|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.gender|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.stage|default:"—" }}</td>
                 <td>{{ v.deputy_need|default:"0" }}</td>
                 <td>{{ v.interested_total|default:0 }}</td>
                 <td>{{ v.interested_rank1|default:0 }}</td>
                 <td>{{ v.achieved_total|default:0 }}</td>
-                <td>{% if v.is_open %}مفتوح{% else %}مغلق{% endif %}</td>
+                <td>
+                  {% if v.is_open %}
+                    <span class="vpr-badge ok">مفتوح</span>
+                  {% else %}
+                    <span class="vpr-badge danger">مغلق</span>
+                  {% endif %}
+                </td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="11" class="mut" style="padding:14px;">لا توجد بيانات.</td>
+                <td colspan="11" class="vpr-empty">لا توجد بيانات.</td>
               </tr>
             {% endfor %}
           </tbody>

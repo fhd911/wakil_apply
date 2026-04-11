@@ -3,122 +3,162 @@
 
 {% block extra_css %}
 <style>
-  .upd, .upd *{
+  :root{
+    --rcv-bg:#f6f7f5;
+    --rcv-bg-2:#f0f2ef;
+    --rcv-bg-3:#e8eeea;
+
+    --rcv-paper:#ffffff;
+    --rcv-paper-2:#f9fbf8;
+    --rcv-paper-3:#f3f6f3;
+
+    --rcv-ink:#203128;
+    --rcv-ink-2:#33453b;
+    --rcv-muted:#6f7f76;
+
+    --rcv-green-1:#1f3a2d;
+    --rcv-green-2:#294638;
+    --rcv-green-3:#4b6457;
+    --rcv-green-4:#7b8f84;
+
+    --rcv-gold-1:#846735;
+    --rcv-gold-2:#ab8950;
+    --rcv-gold-3:#d7c190;
+
+    --rcv-line:#d7dfd8;
+    --rcv-line-2:#c8d2ca;
+    --rcv-line-3:#ebf0eb;
+
+    --rcv-ok:#215f39;
+    --rcv-ok-bg:#eff8f3;
+    --rcv-ok-bd:#cfe6d8;
+
+    --rcv-warn:#8e6113;
+    --rcv-warn-bg:#fcf7ee;
+    --rcv-warn-bd:#e7d7b7;
+
+    --rcv-danger:#8f2f2f;
+    --rcv-danger-bg:#fcf6f6;
+    --rcv-danger-bd:#e7c7c7;
+
+    --rcv-shadow:0 1px 4px rgba(17,24,20,.035);
+    --rcv-shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --rcv-shadow-strong:0 8px 22px rgba(17,24,20,.06);
+
+    --rcv-moe-mid:#1f7a62;
+  }
+
+  .rcv, .rcv *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
-    font-weight:400 !important;
   }
 
-  .upd{
+  .rcv{
     direction:rtl;
-    color:var(--min-ink);
+    color:var(--rcv-ink);
   }
 
-  .upd .wrap{
+  .rcv-wrap{
     max-width:1100px;
     margin:0 auto;
   }
 
-  .upd .panel{
-    width:min(100%, 900px);
-    margin:22px auto 0;
+  .rcv-panel{
+    width:min(100%, 920px);
+    margin:16px auto 0;
   }
 
-  .upd .shell{
-    border:1px solid rgba(211,221,212,.95);
-    border-radius:22px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow);
+  .rcv-shell{
+    position:relative;
     overflow:hidden;
+    border:1px solid var(--rcv-line);
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--rcv-shadow);
   }
 
-  .upd .top{
+  .rcv-shell::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--rcv-green-2) 0%, var(--rcv-gold-2) 100%);
+    opacity:.95;
+  }
+
+  .rcv-top{
     position:relative;
     padding:16px 18px 14px;
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
-    overflow:hidden;
-  }
-
-  .upd .top::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
-  }
-
-  .upd .top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    border-bottom:1px solid var(--rcv-line);
+    border-inline-start:4px solid var(--rcv-moe-mid);
   }
 
-  .upd .top > *{
+  .rcv-top > *{
     position:relative;
     z-index:1;
   }
 
-  .upd h1{
+  .rcv-title{
     margin:0;
-    font-size:18px;
+    font-size:20px;
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
+    line-height:1.2;
+    letter-spacing:0;
+  }
+
+  .rcv-sub{
+    margin:6px 0 0;
+    color:var(--rcv-muted);
+    font-size:10.4px;
+    line-height:1.9;
+    max-width:66ch;
     font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff;
-    line-height:1.35;
   }
 
-  .upd .sub{
-    margin:5px 0 0;
-    color:rgba(255,255,255,.82);
-    font-size:10.6px;
-    line-height:1.8;
-    max-width:64ch;
-  }
-
-  .upd .pill{
+  .rcv-pill{
     display:inline-flex;
     align-items:center;
     gap:8px;
-    min-height:30px;
+    min-height:28px;
     padding:4px 10px;
-    border-radius:999px;
-    border:1px solid rgba(239,225,187,.95);
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    font-size:9.8px;
-    font-weight:800 !important;
+    border-radius:8px;
+    border:1px solid var(--rcv-ok-bd);
+    background:var(--rcv-ok-bg);
+    color:var(--rcv-ok);
+    font-size:9px;
+    font-weight:900 !important;
     white-space:nowrap;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .upd .dot{
+  .rcv-dot{
     width:8px;
     height:8px;
     border-radius:999px;
-    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    background:linear-gradient(135deg,var(--rcv-green-2),var(--rcv-green-3));
+    box-shadow:0 0 0 3px rgba(171,137,80,.12);
     flex:0 0 auto;
   }
 
-  .upd .timer{
+  .rcv-timer{
     margin:12px;
     margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
+    border:1px solid var(--rcv-line);
     background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
+    border-radius:10px;
     padding:12px;
-    box-shadow:var(--min-shadow-soft);
+    box-shadow:var(--rcv-shadow-soft);
   }
 
-  .upd .timer-head{
+  .rcv-timer-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -126,29 +166,29 @@
     margin-bottom:8px;
   }
 
-  .upd .timer-title{
+  .rcv-timer-title{
     margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:9.2px;
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
   }
 
-  .upd .timer-state{
+  .rcv-timer-state{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:26px;
+    min-height:24px;
     padding:4px 10px;
     border-radius:999px;
-    font-size:9.2px;
-    font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
+    font-size:8.6px;
+    font-weight:900 !important;
+    border:1px solid var(--rcv-line);
+    background:#fff;
+    color:var(--rcv-ink-2);
     white-space:nowrap;
   }
 
-  .upd .timer-state::before{
+  .rcv-timer-state::before{
     content:"";
     width:7px;
     height:7px;
@@ -158,334 +198,350 @@
     flex:0 0 auto;
   }
 
-  .upd .timer-grid{
+  .rcv-timer-grid{
     display:grid;
     grid-template-columns:repeat(4, minmax(0,1fr));
     gap:8px;
   }
 
-  .upd .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
+  .rcv-time-box{
+    border:1px solid var(--rcv-line);
+    background:#fff;
+    border-radius:10px;
     padding:10px 8px;
     text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .upd .time-num{
+  .rcv-time-num{
     display:block;
     font-size:18px;
     line-height:1;
     font-weight:900 !important;
     letter-spacing:-.4px;
-    color:var(--min-green-2);
+    color:var(--rcv-green-2);
   }
 
-  .upd .time-label{
+  .rcv-time-label{
     display:block;
     margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
-    font-weight:700 !important;
+    font-size:8.4px;
+    color:var(--rcv-muted);
+    font-weight:800 !important;
   }
 
-  .upd .timer-note{
+  .rcv-timer-note{
     margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
+    font-size:8.8px;
+    color:var(--rcv-muted);
     line-height:1.8;
+    font-weight:800 !important;
   }
 
-  .upd .timer.is-warn{
+  .rcv-timer.is-warn{
     border-color:rgba(217,119,6,.20);
     background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
   }
 
-  .upd .timer.is-warn .timer-state{
+  .rcv-timer.is-warn .rcv-timer-state{
     color:#9a6708;
     border-color:rgba(217,119,6,.20);
     background:linear-gradient(180deg,#fffdf7,#fff8ec);
   }
 
-  .upd .timer.is-warn .timer-state::before{
+  .rcv-timer.is-warn .rcv-timer-state::before{
     background:#d97706;
     box-shadow:0 0 0 3px rgba(217,119,6,.10);
   }
 
-  .upd .timer.is-warn .time-num{
+  .rcv-timer.is-warn .rcv-time-num{
     color:#9a6708;
   }
 
-  .upd .timer.is-danger{
+  .rcv-timer.is-danger{
     border-color:rgba(185,28,28,.18);
     background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
   }
 
-  .upd .timer.is-danger .timer-state{
+  .rcv-timer.is-danger .rcv-timer-state{
     color:#991b1b;
     border-color:rgba(185,28,28,.18);
     background:linear-gradient(180deg,#fffdfd,#fff7f7);
   }
 
-  .upd .timer.is-danger .timer-state::before{
+  .rcv-timer.is-danger .rcv-timer-state::before{
     background:#b91c1c;
     box-shadow:0 0 0 3px rgba(185,28,28,.08);
   }
 
-  .upd .timer.is-danger .time-num{
+  .rcv-timer.is-danger .rcv-time-num{
     color:#991b1b;
   }
 
-  .upd .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
+  .rcv-timer.is-expired{
+    border-color:var(--rcv-danger-bd);
+    background:var(--rcv-danger-bg);
   }
 
-  .upd .timer.is-expired .timer-state{
+  .rcv-timer.is-expired .rcv-timer-state{
     color:#7f1d1d;
     border-color:rgba(185,28,28,.16);
     background:#fff;
   }
 
-  .upd .timer.is-expired .timer-state::before{
+  .rcv-timer.is-expired .rcv-timer-state::before{
     background:#b91c1c;
     box-shadow:0 0 0 3px rgba(185,28,28,.08);
   }
 
-  .upd .timer.is-expired .time-num{
+  .rcv-timer.is-expired .rcv-time-num{
     color:#991b1b;
   }
 
-  .upd .body{
+  .rcv-body{
     padding:12px;
     display:grid;
     gap:12px;
   }
 
-  .upd .card{
+  .rcv-card{
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:18px;
+    border:1px solid var(--rcv-line);
+    border-radius:10px;
     overflow:hidden;
-    box-shadow:var(--min-shadow-soft);
+    box-shadow:var(--rcv-shadow-soft);
   }
 
-  .upd .ch{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
+  .rcv-card-head{
+    padding:11px 12px;
+    border-bottom:1px solid var(--rcv-line);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
-  .upd .ch h3{
+  .rcv-card-head h3{
     margin:0;
-    font-size:11px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:12px;
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
   }
 
-  .upd .tag{
+  .rcv-tag{
     padding:4px 10px;
-    min-height:28px;
+    min-height:26px;
     border-radius:999px;
-    border:1px solid var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
-    color:#14532d;
-    font-size:9.2px;
-    font-weight:800 !important;
+    border:1px solid var(--rcv-ok-bd);
+    background:var(--rcv-ok-bg);
+    color:var(--rcv-ok);
+    font-size:8.6px;
+    font-weight:900 !important;
     display:inline-flex;
     align-items:center;
     white-space:nowrap;
   }
 
-  .upd .cb{
+  .rcv-card-body{
     padding:12px;
   }
 
-  .upd .alert{
-    border:1px solid var(--min-danger-line);
-    background:var(--min-danger-soft);
+  .rcv-alert{
+    border:1px solid var(--rcv-danger-bd);
+    background:var(--rcv-danger-bg);
     color:#991b1b;
     padding:10px 12px;
-    border-radius:14px;
-    font-size:10px;
+    border-radius:10px;
+    font-size:8.9px;
     line-height:1.8;
+    font-weight:800 !important;
   }
 
-  .upd .hero{
+  .rcv-hero{
     display:grid;
     grid-template-columns:auto 1fr;
     gap:12px;
     align-items:start;
   }
 
-  .upd .badge{
-    width:62px;
-    height:62px;
-    border-radius:18px;
-    border:1px solid var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
+  .rcv-badge{
+    width:58px;
+    height:58px;
+    border-radius:14px;
+    border:1px solid var(--rcv-ok-bd);
+    background:var(--rcv-ok-bg);
     display:flex;
     align-items:center;
     justify-content:center;
     color:#15803d;
     font-size:28px;
     font-weight:900 !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .upd .hero-title{
+  .rcv-hero-title{
     margin:0;
     font-size:16px;
-    line-height:1.5;
-    color:var(--min-green-1);
+    line-height:1.45;
+    color:var(--rcv-green-1);
+    font-weight:900 !important;
+  }
+
+  .rcv-hero-sub{
+    margin:5px 0 0;
+    color:var(--rcv-muted);
+    font-size:9.1px;
+    line-height:1.9;
     font-weight:800 !important;
   }
 
-  .upd .hero-sub{
-    margin:5px 0 0;
-    color:var(--min-muted);
-    font-size:10.1px;
-    line-height:1.9;
-  }
-
-  .upd .grid{
+  .rcv-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
-  .upd .field{
+  .rcv-field{
     display:flex;
     flex-direction:column;
     gap:5px;
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:16px;
+    border:1px solid var(--rcv-line);
+    border-radius:10px;
     padding:10px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow-soft);
   }
 
-  .upd .field label{
+  .rcv-field label{
     display:block;
-    font-size:10.4px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:9px;
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
     line-height:1.4;
   }
 
-  .upd .input{
+  .rcv-input{
     width:100%;
-    min-height:40px;
+    min-height:39px;
     padding:9px 11px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    font-size:10.4px;
+    border-radius:8px;
+    border:1px solid var(--rcv-line-2);
+    background:#fff;
+    color:var(--rcv-ink);
+    font-size:9.5px;
     outline:none;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    box-shadow:none;
   }
 
-  .upd .list{
+  .rcv-list{
     display:grid;
     gap:10px;
   }
 
-  .upd .item{
+  .rcv-item{
     display:flex;
     align-items:center;
     gap:10px;
-    border:1px solid rgba(211,221,212,.95);
-    border-radius:16px;
+    border:1px solid var(--rcv-line);
+    border-radius:10px;
     padding:10px 12px;
     background:linear-gradient(180deg,#ffffff,#f9fbf8);
   }
 
-  .upd .rank{
-    min-width:42px;
-    height:36px;
-    border-radius:12px;
+  .rcv-rank{
+    min-width:40px;
+    height:34px;
+    border-radius:10px;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    border:1px solid rgba(239,225,187,.95);
+    background:var(--warn-bg);
+    border:1px solid var(--warn-bd);
     color:#7f5d1a;
-    font-size:10px;
-    font-weight:800 !important;
+    font-size:8.8px;
+    font-weight:900 !important;
     flex:0 0 auto;
   }
 
-  .upd .meta{
+  .rcv-meta{
     min-width:0;
     display:flex;
     flex-direction:column;
     gap:3px;
   }
 
-  .upd .nm{
-    font-size:10.8px;
-    font-weight:800 !important;
-    color:var(--min-green-1);
+  .rcv-nm{
+    font-size:10px;
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
-  .upd .sm{
-    color:var(--min-muted);
-    font-size:9.4px;
+  .rcv-sm{
+    color:var(--rcv-muted);
+    font-size:8.6px;
     line-height:1.8;
-  }
-
-  .upd .note{
-    margin-top:12px;
-    padding:10px 12px;
-    border-radius:16px;
-    border:1px dashed rgba(205,216,206,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    color:var(--min-muted);
-    font-size:9.8px;
-    line-height:1.9;
-  }
-
-  .upd .note b{
     font-weight:800 !important;
   }
 
-  .upd .actions{
+  .rcv-note{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--rcv-line);
+    background:var(--rcv-paper-2);
+    color:var(--rcv-muted);
+    font-size:8.9px;
+    line-height:1.9;
+    font-weight:800 !important;
+  }
+
+  .rcv-note b{
+    font-weight:900 !important;
+    color:var(--rcv-green-1);
+  }
+
+  .rcv-actions{
     display:flex;
     gap:10px;
     flex-wrap:wrap;
     margin-top:12px;
   }
 
-  .upd .btn{
+  .rcv-btn{
     appearance:none;
-    border:1px solid rgba(211,221,212,.95);
+    border:1px solid var(--rcv-line-2);
     cursor:pointer;
-    min-height:34px;
+    min-height:35px;
     padding:7px 14px;
     border-radius:999px;
-    font-size:10.3px;
-    font-weight:800 !important;
+    font-size:9.4px;
+    font-weight:900 !important;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
     text-decoration:none;
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
+    background:#fff;
+    color:var(--rcv-green-2);
+    box-shadow:none;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
   }
 
-  .upd .btn.gold{
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+  .rcv-btn:hover{
+    background:var(--rcv-paper-2);
+    border-color:#b8c6bb;
+    transform:translateY(-1px);
+  }
+
+  .rcv-btn:active{
+    transform:translateY(0);
+  }
+
+  .rcv-btn-gold{
+    background:var(--warn-bg);
     color:#7f5d1a;
-    border-color:rgba(239,225,187,.95);
+    border-color:var(--warn-bd);
   }
 
   @media print {
@@ -504,23 +560,23 @@
       visibility:hidden;
     }
 
-    .upd, .upd *{
+    .rcv, .rcv *{
       visibility:visible;
     }
 
-    .upd{
+    .rcv{
       font-size:12px !important;
       color:#000 !important;
     }
 
-    .upd .wrap,
-    .upd .panel{
+    .rcv-wrap,
+    .rcv-panel{
       max-width:100% !important;
       width:100% !important;
       margin:0 !important;
     }
 
-    .upd .shell{
+    .rcv-shell{
       border:0 !important;
       box-shadow:none !important;
       border-radius:0 !important;
@@ -528,39 +584,39 @@
       overflow:visible !important;
     }
 
-    .upd .top{
+    .rcv-top{
       background:#fff !important;
       color:#000 !important;
       padding:0 0 10px 0 !important;
       border-bottom:2px solid #d1d5db !important;
+      border-inline-start:0 !important;
       display:block !important;
     }
 
-    .upd .top::before,
-    .upd .top::after,
-    .upd .pill,
-    .upd .actions,
-    .upd .timer{
+    .rcv-top::before,
+    .rcv-pill,
+    .rcv-actions,
+    .rcv-timer{
       display:none !important;
     }
 
-    .upd h1{
+    .rcv-title{
       color:#000 !important;
       font-size:18px !important;
     }
 
-    .upd .sub{
+    .rcv-sub{
       color:#444 !important;
       font-size:11px !important;
       max-width:none !important;
     }
 
-    .upd .body{
+    .rcv-body{
       padding:10px 0 0 0 !important;
       gap:10px !important;
     }
 
-    .upd .card{
+    .rcv-card{
       border:1px solid #d1d5db !important;
       box-shadow:none !important;
       break-inside:avoid;
@@ -569,56 +625,56 @@
       border-radius:12px !important;
     }
 
-    .upd .ch{
+    .rcv-card-head{
       background:#fff !important;
       border-bottom:1px solid #d1d5db !important;
     }
 
-    .upd .ch h3,
-    .upd .hero-title,
-    .upd .field label{
+    .rcv-card-head h3,
+    .rcv-hero-title,
+    .rcv-field label{
       color:#000 !important;
     }
 
-    .upd .tag,
-    .upd .badge,
-    .upd .note{
+    .rcv-tag,
+    .rcv-badge,
+    .rcv-note{
       background:#fff !important;
       color:#000 !important;
       border:1px solid #d1d5db !important;
       box-shadow:none !important;
     }
 
-    .upd .hero{
+    .rcv-hero{
       grid-template-columns:1fr !important;
       gap:8px !important;
     }
 
-    .upd .badge{
+    .rcv-badge{
       width:46px !important;
       height:46px !important;
       font-size:22px !important;
       border-radius:12px !important;
     }
 
-    .upd .hero-sub{
+    .rcv-hero-sub{
       color:#444 !important;
       font-size:10px !important;
     }
 
-    .upd .grid{
+    .rcv-grid{
       grid-template-columns:1fr 1fr !important;
       gap:8px !important;
     }
 
-    .upd .field{
+    .rcv-field{
       box-shadow:none !important;
       background:#fff !important;
       border:1px solid #d1d5db !important;
       border-radius:10px !important;
     }
 
-    .upd .input{
+    .rcv-input{
       background:#fff !important;
       border:1px solid #d1d5db !important;
       color:#000 !important;
@@ -626,62 +682,62 @@
       min-height:36px !important;
     }
 
-    .upd .prefs-card{
+    .rcv-prefs-card{
       display:none !important;
     }
 
-    .upd .receipt-card,
-    .upd .summary-card{
+    .rcv-receipt-card,
+    .rcv-summary-card{
       display:block !important;
     }
   }
 
   @media (max-width: 700px){
-    .upd .panel{
+    .rcv-panel{
       width:min(100%, 100%);
       margin-top:10px;
     }
 
-    .upd .grid{
+    .rcv-grid{
       grid-template-columns:1fr;
     }
 
-    .upd .top{
-      padding:13px 14px;
+    .rcv-top{
+      padding:14px;
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .upd h1{
-      font-size:16px;
+    .rcv-title{
+      font-size:18px;
     }
 
-    .upd .body{
+    .rcv-body{
       padding:10px;
     }
 
-    .upd .hero{
+    .rcv-hero{
       grid-template-columns:1fr;
     }
 
-    .upd .actions{
+    .rcv-actions{
       flex-direction:column;
     }
 
-    .upd .btn{
+    .rcv-btn{
       width:100%;
     }
 
-    .upd .pill{
+    .rcv-pill{
       display:none;
     }
 
-    .upd .timer{
+    .rcv-timer{
       margin:10px;
       margin-bottom:0;
     }
 
-    .upd .timer-grid{
+    .rcv-timer-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
@@ -773,139 +829,139 @@ document.addEventListener("DOMContentLoaded", () => {
 {% endblock %}
 
 {% block content %}
-<div class="upd">
-  <div class="wrap">
-    <div class="panel">
-      <div class="shell">
+<div class="rcv">
+  <div class="rcv-wrap">
+    <div class="rcv-panel">
+      <div class="rcv-shell">
 
-        <div class="top">
+        <div class="rcv-top">
           <div>
-            <h1>تم إرسال طلبك بنجاح</h1>
-            <p class="sub">
+            <h1 class="rcv-title">تم إرسال طلبك بنجاح</h1>
+            <p class="rcv-sub">
               تم حفظ رغباتك واعتماد الإرسال النهائي بنجاح. يرجى الاحتفاظ بهذه الصفحة كإشعار استلام لطلبك.
             </p>
           </div>
-          <div class="pill"><span class="dot"></span>تم الاستلام</div>
+          <div class="rcv-pill"><span class="rcv-dot"></span>تم الاستلام</div>
         </div>
 
         {% if portal_show_countdown %}
-        <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
-          <div class="timer-head">
-            <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-            <div class="timer-state" data-timer-state>مفتوح الآن</div>
+        <div class="rcv-timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
+          <div class="rcv-timer-head">
+            <p class="rcv-timer-title">الوقت المتبقي لإغلاق التقديم</p>
+            <div class="rcv-timer-state" data-timer-state>مفتوح الآن</div>
           </div>
 
-          <div class="timer-grid">
-            <div class="time-box">
-              <span class="time-num" id="cdDays">00</span>
-              <span class="time-label">يوم</span>
+          <div class="rcv-timer-grid">
+            <div class="rcv-time-box">
+              <span class="rcv-time-num" id="cdDays">00</span>
+              <span class="rcv-time-label">يوم</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdHours">00</span>
-              <span class="time-label">ساعة</span>
+            <div class="rcv-time-box">
+              <span class="rcv-time-num" id="cdHours">00</span>
+              <span class="rcv-time-label">ساعة</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdMinutes">00</span>
-              <span class="time-label">دقيقة</span>
+            <div class="rcv-time-box">
+              <span class="rcv-time-num" id="cdMinutes">00</span>
+              <span class="rcv-time-label">دقيقة</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdSeconds">00</span>
-              <span class="time-label">ثانية</span>
+            <div class="rcv-time-box">
+              <span class="rcv-time-num" id="cdSeconds">00</span>
+              <span class="rcv-time-label">ثانية</span>
             </div>
           </div>
 
-          <div class="timer-note" data-timer-note">
+          <div class="rcv-timer-note" data-timer-note">
             يمكنك الاحتفاظ بهذه الصفحة كإشعار استلام، وسيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
           </div>
         </div>
         {% endif %}
 
-        <div class="body">
+        <div class="rcv-body">
           {% if app %}
 
-          <div class="card receipt-card">
-            <div class="ch">
+          <div class="rcv-card rcv-receipt-card">
+            <div class="rcv-card-head">
               <h3>إشعار الاستلام</h3>
-              <span class="tag">تم الإرسال</span>
+              <span class="rcv-tag">تم الإرسال</span>
             </div>
-            <div class="cb">
-              <div class="hero">
-                <div class="badge">✓</div>
+            <div class="rcv-card-body">
+              <div class="rcv-hero">
+                <div class="rcv-badge">✓</div>
                 <div>
-                  <h2 class="hero-title">اكتملت عملية التقديم بنجاح</h2>
-                  <p class="hero-sub">
+                  <h2 class="rcv-hero-title">اكتملت عملية التقديم بنجاح</h2>
+                  <p class="rcv-hero-sub">
                     تم استلام طلبك وإقفاله للتعديل، ولا يلزم أي إجراء إضافي من المتقدم بعد هذه المرحلة.
                   </p>
                 </div>
               </div>
 
-              <div class="note">
+              <div class="rcv-note">
                 <b>تنبيه مهم:</b>
                 بعد الإرسال النهائي لا يمكن تعديل الرغبات أو تغيير الإقرار.
               </div>
             </div>
           </div>
 
-          <div class="card summary-card">
-            <div class="ch">
+          <div class="rcv-card rcv-summary-card">
+            <div class="rcv-card-head">
               <h3>ملخص الطلب</h3>
-              <span class="tag">بيانات معتمدة</span>
+              <span class="rcv-tag">بيانات معتمدة</span>
             </div>
-            <div class="cb">
-              <div class="grid">
-                <div class="field">
+            <div class="rcv-card-body">
+              <div class="rcv-grid">
+                <div class="rcv-field">
                   <label>رقم الطلب</label>
-                  <input class="input" value="{{ app.id }}" readonly>
+                  <input class="rcv-input" value="{{ app.id }}" readonly>
                 </div>
 
-                <div class="field">
+                <div class="rcv-field">
                   <label>رقم الهوية</label>
-                  <input class="input" value="{{ a.national_id }}" readonly>
+                  <input class="rcv-input" value="{{ a.national_id }}" readonly>
                 </div>
 
-                <div class="field">
+                <div class="rcv-field">
                   <label>تاريخ الإرسال</label>
-                  <input class="input" value="{{ app.submitted_at|date:'Y-m-d H:i' }}" readonly>
+                  <input class="rcv-input" value="{{ app.submitted_at|date:'Y-m-d H:i' }}" readonly>
                 </div>
 
-                <div class="field">
+                <div class="rcv-field">
                   <label>نوع الإقرار</label>
-                  <input class="input" value="{{ app.get_fallback_choice_display }}" readonly>
+                  <input class="rcv-input" value="{{ app.get_fallback_choice_display }}" readonly>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="card prefs-card">
-            <div class="ch">
+          <div class="rcv-card rcv-prefs-card">
+            <div class="rcv-card-head">
               <h3>الرغبات المعتمدة</h3>
-              <span class="tag">مرتبة</span>
+              <span class="rcv-tag">مرتبة</span>
             </div>
-            <div class="cb">
+            <div class="rcv-card-body">
               {% if prefs %}
-              <div class="list">
+              <div class="rcv-list">
                 {% for p in prefs %}
-                <div class="item">
-                  <div class="rank">{{ p.rank }}</div>
-                  <div class="meta">
-                    <div class="nm">{{ p.vacancy.school_name }}</div>
-                    <div class="sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
+                <div class="rcv-item">
+                  <div class="rcv-rank">{{ p.rank }}</div>
+                  <div class="rcv-meta">
+                    <div class="rcv-nm">{{ p.vacancy.school_name }}</div>
+                    <div class="rcv-sm">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
                   </div>
                 </div>
                 {% endfor %}
               </div>
               {% else %}
-              <div class="alert">لم يتم العثور على رغبات مرتبطة بهذا الطلب.</div>
+              <div class="rcv-alert">لم يتم العثور على رغبات مرتبطة بهذا الطلب.</div>
               {% endif %}
 
-              <div class="actions">
-                <button class="btn gold" type="button" onclick="window.print()">طباعة الإيصال</button>
+              <div class="rcv-actions">
+                <button class="rcv-btn rcv-btn-gold" type="button" onclick="window.print()">طباعة الإيصال</button>
               </div>
             </div>
           </div>
 
           {% else %}
-          <div class="alert">لا يوجد طلب مرتبط.</div>
+          <div class="rcv-alert">لا يوجد طلب مرتبط.</div>
           {% endif %}
         </div>
 

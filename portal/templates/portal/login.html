@@ -3,122 +3,198 @@
 
 {% block extra_css %}
 <style>
-  .upl, .upl *{
+  :root{
+    --moe-bg:#f4f6f3;
+    --moe-surface:#ffffff;
+    --moe-surface-2:#fafbf9;
+    --moe-surface-3:#f7f9f6;
+
+    --moe-ink:#203229;
+    --moe-ink-2:#42544b;
+    --moe-muted:#73827a;
+
+    --moe-green-1:#1f4b3b;
+    --moe-green-2:#2b5e4b;
+    --moe-green-3:#557567;
+
+    --moe-gold-1:#8b7447;
+    --moe-gold-2:#b29862;
+    --moe-gold-3:#d7ccaf;
+
+    --moe-line:#dde4dd;
+    --moe-line-2:#d2dbd3;
+    --moe-line-soft:#edf1ed;
+
+    --moe-ok:#2f6c4b;
+    --moe-ok-bg:#f2f8f4;
+    --moe-ok-bd:#d9e8de;
+
+    --moe-warn:#8a6d32;
+    --moe-warn-bg:#fbf8f1;
+    --moe-warn-bd:#e9ddc3;
+
+    --moe-danger:#8c4a4a;
+    --moe-danger-bg:#fbf6f6;
+    --moe-danger-bd:#e7d4d4;
+
+    --moe-shadow:0 1px 3px rgba(18,30,24,.028);
+    --moe-shadow-soft:0 6px 16px rgba(18,30,24,.032);
+
+    --moe-radius:14px;
+    --moe-radius-lg:18px;
+  }
+
+  .moe-login,.moe-login *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
-    font-weight:400 !important;
   }
 
-  .upl{
-    color:var(--min-ink);
+  .moe-login{
     direction:rtl;
+    color:var(--moe-ink);
   }
 
-  .upl .wrap{
-    max-width:1100px;
+  .moe-login-wrap{
+    max-width:1080px;
     margin:0 auto;
   }
 
-  .upl .panel{
-    width:min(100%, 620px);
-    margin:22px auto 0;
+  .moe-login-panel{
+    width:min(100%, 640px);
+    margin:16px auto 0;
   }
 
-  .upl .shell{
-    border:1px solid rgba(211,221,212,.95);
-    border-radius:22px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow);
-    overflow:hidden;
-  }
-
-  .upl .top{
+  .moe-login-shell{
     position:relative;
-    padding:16px 18px 14px;
+    overflow:hidden;
+    border:1px solid var(--moe-line);
+    border-radius:var(--moe-radius-lg);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--moe-shadow);
+  }
+
+  .moe-login-shell::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--moe-green-2),var(--moe-gold-2));
+    opacity:.95;
+  }
+
+  .moe-login-top{
+    padding:0;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-inline-start:3px solid var(--moe-green-2);
+    border-bottom:1px solid var(--moe-line-soft);
+  }
+
+  .moe-login-top-head{
+    position:relative;
+    padding:14px 18px 12px;
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
-    overflow:hidden;
-  }
-
-  .upl .top::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
-  }
-
-  .upl .top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+      radial-gradient(circle at 86% 24%, rgba(85,117,103,.055) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
   }
 
-  .upl .top > *{
-    position:relative;
-    z-index:1;
-  }
-
-  .upl h1{
-    margin:0;
-    font-size:18px;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff;
-    line-height:1.35;
-  }
-
-  .upl .sub{
-    margin:5px 0 0;
-    color:rgba(255,255,255,.82);
-    font-size:10.6px;
-    line-height:1.8;
-    max-width:50ch;
-  }
-
-  .upl .pill{
+  .moe-login-kicker{
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    min-height:30px;
+    gap:7px;
+    min-height:28px;
     padding:4px 10px;
     border-radius:999px;
-    border:1px solid rgba(239,225,187,.95);
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    font-size:9.8px;
-    font-weight:800 !important;
-    white-space:nowrap;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    border:1px solid #dfd4bc;
+    background:#fcfaf5;
+    color:var(--moe-gold-1);
+    font-size:8.6px;
+    font-weight:900 !important;
+    margin-bottom:8px;
   }
 
-  .upl .dot{
+  .moe-login-kicker-dot{
     width:8px;
     height:8px;
-    border-radius:999px;
-    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    border-radius:50%;
+    background:var(--moe-green-2);
     flex:0 0 auto;
   }
 
-  .upl .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
-    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
-    padding:12px;
-    box-shadow:var(--min-shadow-soft);
+  .moe-login-title{
+    margin:0;
+    font-size:21px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
+    line-height:1.2;
+    letter-spacing:0;
   }
 
-  .upl .timer-head{
+  .moe-login-sub{
+    margin:6px 0 0;
+    color:var(--moe-muted);
+    font-size:10.1px;
+    line-height:1.95;
+    max-width:54ch;
+    font-weight:700 !important;
+  }
+
+  .moe-login-status{
+    padding:10px 18px 12px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+    background:var(--moe-surface);
+  }
+
+  .moe-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+    color:var(--moe-ink-2);
+    font-size:8.5px;
+    font-weight:800 !important;
+    white-space:nowrap;
+  }
+
+  .moe-badge-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--moe-green-2);
+    flex:0 0 auto;
+  }
+
+  .moe-badge.warn{
+    background:var(--moe-warn-bg);
+    border-color:var(--moe-warn-bd);
+    color:var(--moe-warn);
+  }
+
+  .moe-badge.warn .moe-badge-dot{
+    background:var(--moe-warn);
+  }
+
+  .moe-login-timer{
+    margin:12px;
+    margin-bottom:0;
+    border:1px solid var(--moe-line);
+    background:linear-gradient(180deg,#fffdfa 0%, #fafbf9 100%);
+    border-radius:14px;
+    padding:12px;
+    box-shadow:var(--moe-shadow);
+  }
+
+  .moe-login-timer-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -126,29 +202,29 @@
     margin-bottom:8px;
   }
 
-  .upl .timer-title{
+  .moe-login-timer-title{
     margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:9px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
   }
 
-  .upl .timer-state{
+  .moe-login-timer-state{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:26px;
+    min-height:24px;
     padding:4px 10px;
     border-radius:999px;
-    font-size:9.2px;
+    font-size:8.4px;
     font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
+    border:1px solid var(--moe-line);
+    background:#fff;
+    color:var(--moe-ink-2);
     white-space:nowrap;
   }
 
-  .upl .timer-state::before{
+  .moe-login-timer-state::before{
     content:"";
     width:7px;
     height:7px;
@@ -158,254 +234,268 @@
     flex:0 0 auto;
   }
 
-  .upl .timer-grid{
+  .moe-login-timer-grid{
     display:grid;
     grid-template-columns:repeat(4, minmax(0,1fr));
     gap:8px;
   }
 
-  .upl .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
+  .moe-login-time-box{
+    border:1px solid var(--moe-line);
+    background:#fff;
+    border-radius:12px;
     padding:10px 8px;
     text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .upl .time-num{
+  .moe-login-time-num{
     display:block;
     font-size:18px;
     line-height:1;
     font-weight:900 !important;
-    letter-spacing:-.4px;
-    color:var(--min-green-2);
+    letter-spacing:-.3px;
+    color:var(--moe-green-2);
   }
 
-  .upl .time-label{
+  .moe-login-time-label{
     display:block;
     margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
+    font-size:8.1px;
+    color:var(--moe-muted);
     font-weight:700 !important;
   }
 
-  .upl .timer-note{
+  .moe-login-timer-note{
     margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
+    font-size:8.4px;
+    color:var(--moe-muted);
     line-height:1.8;
+    font-weight:700 !important;
   }
 
-  .upl .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
+  .moe-login-timer.is-warn{
+    border-color:rgba(178,152,98,.35);
+    background:linear-gradient(180deg,#fffdf8 0%, #fcfaf5 100%);
   }
 
-  .upl .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  .moe-login-timer.is-warn .moe-login-timer-state{
+    color:var(--moe-warn);
+    border-color:rgba(178,152,98,.26);
+    background:#fffdf8;
   }
 
-  .upl .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  .moe-login-timer.is-warn .moe-login-timer-state::before{
+    background:#b7791f;
+    box-shadow:0 0 0 3px rgba(183,121,31,.08);
   }
 
-  .upl .timer.is-warn .time-num{
-    color:#9a6708;
+  .moe-login-timer.is-warn .moe-login-time-num{
+    color:var(--moe-warn);
   }
 
-  .upl .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
+  .moe-login-timer.is-danger{
+    border-color:rgba(140,74,74,.22);
+    background:linear-gradient(180deg,#fffafa 0%, #fbf6f6 100%);
   }
 
-  .upl .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
-  }
-
-  .upl .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .upl .timer.is-danger .time-num{
-    color:#991b1b;
-  }
-
-  .upl .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
-  }
-
-  .upl .timer.is-expired .timer-state{
-    color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
+  .moe-login-timer.is-danger .moe-login-timer-state{
+    color:var(--moe-danger);
+    border-color:rgba(140,74,74,.18);
     background:#fff;
   }
 
-  .upl .timer.is-expired .timer-state::before{
+  .moe-login-timer.is-danger .moe-login-timer-state::before{
     background:#b91c1c;
     box-shadow:0 0 0 3px rgba(185,28,28,.08);
   }
 
-  .upl .timer.is-expired .time-num{
-    color:#991b1b;
+  .moe-login-timer.is-danger .moe-login-time-num{
+    color:var(--moe-danger);
   }
 
-  .upl .card{
+  .moe-login-timer.is-expired{
+    border-color:var(--moe-danger-bd);
+    background:var(--moe-danger-bg);
+  }
+
+  .moe-login-timer.is-expired .moe-login-timer-state{
+    color:var(--moe-danger);
+    border-color:rgba(140,74,74,.16);
+    background:#fff;
+  }
+
+  .moe-login-timer.is-expired .moe-login-timer-state::before{
+    background:#b91c1c;
+    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  }
+
+  .moe-login-timer.is-expired .moe-login-time-num{
+    color:var(--moe-danger);
+  }
+
+  .moe-login-card{
     margin:12px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:18px;
+    border:1px solid var(--moe-line);
+    border-radius:14px;
     overflow:hidden;
-    box-shadow:var(--min-shadow-soft);
+    box-shadow:var(--moe-shadow);
   }
 
-  .upl .ch{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
+  .moe-login-card-head{
+    padding:11px 12px;
+    border-bottom:1px solid var(--moe-line-soft);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    background:linear-gradient(180deg,#ffffff,#fafcf9);
   }
 
-  .upl .ch h3{
+  .moe-login-card-head h3{
     margin:0;
-    font-size:11px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:11.3px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
   }
 
-  .upl .tag{
+  .moe-login-tag{
     padding:4px 10px;
-    min-height:28px;
+    min-height:26px;
     border-radius:999px;
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-muted);
-    font-size:9.3px;
+    border:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+    color:var(--moe-muted);
+    font-size:8.3px;
     font-weight:800 !important;
     display:inline-flex;
     align-items:center;
     white-space:nowrap;
   }
 
-  .upl .cb{
+  .moe-login-card-body{
     padding:12px;
   }
 
-  .upl .alert{
-    border:1px solid var(--min-danger-line);
-    background:var(--min-danger-soft);
+  .moe-login-alert{
+    border:1px solid var(--moe-danger-bd);
+    background:var(--moe-danger-bg);
     color:#7f1d1d;
-    border-radius:14px;
+    border-radius:11px;
     padding:10px 12px;
-    line-height:1.7;
+    line-height:1.8;
     margin-bottom:12px;
-    font-size:10px;
+    font-size:8.6px;
+    font-weight:800 !important;
   }
 
-  .upl .field{
+  .moe-login-field{
     display:flex;
     flex-direction:column;
     gap:5px;
   }
 
-  .upl label{
-    font-size:9.8px;
-    color:var(--min-green-2);
-    font-weight:800 !important;
+  .moe-login-label{
+    font-size:8.8px;
+    color:var(--moe-green-1);
+    font-weight:900 !important;
     padding-inline:2px;
     line-height:1.4;
   }
 
-  .upl .input{
+  .moe-login-input{
     width:100%;
-    min-height:40px;
+    min-height:39px;
     padding:9px 11px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    font-size:10.4px;
+    border-radius:10px;
+    border:1px solid var(--moe-line-2);
+    background:#fff;
+    font-size:9.1px;
     line-height:1.6;
-    color:var(--min-ink-2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    color:var(--moe-ink-2);
     outline:none;
     transition:border-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+    box-shadow:none;
   }
 
-  .upl .input::placeholder{
-    color:rgba(111,129,119,.72);
+  .moe-login-input::placeholder{
+    color:rgba(115,130,122,.72);
   }
 
-  .upl .input:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .moe-login-input:focus{
+    border-color:rgba(178,152,98,.52);
+    box-shadow:0 0 0 2px rgba(178,152,98,.07);
   }
 
-  .upl .input[disabled]{
+  .moe-login-input[disabled]{
     opacity:.75;
     cursor:not-allowed;
     background:linear-gradient(180deg,#f4f6f4,#eef2ee);
   }
 
-  .upl .note{
+  .moe-login-note{
     margin-top:10px;
     padding:10px 12px;
-    border-radius:16px;
-    border:1px dashed rgba(205,216,206,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    color:var(--min-muted);
-    font-size:9.6px;
-    line-height:1.8;
+    border-radius:11px;
+    border:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+    color:var(--moe-muted);
+    font-size:8.4px;
+    line-height:1.9;
+    font-weight:700 !important;
   }
 
-  .upl .actions{
+  .moe-login-actions{
     margin-top:12px;
     display:flex;
     gap:10px;
     flex-wrap:wrap;
   }
 
-  .upl .btn{
+  .moe-login-btn{
     appearance:none;
-    border:1px solid rgba(211,221,212,.95);
+    border:1px solid var(--moe-line-2);
     cursor:pointer;
-    min-height:36px;
+    min-height:35px;
     padding:8px 14px;
     border-radius:999px;
-    font-size:10.4px;
-    font-weight:800 !important;
+    font-size:9px;
+    font-weight:900 !important;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:10px;
+    gap:8px;
     text-decoration:none;
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    transition:transform .15s ease, opacity .15s ease, filter .15s ease;
+    background:#fff;
+    color:var(--moe-green-2);
+    transition:transform .15s ease, opacity .15s ease, background .15s ease, border-color .15s ease;
     width:100%;
+    box-shadow:none;
   }
 
-  .upl .btn.primary{
+  .moe-login-btn.primary{
     color:#fff;
-    border-color:var(--min-green-2);
-    background:linear-gradient(180deg,var(--min-green-3),var(--min-green-2));
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    border-color:var(--moe-green-2);
+    background:var(--moe-green-2);
   }
 
-  .upl .btn:active{
-    transform:translateY(1px);
+  .moe-login-btn:hover{
+    transform:translateY(-1px);
+    background:var(--moe-surface-2);
+    border-color:#c6d0c7;
   }
 
-  .upl .btn[disabled],
-  .upl .btn.is-disabled{
+  .moe-login-btn.primary:hover{
+    background:var(--moe-green-1);
+    border-color:var(--moe-green-1);
+  }
+
+  .moe-login-btn:active{
+    transform:translateY(0);
+  }
+
+  .moe-login-btn[disabled],
+  .moe-login-btn.is-disabled{
     opacity:.55;
     cursor:not-allowed;
     transform:none;
@@ -413,53 +503,57 @@
     filter:grayscale(.10);
   }
 
-  .upl .expired-inline{
+  .moe-login-expired{
     display:none;
     margin-top:10px;
-    border:1px solid var(--min-danger-line);
-    background:var(--min-danger-soft);
+    border:1px solid var(--moe-danger-bd);
+    background:var(--moe-danger-bg);
     color:#7f1d1d;
-    border-radius:14px;
+    border-radius:11px;
     padding:10px 12px;
     line-height:1.7;
-    font-size:10px;
-    font-weight:700 !important;
+    font-size:8.6px;
+    font-weight:800 !important;
   }
 
-  .upl .expired-inline.show{
+  .moe-login-expired.show{
     display:block;
   }
 
-  @media (max-width: 640px){
-    .upl .panel{
+  @media (max-width:640px){
+    .moe-login-panel{
       width:min(100%, 100%);
       margin-top:10px;
     }
 
-    .upl .top{
-      padding:13px 14px;
+    .moe-login-top-head{
+      padding:12px 14px 10px;
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .upl h1{
-      font-size:16px;
+    .moe-login-title{
+      font-size:18px;
     }
 
-    .upl .pill{
+    .moe-login-kicker{
       display:none;
     }
 
-    .upl .timer,
-    .upl .card{
+    .moe-login-status{
+      padding:10px 14px 12px;
+    }
+
+    .moe-login-timer,
+    .moe-login-card{
       margin:10px;
     }
 
-    .upl .cb{
+    .moe-login-card-body{
       padding:10px;
     }
 
-    .upl .timer-grid{
+    .moe-login-timer-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
@@ -467,75 +561,85 @@
 {% endblock %}
 
 {% block content %}
-<div class="upl">
-  <div class="wrap">
-    <div class="panel">
-      <div class="shell">
+<div class="moe-login">
+  <div class="moe-login-wrap">
+    <div class="moe-login-panel">
+      <div class="moe-login-shell">
 
-        <div class="top">
-          <div>
-            <h1>تسجيل الدخول</h1>
-            <p class="sub">
-              أدخل السجل المدني للتحقق من وجودك ضمن بيانات المرشحين والانتقال إلى خطوات التقديم.
-            </p>
+        <div class="moe-login-top">
+          <div class="moe-login-top-head">
+            <div>
+              <span class="moe-login-kicker">
+                <span class="moe-login-kicker-dot"></span>
+                التحقق من البيانات
+              </span>
+              <h1 class="moe-login-title">تسجيل الدخول</h1>
+              <p class="moe-login-sub">
+                أدخل السجل المدني للتحقق من وجودك ضمن بيانات المرشحين والانتقال إلى خطوات التقديم.
+              </p>
+            </div>
           </div>
-          <div class="pill">
-            <span class="dot"></span>
-            <span>التحقق من البيانات</span>
+
+          <div class="moe-login-status">
+            <span class="moe-badge warn">
+              <span class="moe-badge-dot"></span>
+              الخطوة التمهيدية
+            </span>
           </div>
         </div>
 
         {% if portal_show_countdown %}
-        <div id="portalTimer" class="timer" data-closes-at="{{ portal_closes_at_iso }}">
-          <div class="timer-head">
-            <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-            <div class="timer-state" id="timerState">مفتوح الآن</div>
+        <div id="portalTimer" class="moe-login-timer" data-closes-at="{{ portal_closes_at_iso }}">
+          <div class="moe-login-timer-head">
+            <p class="moe-login-timer-title">الوقت المتبقي لإغلاق التقديم</p>
+            <div class="moe-login-timer-state" id="timerState">مفتوح الآن</div>
           </div>
 
-          <div class="timer-grid">
-            <div class="time-box">
-              <span class="time-num" id="cdDays">00</span>
-              <span class="time-label">يوم</span>
+          <div class="moe-login-timer-grid">
+            <div class="moe-login-time-box">
+              <span class="moe-login-time-num" id="cdDays">00</span>
+              <span class="moe-login-time-label">يوم</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdHours">00</span>
-              <span class="time-label">ساعة</span>
+            <div class="moe-login-time-box">
+              <span class="moe-login-time-num" id="cdHours">00</span>
+              <span class="moe-login-time-label">ساعة</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdMinutes">00</span>
-              <span class="time-label">دقيقة</span>
+            <div class="moe-login-time-box">
+              <span class="moe-login-time-num" id="cdMinutes">00</span>
+              <span class="moe-login-time-label">دقيقة</span>
             </div>
-            <div class="time-box">
-              <span class="time-num" id="cdSeconds">00</span>
-              <span class="time-label">ثانية</span>
+            <div class="moe-login-time-box">
+              <span class="moe-login-time-num" id="cdSeconds">00</span>
+              <span class="moe-login-time-label">ثانية</span>
             </div>
           </div>
 
-          <div class="timer-note" id="timerNote">
+          <div class="moe-login-timer-note" id="timerNote">
             سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
           </div>
         </div>
         {% endif %}
 
-        <div class="card">
-          <div class="ch">
+        <div class="moe-login-card">
+          <div class="moe-login-card-head">
             <h3>الدخول إلى النظام</h3>
-            <span class="tag">الخطوة التمهيدية</span>
+            <span class="moe-login-tag">التحقق الأولي</span>
           </div>
-          <div class="cb">
+
+          <div class="moe-login-card-body">
 
             {% if error %}
-            <div class="alert">{{ error }}</div>
+            <div class="moe-login-alert">{{ error }}</div>
             {% endif %}
 
             <form method="post" id="loginForm" novalidate>
               {% csrf_token %}
 
-              <div class="field">
-                <label for="nid">السجل المدني</label>
+              <div class="moe-login-field">
+                <label class="moe-login-label" for="nid">السجل المدني</label>
                 <input
                   id="nid"
-                  class="input"
+                  class="moe-login-input"
                   name="national_id"
                   inputmode="numeric"
                   autocomplete="off"
@@ -545,15 +649,15 @@
                 />
               </div>
 
-              <div class="actions">
-                <button class="btn primary" id="loginBtn" type="submit">دخول</button>
+              <div class="moe-login-actions">
+                <button class="moe-login-btn primary" id="loginBtn" type="submit">دخول</button>
               </div>
 
-              <div class="expired-inline" id="expiredMsg">
+              <div class="moe-login-expired" id="expiredMsg">
                 انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
               </div>
 
-              <div class="note">
+              <div class="moe-login-note">
                 أدخل رقم الهوية كما هو مسجل في بيانات المرشحين للمتابعة.
               </div>
             </form>
@@ -590,8 +694,8 @@
       if (v.length !== 10){
         e.preventDefault();
         nid.focus();
-        nid.style.borderColor = "rgba(185,28,28,.45)";
-        nid.style.boxShadow = "0 0 0 4px rgba(185,28,28,.08)";
+        nid.style.borderColor = "rgba(140,74,74,.40)";
+        nid.style.boxShadow = "0 0 0 4px rgba(140,74,74,.08)";
         setTimeout(() => {
           nid.style.borderColor = "";
           nid.style.boxShadow = "";

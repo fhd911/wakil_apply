@@ -3,384 +3,437 @@
 
 {% block extra_css %}
 <style>
-  .upc, .upc *{
+  :root{
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
+
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
+
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
+
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
+
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
+
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
+
+    --ok:#215f39;
+    --warn:#8e6113;
+    --danger:#8f2f2f;
+    --info:#355c80;
+
+    --ok-bg:#eff8f3;
+    --ok-bd:#cfe6d8;
+
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
+
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --moe-deep:#0f5f49;
+    --moe-mid:#1f7a62;
+    --moe-soft:#2e9b81;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+  }
+
+  .upc,.upc *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
-    font-weight:400 !important;
   }
 
   .upc{
-    color:var(--min-ink);
     direction:rtl;
+    color:var(--ink);
   }
 
-  .upc .wrap{
-    max-width:1100px;
+  .upc-wrap{
+    max-width:1120px;
     margin:0 auto;
+    display:grid;
+    gap:12px;
   }
 
-  .upc .shell{
-    border:1px solid rgba(211,221,212,.95);
-    border-radius:22px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow);
-    overflow:hidden;
-  }
-
-  .upc .top{
+  .upc-shell,
+  .upc-top,
+  .upc-timer,
+  .upc-card{
     position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
+  }
+
+  .upc-shell::before,
+  .upc-top::before,
+  .upc-timer::before,
+  .upc-card::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
+  }
+
+  .upc-top{
     padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg,#1d4a38 0%, #173b2e 52%, #123126 100%);
-    overflow:hidden;
+    flex-wrap:wrap;
   }
 
-  .upc .top::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--min-gold-2),var(--min-gold-1),rgba(200,160,74,.26));
-  }
-
-  .upc .top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
-  }
-
-  .upc .top > *{
+  .upc-top > *{
     position:relative;
     z-index:1;
   }
 
   .upc h1{
     margin:0;
-    font-size:18px;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff;
-    line-height:1.35;
+    font-size:20px;
+    line-height:1.2;
+    font-weight:900 !important;
+    color:var(--green-1);
+    letter-spacing:0;
   }
 
   .upc .sub{
-    margin:5px 0 0;
-    color:rgba(255,255,255,.82);
-    font-size:10.6px;
-    line-height:1.8;
-    max-width:66ch;
+    margin:6px 0 0;
+    max-width:68ch;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.95;
+    font-weight:800 !important;
   }
 
   .upc .pill{
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid rgba(239,225,187,.95);
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    font-size:9.8px;
-    font-weight:800 !important;
+    gap:7px;
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900 !important;
     white-space:nowrap;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
   .upc .dot{
     width:8px;
     height:8px;
-    border-radius:50%;
-    background:linear-gradient(135deg,var(--min-green-2),var(--min-green-3));
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    border-radius:999px;
+    background:var(--moe-mid);
+    flex:0 0 auto;
   }
 
-  .upc .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid rgba(214,223,214,.96);
-    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
-    border-radius:18px;
+  .upc-timer{
+    margin-top:0;
     padding:12px;
-    box-shadow:var(--min-shadow-soft);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
-  .upc .timer-head{
+  .upc-timer-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
     margin-bottom:8px;
+    flex-wrap:wrap;
   }
 
-  .upc .timer-title{
+  .upc-timer-title{
     margin:0;
-    font-size:10.6px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:9.8px;
+    font-weight:900 !important;
+    color:var(--green-1);
   }
 
-  .upc .timer-state{
+  .upc-timer-state{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:26px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:800 !important;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    font-size:8.8px;
+    font-weight:900 !important;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
     white-space:nowrap;
   }
 
-  .upc .timer-state::before{
+  .upc-timer-state::before{
     content:"";
     width:7px;
     height:7px;
     border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    background:var(--ok);
     flex:0 0 auto;
   }
 
-  .upc .timer-grid{
+  .upc-timer-grid{
     display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:8px;
   }
 
-  .upc .time-box{
-    border:1px solid rgba(218,226,218,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-radius:14px;
+  .upc-time-box{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:10px;
     padding:10px 8px;
     text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .upc .time-num{
+  .upc-time-num{
     display:block;
     font-size:18px;
     line-height:1;
     font-weight:900 !important;
     letter-spacing:-.4px;
-    color:var(--min-green-2);
+    color:var(--green-2);
   }
 
-  .upc .time-label{
+  .upc-time-label{
     display:block;
     margin-top:6px;
-    font-size:9px;
-    color:var(--min-muted);
-    font-weight:700 !important;
+    font-size:8.5px;
+    color:var(--muted);
+    font-weight:800 !important;
   }
 
-  .upc .timer-note{
+  .upc-timer-note{
     margin-top:8px;
-    font-size:9.6px;
-    color:var(--min-muted);
+    font-size:8.8px;
+    color:var(--muted);
     line-height:1.8;
+    font-weight:800 !important;
   }
 
-  .upc .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
+  .upc-timer.is-warn{
+    border-color:var(--warn-bd);
     background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
   }
 
-  .upc .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
+  .upc-timer.is-warn .upc-timer-state{
+    color:#8a6526;
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
   }
 
-  .upc .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
+  .upc-timer.is-warn .upc-timer-state::before{
+    background:var(--warn);
   }
 
-  .upc .timer.is-warn .time-num{
-    color:#9a6708;
+  .upc-timer.is-warn .upc-time-num{
+    color:#8a6526;
   }
 
-  .upc .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
+  .upc-timer.is-danger{
+    border-color:var(--danger-bd);
     background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
   }
 
-  .upc .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
+  .upc-timer.is-danger .upc-timer-state{
+    color:#8f2f2f;
+    border-color:var(--danger-bd);
+    background:var(--danger-bg);
   }
 
-  .upc .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  .upc-timer.is-danger .upc-timer-state::before{
+    background:var(--danger);
   }
 
-  .upc .timer.is-danger .time-num{
-    color:#991b1b;
+  .upc-timer.is-danger .upc-time-num{
+    color:#8f2f2f;
   }
 
-  .upc .timer.is-expired{
-    border-color:var(--min-danger-line);
-    background:var(--min-danger-soft);
+  .upc-timer.is-expired{
+    border-color:var(--danger-bd);
+    background:var(--danger-bg);
   }
 
-  .upc .timer.is-expired .timer-state{
+  .upc-timer.is-expired .upc-timer-state{
     color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
+    border-color:var(--danger-bd);
     background:#fff;
   }
 
-  .upc .timer.is-expired .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+  .upc-timer.is-expired .upc-timer-state::before{
+    background:var(--danger);
   }
 
-  .upc .timer.is-expired .time-num{
-    color:#991b1b;
+  .upc-timer.is-expired .upc-time-num{
+    color:#8f2f2f;
   }
 
-  .upc .grid{
-    padding:12px;
+  .upc-grid{
     display:grid;
-    grid-template-columns:1.4fr .9fr;
+    grid-template-columns:1.42fr .88fr;
     gap:12px;
     align-items:start;
   }
 
-  .upc .card{
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .upc .ch{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
+  .upc-card-head{
+    padding:11px 12px;
+    border-bottom:1px solid var(--line);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    flex-wrap:wrap;
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    position:relative;
+    z-index:1;
   }
 
-  .upc .ch h3{
+  .upc-card-head h3{
     margin:0;
-    font-size:11px;
-    font-weight:800 !important;
-    color:var(--min-green-2);
+    font-size:12px;
+    font-weight:900 !important;
+    color:var(--green-1);
   }
 
-  .upc .tag{
-    padding:4px 10px;
+  .upc-tag{
+    padding:4px 9px;
     min-height:28px;
-    border-radius:999px;
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-muted);
-    font-size:9.3px;
-    font-weight:800 !important;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--muted);
+    font-size:8.8px;
+    font-weight:900 !important;
     display:inline-flex;
     align-items:center;
     white-space:nowrap;
   }
 
-  .upc .cb{
+  .upc-card-body{
     padding:12px;
+    position:relative;
+    z-index:1;
   }
 
-  .upc .fields{
+  .upc-fields{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
-  .upc .f{
+  .upc-f{
     display:flex;
     flex-direction:column;
     gap:5px;
   }
 
-  .upc .lbl{
-    font-size:9.8px;
-    color:var(--min-green-2);
-    font-weight:800 !important;
+  .upc-lbl{
+    font-size:9px;
+    color:var(--green-1);
+    font-weight:900 !important;
     padding-inline:2px;
-    line-height:1.4;
+    line-height:1.5;
   }
 
-  .upc .val{
+  .upc-val{
     width:100%;
-    min-height:40px;
-    padding:9px 11px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    font-size:10.4px;
-    line-height:1.6;
-    color:var(--min-ink-2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    min-height:39px;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fbfcfb;
+    font-size:9.4px;
+    line-height:1.7;
+    color:var(--ink);
     display:flex;
     align-items:center;
     word-break:break-word;
+    font-weight:800 !important;
   }
 
-  .upc .note{
+  .upc-note{
     margin-top:10px;
-    padding:10px 12px;
-    border-radius:16px;
-    border:1px dashed rgba(205,216,206,.95);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    color:var(--min-muted);
-    font-size:9.6px;
-    line-height:1.8;
+    padding:11px 12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--muted);
+    font-size:8.8px;
+    line-height:1.9;
+    font-weight:800 !important;
   }
 
-  .upc .btn{
+  .upc-btn{
     appearance:none;
-    border:1px solid rgba(211,221,212,.95);
+    border:1px solid var(--line-2);
     cursor:pointer;
     width:100%;
-    min-height:36px;
+    min-height:35px;
     padding:8px 14px;
-    border-radius:999px;
-    font-size:10.4px;
-    font-weight:800 !important;
+    border-radius:8px;
+    font-size:9.6px;
+    font-weight:900 !important;
     display:flex;
     align-items:center;
     justify-content:center;
     gap:10px;
     text-decoration:none;
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    transition:transform .15s ease, opacity .15s ease, filter .15s ease;
+    background:#fff;
+    color:var(--green-2);
+    transition:transform .15s ease, opacity .15s ease, background .15s ease, border-color .15s ease;
+    box-shadow:none;
   }
 
-  .upc .btn.primary{
+  .upc-btn.primary{
     color:#fff;
-    border-color:var(--min-green-2);
-    background:linear-gradient(180deg,var(--min-green-3),var(--min-green-2));
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    border-color:var(--green-2);
+    background:var(--green-2);
   }
 
-  .upc .btn:active{
-    transform:translateY(1px);
+  .upc-btn:hover{
+    transform:translateY(-1px);
+    background:var(--paper-2);
+    border-color:#b8c6bb;
   }
 
-  .upc .btn[disabled],
-  .upc .btn.is-disabled{
+  .upc-btn.primary:hover{
+    background:var(--green-3);
+    border-color:var(--green-3);
+  }
+
+  .upc-btn:active{
+    transform:translateY(0);
+  }
+
+  .upc-btn[disabled],
+  .upc-btn.is-disabled{
     opacity:.55;
     cursor:not-allowed;
     transform:none;
@@ -388,63 +441,58 @@
     filter:grayscale(.10);
   }
 
-  .upc .expired-inline{
+  .upc-expired-inline{
     display:none;
     margin-top:10px;
-    border:1px solid var(--min-danger-line);
-    background:var(--min-danger-soft);
+    border:1px solid var(--danger-bd);
+    background:var(--danger-bg);
     color:#7f1d1d;
-    border-radius:14px;
+    border-radius:10px;
     padding:10px 12px;
-    line-height:1.7;
-    font-size:10px;
-    font-weight:700 !important;
+    line-height:1.8;
+    font-size:8.9px;
+    font-weight:900 !important;
   }
 
-  .upc .expired-inline.show{
+  .upc-expired-inline.show{
     display:block;
   }
 
-  @media (max-width: 980px){
-    .upc .grid{
+  @media (max-width:980px){
+    .upc-grid{
       grid-template-columns:1fr;
     }
 
-    .upc .fields{
+    .upc-fields{
       grid-template-columns:1fr;
     }
   }
 
-  @media (max-width: 640px){
-    .upc .top{
-      padding:13px 14px;
+  @media (max-width:640px){
+    .upc{
+      padding:0;
+    }
+
+    .upc-top{
+      padding:14px;
       flex-direction:column;
       align-items:flex-start;
     }
 
     .upc h1{
-      font-size:16px;
+      font-size:18px;
+    }
+
+    .upc-grid{
+      grid-template-columns:1fr;
+    }
+
+    .upc-timer-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
     .upc .pill{
       display:none;
-    }
-
-    .upc .grid{
-      padding:10px;
-    }
-
-    .upc .cb{
-      padding:10px;
-    }
-
-    .upc .timer{
-      margin:10px;
-      margin-bottom:0;
-    }
-
-    .upc .timer-grid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 </style>
@@ -552,10 +600,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 {% block content %}
 <div class="upc">
-  <div class="wrap">
-    <div class="shell">
+  <div class="upc-wrap">
+    <div class="upc-shell">
 
-      <div class="top">
+      <div class="upc-top">
         <div>
           <h1>تأكيد البيانات</h1>
           <p class="sub">
@@ -565,80 +613,86 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="pill"><span class="dot"></span>بيانات المتقدم</div>
       </div>
 
-      {% if portal_show_countdown %}
-      <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
-        <div class="timer-head">
-          <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-          <div class="timer-state" data-timer-state>مفتوح الآن</div>
+      <div style="padding:12px; display:grid; gap:12px;">
+
+        {% if portal_show_countdown %}
+        <div class="upc-timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
+          <div class="upc-timer-head">
+            <p class="upc-timer-title">الوقت المتبقي لإغلاق التقديم</p>
+            <div class="upc-timer-state" data-timer-state>مفتوح الآن</div>
+          </div>
+
+          <div class="upc-timer-grid">
+            <div class="upc-time-box">
+              <span class="upc-time-num" id="cdDays">00</span>
+              <span class="upc-time-label">يوم</span>
+            </div>
+            <div class="upc-time-box">
+              <span class="upc-time-num" id="cdHours">00</span>
+              <span class="upc-time-label">ساعة</span>
+            </div>
+            <div class="upc-time-box">
+              <span class="upc-time-num" id="cdMinutes">00</span>
+              <span class="upc-time-label">دقيقة</span>
+            </div>
+            <div class="upc-time-box">
+              <span class="upc-time-num" id="cdSeconds">00</span>
+              <span class="upc-time-label">ثانية</span>
+            </div>
+          </div>
+
+          <div class="upc-timer-note" data-timer-note>
+            سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
+          </div>
         </div>
+        {% endif %}
 
-        <div class="timer-grid">
-          <div class="time-box">
-            <span class="time-num" id="cdDays">00</span>
-            <span class="time-label">يوم</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdHours">00</span>
-            <span class="time-label">ساعة</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdMinutes">00</span>
-            <span class="time-label">دقيقة</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdSeconds">00</span>
-            <span class="time-label">ثانية</span>
-          </div>
-        </div>
+        <div class="upc-grid">
 
-        <div class="timer-note" data-timer-note>
-          سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
-        </div>
-      </div>
-      {% endif %}
+          <div class="upc-card">
+            <div class="upc-card-head">
+              <h3>بيانات المتقدم</h3>
+              <span class="upc-tag">ID: {{ a.id|default:"-" }}</span>
+            </div>
 
-      <div class="grid">
-
-        <div class="card">
-          <div class="ch">
-            <h3>بيانات المتقدم</h3>
-            <span class="tag">ID: {{ a.id|default:"-" }}</span>
-          </div>
-          <div class="cb">
-            <div class="fields">
-              {% for f in fields %}
-              <div class="f">
-                <div class="lbl">{{ f.label }}</div>
-                <div class="val">{{ f.value }}</div>
+            <div class="upc-card-body">
+              <div class="upc-fields">
+                {% for f in fields %}
+                <div class="upc-f">
+                  <div class="upc-lbl">{{ f.label }}</div>
+                  <div class="upc-val">{{ f.value }}</div>
+                </div>
+                {% endfor %}
               </div>
-              {% endfor %}
-            </div>
 
-            <div class="note">
-              إذا كان هناك خطأ في البيانات أو رقم الجوال، فيرجى مراجعة الجهة المختصة قبل اعتماد الطلب.
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="ch">
-            <h3>إجراءات</h3>
-            <span class="tag">الخطوة 1 من 2</span>
-          </div>
-          <div class="cb">
-            <form method="post" style="display:grid;gap:10px;">
-              {% csrf_token %}
-              <button class="btn primary" data-next-btn type="submit">أؤكد صحة البيانات وأتابع</button>
-            </form>
-
-            <div class="expired-inline" data-expired-inline>
-              انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
-            </div>
-
-            <div class="note">
-              بعد التأكيد سيتم فتح صفحة ترتيب الرغبات لاستكمال الطلب.
+              <div class="upc-note">
+                إذا كان هناك خطأ في البيانات أو رقم الجوال، فيرجى مراجعة الجهة المختصة قبل اعتماد الطلب.
+              </div>
             </div>
           </div>
+
+          <div class="upc-card">
+            <div class="upc-card-head">
+              <h3>إجراءات</h3>
+              <span class="upc-tag">الخطوة 1 من 2</span>
+            </div>
+
+            <div class="upc-card-body">
+              <form method="post" style="display:grid;gap:10px;">
+                {% csrf_token %}
+                <button class="upc-btn primary" data-next-btn type="submit">أؤكد صحة البيانات وأتابع</button>
+              </form>
+
+              <div class="upc-expired-inline" data-expired-inline>
+                انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
+              </div>
+
+              <div class="upc-note">
+                بعد التأكيد سيتم فتح صفحة ترتيب الرغبات لاستكمال الطلب.
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>

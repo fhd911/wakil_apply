@@ -1,18 +1,253 @@
 {% extends "portal/base.html" %}
 {% block title %}التقديم مغلق{% endblock %}
 
+{% block extra_css %}
+<style>
+  :root{
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
+
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
+
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
+
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+
+    --danger:#8f2f2f;
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --warn:#8e6113;
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
+
+    --moe-mid:#1f7a62;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+  }
+
+  .cls, .cls *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
+
+  .cls{
+    direction:rtl;
+    color:var(--ink);
+  }
+
+  .cls-wrap{
+    max-width:960px;
+    margin:0 auto;
+    display:grid;
+    gap:12px;
+  }
+
+  .cls-head,
+  .cls-card{
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--shadow);
+  }
+
+  .cls-head::before,
+  .cls-card::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
+  }
+
+  .cls-head{
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+  }
+
+  .cls-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.2;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
+  }
+
+  .cls-sub{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.9;
+    font-weight:800;
+  }
+
+  .cls-card{
+    padding:18px;
+  }
+
+  .cls-alert{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:8px;
+    border:1px solid var(--warn-bd);
+    background:var(--warn-bg);
+    color:#8a6526;
+    font-size:9px;
+    font-weight:900;
+    white-space:nowrap;
+    margin-bottom:12px;
+  }
+
+  .cls-msg{
+    margin:0;
+    color:var(--ink-2);
+    line-height:2;
+    font-size:10.4px;
+    font-weight:800;
+  }
+
+  .cls-actions{
+    margin-top:16px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .cls-btn{
+    appearance:none;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    border-radius:8px;
+    padding:8px 14px;
+    min-height:35px;
+    font-size:9.4px;
+    font-weight:900;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    cursor:pointer;
+    box-shadow:none;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+  }
+
+  .cls-btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+    transform:translateY(-1px);
+  }
+
+  .cls-btn:active{
+    transform:translateY(0);
+  }
+
+  .cls-btn-primary{
+    background:var(--green-2);
+    border-color:var(--green-2);
+    color:#fff;
+  }
+
+  .cls-note{
+    margin-top:10px;
+    padding:11px 12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--muted);
+    font-size:8.8px;
+    line-height:1.9;
+    font-weight:800;
+  }
+
+  @media (max-width:640px){
+    .cls-head,
+    .cls-card{
+      border-radius:10px;
+    }
+
+    .cls-head{
+      padding:14px;
+    }
+
+    .cls-card{
+      padding:14px;
+    }
+
+    .cls-title{
+      font-size:18px;
+    }
+
+    .cls-actions{
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    .cls-btn{
+      width:100%;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width:960px; margin:28px auto; padding:18px;">
-  <div style="background:#fff; border:1px solid #dbe3db; border-radius:18px; padding:18px;">
-    <h2 style="margin:0 0 8px; color:#163126; font-weight:900;">التقديم مغلق حالياً</h2>
-    <p style="margin:0; color:#6f8177; line-height:1.9; font-size:14px;">
-      {{ msg|default:"نحيطكم علمًا بأن فترة التقديم مغلقة حالياً." }}
-    </p>
-    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-      <a href="{% url 'portal:login' %}" style="display:inline-block; padding:9px 14px; border-radius:999px; border:1px solid #cdd8ce; text-decoration:none; color:#234536; font-weight:800;">
-        رجوع لصفحة الدخول
-      </a>
+<div class="cls">
+  <div class="cls-wrap">
+
+    <div class="cls-head">
+      <h1 class="cls-title">التقديم مغلق حالياً</h1>
+      <p class="cls-sub">
+        هذه الصفحة تظهر عند إيقاف التقديم مؤقتًا أو عند انتهاء فترة التقديم المحددة في النظام.
+      </p>
     </div>
+
+    <div class="cls-card">
+      <div class="cls-alert">
+        تنبيه
+      </div>
+
+      <p class="cls-msg">
+        {{ msg|default:"نحيطكم علمًا بأن فترة التقديم مغلقة حالياً." }}
+      </p>
+
+      <div class="cls-actions">
+        <a href="{% url 'portal:login' %}" class="cls-btn cls-btn-primary">
+          رجوع لصفحة الدخول
+        </a>
+      </div>
+
+      <div class="cls-note">
+        في حال تم فتح التقديم لاحقًا، يمكنكم العودة إلى صفحة الدخول والمحاولة مرة أخرى.
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}

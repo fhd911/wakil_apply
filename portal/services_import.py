@@ -19,24 +19,22 @@ class ImportResult:
 
 
 # =========================
-# Normalizers (مهم جداً)
+# Normalizers
 # =========================
 def norm_text(s: str) -> str:
     s = (s or "").strip()
-    s = " ".join(s.split())  # إزالة المسافات الزائدة
+    s = " ".join(s.split())
     return s
 
 
 def norm_gender(g: str) -> str:
     g = norm_text(g)
     mapping = {
-        # ذكور / أولاد
         "ذكور": "بنين",
         "ذكر": "بنين",
         "اولاد": "بنين",
         "أولاد": "بنين",
         "بنين": "بنين",
-        # إناث / بنات
         "إناث": "بنات",
         "اناث": "بنات",
         "أناث": "بنات",
@@ -53,10 +51,30 @@ def _to_int(v) -> int:
         return 0
 
 
+def _norm_import_mode(mode: str) -> str:
+    mode = norm_text(mode or "sync").lower()
+    allowed = {"sync", "create_only", "update_only"}
+    return mode if mode in allowed else "sync"
+
+
+def _cell(row, idx, default=""):
+    try:
+        value = row[idx]
+    except Exception:
+        return default
+    return value if value is not None else default
+
+
 # =========================
 # Import Applicants (A..I)
+# modes:
+# - sync        = إضافة الجديد + تحديث الموجود
+# - create_only = إضافة الجديد فقط
+# - update_only = تحديث الموجود فقط
 # =========================
-def import_applicants_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
+def import_applicants_xlsx(path: str, mode: str = "sync") -> Tuple[ImportBatch, ImportResult]:
+    mode = _norm_import_mode(mode)
+
     wb = load_workbook(path)
     ws = wb.active
 
@@ -64,18 +82,27 @@ def import_applicants_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
     res = ImportResult()
 
     for row in ws.iter_rows(min_row=2, values_only=True):
-        # A..I
-        full_name = norm_text(row[0] or "")
-        national_id = norm_text(str(row[1] or ""))
-        mobile = norm_text(str(row[2] or ""))
-        gender = norm_gender(row[3] or "")
-        current_job = norm_text(row[4] or "")
-        sector = norm_text(row[5] or "")
-        rank = norm_text(row[6] or "")
-        start_date = norm_text(str(row[7] or ""))
-        current_school = norm_text(row[8] or "")
+        full_name = norm_text(_cell(row, 0, ""))
+        national_id = norm_text(str(_cell(row, 1, "")))
+        mobile = norm_text(str(_cell(row, 2, "")))
+        gender = norm_gender(_cell(row, 3, ""))
+        current_job = norm_text(_cell(row, 4, ""))
+        sector = norm_text(_cell(row, 5, ""))
+        rank = norm_text(_cell(row, 6, ""))
+        start_date = norm_text(str(_cell(row, 7, "")))
+        current_school = norm_text(_cell(row, 8, ""))
 
         if not national_id:
+            res.skipped += 1
+            continue
+
+        existing = Applicant.objects.filter(national_id=national_id).first()
+
+        if mode == "create_only" and existing:
+            res.skipped += 1
+            continue
+
+        if mode == "update_only" and not existing:
             res.skipped += 1
             continue
 
@@ -94,6 +121,7 @@ def import_applicants_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
                 is_active=True,
             ),
         )
+
         if was_created:
             res.created += 1
         else:
@@ -104,8 +132,14 @@ def import_applicants_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
 
 # =========================
 # Import Schools/Vacancies (A..R)
+# modes:
+# - sync        = إضافة الجديد + تحديث الموجود
+# - create_only = إضافة الجديد فقط
+# - update_only = تحديث الموجود فقط
 # =========================
-def import_schools_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
+def import_schools_xlsx(path: str, mode: str = "sync") -> Tuple[ImportBatch, ImportResult]:
+    mode = _norm_import_mode(mode)
+
     wb = load_workbook(path)
     ws = wb.active
 
@@ -113,34 +147,41 @@ def import_schools_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
     res = ImportResult()
 
     for row in ws.iter_rows(min_row=2, values_only=True):
-        # A..R (0..17)
-        ministry_no = norm_text(str(row[0] or ""))
-        school_name = norm_text(row[1] or "")
-        stage = norm_text(row[2] or "")
-        sector = norm_text(row[3] or "")
-        establishment_status = norm_text(row[4] or "")
-        gender = norm_gender(row[5] or "")
-        education_type = norm_text(row[6] or "")
-        manager_national_id = norm_text(str(row[7] or ""))
-        manager_name = norm_text(row[8] or "")
+        ministry_no = norm_text(str(_cell(row, 0, "")))
+        school_name = norm_text(_cell(row, 1, ""))
+        stage = norm_text(_cell(row, 2, ""))
+        sector = norm_text(_cell(row, 3, ""))
+        establishment_status = norm_text(_cell(row, 4, ""))
+        gender = norm_gender(_cell(row, 5, ""))
+        education_type = norm_text(_cell(row, 6, ""))
+        manager_national_id = norm_text(str(_cell(row, 7, "")))
+        manager_name = norm_text(_cell(row, 8, ""))
 
-        students_total = _to_int(row[9])
-        classes_total = _to_int(row[10])
-        students_metric = _to_int(row[11])
-        class_metric = _to_int(row[12])
-        stage_code = norm_text(str(row[13] or ""))
-        stage_metric = _to_int(row[14])
+        students_total = _to_int(_cell(row, 9, 0))
+        classes_total = _to_int(_cell(row, 10, 0))
+        students_metric = _to_int(_cell(row, 11, 0))
+        class_metric = _to_int(_cell(row, 12, 0))
+        stage_code = norm_text(str(_cell(row, 13, "")))
+        stage_metric = _to_int(_cell(row, 14, 0))
 
-        deputy_staff = _to_int(row[15])
-        deputy_existing = _to_int(row[16])
-        deputy_need = _to_int(row[17])
+        deputy_staff = _to_int(_cell(row, 15, 0))
+        deputy_existing = _to_int(_cell(row, 16, 0))
+        deputy_need = _to_int(_cell(row, 17, 0))
 
         if not school_name:
             res.skipped += 1
             continue
 
-        # مفتاح تحديث: الرقم الوزاري إن وجد، وإلا اسم المدرسة
         key = ministry_no or school_name
+        existing = SchoolVacancy.objects.filter(ministry_no=key).first()
+
+        if mode == "create_only" and existing:
+            res.skipped += 1
+            continue
+
+        if mode == "update_only" and not existing:
+            res.skipped += 1
+            continue
 
         _, was_created = SchoolVacancy.objects.update_or_create(
             ministry_no=key,
@@ -167,6 +208,7 @@ def import_schools_xlsx(path: str) -> Tuple[ImportBatch, ImportResult]:
                 batch=batch,
             ),
         )
+
         if was_created:
             res.created += 1
         else:

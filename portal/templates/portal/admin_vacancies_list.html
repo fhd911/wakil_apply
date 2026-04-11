@@ -3,336 +3,339 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Vacancies List — Unified Ministerial Light Style
-     ✅ تحديث:
-     - إضافة أعمدة الإقبال: (إجمالي الراغبين / رغبة أولى / ترشيحات نهائية)
-     - إضافة أزرار: تعطيل جميع المدارس / تفعيل جميع المدارس
-  ========================================================= */
-
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
 
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
-    --min-surface-3:#f8fbf8;
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
 
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
 
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
-    --min-green-4:#4e7b68;
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
 
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
-    --min-gold-3:#efe1bb;
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
 
-    --min-line:#dbe3db;
-    --min-line-2:#cdd8ce;
+    --ok:#215f39;
+    --warn:#8e6113;
+    --danger:#8f2f2f;
+    --info:#355c80;
 
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-soft:0 8px 18px rgba(16,34,27,.05);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+    --moe-deep:#0f5f49;
+    --moe-mid:#1f7a62;
+    --moe-soft:#2e9b81;
+    --moe-mist:#edf6f2;
+    --moe-mist-2:#f7fbf9;
+    --moe-line:#d6e6dd;
 
-    --min-ok:#166534;
-    --min-ok-soft:#eefbf3;
-    --min-ok-line:#b7e4c7;
-
-    --min-warn:#92400e;
-    --min-warn-soft:#fff8ed;
-    --min-warn-line:#f4cf9b;
-
-    --min-danger:#991b1b;
-    --min-danger-soft:#fef2f2;
-    --min-danger-line:#fecaca;
+    --r-2xl:12px;
+    --r-xl:10px;
+    --r-lg:9px;
+    --r-md:8px;
+    --r-sm:7px;
   }
 
-  .ui{
+  .v963v,.v963v *{box-sizing:border-box}
+
+  .v963v{
+    direction:rtl;
+    color:var(--ink);
+    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    padding:10px;
+  }
+
+  .v963v-page{
     position:relative;
-    background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
   }
 
-  .ui-page{
-    position:relative;
-  }
-
-  .ui-top{
-    margin-bottom:12px;
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
+  .v963v-top,
+  .v963v-card{
     position:relative;
     overflow:hidden;
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    align-items:flex-start;
-    flex-wrap:wrap;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:0 1px 4px rgba(17,24,20,.035);
   }
 
-  .ui-top::before{
+  .v963v-top::before,
+  .v963v-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
-  .ui-top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+  .v963v-top{
+    margin-bottom:14px;
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:start;
   }
 
-  .ui-top > *{
-    position:relative;
-    z-index:1;
-  }
-
-  .ui-title{
-    font-size:20px !important;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff !important;
+  .v963v-title{
     margin:0;
+    font-size:20px;
+    line-height:1.15;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
   }
 
-  .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.6 !important;
+  .v963v-subtitle{
+    margin:6px 0 0;
+    max-width:820px;
+    font-size:10.4px;
+    line-height:1.95;
+    color:var(--muted);
+    font-weight:800;
   }
 
-  .ui-actions{
+  .v963v-actions{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
     align-items:center;
+    justify-content:flex-end;
   }
 
-  .ui-inline-form{
+  .v963v-inline-form{
     margin:0;
     display:inline-flex;
   }
 
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
-  }
-
-  .ui-toolbar{
-    padding:8px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-toolbar-row{
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
+  .v963v-btn{
+    display:inline-flex;
     align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:35px;
+    padding:6px 12px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:9.4px;
+    font-weight:900;
+    box-shadow:none;
+    transition:.16s ease;
   }
 
-  .ui-toolbar-left,
-  .ui-toolbar-right{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
+  .v963v-btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
   }
 
-  .ui-foot{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-top:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  .v963v-btn-primary{
+    background:var(--green-2);
+    color:#fff;
+    border-color:var(--green-2);
   }
 
-  .ui-muted{
-    color:var(--min-muted) !important;
-    font-size:9.8px;
+  .v963v-btn-danger{
+    background:var(--danger);
+    color:#fff;
+    border-color:var(--danger);
   }
 
-  .ui-pill{
+  .v963v-btn-warn{
+    background:var(--warn);
+    color:#fff;
+    border-color:var(--warn);
+  }
+
+  .v963v-btn-info,
+  .v963v-btn-gold,
+  .v963v-btn-soft{
+    background:#fff;
+    color:var(--green-2);
+    border-color:var(--line-2);
+  }
+
+  .v963v-btn-sm{
     min-height:30px;
     padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
+    font-size:8.4px;
+    border-radius:8px;
   }
 
-  .ui-pill-ok{
-    color:var(--min-ok) !important;
-    border-color:var(--min-ok-line) !important;
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
-  }
-
-  .ui-pill-danger{
-    color:var(--min-danger) !important;
-    border-color:var(--min-danger-line) !important;
-    background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
-  }
-
-  .ui-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#16a34a;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
-  }
-
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-    justify-content:center;
-  }
-
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-warn{
-    color:#fff !important;
-    border-color:#b45309 !important;
-    background:linear-gradient(180deg,#d97706,#b45309) !important;
-    box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-danger{
-    color:#fff !important;
-    border-color:#b91c1c !important;
-    background:linear-gradient(180deg,#dc2626,#b91c1c) !important;
-    box-shadow:0 10px 18px rgba(185,28,28,.14), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-sm{
-    min-height:27px;
-    padding:5px 9px;
-    font-size:9.4px;
-    border-radius:10px;
-  }
-
-  .ui-btn-icon{
+  .v963v-btn-icon{
     font-size:11px;
     line-height:1;
   }
 
-  .ui-input,
-  .ui-select{
-    min-height:38px;
-    height:38px;
-    padding:8px 12px;
-    font-size:10.5px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    outline:none;
+  .v963v-toolbar{
+    padding:12px 13px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
-  .ui-input:focus,
-  .ui-select:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .v963v-filter-shell{
+    display:grid;
+    gap:12px;
+    padding:11px;
+    border:1px solid var(--moe-line);
+    border-radius:10px;
+    background:var(--moe-mist-2);
   }
 
-  .vac-list-wrap{
-    overflow:auto;
+  .v963v-toolbar-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+  }
+
+  .v963v-toolbar-left,
+  .v963v-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .v963v-toolbar-right{
+    justify-content:flex-end;
+  }
+
+  .v963v-input,
+  .v963v-select{
+    min-height:39px;
+    height:39px;
+    padding:6px 10px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
     background:#fff;
-    border-top:1px solid rgba(219,227,219,.92);
-    position:relative;
+    color:var(--ink);
+    font-size:9.5px;
+    outline:none;
+    box-shadow:none;
   }
 
-  .vac-list-table{
-    width:100%;
-    min-width:1460px;
-    border-collapse:separate;
-    border-spacing:0;
-    table-layout:fixed;
+  .v963v-input:focus,
+  .v963v-select:focus{
+    border-color:var(--gold-2);
+    box-shadow:0 0 0 2px rgba(171,137,80,.08);
   }
 
-  .vac-list-table th,
-  .vac-list-table td{
-    overflow:visible;
-  }
-
-  .vac-list-table thead th{
-    position:sticky;
-    top:0;
-    z-index:4;
-    background:#eef3ee !important;
-    color:var(--min-green-2);
-    font-size:10.1px;
-    font-weight:800;
-    padding:10px 8px;
-    border-bottom:1px solid #d7e0d7 !important;
+  .v963v-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900;
     white-space:nowrap;
   }
 
-  .vac-list-table tbody td{
-    padding:8px 8px;
-    font-size:10.4px;
+  .v963v-pill-ok{
+    background:#eff8f3 !important;
+    border-color:#cfe6d8 !important;
+    color:#1c6a44 !important;
+  }
+
+  .v963v-pill-danger{
+    background:#fcf6f6 !important;
+    border-color:#e7c7c7 !important;
+    color:#8f2f2f !important;
+  }
+
+  .v963v-pill-info{
+    background:#f3f7fd !important;
+    border-color:#d5e0ef !important;
+    color:#355c80 !important;
+  }
+
+  .v963v-muted{
+    color:var(--muted) !important;
+    font-size:8.5px;
+    font-weight:800;
+  }
+
+  .v963v-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#1f7a62;
+  }
+
+  .v963v-table-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid var(--line);
+    position:relative;
+  }
+
+  .v963v-table{
+    width:100%;
+    min-width:1440px;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  .v963v-table th{
+    position:sticky;
+    top:0;
+    z-index:5;
+    padding:12px 8px;
+    white-space:nowrap;
+    font-size:8.8px;
+    font-weight:900;
+    color:var(--green-1);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
+    border-bottom:1px solid var(--line-2);
+    border-inline-start:1px solid #e1e7e2;
+    text-align:center;
+  }
+
+  .v963v-table td{
+    padding:11px 8px;
+    font-size:9.35px;
     vertical-align:middle;
-    border-bottom:1px solid #e7ede7 !important;
-    background:#ffffff;
-    color:var(--min-ink-2);
+    background:#fff;
+    color:var(--ink);
+    border-bottom:1px solid #edf1ed;
+    border-inline-start:1px solid #f1f3f1;
   }
 
-  .vac-list-table tbody tr:nth-child(even) td{
-    background:#fbfcfa;
+  .v963v-table th:first-child,
+  .v963v-table td:first-child{
+    border-inline-start:none;
   }
 
-  .vac-list-table tbody tr:hover td{
-    background:#f8faf7;
+  .v963v-row:nth-child(even) td{
+    background:#fcfdfc;
+  }
+
+  .v963v-row:hover td{
+    background:#f8faf8;
   }
 
   .vac-col-school{
@@ -340,41 +343,42 @@
   }
 
   .vac-col-actions{
-    width:300px;
+    width:290px;
     position:sticky;
     left:0;
-    z-index:3;
-    background:#fff !important;
-    box-shadow:10px 0 14px rgba(16,34,27,.04);
+    z-index:6;
+    background:#fdfefe !important;
+    box-shadow:inset 1px 0 0 #e4ece7 !important;
   }
 
-  .vac-list-table thead .vac-col-actions{
-    z-index:7;
-    background:#eef3ee !important;
+  .v963v-table thead .vac-col-actions{
+    z-index:9;
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
   }
 
-  .ui-name .n1{
-    font-size:11px;
+  .v963v-name .n1{
+    font-size:10.7px;
     line-height:1.35;
-    font-weight:800;
-    color:var(--min-green-1);
-    letter-spacing:-.1px;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
   }
 
-  .ui-name .n2{
+  .v963v-name .n2{
     margin-top:3px;
-    font-size:9.2px;
-    color:var(--min-muted);
-    font-weight:700;
+    font-size:8.8px;
+    color:var(--muted);
+    font-weight:800;
   }
 
   .vac-act{
     display:flex;
-    gap:8px;
+    gap:7px;
     flex-wrap:nowrap;
     align-items:center;
-    justify-content:flex-start;
-    min-width:280px;
+    justify-content:center;
+    min-width:264px;
+    flex-direction:row-reverse;
   }
 
   .vac-act form{
@@ -382,52 +386,82 @@
     margin:0;
   }
 
-  .vac-act .ui-btn{
-    min-width:78px;
+  .vac-act .v963v-btn{
+    min-width:74px;
     justify-content:center;
+  }
+
+  .vac-col-actions .v963v-btn-warn{
+    background:#fcf8ef !important;
+    border-color:#ead6ae !important;
+    color:#8e6113 !important;
+  }
+
+  .vac-col-actions .v963v-btn-danger{
+    background:#fcf6f6 !important;
+    border-color:#e7c7c7 !important;
+    color:#8f2f2f !important;
+  }
+
+  .vac-col-actions .v963v-btn:not(.v963v-btn-primary):not(.v963v-btn-danger):not(.v963v-btn-warn){
+    background:#ffffff !important;
+    border-color:#d8e2db !important;
+    color:var(--green-2) !important;
   }
 
   .cnt{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-width:48px;
+    min-width:44px;
     height:28px;
-    padding:0 10px;
-    border-radius:999px;
+    padding:0 9px;
+    border-radius:8px;
     font-weight:900;
-    font-size:10px;
-    letter-spacing:-.1px;
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-green-2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    font-size:9px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
   }
 
   .cnt-strong{
-    border-color:rgba(200,160,74,.30);
-    background:linear-gradient(180deg,#fffdf6,#fbf6e8);
-    color:#7a5b14;
+    background:#fcf7ee;
+    border-color:#e7d7b7;
+    color:#8a6526;
   }
 
   .cnt-ok{
-    border-color:var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
-    color:var(--min-ok);
+    background:#eff8f3;
+    border-color:#cfe6d8;
+    color:#1c6a44;
+  }
+
+  .v963v-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border-top:1px solid var(--line);
+    background:var(--paper);
   }
 
   @media (max-width: 900px){
-    .ui-toolbar-row{
+    .v963v-toolbar-row{
       grid-template-columns:1fr;
       align-items:stretch;
     }
 
-    .ui-foot{
+    .v963v-toolbar-right{
+      justify-content:flex-start;
+    }
+
+    .v963v-foot{
       flex-direction:column;
       align-items:flex-start;
     }
 
-    .vac-list-table{
+    .v963v-table{
       min-width:1360px;
     }
 
@@ -436,124 +470,137 @@
     }
 
     .vac-act{
-      min-width:250px;
-    }
-
-    .vac-act .ui-btn{
-      min-width:70px;
+      min-width:246px;
     }
   }
 
   @media (max-width: 640px){
-    .ui-top{
-      border-radius:18px;
-      padding:13px 14px;
+    .v963v{
+      padding:6px;
     }
 
-    .ui-title{
-      font-size:18px !important;
+    .v963v-top{
+      padding:14px;
+      grid-template-columns:1fr;
     }
 
-    .ui-toolbar{
-      padding:8px;
+    .v963v-title{
+      font-size:18px;
+    }
+
+    .v963v-toolbar{
+      padding:10px;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="v963v">
+  <div class="v963v-page">
 
-    <div class="ui-top">
-      <div class="ui-title-wrap">
-        <h1 class="ui-title">إدارة الشواغر / المدارس</h1>
-        <p class="ui-subtitle">إضافة، تعديل، فتح وإغلاق الشاغر — مع دعم الفتح والإغلاق الجماعي، والحذف النهائي للسوبر فقط.</p>
+    <div class="v963v-top">
+      <div>
+        <h1 class="v963v-title">إدارة الشواغر / المدارس</h1>
+        <p class="v963v-subtitle">إضافة، تعديل، فتح وإغلاق الشاغر، مع دعم التفعيل والتعطيل الجماعي، وعرض مؤشرات الإقبال والترشيحات النهائية ضمن نفس الهوية البصرية الرسمية.</p>
       </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span class="ui-btn-icon">▦</span>
+      <div class="v963v-actions">
+        <a class="v963v-btn v963v-btn-gold" href="{% url 'portal:admin_dashboard' %}">
+          <span class="v963v-btn-icon">▦</span>
           لوحة القرار
         </a>
 
-        <a class="ui-btn ui-btn-primary" href="{% url 'portal:admin_vacancies_create' %}">
-          <span class="ui-btn-icon">＋</span>
+        <a class="v963v-btn v963v-btn-primary" href="{% url 'portal:admin_vacancies_create' %}">
+          <span class="v963v-btn-icon">＋</span>
           إضافة شاغر
         </a>
 
-        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
-          <span class="ui-btn-icon">👤</span>
+        <a class="v963v-btn v963v-btn-info" href="{% url 'portal:admin_applicants_list' %}">
+          <span class="v963v-btn-icon">👤</span>
           إدارة المتقدمين
         </a>
 
-        <form method="post" action="{% url 'portal:admin_vacancies_enable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد فتح جميع المدارس؟');">
+        <form method="post" action="{% url 'portal:admin_vacancies_enable_all' %}" class="v963v-inline-form" onsubmit="return confirm('تأكيد فتح جميع المدارس؟');">
           {% csrf_token %}
-          <button class="ui-btn ui-btn-primary" type="submit">
-            <span class="ui-btn-icon">✓</span>
+          <input type="hidden" name="q" value="{{ q }}">
+          <input type="hidden" name="sector" value="{{ sector }}">
+          <input type="hidden" name="gender" value="{{ gender }}">
+          <input type="hidden" name="open" value="{{ open }}">
+          <input type="hidden" name="page" value="{{ rows.number }}">
+          <button class="v963v-btn v963v-btn-primary" type="submit">
+            <span class="v963v-btn-icon">✓</span>
             تفعيل جميع المدارس
           </button>
         </form>
 
-        <form method="post" action="{% url 'portal:admin_vacancies_disable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد إغلاق جميع المدارس؟');">
+        <form method="post" action="{% url 'portal:admin_vacancies_disable_all' %}" class="v963v-inline-form" onsubmit="return confirm('تأكيد إغلاق جميع المدارس؟');">
           {% csrf_token %}
-          <button class="ui-btn ui-btn-danger" type="submit">
-            <span class="ui-btn-icon">✕</span>
+          <input type="hidden" name="q" value="{{ q }}">
+          <input type="hidden" name="sector" value="{{ sector }}">
+          <input type="hidden" name="gender" value="{{ gender }}">
+          <input type="hidden" name="open" value="{{ open }}">
+          <input type="hidden" name="page" value="{{ rows.number }}">
+          <button class="v963v-btn v963v-btn-danger" type="submit">
+            <span class="v963v-btn-icon">✕</span>
             تعطيل جميع المدارس
           </button>
         </form>
       </div>
     </div>
 
-    <div class="ui-card">
+    <div class="v963v-card">
 
-      <div class="ui-toolbar">
-        <form method="get" class="ui-toolbar-row">
-          <div class="ui-toolbar-left">
-            <input
-              class="ui-input"
-              name="q"
-              value="{{ q }}"
-              placeholder="بحث: المدرسة / رقم الوزارة / القطاع / المدير"
-              style="width:min(360px,100%)"
-            >
+      <div class="v963v-toolbar">
+        <form method="get" class="v963v-filter-shell">
+          <div class="v963v-toolbar-row">
+            <div class="v963v-toolbar-left">
+              <input
+                class="v963v-input"
+                name="q"
+                value="{{ q }}"
+                placeholder="بحث: المدرسة / رقم الوزارة / القطاع / المدير"
+                style="width:min(360px,100%)"
+              >
 
-            <input
-              class="ui-input"
-              name="sector"
-              value="{{ sector }}"
-              placeholder="فلتر قطاع"
-              style="width:170px"
-            >
+              <input
+                class="v963v-input"
+                name="sector"
+                value="{{ sector }}"
+                placeholder="فلتر قطاع"
+                style="width:170px"
+              >
 
-            <input
-              class="ui-input"
-              name="gender"
-              value="{{ gender }}"
-              placeholder="فلتر جنس"
-              style="width:140px"
-            >
+              <input
+                class="v963v-input"
+                name="gender"
+                value="{{ gender }}"
+                placeholder="فلتر جنس"
+                style="width:140px"
+              >
 
-            <select class="ui-select" name="open" style="width:150px">
-              <option value="" {% if not open %}selected{% endif %}>الكل</option>
-              <option value="open" {% if open == "open" %}selected{% endif %}>مفتوح</option>
-              <option value="closed" {% if open == "closed" %}selected{% endif %}>مغلق</option>
-            </select>
-          </div>
+              <select class="v963v-select" name="open" style="width:150px">
+                <option value="" {% if not open %}selected{% endif %}>الكل</option>
+                <option value="open" {% if open == "open" %}selected{% endif %}>مفتوح</option>
+                <option value="closed" {% if open == "closed" %}selected{% endif %}>مغلق</option>
+              </select>
+            </div>
 
-          <div class="ui-toolbar-right">
-            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
-            <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">مسح</a>
-            <span class="ui-pill">
-              <span class="ui-dot"></span>
-              الإجمالي: <b>{{ total }}</b>
-            </span>
+            <div class="v963v-toolbar-right">
+              <button class="v963v-btn v963v-btn-primary" type="submit">بحث</button>
+              <a class="v963v-btn" href="{% url 'portal:admin_vacancies_list' %}">مسح</a>
+
+              <span class="v963v-pill">
+                <span class="v963v-dot"></span>
+                الإجمالي: <b>{{ total }}</b>
+              </span>
+            </div>
           </div>
         </form>
       </div>
 
-      <div class="vac-list-wrap">
-        <table class="ui-table vac-list-table">
+      <div class="v963v-table-wrap">
+        <table class="v963v-table">
           <thead>
             <tr>
               <th class="vac-col-school">المدرسة</th>
@@ -572,36 +619,36 @@
 
           <tbody>
             {% for v in rows %}
-            <tr>
+            <tr class="v963v-row">
               <td class="vac-col-school" title="{{ v.school_name }}">
-                <div class="ui-name">
+                <div class="v963v-name">
                   <div class="n1">{{ v.school_name|default:"—" }}</div>
                   <div class="n2">{{ v.manager_name|default:"-" }}</div>
                 </div>
               </td>
 
-              <td class="ui-muted">{{ v.ministry_no|default:"—" }}</td>
+              <td class="v963v-muted">{{ v.ministry_no|default:"—" }}</td>
 
               <td title="{{ v.sector }}">
                 {% if v.sector %}
-                  <span class="ui-pill">{{ v.sector }}</span>
+                  <span class="v963v-pill">{{ v.sector }}</span>
                 {% else %}
-                  <span class="ui-pill ui-muted">—</span>
+                  <span class="v963v-pill v963v-muted">—</span>
                 {% endif %}
               </td>
 
               <td>
                 {% if v.gender %}
-                  <span class="ui-pill">{{ v.gender }}</span>
+                  <span class="v963v-pill">{{ v.gender }}</span>
                 {% else %}
-                  <span class="ui-pill ui-muted">—</span>
+                  <span class="v963v-pill v963v-muted">—</span>
                 {% endif %}
               </td>
 
-              <td class="ui-muted">{{ v.stage|default:"—" }}</td>
+              <td class="v963v-muted">{{ v.stage|default:"—" }}</td>
 
               <td>
-                <span class="ui-pill">{{ v.deputy_need|default:"0" }}</span>
+                <span class="v963v-pill">{{ v.deputy_need|default:"0" }}</span>
               </td>
 
               <td>
@@ -622,21 +669,26 @@
 
               <td>
                 {% if v.is_open %}
-                  <span class="ui-pill ui-pill-ok">مفتوح</span>
+                  <span class="v963v-pill v963v-pill-ok">مفتوح</span>
                 {% else %}
-                  <span class="ui-pill ui-pill-danger">مغلق</span>
+                  <span class="v963v-pill v963v-pill-danger">مغلق</span>
                 {% endif %}
               </td>
 
               <td class="vac-col-actions">
                 <div class="vac-act">
-                  <a class="ui-btn ui-btn-sm" href="{% url 'portal:admin_vacancies_edit' v.id %}">
+                  <a class="v963v-btn v963v-btn-sm" href="{% url 'portal:admin_vacancies_edit' v.id %}">
                     تعديل
                   </a>
 
                   <form method="post" action="{% url 'portal:admin_vacancies_toggle' v.id %}">
                     {% csrf_token %}
-                    <button class="ui-btn ui-btn-sm ui-btn-warn" type="submit">
+                    <input type="hidden" name="q" value="{{ q }}">
+                    <input type="hidden" name="sector" value="{{ sector }}">
+                    <input type="hidden" name="gender" value="{{ gender }}">
+                    <input type="hidden" name="open" value="{{ open }}">
+                    <input type="hidden" name="page" value="{{ rows.number }}">
+                    <button class="v963v-btn v963v-btn-sm v963v-btn-warn" type="submit">
                       {% if v.is_open %}إغلاق{% else %}فتح{% endif %}
                     </button>
                   </form>
@@ -647,7 +699,12 @@
                     onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كانت هناك رغبات مرتبطة.');"
                   >
                     {% csrf_token %}
-                    <button class="ui-btn ui-btn-sm ui-btn-danger" type="submit">
+                    <input type="hidden" name="q" value="{{ q }}">
+                    <input type="hidden" name="sector" value="{{ sector }}">
+                    <input type="hidden" name="gender" value="{{ gender }}">
+                    <input type="hidden" name="open" value="{{ open }}">
+                    <input type="hidden" name="page" value="{{ rows.number }}">
+                    <button class="v963v-btn v963v-btn-sm v963v-btn-danger" type="submit">
                       حذف
                     </button>
                   </form>
@@ -656,7 +713,7 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="11" style="padding:16px; color:var(--min-muted); background:#fff;">
+              <td colspan="11" style="padding:16px; color:var(--muted); background:#fff; text-align:center;">
                 لا توجد بيانات.
               </td>
             </tr>
@@ -665,16 +722,16 @@
         </table>
       </div>
 
-      <div class="ui-foot">
-        <div class="ui-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
+      <div class="v963v-foot">
+        <div class="v963v-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           {% if rows.has_previous %}
-            <a class="ui-btn" href="?q={{ q }}&sector={{ sector }}&gender={{ gender }}&open={{ open }}&page={{ rows.previous_page_number }}">السابق</a>
+            <a class="v963v-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.previous_page_number }}">السابق</a>
           {% endif %}
 
           {% if rows.has_next %}
-            <a class="ui-btn" href="?q={{ q }}&sector={{ sector }}&gender={{ gender }}&open={{ open }}&page={{ rows.next_page_number }}">التالي</a>
+            <a class="v963v-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.next_page_number }}">التالي</a>
           {% endif %}
         </div>
       </div>

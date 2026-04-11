@@ -1,263 +1,575 @@
 {% extends "portal/base.html" %}
-{% block title %}لوحة القرار{% endblock %}
+{% block title %}لوحة القرارات الإدارية التعليمية{% endblock %}
 
 {% block extra_css %}
 <style>
   :root{
-    --bg:#eef3ef;
-    --bg-2:#e6ede8;
-    --paper:#ffffff;
-    --paper-2:#fbfdfb;
-    --paper-3:#f4f8f5;
+    --moe-bg:#f4f6f3;
+    --moe-bg-2:#edf1ed;
+    --moe-surface:#ffffff;
+    --moe-surface-2:#fbfcfa;
+    --moe-surface-3:#f6f8f5;
 
-    --ink:#142019;
-    --ink-2:#2b4035;
-    --muted:#6e7f76;
+    --moe-ink:#1d2d25;
+    --moe-ink-2:#32433a;
+    --moe-muted:#6d7d73;
 
-    --green-1:#102d23;
-    --green-2:#1b4638;
-    --green-3:#2d6451;
-    --green-4:#4d7c69;
+    --moe-green-1:#183629;
+    --moe-green-2:#274538;
+    --moe-green-3:#466055;
+    --moe-green-4:#7d8f85;
 
-    --gold-1:#8f6a2f;
-    --gold-2:#bb9250;
-    --gold-3:#d8bc84;
+    --moe-gold-1:#7e6331;
+    --moe-gold-2:#a5844d;
+    --moe-gold-3:#d8c69f;
 
-    --line:#d7e0d9;
-    --line-2:#c9d4cc;
-    --line-3:#eaf0eb;
+    --moe-line:#d7dfd8;
+    --moe-line-2:#cbd4cc;
+    --moe-line-3:#e8ede8;
 
-    --ok:#15803d;
-    --warn:#b45309;
-    --danger:#b91c1c;
-    --info:#1d4ed8;
+    --moe-ok:#1f5c37;
+    --moe-ok-bg:#eef7f1;
+    --moe-ok-bd:#cfe3d6;
 
-    --shadow-xs:0 3px 8px rgba(15,23,20,.03);
-    --shadow-soft:0 8px 18px rgba(15,23,20,.05);
-    --shadow:0 14px 30px rgba(15,23,20,.07);
-    --shadow-strong:0 22px 48px rgba(15,23,20,.11);
+    --moe-warn:#886114;
+    --moe-warn-bg:#fbf6ec;
+    --moe-warn-bd:#e5d6b7;
 
-    --r-2xl:20px;
-    --r-xl:16px;
-    --r-lg:12px;
-    --r-md:10px;
-    --r-sm:8px;
+    --moe-danger:#8a3131;
+    --moe-danger-bg:#fbf5f5;
+    --moe-danger-bd:#e5c7c7;
+
+    --moe-info:#355c7a;
+    --moe-info-bg:#f2f6fb;
+    --moe-info-bd:#d7e1ee;
+
+    --moe-shadow:0 1px 3px rgba(17,24,20,.035);
+    --moe-shadow-soft:0 8px 18px rgba(17,24,20,.05);
+    --moe-shadow-table:0 8px 18px rgba(17,24,20,.045);
+
+    --moe-r-2xl:15px;
+    --moe-r-xl:12px;
+    --moe-r-lg:9px;
+    --moe-r-md:7px;
+    --moe-r-sm:6px;
   }
 
-  .v963, .v963 *{ box-sizing:border-box; }
+  .v963,.v963 *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
 
   .v963{
     direction:rtl;
-    color:var(--ink);
-    background:
-      radial-gradient(1100px 500px at 78% -8%, rgba(216,188,132,.16), transparent 58%),
-      radial-gradient(900px 420px at 8% 0%, rgba(45,100,81,.10), transparent 60%),
-      linear-gradient(180deg,#f4f7f4 0%, var(--bg) 45%, var(--bg-2) 100%);
-    padding:12px;
+    color:var(--moe-ink);
+    background:linear-gradient(180deg,#f7f8f6 0%, #f2f5f1 45%, #edf1ed 100%);
+    padding:8px;
   }
 
   .v963-page{
+    max-width:1520px;
+    margin:0 auto;
     display:grid;
-    grid-template-columns:minmax(0,1fr) 334px;
-    gap:12px;
+    grid-template-columns:minmax(0,1fr);
+    gap:11px;
     align-items:start;
   }
 
-  .v963-main{ min-width:0; }
-  .v963-side{ position:sticky; top:10px; }
+  .v963-main{min-width:0}
 
   .v963-card,
-  .v963-top,
-  .v963-side-card{
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:var(--r-2xl);
-    background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(250,252,250,.96));
-    box-shadow:var(--shadow);
-    overflow:hidden;
+  .v963-kpi,
+  .v963-info,
+  .v963-modal-card,
+  .v963-toast{
+    border:1px solid var(--moe-line);
+    border-radius:var(--moe-r-2xl);
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--moe-shadow);
     position:relative;
+    overflow:hidden;
   }
 
   .v963-card::before,
-  .v963-side-card::before,
+  .v963-kpi::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,rgba(39,69,56,.85) 0%, rgba(165,132,77,.85) 100%);
+    opacity:.92;
+  }
+
+  /* =========================
+     Header جديد
+  ========================= */
+  .v963-top{
+    border:1px solid #d5ddd6;
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    box-shadow:0 8px 18px rgba(17,24,20,.04);
+    padding:16px 18px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:14px;
+    align-items:center;
+    overflow:hidden;
+    position:relative;
+    margin-bottom:12px;
+  }
+
   .v963-top::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:4px;
-    background:linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--green-2) 18%,
-      var(--gold-2) 50%,
-      var(--green-2) 82%,
-      transparent 100%
-    );
-    opacity:1;
+    background:linear-gradient(90deg,var(--moe-green-2) 0%, var(--moe-gold-2) 100%);
   }
 
-  .v963-top{
-    margin-bottom:12px;
-    padding:18px 18px 16px;
-    background:
-      radial-gradient(500px 180px at 85% 0%, rgba(195,154,87,.10), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,250,247,.95));
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:center;
-    overflow:hidden;
+  .v963-top::after{
+    display:none !important;
+  }
+
+  .v963-top-main{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:flex-start;
   }
 
   .v963-title{
     margin:0;
-    font-size:27px;
+    font-size:22px;
     line-height:1.1;
-    font-weight:900;
-    color:var(--green-1);
-    letter-spacing:.2px;
-    text-shadow:0 1px 0 rgba(255,255,255,.85);
+    font-weight:900 !important;
+    color:var(--moe-green-1);
+    letter-spacing:.1px;
+    padding:0;
+    text-shadow:none;
   }
 
-  .v963-sub{
-    margin:6px 0 0;
-    font-size:12.4px;
-    line-height:1.9;
-    color:var(--muted);
-    font-weight:800;
+  .v963-title::after{
+    display:none !important;
+  }
+
+  .v963-top-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    min-width:0;
+  }
+
+  .v963-top-note{
+    color:var(--moe-muted);
+    font-size:8px;
+    font-weight:800 !important;
+  }
+
+  .v963-status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:29px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--moe-line);
+    background:#fff;
+    color:var(--moe-ink-2);
+    font-size:8.2px;
+    font-weight:900 !important;
+    white-space:nowrap;
+  }
+
+  .v963-status-badge .v963-dot{
+    width:8px;
+    height:8px;
   }
 
   .v963-top-side{
     display:flex;
-    gap:8px;
     align-items:center;
-    flex-wrap:wrap;
     justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
+    min-width:0;
+    padding:0;
+    border:none;
+    background:transparent;
+    box-shadow:none;
   }
 
-  .v963-pill{
+  .v963-pill,
+  .v963-tag,
+  .v963-state-badge,
+  .v963-chip,
+  .v963-count,
+  .v963-nid{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:34px;
-    padding:5px 12px;
-    border-radius:999px;
-    border:1px solid rgba(16,45,35,.12);
-    background:linear-gradient(180deg,#ffffff,#f7fbf8);
-    color:var(--ink-2);
-    font-size:11px;
-    font-weight:900;
+    min-height:26px;
+    padding:4px 8px;
+    border-radius:7px;
+    border:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+    color:var(--moe-ink-2);
     white-space:nowrap;
-    box-shadow:var(--shadow-soft);
+    font-size:8.15px;
+    font-weight:900 !important;
   }
 
   .v963-dot{
-    width:7px;height:7px;border-radius:50%;
-    background:var(--green-3);
-    box-shadow:0 0 0 3px rgba(77,124,105,.10);
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--moe-green-3);
+    flex:0 0 auto;
   }
 
-  .v963-dot.status-closed{ background:var(--danger); box-shadow:0 0 0 3px rgba(185,28,28,.10); }
-  .v963-dot.status-open{ background:var(--ok); box-shadow:0 0 0 3px rgba(21,128,61,.10); }
-  .v963-dot.status-phase{ background:var(--gold-2); box-shadow:0 0 0 3px rgba(187,146,80,.10); }
+  .v963-dot.status-closed{background:var(--moe-danger)}
+  .v963-dot.status-open{background:var(--moe-ok)}
+  .v963-dot.status-phase{background:var(--moe-gold-2)}
 
-  .v963-btn{
+  .v963-btn,
+  .v963-tab,
+  .v963-chip-btn,
+  .v963-search-clear{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:34px;
-    padding:6px 12px;
-    border-radius:11px;
-    border:1px solid rgba(16,45,35,.12);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-    color:var(--ink-2);
+    min-height:33px;
+    padding:6px 11px;
+    border-radius:8px;
+    border:1px solid var(--moe-line-2);
+    background:#fff;
+    color:var(--moe-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:10.3px;
-    font-weight:900;
-    box-shadow:var(--shadow-soft);
-    transition:.16s ease;
-  }
-
-  .v963-btn:hover{
-    transform:translateY(-1px);
-    border-color:rgba(187,146,80,.45);
-    box-shadow:var(--shadow);
-  }
-
-  .v963-btn[disabled]{
-    opacity:.6;
-    cursor:not-allowed;
-    transform:none !important;
-  }
-
-  .v963-btn-primary{
-    color:#fff;
-    border-color:rgba(16,45,35,.4);
-    background:linear-gradient(180deg,var(--green-3),var(--green-1));
-  }
-
-  .v963-btn-ok{
-    color:#fff;
-    border-color:#1b8b47;
-    background:linear-gradient(180deg,#16a34a,var(--ok));
-  }
-
-  .v963-btn-warn{
-    color:#fff;
-    border-color:#c26a18;
-    background:linear-gradient(180deg,#d97706,var(--warn));
-  }
-
-  .v963-btn-danger{
-    color:#fff;
-    border-color:#d33a3a;
-    background:linear-gradient(180deg,#dc2626,var(--danger));
-  }
-
-  .v963-btn-info{
-    color:#fff;
-    border-color:#356ed0;
-    background:linear-gradient(180deg,#2563eb,var(--info));
-  }
-
-  .v963-btn-soft{
-    color:#1d4ed8;
-    border-color:#dbe7ff;
-    background:linear-gradient(180deg,#f7fbff,#f3f8ff);
-  }
-
-  .v963-btn-gold{
-    color:#7a5712;
-    border-color:rgba(187,146,80,.45);
-    background:linear-gradient(180deg,#fffaf0,#fff2db);
-  }
-
-  .v963-btn-sm{
-    min-height:29px;
-    padding:4px 10px;
-    font-size:9.2px;
-    border-radius:9px;
+    font-size:8.8px;
+    font-weight:900 !important;
+    transition:background .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease;
     box-shadow:none;
   }
 
-  .v963-sec{ padding:12px; }
-  .v963-div{ border-top:1px solid rgba(16,45,35,.10); }
+  .v963-btn:hover,
+  .v963-tab:hover,
+  .v963-chip-btn:hover,
+  .v963-search-clear:hover{
+    transform:translateY(-1px);
+    background:#f8faf8;
+    border-color:#bcc8be;
+  }
+
+  .v963-btn-primary,
+  .v963-btn-ok{
+    background:linear-gradient(180deg,#2d4a3b 0%, #1f3a2d 100%);
+    border-color:#1f3a2d;
+    color:#fff;
+  }
+
+  .v963-btn-primary:hover,
+  .v963-btn-ok:hover{
+    background:linear-gradient(180deg,#355345 0%, #244031 100%);
+    border-color:#244031;
+  }
+
+  .v963-btn-danger{
+    background:var(--moe-danger-bg);
+    border-color:var(--moe-danger-bd);
+    color:var(--moe-danger);
+  }
+
+  .v963-btn-warn{
+    background:var(--moe-warn-bg);
+    border-color:var(--moe-warn-bd);
+    color:var(--moe-warn);
+  }
+
+  .v963-btn-info,
+  .v963-btn-soft,
+  .v963-btn-gold{
+    background:#fff;
+    color:var(--moe-green-2);
+    border-color:var(--moe-line-2);
+  }
+
+  .v963-btn-sm{
+    min-height:28px;
+    padding:4px 9px;
+    font-size:8px;
+    border-radius:7px;
+  }
+
+  .v963-top .v963-btn{
+    min-height:35px;
+    padding:6px 13px;
+    border-radius:10px;
+    border:1px solid #cfd7d0;
+    background:#fff;
+    color:var(--moe-green-2);
+    box-shadow:none;
+  }
+
+  .v963-top .v963-btn:hover{
+    background:#f7faf7;
+    border-color:#bcc8be;
+  }
+
+  .v963-top .v963-btn-info{
+    background:#fff;
+    color:var(--moe-green-2);
+  }
+
+  /* =========================
+     القائمة الرسمية
+  ========================= */
+  .v963-more-wrap{
+    position:relative;
+    z-index:70;
+  }
+
+  .v963-top .v963-more-btn{
+    min-width:104px;
+    justify-content:space-between;
+    border-color:#223a2f;
+    background:linear-gradient(180deg,#2f4c3d 0%, #223a2f 100%);
+    color:#fff;
+  }
+
+  .v963-top .v963-more-btn:hover{
+    background:linear-gradient(180deg,#355344 0%, #274033 100%);
+    border-color:#223a2f;
+    color:#fff;
+  }
+
+  .v963-top .v963-caret{
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.15);
+    color:#fff;
+    font-size:8px;
+    line-height:1;
+    transition:transform .18s ease;
+    flex:0 0 auto;
+  }
+
+  .v963-more-wrap.open .v963-caret{
+    transform:rotate(180deg);
+  }
+
+  .v963-menu{
+    position:absolute;
+    top:calc(100% + 10px);
+    inset-inline-end:0;
+    width:min(390px, calc(100vw - 34px));
+    border:1px solid #ced6cf;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff 0%, #fafcf9 100%);
+    box-shadow:0 18px 34px rgba(17,24,20,.11);
+    overflow:hidden;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(8px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    z-index:9999;
+  }
+
+  .v963-more-wrap.open .v963-menu{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+  }
+
+  .v963-menu::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:3px;
+    background:linear-gradient(90deg,var(--moe-green-2) 0%, var(--moe-gold-2) 100%);
+    opacity:1;
+  }
+
+  .v963-menu-head{
+    padding:12px 13px 10px;
+    background:linear-gradient(180deg,#f7faf7 0%, #f2f6f2 100%);
+    border-bottom:1px solid #e7ece8;
+  }
+
+  .v963-menu-title{
+    margin:0;
+    font-size:9.7px;
+    color:var(--moe-green-1);
+    font-weight:900 !important;
+  }
+
+  .v963-menu-sub{
+    margin-top:3px;
+    color:var(--moe-muted);
+    font-size:7.25px;
+    line-height:1.7;
+    font-weight:800 !important;
+  }
+
+  .v963-menu-list{
+    padding:9px;
+    background:#fbfcfa;
+  }
+
+  .v963-menu-group{
+    background:#fff;
+    border:1px solid #e8eeea;
+    border-radius:13px;
+    overflow:hidden;
+  }
+
+  .v963-menu-group + .v963-menu-group{
+    margin-top:8px;
+  }
+
+  .v963-menu-group-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:9px 11px;
+    background:linear-gradient(180deg,#f7f3ea 0%, #f4efe4 100%);
+    border-bottom:1px solid #ece5d8;
+    color:#6d5728;
+    font-size:7.1px;
+    font-weight:900 !important;
+  }
+
+  .v963-menu-group-title::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:linear-gradient(180deg,#b28e52,#876a35);
+    flex:0 0 auto;
+  }
+
+  .v963-menu-link{
+    display:grid;
+    grid-template-columns:56px 28px minmax(0,1fr);
+    align-items:center;
+    gap:10px;
+    padding:10px 11px;
+    text-decoration:none;
+    color:var(--moe-ink);
+    border-bottom:1px solid #f1f4f1;
+    transition:background .14s ease;
+    position:relative;
+  }
+
+  .v963-menu-link:last-child{border-bottom:none}
+
+  .v963-menu-link:hover{
+    background:#f8faf8;
+  }
+
+  .v963-menu-link.is-key{
+    background:linear-gradient(180deg,#fcfaf4 0%, #f8f3e6 100%);
+  }
+
+  .v963-menu-link.is-key::after{
+    content:"";
+    position:absolute;
+    inset-inline-start:0;
+    top:0;
+    bottom:0;
+    width:3px;
+    background:linear-gradient(180deg,#b28d50,#876935);
+  }
+
+  .v963-menu-link.is-key:hover{
+    background:linear-gradient(180deg,#faf7ee 0%, #f5efdf 100%);
+  }
+
+  .v963-menu-meta{
+    color:#7b8880;
+    font-size:7px;
+    font-weight:900 !important;
+    white-space:nowrap;
+  }
+
+  .v963-menu-badge{
+    width:24px;
+    height:24px;
+    border-radius:7px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #dde4de;
+    background:linear-gradient(180deg,#ffffff,#f6f8f6);
+    color:var(--moe-green-2);
+    font-size:6.6px;
+    font-weight:900 !important;
+  }
+
+  .v963-menu-link.is-key .v963-menu-badge{
+    border-color:rgba(165,132,77,.35);
+    background:linear-gradient(180deg,#fffaf0,#f8f0de);
+    color:#775a1a;
+  }
+
+  .v963-menu-label{
+    min-width:0;
+    color:var(--moe-green-1);
+    font-size:8.7px;
+    font-weight:900 !important;
+    line-height:1.45;
+  }
+
+  .v963-sec{padding:10px 11px}
+  .v963-div{border-top:1px solid var(--moe-line-3)}
+
+  .v963-section-cap{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-bottom:8px;
+    padding-bottom:5px;
+    border-bottom:1px solid var(--moe-line);
+    color:var(--moe-green-1);
+    font-size:9px;
+    font-weight:900 !important;
+  }
+
+  .v963-section-cap::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(180deg,var(--moe-green-3),var(--moe-green-2));
+    flex:0 0 auto;
+  }
+
+  .v963-filter-shell,
+  .v963-ops,
+  .v963-group{
+    border:1px solid var(--moe-line);
+    border-radius:10px;
+    background:var(--moe-surface-2);
+  }
 
   .v963-filter-shell{
     display:grid;
-    gap:12px;
-    padding:12px;
-    border:1px solid rgba(16,45,35,.09);
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,252,249,.95));
-    box-shadow:0 18px 38px rgba(15,23,20,.05);
+    gap:9px;
+    padding:9px;
   }
 
   .v963-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
+    gap:8px;
     align-items:start;
   }
 
@@ -270,121 +582,88 @@
   .v963-label{
     display:block;
     margin-bottom:5px;
-    font-size:10.2px;
-    font-weight:900;
-    color:var(--ink-2);
-    min-height:18px;
+    min-height:17px;
+    font-size:8.55px;
+    color:var(--moe-green-1);
+    font-weight:900 !important;
   }
 
-  .v963-help{
-    margin-top:4px;
-    font-size:8.2px;
-    color:var(--muted);
-    line-height:1.35;
-    min-height:12px;
+  .v963-help,
+  .v963-note,
+  .v963-modal-sub{
+    color:var(--moe-muted);
+    font-size:7.55px;
+    line-height:1.7;
+    font-weight:800 !important;
   }
 
-  .v963-input,.v963-select{
+  .v963-input,
+  .v963-select,
+  .v963-search-input,
+  .v963-textarea{
     width:100%;
-    min-height:38px;
-    height:38px;
-    padding:5px 10px;
-    border-radius:10px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:var(--ink);
-    font-size:10.2px;
+    min-height:37px;
+    padding:7px 9px;
+    border-radius:7px;
+    border:1px solid var(--moe-line-2);
+    background:#fff;
+    color:var(--moe-ink);
+    font-size:8.9px;
     outline:none;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
-    transition:.14s ease;
+    box-shadow:none;
   }
 
-  .v963-input:hover,.v963-select:hover{ border-color:rgba(187,146,80,.40); }
-  .v963-input:focus,.v963-select:focus,.v963-search-input:focus,.v963-textarea:focus{
-    border-color:rgba(187,146,80,.55);
-    box-shadow:0 0 0 3px rgba(187,146,80,.10);
+  .v963-textarea{
+    min-height:94px;
+    padding:8px 9px;
+    resize:vertical;
+    line-height:1.85;
+  }
+
+  .v963-input:focus,
+  .v963-select:focus,
+  .v963-search-input:focus,
+  .v963-textarea:focus{
+    border-color:var(--moe-gold-2);
+    box-shadow:0 0 0 2px rgba(165,132,77,.08);
   }
 
   .v963-search-eq{
     display:grid;
-    grid-template-columns:minmax(0,1fr) 38px;
+    grid-template-columns:minmax(0,1fr) 37px;
     gap:6px;
     align-items:stretch;
   }
 
-  .v963-search-input{
-    width:100%;
-    min-height:38px;
-    height:38px;
-    padding:5px 10px;
-    border-radius:10px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:var(--ink);
-    font-size:10.2px;
-    outline:none;
-    transition:.14s ease;
-  }
-
-  .v963-search-input:hover{ border-color:rgba(187,146,80,.40); }
-
   .v963-search-clear{
-    min-height:38px;
-    height:38px;
-    width:38px;
-    border-radius:10px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:#6f8178;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-size:13px;
-    font-weight:900;
-    cursor:pointer;
-    box-shadow:var(--shadow-soft);
-    transition:.14s ease;
-  }
-
-  .v963-search-clear:hover{
-    border-color:rgba(187,146,80,.40);
-    transform:translateY(-1px);
-    box-shadow:var(--shadow);
+    width:37px;
+    padding:0;
+    font-size:12px;
   }
 
   .v963-toolbar{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     gap:10px;
-    align-items:center;
-    padding-top:2px;
+    align-items:start;
   }
 
-  .v963-toolbar-right{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-    min-width:0;
-  }
-
+  .v963-toolbar-right,
   .v963-toolbar-left{
     display:flex;
     align-items:center;
-    justify-content:flex-end;
-    gap:8px;
+    gap:6px;
     flex-wrap:wrap;
   }
+
+  .v963-toolbar-left{justify-content:flex-end}
 
   .v963-group{
     display:inline-flex;
     align-items:center;
-    gap:5px;
+    gap:4px;
     flex-wrap:wrap;
     padding:4px;
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:12px;
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7);
   }
 
   .v963-group-label{
@@ -393,58 +672,13 @@
     justify-content:center;
     min-height:22px;
     padding:0 7px;
-    border-radius:8px;
-    background:linear-gradient(180deg,#f4f8f5,#eef6f0);
-    border:1px solid rgba(16,45,35,.10);
-    color:#75847d;
-    font-size:7.2px;
-    font-weight:900;
+    border-radius:6px;
+    background:var(--moe-surface-3);
+    border:1px solid var(--moe-line);
+    color:var(--moe-muted);
+    font-size:6.85px;
+    font-weight:900 !important;
     white-space:nowrap;
-  }
-
-  .v963-more{ position:relative; }
-  .v963-more > summary{ list-style:none; }
-  .v963-more > summary::-webkit-details-marker{ display:none; }
-
-  .v963-more-menu{
-    position:absolute;
-    inset-inline-end:0;
-    top:calc(100% + 8px);
-    min-width:255px;
-    padding:10px;
-    border:1px solid rgba(16,45,35,.14);
-    border-radius:14px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    box-shadow:0 20px 40px rgba(15,23,20,.12);
-    display:grid;
-    gap:6px;
-    z-index:50;
-  }
-
-  .v963-more-link{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    min-height:34px;
-    padding:7px 10px;
-    border-radius:10px;
-    border:1px solid transparent;
-    color:var(--ink-2);
-    text-decoration:none;
-    font-size:9.5px;
-    font-weight:900;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-  }
-
-  .v963-more-link:hover{
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7);
-    border-color:rgba(187,146,80,.30);
-  }
-
-  .v963-more-link .meta{
-    color:#7d8b84;
-    font-size:7.4px;
   }
 
   .v963-kpis{
@@ -454,28 +688,12 @@
   }
 
   .v963-kpi{
-    border:1px solid rgba(16,45,35,.09);
-    border-radius:15px;
-    padding:13px 13px;
-    min-height:88px;
-    background:
-      radial-gradient(160px 80px at 100% 0%, rgba(195,154,87,.08), transparent 60%),
-      linear-gradient(180deg,#ffffff,#f9fcfa);
-    box-shadow:0 16px 34px rgba(15,23,20,.05);
+    padding:10px;
+    min-height:78px;
     display:flex;
     flex-direction:column;
     gap:3px;
-    position:relative;
-    overflow:hidden;
-  }
-
-  .v963-kpi::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--green-2),var(--gold-2));
-    opacity:1;
+    box-shadow:var(--moe-shadow-soft);
   }
 
   .v963-k1{
@@ -483,42 +701,29 @@
     align-items:center;
     justify-content:space-between;
     gap:6px;
-    font-size:9.1px;
-    color:var(--muted);
-    line-height:1.3;
-    font-weight:900;
+    font-size:8px;
+    color:var(--moe-muted);
+    line-height:1.35;
+    font-weight:900 !important;
   }
 
   .v963-k2{
-    font-size:22px;
+    font-size:17px;
     line-height:1.05;
-    font-weight:900;
-    color:var(--green-1);
-    letter-spacing:.2px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
   }
 
   .v963-k3{
     margin-top:auto;
-    font-size:8.2px;
-    color:#839188;
-  }
-
-  .v963-chip{
-    display:inline-flex;
-    align-items:center;
-    padding:2px 6px;
-    border-radius:999px;
-    font-size:7.4px;
-    font-weight:900;
-    border:1px solid rgba(187,146,80,.45);
-    background:linear-gradient(180deg,#fffaf0,#fff7e6);
-    color:#8c641d;
+    font-size:7.35px;
+    color:#829087;
   }
 
   .v963-chip.ok{
-    border-color:#cfe9d8;
-    background:linear-gradient(180deg,#f2fcf5,#eafff1);
-    color:#166534;
+    border-color:var(--moe-ok-bd);
+    background:var(--moe-ok-bg);
+    color:var(--moe-ok);
   }
 
   .v963-ops{
@@ -527,11 +732,7 @@
     justify-content:space-between;
     gap:8px;
     flex-wrap:wrap;
-    padding:10px;
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:14px;
-    background:linear-gradient(180deg,#ffffff,#fbfdfc);
-    box-shadow:0 16px 34px rgba(15,23,20,.045);
+    padding:8px 9px;
   }
 
   .v963-ops-right,
@@ -549,205 +750,113 @@
     align-items:center;
   }
 
-  .v963-tab{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:31px;
-    padding:5px 10px;
-    border-radius:14px;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:#6d7d75;
-    cursor:pointer;
-    font-size:9px;
-    font-weight:900;
-    transition:.14s ease;
-  }
-
-  .v963-tab:hover{
-    border-color:rgba(187,146,80,.32);
-    transform:translateY(-1px);
-  }
-
-  .v963-tab.on{
-    color:#745311;
-    border-color:rgba(187,146,80,.55);
-    background:linear-gradient(180deg,#fff7e8,#fff1d0);
-    box-shadow:0 12px 22px rgba(143,106,47,.12);
-  }
-
-  .v963-count{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:18px;
-    height:16px;
-    padding:0 5px;
-    border-radius:999px;
-    border:1px solid rgba(16,45,35,.10);
-    background:#fff;
-    color:#62746b;
-    font-size:7.4px;
-    font-weight:900;
+  .v963-tab.on,
+  .v963-chip-btn.active{
+    color:#775715;
+    border-color:rgba(165,132,77,.55);
+    background:linear-gradient(180deg,#fff8ee,#fff1dc);
   }
 
   .v963-tab.on .v963-count{
-    border-color:rgba(187,146,80,.55);
-    background:#fff4d9;
-    color:#7a5712;
+    border-color:rgba(165,132,77,.55);
+    background:#fff4e2;
+    color:#775715;
   }
 
-  .v963-toolgroup{
-    display:inline-flex;
-    gap:4px;
-    align-items:center;
-    padding:3px;
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:999px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-  }
-
-  .v963-toolcap{
-    display:inline-flex;
-    align-items:center;
-    padding:0 7px;
-    min-height:22px;
-    border-radius:999px;
-    background:linear-gradient(180deg,#f7faf8,#eef6f0);
-    color:#738178;
-    font-size:7.2px;
-    font-weight:900;
-    white-space:nowrap;
-    border:1px solid rgba(16,45,35,.08);
-  }
-
-  .v963-chip-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:27px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:#65776e;
-    font-size:8.4px;
-    font-weight:900;
-    cursor:pointer;
-    text-decoration:none;
-    transition:.14s ease;
-  }
-
-  .v963-chip-btn:hover{
-    border-color:rgba(187,146,80,.30);
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7);
-    transform:translateY(-1px);
-  }
-
-  .v963-chip-btn.active{
-    border-color:rgba(187,146,80,.55);
-    background:linear-gradient(180deg,#fff7e8,#fff1d0);
-    color:#7a5712;
-  }
-
-  .v963-note{
-    font-size:7.9px;
-    color:#7d8b84;
-    font-weight:900;
-  }
-
+  /* =========================
+     الجدول
+  ========================= */
   .v963-table-wrap{
     overflow:auto;
-    background:#fff;
-    border-top:1px solid rgba(16,45,35,.10);
+    background:linear-gradient(180deg,#fff 0%, #fcfdfc 100%);
+    border-top:1px solid var(--moe-line);
+    box-shadow:var(--moe-shadow-table) inset;
   }
 
   .v963-table{
     width:100%;
-    min-width:1040px;
-    border-collapse:collapse;
+    min-width:980px;
+    border-collapse:separate;
+    border-spacing:0;
     table-layout:fixed;
+  }
+
+  .v963-table thead{
+    position:relative;
+    z-index:2;
   }
 
   .v963-table th{
     position:sticky;
     top:0;
     z-index:5;
-    padding:12px 8px;
+    padding:11px 8px;
     white-space:nowrap;
-    font-size:9.8px;
-    font-weight:900;
-    color:var(--green-1);
-    background:linear-gradient(180deg,#f4f8f5,#eaf2ec);
-    border-bottom:1px solid rgba(16,45,35,.16);
-    border-inline-start:1px solid rgba(16,45,35,.07);
+    font-size:8.6px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
+    background:linear-gradient(180deg,#f3f6f2 0%, #edf2ed 100%);
+    border-bottom:1px solid #cfd8d0;
+    border-inline-start:1px solid #dfe6df;
     text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
   }
 
-  .v963-table th:first-child{ border-inline-start:none; }
+  .v963-table th:first-child,
+  .v963-table td:first-child{
+    border-inline-start:none;
+  }
 
   .v963-table td{
     padding:11px 8px;
-    font-size:10.2px;
+    font-size:9px;
     vertical-align:middle;
-    border-bottom:1px solid rgba(16,45,35,.07);
-    border-inline-start:1px solid rgba(16,45,35,.05);
+    border-bottom:1px solid #edf1ed;
+    border-inline-start:1px solid #f0f3f0;
     background:#fff;
-    color:rgba(20,32,25,.98);
+    color:var(--moe-ink);
+    transition:background .14s ease, box-shadow .14s ease;
   }
 
-  .v963-table td:first-child{ border-inline-start:none; }
-
-  .v963-row:nth-child(even) td{
-    background:linear-gradient(180deg,#fcfefc,#fbfdfb);
-  }
-
-  .v963-row.is-nominated td{ background:linear-gradient(180deg,#fffdf8,#fffaf0); }
-  .v963-row.is-draft td{ background:linear-gradient(180deg,#fffdfa,#fff9f0); }
+  .v963-row:nth-child(4n+1) td{background:#ffffff}
+  .v963-row:nth-child(4n+3) td{background:#fcfdfc}
 
   .v963-row:hover td{
-    background:rgba(45,100,81,.035) !important;
+    background:#f8faf8 !important;
   }
 
   .v963-row.is-selected td{
-    background:rgba(187,146,80,.08) !important;
-    box-shadow:inset 0 0 0 1px rgba(187,146,80,.05), inset 3px 0 0 rgba(187,146,80,.32);
+    background:#fbf7ef !important;
+    box-shadow:inset 2px 0 0 rgba(165,132,77,.28) !important;
   }
 
-  .v963-row.is-queue-active td{
-    background:rgba(59,119,207,.06) !important;
-    box-shadow:inset 0 0 0 1px rgba(59,119,207,.05), inset 3px 0 0 rgba(59,119,207,.3);
-  }
-
-  .v963-row.priority-top td{
-    box-shadow:inset 0 2px 0 rgba(187,146,80,.18);
-  }
-
-  .c-sel{ width:38px; text-align:center; }
-  .c-idx{ width:44px; text-align:center; }
-  .c-name{ width:330px; }
-  .c-flow{ width:180px; }
-  .c-state{ width:170px; }
-
+  .c-sel{width:38px;text-align:center}
+  .c-idx{width:44px;text-align:center}
+  .c-name{width:290px}
+  .c-flow{width:190px}
+  .c-state{width:168px}
   .c-actions{
     width:230px;
     position:sticky;
     inset-inline-start:0;
     left:auto !important;
     z-index:6;
-    background:linear-gradient(180deg,#ffffff,#f8fbf9) !important;
-    box-shadow:inset 1px 0 0 rgba(16,45,35,.07), -8px 0 18px rgba(15,23,20,.03);
+    background:linear-gradient(180deg,#ffffff 0%, #fcfdfc 100%) !important;
+    box-shadow:
+      inset 1px 0 0 #e6ece7,
+      -8px 0 14px rgba(17,24,20,.03);
   }
 
   .v963-table thead .c-actions{
     z-index:9;
-    background:linear-gradient(180deg,#f4f8f5,#eaf2ec) !important;
+    background:linear-gradient(180deg,#f3f6f2 0%, #edf2ed 100%) !important;
+    box-shadow:inset 1px 0 0 #dfe6df;
   }
 
   .v963-check{
-    width:14px;height:14px;
-    accent-color:var(--green-2);
+    width:14px;
+    height:14px;
+    accent-color:var(--moe-green-2);
     cursor:pointer;
   }
 
@@ -768,55 +877,48 @@
 
   .v963-name-main{
     min-width:0;
-    font-size:11.2px;
-    font-weight:900;
-    color:var(--green-1);
+    font-size:10.25px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
   .v963-state-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    min-height:20px;
+    min-height:21px;
     padding:2px 7px;
-    border-radius:999px;
-    font-size:8.1px;
-    font-weight:900;
-    white-space:nowrap;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:#6c7d74;
-  }
-
-  .v963-state-badge::before{
-    content:"";
-    width:4px;height:4px;border-radius:50%;
-    display:inline-block;
+    font-size:7.65px;
   }
 
   .v963-state-badge.submitted{
-    color:#166534;
-    border-color:#cde7d6;
-    background:linear-gradient(180deg,#f4fff7,#ecfff2);
-  }
-
-  .v963-state-badge.submitted::before{
-    background:#22c55e;
-    box-shadow:0 0 0 3px rgba(34,197,94,.08);
+    background:var(--moe-ok-bg);
+    border-color:var(--moe-ok-bd);
+    color:var(--moe-ok);
   }
 
   .v963-state-badge.draft{
-    color:#9a3412;
-    border-color:#f3dcc3;
-    background:linear-gradient(180deg,#fff9f3,#fff2e8);
+    background:var(--moe-warn-bg);
+    border-color:var(--moe-warn-bd);
+    color:#8a6526;
   }
 
-  .v963-state-badge.draft::before{
-    background:#f59e0b;
-    box-shadow:0 0 0 3px rgba(245,158,11,.08);
+  .v963-state-badge.returned{
+    background:var(--moe-info-bg);
+    border-color:var(--moe-info-bd);
+    color:var(--moe-info);
+  }
+
+  .v963-state-badge.approved{
+    background:var(--moe-ok-bg);
+    border-color:var(--moe-ok-bd);
+    color:var(--moe-ok);
+  }
+
+  .v963-state-badge.rejected{
+    background:var(--moe-danger-bg);
+    border-color:var(--moe-danger-bd);
+    color:var(--moe-danger);
   }
 
   .v963-nid-row{
@@ -827,48 +929,22 @@
   }
 
   .v963-nid{
-    display:inline-flex;
-    align-items:center;
     gap:5px;
     padding:4px 8px;
-    border-radius:999px;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    font-size:8.5px;
-    color:var(--ink);
-    white-space:nowrap;
+    font-size:7.95px;
   }
 
   .v963-nid .lbl{
-    color:#7d8b84;
-    font-size:7.4px;
-    font-weight:900;
+    color:#7c8a83;
+    font-size:6.9px;
+    font-weight:900 !important;
   }
 
   .v963-nid .val{
     direction:ltr;
     unicode-bidi:embed;
-    font-weight:900;
+    font-weight:900 !important;
     letter-spacing:.15px;
-  }
-
-  .v963-mini{
-    width:18px;height:18px;
-    border-radius:6px;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-size:7px;
-    color:#6f8178;
-    cursor:pointer;
-    transition:.14s ease;
-  }
-
-  .v963-mini:hover{
-    border-color:rgba(187,146,80,.35);
-    transform:translateY(-1px);
   }
 
   .v963-flow{
@@ -878,66 +954,39 @@
     align-items:center;
   }
 
-  .v963-tag{
-    display:inline-flex;
-    align-items:center;
-    padding:3px 7px;
-    border-radius:999px;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    font-size:8.1px;
-    font-weight:900;
-    color:#66786f;
-    white-space:nowrap;
-  }
-
   .v963-tag.gold{
-    color:#815d16;
-    border-color:rgba(187,146,80,.45);
-    background:linear-gradient(180deg,#fffaf0,#fff7e6);
+    border-color:rgba(165,132,77,.45);
+    background:#f8f4ea;
+    color:#7d5d19;
   }
 
   .v963-tag.info{
-    color:#1d4ed8;
-    border-color:#d7e5ff;
-    background:linear-gradient(180deg,#f6f9ff,#f2f7ff);
+    border-color:#d7e4f3;
+    background:#f3f7fc;
+    color:#355b79;
   }
 
   .v963-actions{
     display:flex;
-    gap:6px;
+    gap:5px;
     align-items:center;
-    flex-wrap:nowrap;
+    flex-wrap:wrap;
+    justify-content:center;
     flex-direction:row-reverse;
   }
 
-  .v963-actions .v963-btn{
-    box-shadow:none;
-    border-color:rgba(16,45,35,.12);
-  }
-
-  .v963-actions .v963-btn:hover{
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7);
-  }
-
-  .v963-expand-btn.on{
-    border-color:rgba(187,146,80,.45);
-    background:linear-gradient(180deg,#fffaf0,#fff7e6);
-    color:#815d16;
-  }
-
-  .v963-expand-row{ display:none; }
-  .v963-expand-row.on{ display:table-row; }
+  .v963-expand-row{display:none}
+  .v963-expand-row.on{display:table-row}
 
   .v963-expand-cell{
     padding:0 !important;
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7) !important;
-    border-bottom:1px solid rgba(16,45,35,.10);
+    background:#fbfdfb !important;
+    border-bottom:1px solid var(--moe-line);
   }
 
   .v963-expand-box{
     padding:10px;
-    border-top:1px dashed rgba(16,45,35,.18);
+    border-top:1px dashed rgba(39,69,56,.16);
     background:linear-gradient(180deg,#fcfefc,#fbfdfb);
   }
 
@@ -948,384 +997,116 @@
   }
 
   .v963-info{
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:10px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
     padding:8px;
+    border-radius:8px;
   }
 
   .v963-info .t{
-    font-size:8.2px;
-    color:#7f8d85;
+    font-size:7.5px;
+    color:#7e8b84;
     margin-bottom:3px;
-    font-weight:900;
+    font-weight:900 !important;
   }
 
   .v963-info .v{
-    font-size:9.1px;
-    color:var(--ink);
-    font-weight:900;
-    line-height:1.45;
+    font-size:8.55px;
+    color:var(--moe-ink);
+    font-weight:900 !important;
+    line-height:1.6;
   }
 
-  .v963-side-card{
-    background:
-      radial-gradient(220px 120px at 90% 0%, rgba(195,154,87,.10), transparent 60%),
-      linear-gradient(180deg,#ffffff,#f6faf7);
-    box-shadow:var(--shadow-strong);
+  .v963-bulkbar{
+    display:none;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:8px 11px;
+    border-top:1px solid var(--moe-line);
+    border-bottom:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
   }
 
-  .v963-side-head{
-    padding:13px 12px 11px;
-    border-bottom:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#f4f8f5,#ebf3ed);
-    position:relative;
-  }
+  .v963-bulkbar.on{display:flex}
 
-  .v963-side-title{
-    margin:0;
-    font-size:13px;
-    font-weight:900;
-    color:var(--green-1);
-  }
-
-  .v963-side-sub{
-    margin-top:5px;
-    font-size:8.4px;
-    line-height:1.75;
-    color:var(--muted);
-    font-weight:800;
-  }
-
-  .v963-side-body{
-    padding:9px;
+  .v963-bulkbar-right,
+  .v963-bulkbar-left{
     display:flex;
-    flex-direction:column;
+    align-items:center;
     gap:7px;
-  }
-
-  .v963-side-box{
-    border:1px solid rgba(16,45,35,.09);
-    border-radius:13px;
-    background:linear-gradient(180deg,#ffffff,#fbfdfb);
-    padding:8px;
-    box-shadow:0 14px 28px rgba(15,23,20,.04);
-  }
-
-  .v963-side-kpi{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:6px;
-  }
-
-  .v963-side-mini{
-    border:1px solid rgba(16,45,35,.08);
-    border-radius:10px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    padding:7px;
-  }
-
-  .v963-side-mini .k{
-    font-size:7.5px;
-    color:#7f8d85;
-    margin-bottom:2px;
-    font-weight:900;
-  }
-
-  .v963-side-mini .v{
-    font-size:11.8px;
-    color:var(--green-1);
-    font-weight:900;
-  }
-
-  .v963-selected-list{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-    max-height:180px;
-    overflow:auto;
-  }
-
-  .v963-selected-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:6px;
-    border:1px solid rgba(16,45,35,.08);
-    border-radius:10px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    padding:7px 8px;
-    transition:.14s ease;
-  }
-
-  .v963-selected-item:hover{
-    border-color:rgba(187,146,80,.30);
-    transform:translateY(-1px);
-  }
-
-  .v963-selected-item.active{
-    border-color:#d8e5fb;
-    background:linear-gradient(180deg,#f7faff,#f3f8ff);
-    box-shadow:0 0 0 3px rgba(57,119,207,.05);
-  }
-
-  .v963-selected-item .n{
-    min-width:0;
-    flex:1 1 auto;
-    font-size:7.8px;
-    font-weight:900;
-    color:var(--ink);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .v963-selected-item .i{
-    font-size:7px;
-    color:#7f8d85;
-    white-space:nowrap;
-  }
-
-  .v963-queue-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:6px;
-    margin-bottom:5px;
-  }
-
-  .v963-queue-nav{
-    display:flex;
-    gap:4px;
     flex-wrap:wrap;
   }
 
-  .v963-queue-state{
-    font-size:7.8px;
-    font-weight:900;
-    color:#718078;
+  .v963-bulkbar-title{
+    font-size:9.1px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
   }
 
-  .v963-queue-card{
-    border:1px solid rgba(16,45,35,.08);
-    border-radius:12px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    padding:8px;
+  .v963-bulkbar-sub{
+    font-size:7.65px;
+    color:var(--moe-muted);
+    font-weight:800 !important;
   }
 
-  .v963-queue-empty{
-    text-align:center;
-    font-size:7.9px;
-    color:#839088;
-    padding:6px 4px;
-  }
-
-  .v963-queue-name{
-    font-size:8.9px;
-    font-weight:900;
-    color:var(--green-1);
-    line-height:1.45;
-    margin-bottom:6px;
-  }
-
-  .v963-queue-meta{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    margin-bottom:6px;
-  }
-
-  .v963-queue-line{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    padding:5px 7px;
-    border-radius:10px;
-    background:linear-gradient(180deg,#f9fbfa,#f4f8f5);
-    border:1px solid rgba(16,45,35,.08);
-  }
-
-  .v963-queue-line .k{
-    font-size:7.2px;
-    color:#7f8d85;
-    font-weight:900;
-  }
-
-  .v963-queue-line .v{
-    font-size:8px;
-    color:var(--ink);
-    font-weight:900;
-    min-width:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .v963-queue-actions{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:6px;
-    margin-top:6px;
-  }
-
-  .v963-queue-actions .wide{ grid-column:1/-1; }
-
-  .v963-collapse-toggle{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    padding:0;
-    border:none;
-    background:none;
-    cursor:pointer;
-    color:inherit;
-  }
-
-  .v963-collapse-title{
-    font-size:8.8px;
-    font-weight:900;
-    color:var(--ink-2);
-  }
-
-  .v963-collapse-icon{
-    width:17px;height:17px;
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:6px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:9px;
-    color:#738178;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    transition:.15s ease;
-  }
-
-  .v963-collapse.on .v963-collapse-icon{
-    transform:rotate(180deg);
-  }
-
-  .v963-collapse-body{
-    display:none;
-    margin-top:6px;
-  }
-
-  .v963-collapse.on .v963-collapse-body{ display:block; }
-
-  .v963-compare-shell{
-    overflow:auto;
-    border:1px solid rgba(16,45,35,.10);
-    border-radius:12px;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-  }
-
-  .v963-compare-table{
-    width:100%;
-    min-width:280px;
-    border-collapse:collapse;
-    table-layout:fixed;
-  }
-
-  .v963-compare-table th,
-  .v963-compare-table td{
-    border-bottom:1px solid rgba(16,45,35,.08);
-    border-inline-start:1px solid rgba(16,45,35,.08);
-    padding:6px 5px;
-    font-size:7.5px;
-    vertical-align:top;
-    text-align:center;
-    background:#fff;
-  }
-
-  .v963-compare-table tr > *:first-child{ border-inline-start:none; }
-
-  .v963-compare-table thead th{
-    position:sticky;
-    top:0;
-    z-index:1;
-    background:linear-gradient(180deg,#f7faf7,#eef6f0);
-    color:var(--ink-2);
-    font-weight:900;
-  }
-
-  .v963-compare-table .field-col{
-    width:74px;
-    background:linear-gradient(180deg,#fafcfb,#f6faf7);
-    color:#738178;
-    font-weight:900;
-    text-align:right;
-  }
-
-  .v963-compare-table .head-app{
-    font-size:7.2px;
-    line-height:1.4;
-    font-weight:900;
-    color:var(--green-1);
-    white-space:normal;
-    word-break:break-word;
-  }
-
-  .v963-compare-val{
-    line-height:1.35;
-    color:var(--ink);
-    font-weight:900;
-    white-space:normal;
-    word-break:break-word;
-  }
-
-  .v963-compare-row.has-diff .field-col{
-    background:linear-gradient(180deg,#fffaf0,#fff7e6);
-    color:#815d16;
-    border-bottom-color:rgba(187,146,80,.35);
-  }
-
-  .v963-compare-row.has-diff td.diff{
-    background:linear-gradient(180deg,#fffdf8,#fffaf0);
-    box-shadow:inset 0 0 0 1px rgba(187,146,80,.08);
-    border-bottom-color:rgba(187,146,80,.35);
-  }
-
-  .v963-compare-badge{
+  .v963-bulkbar-count{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    margin-top:3px;
-    min-height:14px;
-    padding:0 6px;
+    min-width:24px;
+    height:22px;
+    padding:0 8px;
     border-radius:999px;
-    font-size:6.3px;
-    font-weight:900;
-    color:#815d16;
-    border:1px solid rgba(187,146,80,.45);
-    background:linear-gradient(180deg,#fffaf0,#fff7e6);
+    border:1px solid var(--moe-line-2);
+    background:#fff;
+    color:var(--moe-green-1);
+    font-size:8.55px;
+    font-weight:900 !important;
   }
 
-  .v963-textarea{
-    width:100%;
-    min-height:88px;
-    padding:8px 9px;
-    border-radius:12px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    color:var(--ink);
-    resize:vertical;
-    font-size:9.1px;
-    outline:none;
+  .v963-modal{
+    position:fixed;
+    inset:0;
+    z-index:100001;
+    background:rgba(15,23,20,.14);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
   }
 
-  .v963-side-actions{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:6px;
+  .v963-modal.on{display:flex}
+
+  .v963-modal-card{
+    width:min(100%,520px);
+    border-radius:14px;
   }
 
-  .v963-empty{
-    font-size:7.9px;
-    color:#839088;
-    text-align:center;
-    padding:6px;
+  .v963-modal-head,
+  .v963-modal-foot{
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    border-bottom:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+  }
+
+  .v963-modal-foot{
+    border-top:1px solid var(--moe-line);
+    border-bottom:none;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .v963-modal-body{padding:12px}
+
+  .v963-modal-title{
+    margin:0;
+    font-size:9.8px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
   }
 
   .v963-toast{
@@ -1336,164 +1117,100 @@
     min-width:220px;
     max-width:310px;
     padding:10px 12px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    box-shadow:0 18px 36px rgba(15,23,20,.14);
-    border-radius:12px;
+    border-radius:11px;
     display:none;
   }
 
-  .v963-toast.on{ display:block; }
-  .v963-toast .t{ font-size:9.2px;font-weight:900;color:var(--green-1);margin-bottom:2px; }
-  .v963-toast .s{ color:var(--muted);font-size:7.9px; }
+  .v963-toast.on{display:block}
 
-  .v963-modal{
-    position:fixed;
-    inset:0;
-    z-index:100001;
-    background:rgba(15,23,20,.18);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:14px;
+  .v963-toast .t{
+    font-size:8.8px;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
+    margin-bottom:2px;
   }
 
-  .v963-modal.on{
-    display:flex;
-    backdrop-filter:blur(5px);
+  .v963-toast .s{
+    color:var(--moe-muted);
+    font-size:7.75px;
   }
 
-  .v963-modal-card{
-    width:min(100%,520px);
-    border-radius:14px;
-    border:1px solid rgba(16,45,35,.14);
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-    box-shadow:0 22px 46px rgba(15,23,20,.18);
-    overflow:hidden;
+  @media (max-width:1100px){
+    .v963-kpis,
+    .v963-expand-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
   }
 
-  .v963-modal-head,.v963-modal-foot{
-    padding:10px 12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    border-bottom:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#f7faf7,#eef6f0);
+  @media (max-width:920px){
+    .v963-top{
+      grid-template-columns:1fr;
+      align-items:start;
+      padding:14px 15px;
+    }
+
+    .v963-top-side{
+      justify-content:flex-start;
+    }
+
+    .v963-title{
+      font-size:19px;
+    }
+
+    .v963-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .v963-toolbar{grid-template-columns:1fr}
+    .v963-toolbar-left{justify-content:flex-start}
+    .v963-table{min-width:900px}
+    .c-name{width:300px}
+    .c-flow{width:190px}
+    .c-state{width:170px}
+    .c-actions{width:236px}
+
+    .v963-menu{
+      inset-inline-end:auto;
+      inset-inline-start:0;
+    }
   }
 
-  .v963-modal-foot{
-    border-top:1px solid rgba(16,45,35,.10);
-    border-bottom:none;
-    justify-content:flex-start;
-    flex-wrap:wrap;
-    background:linear-gradient(180deg,#fbfdfb,#f6faf7);
-  }
+  @media (max-width:640px){
+    .v963{
+      padding:7px;
+    }
 
-  .v963-modal-body{ padding:12px; }
+    .v963-page{
+      gap:8px;
+    }
 
-  .v963-modal-title{
-    margin:0;
-    font-size:10.2px;
-    font-weight:900;
-    color:var(--green-1);
-  }
-
-  .v963-modal-sub{
-    margin-top:2px;
-    color:var(--muted);
-    font-size:7.9px;
-  }
-
-  .v963-ctx-active{
-    border-color:rgba(187,146,80,.60) !important;
-    background:linear-gradient(180deg,#fff7e8,#fff1d0) !important;
-    color:#7a5712 !important;
-  }
-
-  mark.hl{
-    background:rgba(187,146,80,.18);
-    border:1px solid rgba(187,146,80,.10);
-    border-radius:6px;
-    padding:0 2px;
-  }
-
-  .v963-row.flash-ok td{ animation:v963FlashOk .9s ease; }
-  .v963-row.flash-warn td{ animation:v963FlashWarn .9s ease; }
-  .v963-row.flash-bad td{ animation:v963FlashBad .9s ease; }
-
-  @keyframes v963FlashOk{
-    0%{ background:rgba(34,197,94,.14); }
-    100%{ background:inherit; }
-  }
-
-  @keyframes v963FlashWarn{
-    0%{ background:rgba(245,158,11,.14); }
-    100%{ background:inherit; }
-  }
-
-  @keyframes v963FlashBad{
-    0%{ background:rgba(239,68,68,.12); }
-    100%{ background:inherit; }
-  }
-
-  .v963-cmd-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:10px 10px;
-    border-bottom:1px solid rgba(16,45,35,.08);
-    font-size:10px;
-    font-weight:900;
-    cursor:pointer;
-    background:linear-gradient(180deg,#fff,#fbfdfb);
-  }
-
-  .v963-cmd-item:hover{ background:linear-gradient(180deg,#fbfdfb,#f6faf7); }
-  .v963-cmd-item.on{ background:linear-gradient(180deg,#fff7e8,#fff1d0); border-bottom-color:rgba(187,146,80,.35); }
-
-  .v963-cmd-kbd{
-    font-size:8px;
-    font-weight:900;
-    color:#7d8b84;
-    border:1px solid rgba(16,45,35,.10);
-    background:linear-gradient(180deg,#f7faf8,#eef6f0);
-    border-radius:8px;
-    padding:2px 6px;
-    white-space:nowrap;
-  }
-
-  @media (max-width: 1360px){
-    .v963-page{ grid-template-columns:minmax(0,1fr); }
-    .v963-side{ position:static; }
-  }
-
-  @media (max-width: 1100px){
-    .v963-kpis{ grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .v963-expand-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
-  }
-
-  @media (max-width: 920px){
-    .v963-top{ grid-template-columns:1fr; align-items:start; }
-    .v963-top-side{ justify-content:flex-start; }
-    .v963-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .v963-toolbar{ grid-template-columns:1fr; }
-    .v963-toolbar-left{ justify-content:flex-start; }
-    .v963-table{ min-width:900px; }
-    .v963-ops{ flex-direction:column; align-items:stretch; }
-    .v963-ops-right,.v963-ops-left{ width:100%; justify-content:flex-start; }
-  }
-
-  @media (max-width: 640px){
     .v963-kpis,
     .v963-grid,
-    .v963-expand-grid,
-    .v963-queue-actions{ grid-template-columns:1fr; }
-    .v963-table{ min-width:780px; }
-    .c-idx{ display:none; }
-    .v963-search-eq{ grid-template-columns:minmax(0,1fr) 34px; }
-    .v963-search-clear{ width:34px; min-height:34px; height:34px; }
+    .v963-expand-grid{
+      grid-template-columns:1fr;
+    }
+
+    .v963-table{min-width:780px}
+    .v963-search-eq{grid-template-columns:minmax(0,1fr) 34px}
+    .v963-search-clear{width:34px;min-height:34px}
+    .v963-bulkbar{align-items:flex-start}
+    .v963-bulkbar-left,
+    .v963-bulkbar-right{width:100%}
+    .v963-title{font-size:18px}
+
+    .v963-menu{
+      width:min(100vw - 24px, 390px);
+    }
+
+    .v963-menu-link{
+      grid-template-columns:52px 24px minmax(0,1fr);
+      gap:8px;
+      padding:10px 12px;
+    }
+
+    .v963-menu-badge{
+      width:24px;
+      height:24px;
+      border-radius:7px;
+      font-size:6.3px;
+    }
   }
 </style>
 {% endblock %}
@@ -1504,171 +1221,198 @@
 
     <div class="v963-main">
       <div class="v963-top">
-        <div>
-          <h1 class="v963-title">لوحة القرار — V9.6.4 Royal Operations</h1>
-          <p class="v963-sub">
-            تشغيل تنفيذي أكثر فخامة: أوامر سريعة، تحديد محفوظ، طابور مراجعة، وتراجع حقيقي على السيرفر خلال 6 ثوانٍ.
-          </p>
+        <div class="v963-top-main">
+          <h1 class="v963-title">لوحة القرارات الإدارية التعليمية</h1>
+
+          <div class="v963-top-meta">
+            {% if portal_window %}
+              <span class="v963-status-badge">
+                {% if not portal_window.is_enabled or portal_window.phase == "closed" %}
+                  <span class="v963-dot status-closed"></span>
+                  الحالة: <b>مغلق</b>
+                {% elif portal_window.phase == "official_only" %}
+                  <span class="v963-dot status-phase"></span>
+                  الحالة: <b>الوكلاء الرسميون</b>
+                {% elif portal_window.phase == "new_only" %}
+                  <span class="v963-dot status-open"></span>
+                  الحالة: <b>المتقدمون الجدد</b>
+                {% elif portal_window.phase == "all" %}
+                  <span class="v963-dot status-open"></span>
+                  الحالة: <b>الجميع</b>
+                {% endif %}
+              </span>
+            {% endif %}
+
+            <span class="v963-top-note">لوحة متابعة واعتماد الطلبات</span>
+          </div>
         </div>
 
         <div class="v963-top-side">
-          <a class="v963-btn v963-btn-gold" href="{% url 'portal:admin_final_approvals' %}">
-            ✅ الطلبات المعتمدة
+          <a class="v963-btn" href="{% url 'portal:admin_applicants_list' %}">
+            إدارة المتقدمين
+          </a>
+
+          <a class="v963-btn" href="{% url 'portal:admin_vacancies_list' %}">
+            إدارة الشواغر
           </a>
 
           <a class="v963-btn v963-btn-info" href="{% url 'portal:admin_portal_window' %}">
-            ⚙️ ضابط فتح/إغلاق التقديم
+            فتح / إغلاق البوابة
           </a>
 
-          {% if portal_window %}
-            <span class="v963-pill">
-              {% if not portal_window.is_enabled or portal_window.phase == "closed" %}
-                <span class="v963-dot status-closed"></span>
-                الحالة: <b>مغلق</b>
-              {% elif portal_window.phase == "official_only" %}
-                <span class="v963-dot status-phase"></span>
-                الحالة: <b>الوكلاء الرسميون</b>
-              {% elif portal_window.phase == "new_only" %}
-                <span class="v963-dot status-open"></span>
-                الحالة: <b>المتقدمون الجدد</b>
-              {% else %}
-                <span class="v963-dot"></span>
-                الحالة: <b>غير محدد</b>
-              {% endif %}
-            </span>
-          {% endif %}
+          <div class="v963-more-wrap" id="moreWrap">
+            <button class="v963-btn v963-more-btn" type="button" id="moreMenuBtn" aria-expanded="false" aria-controls="moreMenu" onclick="toggleMoreMenu()">
+              <span>المزيد</span>
+              <span class="v963-caret">▾</span>
+            </button>
 
-          <span class="v963-pill">
-            <span class="v963-dot"></span>
-            الإجمالي: <b>{{ total_apps|default:"0" }}</b>
-          </span>
+            <div class="v963-menu" id="moreMenu">
+              <div class="v963-menu-head">
+                <div class="v963-menu-title">القائمة الإدارية</div>
+                <div class="v963-menu-sub">التقارير والإجراءات المرتبطة بلوحة القرارات</div>
+              </div>
 
-          <a class="v963-btn" href="{% url 'portal:admin_dashboard' %}">إعادة ضبط</a>
+              <div class="v963-menu-list">
+                <div class="v963-menu-group">
+                  <div class="v963-menu-group-title">التقارير العامة</div>
+
+                  <a class="v963-menu-link" href="{{ url_general_excel }}">
+                    <span class="v963-menu-meta">تصدير</span>
+                    <span class="v963-menu-badge">XL</span>
+                    <span class="v963-menu-label">Excel عام</span>
+                  </a>
+
+                  <a class="v963-menu-link" href="{{ url_general_print }}">
+                    <span class="v963-menu-meta">طباعة</span>
+                    <span class="v963-menu-badge">PDF</span>
+                    <span class="v963-menu-label">تقرير طباعة</span>
+                  </a>
+
+                  <a class="v963-menu-link is-key" href="{% url 'portal:admin_final_approvals' %}{% if current_query %}?{{ current_query }}{% endif %}">
+                    <span class="v963-menu-meta">اعتمادات</span>
+                    <span class="v963-menu-badge">نهائي</span>
+                    <span class="v963-menu-label">الطلبات المعتمدة</span>
+                  </a>
+
+                  <a class="v963-menu-link" href="{{ url_school_demand_report }}">
+                    <span class="v963-menu-meta">تحليل</span>
+                    <span class="v963-menu-badge">عرض</span>
+                    <span class="v963-menu-label">فرز/إقبال المدارس</span>
+                  </a>
+                </div>
+
+                <div class="v963-menu-group">
+                  <div class="v963-menu-group-title">تقارير المرشحين</div>
+
+                  <a class="v963-menu-link" href="{{ url_candidates_csv }}">
+                    <span class="v963-menu-meta">مرشحين</span>
+                    <span class="v963-menu-badge">CSV</span>
+                    <span class="v963-menu-label">CSV المرشحين</span>
+                  </a>
+
+                  <a class="v963-menu-link" href="{{ url_candidates_excel }}">
+                    <span class="v963-menu-meta">مرشحين</span>
+                    <span class="v963-menu-badge">XL</span>
+                    <span class="v963-menu-label">Excel المرشحين</span>
+                  </a>
+
+                  <a class="v963-menu-link" href="{{ url_candidates_print }}">
+                    <span class="v963-menu-meta">مرشحين</span>
+                    <span class="v963-menu-badge">PDF</span>
+                    <span class="v963-menu-label">طباعة المرشحين</span>
+                  </a>
+
+                  <a class="v963-menu-link is-key" href="{{ url_candidates_report }}">
+                    <span class="v963-menu-meta">مرشحين</span>
+                    <span class="v963-menu-badge">تقرير</span>
+                    <span class="v963-menu-label">تقرير المرشحين</span>
+                  </a>
+                </div>
+
+                <div class="v963-menu-group">
+                  <div class="v963-menu-group-title">الأدوات الإدارية</div>
+
+                  <a class="v963-menu-link" href="{% url 'portal:admin_portal_window' %}">
+                    <span class="v963-menu-meta">إعدادات</span>
+                    <span class="v963-menu-badge">ضبط</span>
+                    <span class="v963-menu-label">لوحة أوامر</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="v963-card">
-
         <div class="v963-sec">
-          <form method="get" autocomplete="off" id="filtersForm">
-            {% csrf_token %}
+          <div class="v963-section-cap">الفلاتر والبحث</div>
 
-            <div class="v963-filter-shell">
-              <div class="v963-grid">
-                <div class="v963-field">
-                  <label class="v963-label">الحالة</label>
-                  <select class="v963-select" name="status">
-                    <option value="" {% if not f_status %}selected{% endif %}>الكل</option>
-                    <option value="draft" {% if f_status == "draft" %}selected{% endif %}>مسودة</option>
-                    <option value="submitted" {% if f_status == "submitted" %}selected{% endif %}>مُرسل</option>
-                  </select>
-                  <div class="v963-help">مسودة / مُرسل</div>
-                </div>
+          <form method="get" id="filtersForm" class="v963-filter-shell">
+            <div class="v963-grid">
+              <div class="v963-field">
+                <label class="v963-label">بحث عام</label>
+                <input class="v963-input" type="text" name="q" value="{{ f_q|default:'' }}" placeholder="اسم المتقدم / السجل / القطاع / المدرسة">
+              </div>
 
-                <div class="v963-field">
-                  <label class="v963-label">القطاع</label>
-                  <input class="v963-input" name="sector" list="sectorsList" placeholder="اختر أو ابحث…" value="{{ f_sector|default:'' }}">
-                  <datalist id="sectorsList">
-                    {% for s in sectors %}
-                      <option value="{{ s }}"></option>
-                    {% endfor %}
-                  </datalist>
-                  <div class="v963-help">قائمة + بحث</div>
-                </div>
+              <div class="v963-field">
+                <label class="v963-label">الحالة</label>
+                <select class="v963-select" name="status">
+                  <option value="">الكل</option>
+                  <option value="submitted" {% if f_status == "submitted" %}selected{% endif %}>مُرسل</option>
+                  <option value="draft" {% if f_status == "draft" %}selected{% endif %}>مسودة</option>
+                  <option value="returned" {% if f_status == "returned" %}selected{% endif %}>مُعاد</option>
+                  <option value="approved" {% if f_status == "approved" %}selected{% endif %}>معتمد</option>
+                  <option value="rejected" {% if f_status == "rejected" %}selected{% endif %}>مرفوض</option>
+                </select>
+              </div>
 
-                <div class="v963-field">
-                  <label class="v963-label">الجنس</label>
-                  <select class="v963-select" name="gender">
-                    <option value="" {% if not f_gender %}selected{% endif %}>الكل</option>
-                    <option value="بنين" {% if f_gender == "بنين" %}selected{% endif %}>بنين</option>
-                    <option value="بنات" {% if f_gender == "بنات" %}selected{% endif %}>بنات</option>
-                  </select>
-                  <div class="v963-help">اختيار</div>
-                </div>
+              <div class="v963-field">
+                <label class="v963-label">القطاع</label>
+                <select class="v963-select" name="sector">
+                  <option value="">الكل</option>
+                  {% for s in sectors %}
+                    <option value="{{ s }}" {% if f_sector == s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+              </div>
 
-                <div class="v963-field">
-                  <label class="v963-label">بحث محلي</label>
+              <div class="v963-field">
+                <label class="v963-label">الجنس</label>
+                <select class="v963-select" name="gender">
+                  <option value="">الكل</option>
+                  <option value="بنين" {% if f_gender == "بنين" %}selected{% endif %}>بنين</option>
+                  <option value="بنات" {% if f_gender == "بنات" %}selected{% endif %}>بنات</option>
+                  <option value="ذكر" {% if f_gender == "ذكر" %}selected{% endif %}>ذكر</option>
+                  <option value="أنثى" {% if f_gender == "أنثى" %}selected{% endif %}>أنثى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="v963-toolbar">
+              <div class="v963-toolbar-right">
+                <div class="v963-group">
+                  <span class="v963-group-label">بحث محلي</span>
                   <div class="v963-search-eq">
-                    <input class="v963-search-input" id="qLocal" placeholder="ابحث بالاسم / الهوية / القطاع / الجنس / الحالة / رقم الرغبة">
+                    <input id="qLocal" class="v963-search-input" type="text" placeholder="بحث داخل النتائج الحالية..." oninput="applyLocalSearch()">
                     <button class="v963-search-clear" type="button" onclick="clearLocalSearch()">×</button>
                   </div>
-                  <div class="v963-help">/ للبحث • Ctrl+K لوحة أوامر</div>
                 </div>
               </div>
 
-              <div class="v963-toolbar">
-                <div class="v963-toolbar-right">
-                  <button class="v963-btn v963-btn-primary" type="submit">تطبيق الفلاتر</button>
-
-                  <div class="v963-group">
-                    <span class="v963-group-label">عام</span>
-                    <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_dashboard' %}">مسح الفلاتر</a>
-                    <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_import' %}">استيراد</a>
-                    <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
-                    <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
-                    <a class="v963-btn v963-btn-sm v963-btn-gold" href="{% url 'portal:admin_final_approvals' %}">
-                      الطلبات المعتمدة
-                    </a>
-                    <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_portal_window' %}">
-                      فتح/إغلاق التقديم
-                    </a>
-                  </div>
-                </div>
-
-                <div class="v963-toolbar-left">
-                  <details class="v963-more" id="moreMenu">
-                    <summary class="v963-btn v963-btn-soft">المزيد</summary>
-                    <div class="v963-more-menu">
-                      <a class="v963-more-link"
-                         href="{% url 'portal:admin_export_excel' %}?status={{ f_status|default:'' }}&sector={{ f_sector|default:'' }}&gender={{ f_gender|default:'' }}">
-                        <span>Excel عام</span><span class="meta">تصدير</span>
-                      </a>
-
-                      <a class="v963-more-link" target="_blank" rel="noopener"
-                         href="{% url 'portal:admin_report_print' %}?status={{ f_status|default:'' }}&sector={{ f_sector|default:'' }}&gender={{ f_gender|default:'' }}">
-                        <span>تقرير طباعة</span><span class="meta">عام</span>
-                      </a>
-
-                      <a class="v963-more-link" href="{% url 'portal:admin_final_approvals' %}">
-                        <span>الطلبات المعتمدة</span><span class="meta">موافقات نهائية</span>
-                      </a>
-
-                      <a class="v963-more-link" target="_blank" rel="noopener"
-                         href="{% url 'portal:admin_vacancies_pressure' %}">
-                        <span>تقرير ضغط/إقبال المدارس</span><span class="meta">تقارير</span>
-                      </a>
-
-                      <a class="v963-more-link" href="{% url 'portal:admin_nominations_csv' %}" id="ctxNomCsv">
-                        <span>CSV المرشحين</span><span class="meta">مرشحين</span>
-                      </a>
-
-                      <a class="v963-more-link" href="{% url 'portal:admin_nominations_excel' %}" id="ctxNomExcel">
-                        <span>Excel المرشحين</span><span class="meta">مرشحين</span>
-                      </a>
-
-                      <a class="v963-more-link" target="_blank" rel="noopener" href="{% url 'portal:admin_nominations_print' %}" id="ctxNomPrint">
-                        <span>طباعة المرشحين</span><span class="meta">مرشحين</span>
-                      </a>
-
-                      <a class="v963-more-link" href="{% url 'portal:admin_nominations_report' %}" id="ctxNomReport">
-                        <span>تقرير المرشحين</span><span class="meta">مرشحين</span>
-                      </a>
-
-                      <div class="v963-more-link" style="cursor:default; border-top:1px solid rgba(16,45,35,.08); padding-top:10px; margin-top:2px;">
-                        <span>لوحة أوامر</span><span class="meta">Ctrl+K</span>
-                      </div>
-                    </div>
-                  </details>
-                </div>
+              <div class="v963-toolbar-left">
+                <button class="v963-btn v963-btn-primary" type="submit">تطبيق الفلاتر</button>
+                <a class="v963-btn" href="{% url 'portal:admin_dashboard' %}">إعادة ضبط</a>
               </div>
             </div>
           </form>
         </div>
 
         <div class="v963-sec v963-div">
+          <div class="v963-section-cap">المؤشرات العامة</div>
           <div class="v963-kpis">
             <div class="v963-kpi">
-              <div class="v963-k1">إجمالي الطلبات <span class="v963-chip">حسب الفلاتر</span></div>
+              <div class="v963-k1">إجمالي الطلبات <span class="v963-chip">ضمن النطاق الحالي</span></div>
               <div class="v963-k2">{{ total_apps|default:"0" }}</div>
               <div class="v963-k3">إجمالي السجلات الحالية</div>
             </div>
@@ -1686,1582 +1430,429 @@
             </div>
 
             <div class="v963-kpi">
-              <div class="v963-k1">مرشحون نهائيون <span class="v963-chip ok">أولوية</span></div>
-              <div class="v963-k2">{% firstof nominated_count achieved_count "0" %}</div>
-              <div class="v963-k3">أعلى أولوية</div>
+              <div class="v963-k1">المرشحون النهائيون <span class="v963-chip ok">أولوية اعتماد</span></div>
+              <div class="v963-k2">{{ nominated_count|default:"0" }}</div>
+              <div class="v963-k3">لديهم رغبة متحققة</div>
             </div>
+          </div>
+        </div>
+
+        <div class="v963-bulkbar" id="bulkActionBar">
+          <div class="v963-bulkbar-right">
+            <div>
+              <div class="v963-bulkbar-title">التحديد المتعدد</div>
+              <div class="v963-bulkbar-sub">عدد السجلات المحددة الآن</div>
+            </div>
+            <span class="v963-bulkbar-count" id="bulkSelCount">0</span>
+          </div>
+
+          <div class="v963-bulkbar-left">
+            <button class="v963-btn" type="button" onclick="selectAllVisible(true)">تحديد الظاهر</button>
+            <button class="v963-btn" type="button" onclick="clearSelection()">إلغاء التحديد</button>
           </div>
         </div>
 
         <div class="v963-sec v963-div">
+          <div class="v963-section-cap">سجل الطلبات</div>
+
           <div class="v963-ops">
             <div class="v963-ops-right">
               <div class="v963-tabs">
-                <button class="v963-tab on" type="button" id="tabReady" onclick="setWorkflow('ready')">
-                  <span>تحتاج قرار الآن</span><span class="v963-count" id="cntReady">0</span>
-                </button>
-                <button class="v963-tab" type="button" id="tabNom" onclick="setWorkflow('nominated')">
-                  <span>مرشحون نهائيون</span><span class="v963-count" id="cntNom">0</span>
-                </button>
-                <button class="v963-tab" type="button" id="tabReview" onclick="setWorkflow('review')">
-                  <span>بحاجة مراجعة</span><span class="v963-count" id="cntReview">0</span>
-                </button>
-                <button class="v963-tab" type="button" id="tabAll" onclick="setWorkflow('all')">
-                  <span>الكل</span><span class="v963-count" id="cntAll">0</span>
-                </button>
+                <button class="v963-tab {% if not f_status %}on{% endif %}" type="button" onclick="filterRows('all', this)">الكل <span class="v963-count">{{ total_apps|default:"0" }}</span></button>
+                <button class="v963-tab {% if f_status == 'submitted' %}on{% endif %}" type="button" onclick="filterRows('submitted', this)">مُرسل <span class="v963-count">{{ count_submitted|default:"0" }}</span></button>
+                <button class="v963-tab {% if f_status == 'draft' %}on{% endif %}" type="button" onclick="filterRows('draft', this)">مسودة <span class="v963-count">{{ count_draft|default:"0" }}</span></button>
+                <button class="v963-tab" type="button" onclick="filterRows('nominated', this)">مرشح نهائي <span class="v963-count">{{ nominated_count|default:"0" }}</span></button>
               </div>
             </div>
 
             <div class="v963-ops-left">
-              <button class="v963-chip-btn active" type="button" id="sumCurrentBtn" onclick="setWorkflow('all')">
-                الظاهر: <b id="shownCount">0</b>
-              </button>
-
-              <div class="v963-toolgroup">
-                <span class="v963-toolcap">الاختيار</span>
-                <button class="v963-chip-btn" type="button" onclick="selectAllVisible(true)">تحديد الظاهر</button>
-                <button class="v963-chip-btn" type="button" onclick="selectAllVisible(false)">إلغاء</button>
-              </div>
-
-              <div class="v963-toolgroup">
-                <span class="v963-toolcap">العرض</span>
-                <button class="v963-chip-btn" type="button" onclick="togglePrioritySort()">
-                  <span id="prioritySortLabel">الأولوية: مفعّل</span>
-                </button>
-                <button class="v963-chip-btn" type="button" onclick="exportVisibleCsv()">CSV الظاهر</button>
-              </div>
-
-              <span class="v963-pill">المحدد: <b id="selCount">0</b></span>
-              <span class="v963-note" id="workflowHint">قرار سريع</span>
-
-              <button class="v963-btn v963-btn-sm v963-btn-soft" type="button" onclick="openCmdPalette()" title="Ctrl+K">
-                لوحة أوامر
-              </button>
+              <span class="v963-note">يمكن عرض التفاصيل السريعة لكل طلب من داخل الجدول.</span>
             </div>
           </div>
-        </div>
 
-        <div class="v963-table-wrap">
-          <table class="v963-table">
-            <thead>
-              <tr>
-                <th class="c-sel">تحديد</th>
-                <th class="c-idx">#</th>
-                <th class="c-name">المرشح</th>
-                <th class="c-flow">سير القرار</th>
-                <th class="c-state">وضع الطلب</th>
-                <th class="c-actions">إجراءات</th>
-              </tr>
-            </thead>
+          <div class="v963-table-wrap">
+            <table class="v963-table">
+              <thead>
+                <tr>
+                  <th class="c-sel"><input class="v963-check" type="checkbox" onclick="selectAllVisible(this.checked)"></th>
+                  <th class="c-idx">#</th>
+                  <th class="c-name">المتقدم</th>
+                  <th class="c-flow">المسار</th>
+                  <th class="c-state">الحالة</th>
+                  <th class="c-actions">الإجراءات</th>
+                </tr>
+              </thead>
 
-            <tbody id="tbody">
-              {% for r in rows %}
-              {% with ap=r.achieved_pref %}
-              <tr class="v963-row rowItem {% if ap %}is-nominated{% endif %} {% if r.status == 'draft' %}is-draft{% endif %}"
-                  data-id="{{ r.id }}"
-                  data-order="{{ forloop.counter0 }}"
-                  data-name="{{ r.applicant.full_name }}"
-                  data-nid="{{ r.applicant.national_id|default:'' }}"
-                  data-sector="{{ r.applicant.sector }}"
-                  data-gender="{{ r.applicant.gender }}"
-                  data-status="{{ r.status }}"
-                  data-status-label="{% if r.status == 'submitted' %}مُرسل{% else %}مسودة{% endif %}"
+              <tbody id="tbody">
+                {% for r in rows %}
+                {% with ap=r.achieved_pref %}
+                <tr
+                  class="v963-row"
+                  data-row-id="{{ r.id }}"
+                  data-status="{{ r.status|default:'' }}"
                   data-nominated="{% if ap %}1{% else %}0{% endif %}"
-                  data-nomination-label="{% if ap %}مرشح نهائي — رغبة {{ ap.rank }}{% else %}بحاجة مراجعة{% endif %}"
-                  data-priority="{% if ap %}1{% elif r.status == 'submitted' %}2{% else %}3{% endif %}"
-                  data-approve-url="{% url 'portal:admin_approve' r.id %}"
-                  data-reject-url="{% url 'portal:admin_reject' r.id %}"
-                  data-unlock-url="{% url 'portal:admin_unlock' r.id %}"
-                  data-detail-url="{% url 'portal:admin_app_detail' r.id %}"
-                  data-undo-url="{% url 'portal:admin_undo' r.id %}"
-                  data-search="{{ r.applicant.full_name }} {{ r.applicant.national_id }} {{ r.applicant.sector }} {{ r.applicant.gender }} {{ r.status }} {% if r.status == 'submitted' %}مرسل{% else %}مسودة{% endif %} {% if ap %}رغبة {{ ap.rank }} مرشح{% else %}غير مرشح{% endif %}">
+                  data-mode-visible="1"
+                  data-search="{{ r.applicant.full_name }} {{ r.applicant.national_id }} {{ r.applicant.sector }} {{ r.applicant.gender }} {{ r.first_pref_text|default:'' }} {{ r.achieved_text|default:'' }}"
+                >
+                  <td class="c-sel">
+                    <input class="v963-check rowChk" type="checkbox" data-id="{{ r.id }}">
+                  </td>
 
-                <td class="c-sel">
-                  <input class="v963-check rowChk" type="checkbox" data-id="{{ r.id }}">
-                </td>
+                  <td class="c-idx">{{ forloop.counter }}</td>
 
-                <td class="c-idx js-row-num">{{ forloop.counter }}</td>
+                  <td class="c-name">
+                    <div class="v963-name">
+                      <div class="v963-name-top">
+                        <div class="v963-name-main">{{ r.applicant.full_name }}</div>
 
-                <td class="c-name">
-                  <div class="v963-name">
-                    <div class="v963-name-top">
-                      <div class="v963-name-main js-hl" title="{{ r.applicant.full_name }}">{{ r.applicant.full_name }}</div>
-                      {% if r.status == "submitted" %}
-                        <span class="v963-state-badge submitted js-hl">مُرسل</span>
-                      {% else %}
-                        <span class="v963-state-badge draft js-hl">مسودة</span>
+                        {% if r.status == "submitted" %}
+                          <span class="v963-state-badge submitted">مُرسل</span>
+                        {% elif r.status == "draft" %}
+                          <span class="v963-state-badge draft">مسودة</span>
+                        {% elif r.status == "returned" %}
+                          <span class="v963-state-badge returned">مُعاد</span>
+                        {% elif r.status == "approved" %}
+                          <span class="v963-state-badge approved">معتمد</span>
+                        {% elif r.status == "rejected" %}
+                          <span class="v963-state-badge rejected">مرفوض</span>
+                        {% else %}
+                          <span class="v963-state-badge">{{ r.status|default:"—" }}</span>
+                        {% endif %}
+                      </div>
+
+                      <div class="v963-nid-row">
+                        <span class="v963-nid">
+                          <span class="lbl">السجل</span>
+                          <span class="val">{{ r.applicant.national_id }}</span>
+                        </span>
+                        {% if r.prefs_count %}
+                          <span class="v963-tag">الرغبات {{ r.prefs_count }}</span>
+                        {% endif %}
+                      </div>
+
+                      {% if r.first_pref_text %}
+                        <div class="v963-help">الرغبة الأولى: {{ r.first_pref_text }}</div>
                       {% endif %}
                     </div>
+                  </td>
 
-                    <div class="v963-nid-row">
-                      <span class="v963-nid" data-nid="{{ r.applicant.national_id|default:'' }}" data-masked="1">
-                        <span class="lbl">السجل</span>
-                        <span class="val js-hl"></span>
-                      </span>
-                      <button class="v963-mini" type="button" title="إظهار/إخفاء" onclick="toggleNid(this)">👁</button>
-                      <button class="v963-mini" type="button" title="نسخ السجل" onclick="copyNid(this)">⧉</button>
+                  <td class="c-flow">
+                    <div class="v963-flow">
+                      {% if ap %}
+                        <span class="v963-tag gold">ترشيح متحقق</span>
+                        <span class="v963-tag">رغبة {{ ap.rank }}</span>
+                      {% else %}
+                        <span class="v963-tag info">قيد المراجعة</span>
+                      {% endif %}
+
+                      {% if r.admin_decision %}
+                        <span class="v963-tag">{{ r.admin_decision }}</span>
+                      {% endif %}
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <td class="c-flow">
-                  <div class="v963-flow">
-                    {% if ap %}
-                      <span class="v963-tag gold js-hl">مرشح نهائي</span>
-                      <span class="v963-tag js-hl">رغبة {{ ap.rank }}</span>
-                    {% else %}
-                      <span class="v963-tag info js-hl">بحاجة مراجعة</span>
-                    {% endif %}
-                  </div>
-                </td>
-
-                <td class="c-state">
-                  <div class="v963-flow">
-                    <span class="v963-tag js-hl">{{ r.applicant.sector }}</span>
-                    <span class="v963-tag js-hl">{{ r.applicant.gender }}</span>
-                  </div>
-                </td>
-
-                <td class="c-actions">
-                  <div class="v963-actions">
-                    <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_app_detail' r.id %}">تفاصيل</a>
-                    <button class="v963-btn v963-btn-sm v963-expand-btn" type="button" data-expand-btn onclick="toggleExpand(this)">عرض</button>
-                    <button class="v963-btn v963-btn-sm" type="button" onclick="toggleRowSelection('{{ r.id }}')">تحديد</button>
-                  </div>
-                </td>
-              </tr>
-
-              <tr class="v963-expand-row" data-expand-row-for="{{ r.id }}">
-                <td colspan="6" class="v963-expand-cell">
-                  <div class="v963-expand-box">
-                    <div class="v963-expand-grid">
-                      <div class="v963-info">
-                        <div class="t">اسم المتقدم</div>
-                        <div class="v">{{ r.applicant.full_name }}</div>
-                      </div>
-
-                      <div class="v963-info">
-                        <div class="t">الحالة الحالية</div>
-                        <div class="v">{% if r.status == "submitted" %}مُرسل — جاهز للقرار{% else %}مسودة — يحتاج استكمال{% endif %}</div>
-                      </div>
-
-                      <div class="v963-info">
-                        <div class="t">القطاع / الجنس</div>
-                        <div class="v">{{ r.applicant.sector }} — {{ r.applicant.gender }}</div>
-                      </div>
-
-                      <div class="v963-info">
-                        <div class="t">وضع الترشيح</div>
-                        <div class="v">{% if ap %}مرشح نهائي (رغبة {{ ap.rank }}){% else %}لا توجد رغبة متحققة حاليًا{% endif %}</div>
-                      </div>
+                  <td class="c-state">
+                    <div class="v963-flow">
+                      <span class="v963-tag">{{ r.applicant.sector|default:"—" }}</span>
+                      <span class="v963-tag">{{ r.applicant.gender|default:"—" }}</span>
                     </div>
+                  </td>
 
-                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-                      <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_app_detail' r.id %}">فتح التفاصيل الكاملة</a>
-                      <button class="v963-btn v963-btn-sm v963-btn-ok" type="button" onclick="quickRowAction('{{ r.id }}','approve')">اعتماد سريع</button>
+                  <td class="c-actions">
+                    <div class="v963-actions">
+                      <button class="v963-btn v963-btn-sm" type="button" onclick="toggleExpand('{{ r.id }}')">تفاصيل</button>
+                      <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_app_detail' r.id %}?back={{ current_path|urlencode }}">فتح</a>
+                      <button class="v963-btn v963-btn-sm v963-btn-ok" type="button" onclick="quickRowAction('{{ r.id }}','approve')">اعتماد</button>
                       <button class="v963-btn v963-btn-sm v963-btn-danger" type="button" onclick="askRowAction('{{ r.id }}','reject')">رفض</button>
                       <button class="v963-btn v963-btn-sm v963-btn-warn" type="button" onclick="askRowAction('{{ r.id }}','unlock')">إرجاع</button>
                     </div>
-                  </div>
-                </td>
-              </tr>
-              {% endwith %}
-              {% empty %}
-              <tr>
-                <td colspan="6" style="padding:16px; text-align:center; color:var(--muted);">لا توجد بيانات.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+
+                <tr class="v963-expand-row" data-expand-row-for="{{ r.id }}">
+                  <td colspan="6" class="v963-expand-cell">
+                    <div class="v963-expand-box">
+                      <div class="v963-expand-grid">
+                        <div class="v963-info">
+                          <div class="t">اسم المتقدم</div>
+                          <div class="v">{{ r.applicant.full_name }}</div>
+                        </div>
+                        <div class="v963-info">
+                          <div class="t">الوضع الحالي</div>
+                          <div class="v">{% if r.status == 'submitted' %}مُرسل — جاهز للقرار{% else %}{{ r.status|default:"—" }}{% endif %}</div>
+                        </div>
+                        <div class="v963-info">
+                          <div class="t">القطاع / الجنس</div>
+                          <div class="v">{{ r.applicant.sector|default:"—" }} — {{ r.applicant.gender|default:"—" }}</div>
+                        </div>
+                        <div class="v963-info">
+                          <div class="t">حالة الترشيح</div>
+                          <div class="v">{% if ap %}ترشيح متحقق (الرغبة {{ ap.rank }}){% else %}لا توجد رغبة متحققة حاليًا{% endif %}</div>
+                        </div>
+                      </div>
+
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+                        <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_app_detail' r.id %}?back={{ current_path|urlencode }}">فتح التفاصيل الكاملة</a>
+                        <button class="v963-btn v963-btn-sm v963-btn-ok" type="button" onclick="quickRowAction('{{ r.id }}','approve')">اعتماد سريع</button>
+                        <button class="v963-btn v963-btn-sm v963-btn-danger" type="button" onclick="askRowAction('{{ r.id }}','reject')">رفض</button>
+                        <button class="v963-btn v963-btn-sm v963-btn-warn" type="button" onclick="askRowAction('{{ r.id }}','unlock')">إرجاع</button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr>
+                  <td colspan="6" style="padding:16px;text-align:center;color:var(--moe-muted);">لا توجد بيانات.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-
-    <aside class="v963-side">
-      <div class="v963-side-card">
-        <div class="v963-side-head">
-          <h3 class="v963-side-title">لوح القرار الجانبي</h3>
-          <div class="v963-side-sub">
-            Persist Selection + طابور + مقارنة + أسباب جاهزة + قرارات جماعية.
-          </div>
-        </div>
-
-        <div class="v963-side-body">
-          <div class="v963-side-kpi">
-            <div class="v963-side-mini">
-              <div class="k">المحدد الآن</div>
-              <div class="v" id="sideSelCount">0</div>
-            </div>
-            <div class="v963-side-mini">
-              <div class="k">الظاهر الآن</div>
-              <div class="v" id="sideShownCount">0</div>
-            </div>
-          </div>
-
-          <div class="v963-side-box">
-            <div class="v963-label" style="margin-bottom:5px;">طابور المراجعة (على المحدد الظاهر)</div>
-
-            <div class="v963-queue-top">
-              <div class="v963-queue-state" id="queueState">0 / 0</div>
-              <div class="v963-queue-nav">
-                <button class="v963-btn v963-btn-sm" type="button" id="queuePrevBtn" onclick="queuePrev()">السابق</button>
-                <button class="v963-btn v963-btn-sm" type="button" id="queueNextBtn" onclick="queueNext()">التالي</button>
-              </div>
-            </div>
-
-            <div class="v963-queue-card" id="queueCard">
-              <div class="v963-queue-empty" id="queueEmpty">حدد طلبات أولًا لتفعيل طابور المراجعة.</div>
-
-              <div id="queueContent" style="display:none;">
-                <div class="v963-queue-name" id="queueName">—</div>
-
-                <div class="v963-queue-meta">
-                  <div class="v963-queue-line">
-                    <span class="k">رقم الطلب</span>
-                    <span class="v" id="queueId">—</span>
-                  </div>
-                  <div class="v963-queue-line">
-                    <span class="k">الحالة</span>
-                    <span class="v" id="queueStatus">—</span>
-                  </div>
-                  <div class="v963-queue-line">
-                    <span class="k">القطاع / الجنس</span>
-                    <span class="v"><span id="queueSector">—</span> — <span id="queueGender">—</span></span>
-                  </div>
-                  <div class="v963-queue-line">
-                    <span class="k">الترشيح</span>
-                    <span class="v" id="queueNomination">—</span>
-                  </div>
-                </div>
-
-                <div class="v963-queue-actions">
-                  <button class="v963-btn v963-btn-ok" type="button" onclick="queueApprove()">اعتماد</button>
-                  <button class="v963-btn v963-btn-danger" type="button" onclick="queueReject()">رفض</button>
-                  <button class="v963-btn v963-btn-warn" type="button" onclick="queueUnlock()">إرجاع</button>
-                  <button class="v963-btn wide" type="button" onclick="queueOpenDetails()">فتح التفاصيل</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="v963-side-box v963-collapse on" id="selectedCollapse">
-            <button class="v963-collapse-toggle" type="button" onclick="toggleCollapse('selectedCollapse')">
-              <span class="v963-collapse-title">قائمة المحدد (Persist)</span>
-              <span class="v963-collapse-icon">⌃</span>
-            </button>
-            <div class="v963-collapse-body">
-              <div class="v963-selected-list" id="selectedList"></div>
-              <div class="v963-empty" id="selectedEmpty">لا توجد طلبات محددة.</div>
-              <div class="v963-help" id="hiddenSelectedHint" style="display:none;">يوجد عناصر محددة لكنها غير ظاهرة بسبب التصفية/البحث.</div>
-            </div>
-          </div>
-
-          <div class="v963-side-box v963-collapse" id="compareCollapse">
-            <button class="v963-collapse-toggle" type="button" onclick="toggleCollapse('compareCollapse')">
-              <span class="v963-collapse-title">المقارنة والملاحظة الجماعية</span>
-              <span class="v963-collapse-icon">⌃</span>
-            </button>
-            <div class="v963-collapse-body">
-              <div class="v963-compare-shell" id="compareShell" style="display:none;">
-                <table class="v963-compare-table" id="compareTable"></table>
-              </div>
-              <div class="v963-empty" id="compareEmpty">حدد من 1 إلى 3 طلبات (من الظاهر) لعرض المقارنة.</div>
-
-              <div style="margin-top:7px;">
-                <div class="v963-label">ملاحظة القرار الجماعي</div>
-                <textarea class="v963-textarea" id="sideNote" placeholder="اكتب سببًا موحدًا عند الرفض أو الإرجاع…"></textarea>
-                <div class="v963-help">يستخدم هذا النص في الرفض/الإرجاع الجماعي.</div>
-
-                <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-                  <button class="v963-chip-btn" type="button" onclick="presetNote('نقص في المرفقات النظامية المطلوبة.')">نقص مرفقات</button>
-                  <button class="v963-chip-btn" type="button" onclick="presetNote('عدم مطابقة بيانات المتقدم مع الضوابط المعتمدة.')">عدم مطابقة</button>
-                  <button class="v963-chip-btn" type="button" onclick="presetNote('يتطلب استكمال بيانات/تصحيح معلومات قبل اعتماد الطلب.')">استكمال/تصحيح</button>
-                  <button class="v963-chip-btn" type="button" onclick="presetNote('تكرار طلب/تعارض بيانات ويستلزم مراجعة.')">تكرار/تعارض</button>
-                </div>
-              </div>
-
-              <div class="v963-side-actions" style="margin-top:7px;">
-                <button class="v963-btn v963-btn-ok" type="button" onclick="bulkApprove()">اعتماد المحدد (Persist)</button>
-                <button class="v963-btn v963-btn-danger" type="button" onclick="bulkReject()">رفض المحدد (Persist)</button>
-                <button class="v963-btn v963-btn-warn" type="button" onclick="bulkUnlock()">إرجاع المحدد (Persist)</button>
-                <button class="v963-btn" type="button" onclick="clearSelection()">مسح التحديد</button>
-              </div>
-
-              <div class="v963-help" style="margin-top:8px;">
-                اختصارات: Ctrl+K أوامر • P أولوية • A الكل • S تحديد • Shift+S إلغاء • C مسح • ← → طابور
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </aside>
 
     <div class="v963-modal" id="noteModal" aria-hidden="true">
       <div class="v963-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="v963-modal-head">
           <div>
-            <h3 class="v963-modal-title" id="modalTitle">سبب القرار</h3>
-            <div class="v963-modal-sub" id="modalSub">—</div>
+            <h3 class="v963-modal-title" id="modalTitle">ملاحظة إدارية</h3>
+            <div class="v963-modal-sub" id="modalSub">أدخل الملاحظة المطلوبة لإتمام الإجراء.</div>
           </div>
-          <button class="v963-btn v963-btn-sm" type="button" onclick="closeModal()">×</button>
+          <button class="v963-btn v963-btn-sm" type="button" onclick="closeNoteModal()">×</button>
         </div>
 
         <div class="v963-modal-body">
-          <label class="v963-label">اكتب السبب</label>
-          <textarea class="v963-textarea" id="modalNote" placeholder="اكتب السبب هنا…"></textarea>
-
-          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="v963-chip-btn" type="button" onclick="presetModal('نقص في المرفقات النظامية المطلوبة.')">نقص مرفقات</button>
-            <button class="v963-chip-btn" type="button" onclick="presetModal('عدم مطابقة بيانات المتقدم مع الضوابط المعتمدة.')">عدم مطابقة</button>
-            <button class="v963-chip-btn" type="button" onclick="presetModal('يتطلب استكمال بيانات/تصحيح معلومات قبل اعتماد الطلب.')">استكمال/تصحيح</button>
-            <button class="v963-chip-btn" type="button" onclick="presetModal('تكرار طلب/تعارض بيانات ويستلزم مراجعة.')">تكرار/تعارض</button>
-          </div>
-
-          <div class="v963-help"><b style="color:#dc2626;">*</b> مطلوب للرفض والإرجاع</div>
+          <label class="v963-label" for="modalNote">الملاحظة</label>
+          <textarea id="modalNote" class="v963-textarea" placeholder="اكتب الملاحظة هنا..."></textarea>
         </div>
 
         <div class="v963-modal-foot">
-          <button class="v963-btn v963-btn-primary" type="button" id="modalConfirm">تأكيد</button>
-          <button class="v963-btn" type="button" onclick="closeModal()">إلغاء</button>
+          <button class="v963-btn v963-btn-primary" type="button" onclick="confirmModalAction()">تنفيذ الإجراء</button>
+          <button class="v963-btn" type="button" onclick="closeNoteModal()">إلغاء</button>
         </div>
       </div>
     </div>
 
-    <div class="v963-modal" id="cmdModal" aria-hidden="true">
-      <div class="v963-modal-card" role="dialog" aria-modal="true" aria-labelledby="cmdTitle" style="width:min(100%,560px);">
-        <div class="v963-modal-head">
-          <div>
-            <h3 class="v963-modal-title" id="cmdTitle">لوحة الأوامر</h3>
-            <div class="v963-modal-sub">اكتب أمرًا… (اعتماد / رفض / إرجاع / طباعة / تصدير / مرشحين)</div>
-          </div>
-          <button class="v963-btn v963-btn-sm" type="button" onclick="closeCmd()">×</button>
-        </div>
-
-        <div class="v963-modal-body">
-          <input class="v963-input" id="cmdInput" placeholder="مثال: اعتماد المحدد — رفض المحدد — طباعة المرشحين" />
-          <div style="margin-top:10px; border:1px solid rgba(16,45,35,.10); border-radius:12px; overflow:hidden;">
-            <div id="cmdList" style="max-height:260px; overflow:auto; background:#fff;"></div>
-          </div>
-          <div class="v963-help">Enter تنفيذ • ↑↓ للتنقل • Esc إغلاق</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="v963-toast" id="toast">
-      <div class="t" id="toastMsg">تم</div>
-      <div class="s" id="toastSub">—</div>
-      <div style="margin-top:8px; display:flex; gap:6px; justify-content:flex-end;">
-        <button class="v963-btn v963-btn-sm" type="button" id="toastUndoBtn" style="display:none;">تراجع</button>
-      </div>
+    <div class="v963-toast" id="toastBox">
+      <div class="t" id="toastTitle">تم</div>
+      <div class="s" id="toastText">اكتملت العملية.</div>
     </div>
 
   </div>
 </div>
 
 <script>
-(function(){
-  const STORAGE_SEARCH = "v963_local_search";
-  const STORAGE_FLOW = "v963_workflow";
-  const STORAGE_PRIORITY = "v963_priority_sort";
-  const STORAGE_SEL = "v963_selected_ids";
-
-  const tbody = document.getElementById("tbody");
-  const qLocal = document.getElementById("qLocal");
-  const prioritySortLabel = document.getElementById("prioritySortLabel");
-  const workflowHint = document.getElementById("workflowHint");
-
-  const shownCount = document.getElementById("shownCount");
-  const sideShownCount = document.getElementById("sideShownCount");
-  const selCount = document.getElementById("selCount");
-  const sideSelCount = document.getElementById("sideSelCount");
-
-  const cntReady = document.getElementById("cntReady");
-  const cntNom = document.getElementById("cntNom");
-  const cntReview = document.getElementById("cntReview");
-  const cntAll = document.getElementById("cntAll");
-
-  const tabReady = document.getElementById("tabReady");
-  const tabNom = document.getElementById("tabNom");
-  const tabReview = document.getElementById("tabReview");
-  const tabAll = document.getElementById("tabAll");
-
-  const sumCurrentBtn = document.getElementById("sumCurrentBtn");
-
-  const selectedList = document.getElementById("selectedList");
-  const selectedEmpty = document.getElementById("selectedEmpty");
-  const hiddenSelectedHint = document.getElementById("hiddenSelectedHint");
-
-  const compareShell = document.getElementById("compareShell");
-  const compareTable = document.getElementById("compareTable");
-  const compareEmpty = document.getElementById("compareEmpty");
-  const sideNote = document.getElementById("sideNote");
-
-  const queueState = document.getElementById("queueState");
-  const queuePrevBtn = document.getElementById("queuePrevBtn");
-  const queueNextBtn = document.getElementById("queueNextBtn");
-  const queueEmpty = document.getElementById("queueEmpty");
-  const queueContent = document.getElementById("queueContent");
-  const queueName = document.getElementById("queueName");
-  const queueId = document.getElementById("queueId");
-  const queueStatus = document.getElementById("queueStatus");
-  const queueSector = document.getElementById("queueSector");
-  const queueGender = document.getElementById("queueGender");
-  const queueNomination = document.getElementById("queueNomination");
-
-  const ctxNomCsv = document.getElementById("ctxNomCsv");
-  const ctxNomExcel = document.getElementById("ctxNomExcel");
-  const ctxNomPrint = document.getElementById("ctxNomPrint");
-  const ctxNomReport = document.getElementById("ctxNomReport");
-
-  const toast = document.getElementById("toast");
-  const toastMsg = document.getElementById("toastMsg");
-  const toastSub = document.getElementById("toastSub");
-  const toastUndoBtn = document.getElementById("toastUndoBtn");
-
-  const noteModal = document.getElementById("noteModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalSub = document.getElementById("modalSub");
-  const modalNote = document.getElementById("modalNote");
-  const modalConfirm = document.getElementById("modalConfirm");
-
-  const cmdModal = document.getElementById("cmdModal");
-  const cmdInput = document.getElementById("cmdInput");
-  const cmdList = document.getElementById("cmdList");
-
-  let workflow = "ready";
-  let prioritySortEnabled = true;
-  let modalState = { onConfirm:null };
-  let queueIndex = 0;
-
+  const csrftoken = document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.split('=')[1] || '';
   const selectedIds = new Set();
-  let lastAction = null;
+  let modalAction = null;
+  let modalTargetId = null;
 
-  function rowsAll(){ return [...tbody.querySelectorAll("tr.v963-row.rowItem")]; }
-  function rowById(id){ return tbody.querySelector('tr.v963-row.rowItem[data-id="' + id + '"]'); }
-  function expandRowFor(id){ return tbody.querySelector('tr.v963-expand-row[data-expand-row-for="' + id + '"]'); }
-  function rowsVisible(){ return rowsAll().filter(r => r.style.display !== "none"); }
-
-  function selectedVisibleRows(){
-    return rowsVisible().filter(tr => selectedIds.has(tr.getAttribute("data-id")));
+  function showToast(title, text){
+    const box = document.getElementById('toastBox');
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastText').textContent = text;
+    box.classList.add('on');
+    setTimeout(() => box.classList.remove('on'), 2400);
   }
 
-  function selectedAllIds(){
-    return [...selectedIds].filter(Boolean);
+  function toggleMoreMenu(forceState = null){
+    const wrap = document.getElementById('moreWrap');
+    const btn = document.getElementById('moreMenuBtn');
+    if (!wrap || !btn) return;
+
+    const nextState = forceState === null ? !wrap.classList.contains('open') : !!forceState;
+    wrap.classList.toggle('open', nextState);
+    btn.setAttribute('aria-expanded', nextState ? 'true' : 'false');
   }
 
-  function currentQueueRow(){
-    const list = selectedVisibleRows();
-    if(!list.length) return null;
-    if(queueIndex < 0) queueIndex = 0;
-    if(queueIndex > list.length - 1) queueIndex = list.length - 1;
-    return list[queueIndex] || null;
+  function clearLocalSearch(){
+    const q = document.getElementById('qLocal');
+    if (!q) return;
+    q.value = '';
+    applyLocalSearch();
   }
 
-  function csrfToken(){
-    const input = document.querySelector('input[name="csrfmiddlewaretoken"]');
-    if(input && input.value) return input.value;
-    const m = document.cookie.match(/(?:^|;\\s*)csrftoken=([^;]+)/);
-    return m ? decodeURIComponent(m[1]) : "";
-  }
+  function applyLocalSearch(){
+    const needle = ((document.getElementById('qLocal')?.value) || '').trim().toLowerCase();
 
-  function showToast(msg, sub){
-    if(!toast) return;
-    toastMsg.textContent = msg || "تم";
-    toastSub.textContent = sub || "";
-    toast.classList.add("on");
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(()=>toast.classList.remove("on"), 2400);
-  }
+    document.querySelectorAll('#tbody .v963-row').forEach(row => {
+      const modeVisible = row.dataset.modeVisible !== '0';
+      const text = (row.dataset.search || '').toLowerCase();
+      const localVisible = !needle || text.includes(needle);
+      const visible = modeVisible && localVisible;
 
-  function saveSelection(){
-    try{
-      localStorage.setItem(STORAGE_SEL, JSON.stringify(selectedAllIds()));
-    }catch(_){}
-  }
+      row.style.display = visible ? '' : 'none';
 
-  function loadSelection(){
-    try{
-      const raw = localStorage.getItem(STORAGE_SEL);
-      if(!raw) return;
-      const arr = JSON.parse(raw);
-      if(Array.isArray(arr)){
-        arr.forEach(id => { if(id) selectedIds.add(String(id)); });
-      }
-    }catch(_){}
-  }
-
-  function applySelectionToCheckboxes(){
-    rowsAll().forEach(tr=>{
-      const id = tr.getAttribute("data-id");
-      const chk = tr.querySelector(".rowChk");
-      if(chk) chk.checked = selectedIds.has(id);
-      tr.classList.toggle("is-selected", selectedIds.has(id));
-    });
-  }
-
-  function maskNid(nid){
-    nid = String(nid || "").trim();
-    if(!nid) return "—";
-    return "••••••" + nid.slice(-4);
-  }
-
-  function ensureOrig(el){
-    if(!el || el.nodeType !== 1) return;
-    if(el.dataset && el.dataset.orig == null){
-      el.dataset.orig = el.innerText || "";
-    }
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (c)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[c]));
-  }
-
-  function escapeRegExp(s){
-    return String(s).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
-  }
-
-  function restoreAllHighlights(){
-    document.querySelectorAll(".js-hl").forEach(el=>{
-      ensureOrig(el);
-      el.innerText = el.dataset.orig || el.innerText;
-    });
-  }
-
-  function applyHighlights(term){
-    restoreAllHighlights();
-    term = (term || "").trim();
-    if(!term) return;
-
-    const re = new RegExp(escapeRegExp(term), "gi");
-    document.querySelectorAll(".js-hl").forEach(el=>{
-      ensureOrig(el);
-      const orig = el.dataset.orig || "";
-      if(!orig) return;
-      if(!re.test(orig)) return;
-      re.lastIndex = 0;
-      el.innerHTML = escapeHtml(orig).replace(re, m => '<mark class="hl">' + escapeHtml(m) + '</mark>');
-    });
-  }
-
-  function initNids(){
-    document.querySelectorAll(".v963-nid").forEach(ch=>{
-      const nid = ch.getAttribute("data-nid") || "";
-      const masked = ch.getAttribute("data-masked") === "1";
-      const val = ch.querySelector(".val");
-      if(val){
-        const txt = masked ? maskNid(nid) : nid;
-        val.textContent = txt;
-        val.dataset.orig = txt;
+      const exp = document.querySelector(`[data-expand-row-for="${row.dataset.rowId}"]`);
+      if (exp){
+        exp.classList.remove('on');
+        exp.style.display = visible ? '' : 'none';
       }
     });
   }
 
-  function updatePriorityLabel(){
-    if(!prioritySortLabel) return;
-    prioritySortLabel.textContent = prioritySortEnabled ? "الأولوية: مفعّل" : "الأولوية: متوقف";
-  }
+  function filterRows(mode, btn){
+    document.querySelectorAll('.v963-tab').forEach(t => t.classList.remove('on'));
+    if (btn) btn.classList.add('on');
 
-  function refreshQueueHighlight(){
-    rowsAll().forEach(tr=>tr.classList.remove("is-queue-active"));
-    const tr = currentQueueRow();
-    if(tr) tr.classList.add("is-queue-active");
-  }
+    document.querySelectorAll('#tbody .v963-row').forEach(row => {
+      let visible = true;
 
-  function syncQueueWithinBounds(){
-    const list = selectedVisibleRows();
-    if(!list.length){ queueIndex = 0; return; }
-    if(queueIndex > list.length - 1) queueIndex = list.length - 1;
-    if(queueIndex < 0) queueIndex = 0;
-  }
+      if (mode === 'submitted') visible = row.dataset.status === 'submitted';
+      else if (mode === 'draft') visible = row.dataset.status === 'draft';
+      else if (mode === 'nominated') visible = row.dataset.nominated === '1';
 
-  function updateQueuePanel(){
-    const list = selectedVisibleRows();
-    syncQueueWithinBounds();
-
-    if(!list.length){
-      queueState.textContent = "0 / 0";
-      queuePrevBtn.disabled = true;
-      queueNextBtn.disabled = true;
-      queueEmpty.style.display = "";
-      queueContent.style.display = "none";
-      refreshQueueHighlight();
-      return;
-    }
-
-    const tr = list[queueIndex];
-    queueState.textContent = String(queueIndex + 1) + " / " + String(list.length);
-    queuePrevBtn.disabled = queueIndex <= 0;
-    queueNextBtn.disabled = queueIndex >= list.length - 1;
-
-    queueName.textContent = tr.getAttribute("data-name") || "-";
-    queueId.textContent = "#" + (tr.getAttribute("data-id") || "");
-    queueStatus.textContent = tr.getAttribute("data-status-label") || "-";
-    queueSector.textContent = tr.getAttribute("data-sector") || "-";
-    queueGender.textContent = tr.getAttribute("data-gender") || "-";
-    queueNomination.textContent = tr.getAttribute("data-nomination-label") || "-";
-
-    queueEmpty.style.display = "none";
-    queueContent.style.display = "";
-    refreshQueueHighlight();
-  }
-
-  function focusQueueRowIntoView(){
-    const tr = currentQueueRow();
-    if(!tr) return;
-    tr.scrollIntoView({block:"nearest", behavior:"smooth"});
-  }
-
-  function updateRowVisuals(tr){
-    if(!tr) return;
-
-    const status = tr.getAttribute("data-status") || "";
-    const statusLabel = tr.getAttribute("data-status-label") || "";
-    const nominated = tr.getAttribute("data-nominated") === "1";
-    const nominationLabel = tr.getAttribute("data-nomination-label") || "";
-    const sector = tr.getAttribute("data-sector") || "";
-    const gender = tr.getAttribute("data-gender") || "";
-
-    const statusBadge = tr.querySelector(".v963-state-badge");
-    if(statusBadge){
-      statusBadge.className = "v963-state-badge " + (status === "submitted" ? "submitted" : "draft") + " js-hl";
-      statusBadge.textContent = statusLabel || (status === "submitted" ? "مُرسل" : "مسودة");
-      statusBadge.dataset.orig = statusBadge.textContent;
-    }
-
-    const flow = tr.querySelector(".c-flow .v963-flow");
-    if(flow){
-      if(nominated){
-        const rankText = nominationLabel.includes("—") ? nominationLabel.split("—")[1].trim() : nominationLabel;
-        flow.innerHTML = `
-          <span class="v963-tag gold js-hl">مرشح نهائي</span>
-          <span class="v963-tag js-hl">${escapeHtml(rankText)}</span>
-        `;
-      }else if(nominationLabel === "مرفوض"){
-        flow.innerHTML = `<span class="v963-tag js-hl">مرفوض</span>`;
-      }else if(nominationLabel === "جاهز للقرار"){
-        flow.innerHTML = `<span class="v963-tag info js-hl">جاهز للقرار</span>`;
-      }else{
-        flow.innerHTML = `<span class="v963-tag info js-hl">${escapeHtml(nominationLabel || "بحاجة مراجعة")}</span>`;
-      }
-    }
-
-    const stateCell = tr.querySelector(".c-state .v963-flow");
-    if(stateCell){
-      stateCell.innerHTML = `
-        <span class="v963-tag js-hl">${escapeHtml(sector)}</span>
-        <span class="v963-tag js-hl">${escapeHtml(gender)}</span>
-      `;
-    }
-
-    tr.classList.toggle("is-nominated", nominated);
-    tr.classList.toggle("is-draft", status === "draft");
-
-    tr.setAttribute("data-search", [
-      tr.getAttribute("data-name") || "",
-      tr.getAttribute("data-nid") || "",
-      sector, gender, status, statusLabel, nominationLabel
-    ].join(" "));
-
-    applyHighlights((qLocal?.value || "").trim());
-  }
-
-  function applyDecisionLocally(tr, kind){
-    if(!tr) return;
-
-    if(kind === "approve"){
-      tr.setAttribute("data-status", "submitted");
-      tr.setAttribute("data-status-label", "مُرسل");
-
-      if(tr.getAttribute("data-nominated") === "1"){
-        tr.setAttribute("data-priority", "1");
-      }else{
-        tr.setAttribute("data-nominated", "0");
-        tr.setAttribute("data-nomination-label", "جاهز للقرار");
-        tr.setAttribute("data-priority", "2");
-      }
-    }
-
-    if(kind === "reject"){
-      tr.setAttribute("data-status", "submitted");
-      tr.setAttribute("data-status-label", "مُرسل");
-      tr.setAttribute("data-nominated", "0");
-      tr.setAttribute("data-nomination-label", "مرفوض");
-      tr.setAttribute("data-priority", "3");
-      selectedIds.delete(tr.getAttribute("data-id"));
-    }
-
-    if(kind === "unlock"){
-      tr.setAttribute("data-status", "draft");
-      tr.setAttribute("data-status-label", "مسودة");
-      tr.setAttribute("data-nominated", "0");
-      tr.setAttribute("data-nomination-label", "بحاجة مراجعة");
-      tr.setAttribute("data-priority", "3");
-      selectedIds.delete(tr.getAttribute("data-id"));
-    }
-
-    updateRowVisuals(tr);
-  }
-
-  function updateContextTools(){
-    const nominationMode = workflow === "nominated";
-    [ctxNomCsv, ctxNomExcel, ctxNomPrint, ctxNomReport].forEach(el=>{
-      if(!el) return;
-      el.classList.toggle("v963-ctx-active", nominationMode);
+      row.dataset.modeVisible = visible ? '1' : '0';
     });
 
-    const hints = {
-      ready:"قرار سريع",
-      nominated:"وضع المرشحين",
-      review:"وضع المراجعة",
-      all:"عرض شامل"
-    };
-    if(workflowHint) workflowHint.textContent = hints[workflow] || "";
+    applyLocalSearch();
   }
 
-  window.presetNote = function(txt){
-    if(sideNote){
-      sideNote.value = (txt || "").trim();
-      showToast("تم اختيار سبب","جاهز للاستخدام");
-      sideNote.focus();
-    }
-  };
-
-  window.presetModal = function(txt){
-    if(modalNote){
-      modalNote.value = (txt || "").trim();
-      modalNote.focus();
-    }
-  };
-
-  window.toggleNid = function(btn){
-    const row = btn.closest("td");
-    const chip = row ? row.querySelector(".v963-nid") : null;
-    if(!chip) return;
-
-    const nid = chip.getAttribute("data-nid") || "";
-    const masked = chip.getAttribute("data-masked") === "1";
-    chip.setAttribute("data-masked", masked ? "0" : "1");
-
-    const val = chip.querySelector(".val");
-    if(val){
-      const txt = masked ? nid : maskNid(nid);
-      val.textContent = txt;
-      val.dataset.orig = txt;
-      applyHighlights((qLocal?.value || "").trim());
-    }
-  };
-
-  window.copyNid = async function(btn){
-    const row = btn.closest("td");
-    const chip = row ? row.querySelector(".v963-nid") : null;
-    if(!chip) return;
-    const nid = chip.getAttribute("data-nid") || "";
-    if(!nid){ showToast("تنبيه","لا يوجد سجل."); return; }
-
-    try{
-      await navigator.clipboard.writeText(nid);
-      showToast("تم النسخ","السجل المدني");
-    }catch(_){
-      const ta = document.createElement("textarea");
-      ta.value = nid;
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      try{
-        document.execCommand("copy");
-        showToast("تم النسخ","السجل المدني");
-      }catch(e){
-        showToast("فشل","تعذر النسخ");
-      }
-      document.body.removeChild(ta);
-    }
-  };
-
-  function rowPassWorkflow(tr){
-    const nominated = tr.getAttribute("data-nominated") === "1";
-    const status = tr.getAttribute("data-status") || "";
-    const nominationLabel = tr.getAttribute("data-nomination-label") || "";
-
-    if(workflow === "all") return true;
-    if(workflow === "nominated") return nominated;
-    if(workflow === "review") return (!nominated && nominationLabel !== "مرفوض");
-    if(workflow === "ready") return status === "submitted";
-    return true;
+  function toggleExpand(id){
+    const row = document.querySelector(`[data-expand-row-for="${id}"]`);
+    if (!row) return;
+    row.classList.toggle('on');
   }
 
-  function computeCounts(searchTerm){
-    const term = String(searchTerm || "").trim().toLowerCase();
-    let all = 0, ready = 0, nominated = 0, review = 0;
+  function syncSelectedPanel(){
+    const countBar = document.getElementById('bulkSelCount');
+    const bar = document.getElementById('bulkActionBar');
 
-    rowsAll().forEach(tr=>{
-      const s = (tr.getAttribute("data-search") || "").toLowerCase();
-      if(term && !s.includes(term)) return;
-
-      all++;
-      const nominatedFlag = tr.getAttribute("data-nominated") === "1";
-      const status = tr.getAttribute("data-status") || "";
-      const nominationLabel = tr.getAttribute("data-nomination-label") || "";
-
-      if(status === "submitted") ready++;
-      if(nominatedFlag) nominated++;
-      if(!nominatedFlag && nominationLabel !== "مرفوض") review++;
-    });
-
-    return {all, ready, nominated, review};
+    if (countBar) countBar.textContent = selectedIds.size;
+    if (bar) bar.classList.toggle('on', selectedIds.size > 0);
   }
 
-  function updateTabCounts(term){
-    const c = computeCounts(term);
-    cntAll.textContent = String(c.all);
-    cntReady.textContent = String(c.ready);
-    cntNom.textContent = String(c.nominated);
-    cntReview.textContent = String(c.review);
-    return c;
+  function setRowSelected(id, checked){
+    const row = document.querySelector(`.v963-row[data-row-id="${id}"]`);
+    const chk = document.querySelector(`.rowChk[data-id="${id}"]`);
+
+    if (checked) selectedIds.add(String(id));
+    else selectedIds.delete(String(id));
+
+    if (chk) chk.checked = checked;
+    if (row) row.classList.toggle('is-selected', checked);
+
+    syncSelectedPanel();
   }
 
-  function updateWorkflowUI(){
-    tabReady.classList.toggle("on", workflow === "ready");
-    tabNom.classList.toggle("on", workflow === "nominated");
-    tabReview.classList.toggle("on", workflow === "review");
-    tabAll.classList.toggle("on", workflow === "all");
-    sumCurrentBtn.classList.toggle("active", workflow === "all");
-    updateContextTools();
-  }
-
-  function refreshExpandVisibility(){
-    rowsAll().forEach(tr=>{
-      const ex = expandRowFor(tr.getAttribute("data-id"));
-      if(!ex) return;
-
-      if(tr.style.display === "none"){
-        ex.classList.remove("on");
-        ex.style.display = "none";
-        const btn = tr.querySelector("[data-expand-btn]");
-        if(btn) btn.classList.remove("on");
-      }else{
-        ex.style.display = ex.classList.contains("on") ? "table-row" : "none";
-      }
+  function selectAllVisible(state){
+    document.querySelectorAll('#tbody .v963-row').forEach(row => {
+      if (row.style.display === 'none') return;
+      setRowSelected(row.dataset.rowId, state);
     });
   }
 
-  function refreshSelectedClass(){
-    rowsAll().forEach(tr=>{
-      const id = tr.getAttribute("data-id");
-      tr.classList.toggle("is-selected", selectedIds.has(id));
-    });
-  }
-
-  function valuesDifferent(values){
-    const normalized = values.map(v => String(v || "").trim());
-    if(normalized.length <= 1) return false;
-    return new Set(normalized).size > 1;
-  }
-
-  function buildComparisonTable(selectedRows){
-    const fields = [
-      { key: "status-label", label: "الحالة" },
-      { key: "sector", label: "القطاع" },
-      { key: "gender", label: "الجنس" },
-      { key: "nomination-label", label: "الترشيح" }
-    ];
-
-    let html = '<thead><tr><th class="field-col">الحقل</th>';
-    selectedRows.forEach(tr=>{
-      const id = tr.getAttribute("data-id") || "";
-      const name = escapeHtml(tr.getAttribute("data-name") || ("#" + id));
-      html += '<th><div class="head-app">' + name + '<br>#' + escapeHtml(id) + '</div></th>';
-    });
-    html += '</tr></thead><tbody>';
-
-    fields.forEach(field=>{
-      const vals = selectedRows.map(tr => tr.getAttribute("data-" + field.key) || "-");
-      const hasDiff = valuesDifferent(vals);
-
-      html += '<tr class="v963-compare-row' + (hasDiff ? ' has-diff' : '') + '">';
-      html += '<td class="field-col">' + escapeHtml(field.label);
-      if(hasDiff) html += '<div class="v963-compare-badge">فرق</div>';
-      html += '</td>';
-
-      vals.forEach(v=>{
-        html += '<td class="' + (hasDiff ? 'diff' : '') + '"><div class="v963-compare-val">' + escapeHtml(v) + '</div></td>';
-      });
-
-      html += '</tr>';
-    });
-
-    html += '</tbody>';
-    return html;
-  }
-
-  function updateSelectedPanel(){
-    selectedList.innerHTML = "";
-    compareTable.innerHTML = "";
-
-    const allSel = selectedAllIds();
-    if(!allSel.length){
-      selectedEmpty.style.display = "";
-      if(hiddenSelectedHint) hiddenSelectedHint.style.display = "none";
-      compareEmpty.style.display = "";
-      compareShell.style.display = "none";
-      return;
-    }
-
-    selectedEmpty.style.display = "none";
-
-    let hiddenCount = 0;
-    allSel.forEach((id, idx)=>{
-      const tr = rowById(id);
-      const visible = tr && tr.style.display !== "none";
-      if(!visible) hiddenCount++;
-
-      const name = tr ? (tr.getAttribute("data-name") || ("#" + id)) : ("#" + id);
-      const item = document.createElement("div");
-      item.className = "v963-selected-item" + ((idx === queueIndex && visible) ? " active" : "");
-      item.innerHTML = '<div class="n"></div><div class="i">#' + escapeHtml(id) + (visible ? "" : " • غير ظاهر") + '</div>';
-      item.querySelector(".n").textContent = name;
-
-      item.addEventListener("click", function(){
-        if(tr && visible){
-          const visList = selectedVisibleRows();
-          const vIdx = visList.indexOf(tr);
-          if(vIdx >= 0){
-            queueIndex = vIdx;
-            updateCounts();
-            focusQueueRowIntoView();
-          }
-        }else{
-          showToast("غير ظاهر", "العنصر محدد لكنه مخفي بالتصفية/البحث.");
-        }
-      });
-
-      selectedList.appendChild(item);
-    });
-
-    if(hiddenSelectedHint){
-      hiddenSelectedHint.style.display = hiddenCount ? "" : "none";
-    }
-
-    const compareRows = selectedVisibleRows().slice(0, 3);
-    if(!compareRows.length){
-      compareEmpty.style.display = "";
-      compareShell.style.display = "none";
-      return;
-    }
-
-    compareEmpty.style.display = "none";
-    compareShell.style.display = "";
-    compareTable.innerHTML = buildComparisonTable(compareRows);
-  }
-
-  function syncRowNumbers(){
-    let i = 1;
-    rowsVisible().forEach(tr=>{
-      const cell = tr.querySelector(".js-row-num");
-      if(cell) cell.textContent = String(i++);
-    });
-  }
-
-  function applyPrioritySort(){
-    const pairs = rowsAll().map(tr => ({ tr, ex: expandRowFor(tr.getAttribute("data-id")) }));
-
-    pairs.forEach(p => p.tr.classList.remove("priority-top"));
-
-    pairs.sort((a, b)=>{
-      if(!prioritySortEnabled){
-        const ao = parseInt(a.tr.getAttribute("data-order") || "0", 10);
-        const bo = parseInt(b.tr.getAttribute("data-order") || "0", 10);
-        return ao - bo;
-      }
-
-      const ap = parseInt(a.tr.getAttribute("data-priority") || "9", 10);
-      const bp = parseInt(b.tr.getAttribute("data-priority") || "9", 10);
-      if(ap !== bp) return ap - bp;
-
-      const ao = parseInt(a.tr.getAttribute("data-order") || "0", 10);
-      const bo = parseInt(b.tr.getAttribute("data-order") || "0", 10);
-      return ao - bo;
-    });
-
-    pairs.forEach((p, idx)=>{
-      tbody.appendChild(p.tr);
-      if(p.ex) tbody.appendChild(p.ex);
-      if(idx === 0) p.tr.classList.add("priority-top");
-    });
-
-    syncRowNumbers();
-  }
-
-  function updateCounts(){
-    const shown = rowsVisible().length;
-    const selAll = selectedIds.size;
-
-    shownCount.textContent = String(shown);
-    sideShownCount.textContent = String(shown);
-
-    selCount.textContent = String(selAll);
-    sideSelCount.textContent = String(selAll);
-
-    refreshSelectedClass();
-    applySelectionToCheckboxes();
-    saveSelection();
-
-    syncQueueWithinBounds();
-    updateSelectedPanel();
-    updateQueuePanel();
-  }
-
-  function applyFilters(){
-    const raw = (qLocal?.value || "");
-    const term = raw.trim().toLowerCase();
-
-    updateTabCounts(term);
-
-    rowsAll().forEach(tr=>{
-      const search = (tr.getAttribute("data-search") || "").toLowerCase();
-      const passSearch = (!term || search.includes(term));
-      const passWorkflow = rowPassWorkflow(tr);
-      tr.style.display = (passSearch && passWorkflow) ? "" : "none";
-    });
-
-    applyPrioritySort();
-
-    try{ localStorage.setItem(STORAGE_SEARCH, raw); }catch(_){}
-    try{ localStorage.setItem(STORAGE_FLOW, workflow); }catch(_){}
-    try{ localStorage.setItem(STORAGE_PRIORITY, prioritySortEnabled ? "1" : "0"); }catch(_){}
-
-    updateWorkflowUI();
-    updatePriorityLabel();
-    applyHighlights(raw.trim());
-    refreshExpandVisibility();
-    updateCounts();
-  }
-
-  window.setWorkflow = function(mode){
-    if(["ready","nominated","review","all"].includes(mode)) workflow = mode;
-    else workflow = "ready";
-    applyFilters();
-    const label = {
-      ready:"عرض الحالات الجاهزة للقرار",
-      nominated:"عرض المرشحين النهائيين",
-      review:"عرض الحالات التي تحتاج مراجعة",
-      all:"عرض جميع النتائج الحالية"
-    };
-    showToast("تم التصفية", label[workflow] || "");
-  };
-
-  window.togglePrioritySort = function(){
-    prioritySortEnabled = !prioritySortEnabled;
-    applyFilters();
-    showToast("ترتيب الأولوية", prioritySortEnabled ? "تم تفعيل ترتيب الأهمية." : "تم إيقاف ترتيب الأهمية.");
-  };
-
-  window.clearLocalSearch = function(){
-    if(!qLocal) return;
-    qLocal.value = "";
-    try{ localStorage.removeItem(STORAGE_SEARCH); }catch(_){}
-    qLocal.focus();
-    applyFilters();
-  };
-
-  window.toggleExpand = function(btn){
-    const tr = btn.closest("tr.v963-row");
-    if(!tr) return;
-
-    const id = tr.getAttribute("data-id");
-    const ex = expandRowFor(id);
-    if(!ex) return;
-
-    const on = ex.classList.contains("on");
-    ex.classList.toggle("on", !on);
-    ex.style.display = !on ? "table-row" : "none";
-    btn.classList.toggle("on", !on);
-  };
-
-  window.toggleRowSelection = function(id){
-    id = String(id || "");
-    if(!id) return;
-    if(selectedIds.has(id)) selectedIds.delete(id);
-    else selectedIds.add(id);
-    updateCounts();
-  };
-
-  window.toggleCollapse = function(id){
-    const box = document.getElementById(id);
-    if(!box) return;
-    box.classList.toggle("on");
-  };
-
-  window.queuePrev = function(){
-    const list = selectedVisibleRows();
-    if(!list.length) return;
-    if(queueIndex > 0) queueIndex--;
-    updateCounts();
-    focusQueueRowIntoView();
-  };
-
-  window.queueNext = function(){
-    const list = selectedVisibleRows();
-    if(!list.length) return;
-    if(queueIndex < list.length - 1) queueIndex++;
-    updateCounts();
-    focusQueueRowIntoView();
-  };
-
-  function goQueueAfterAction(){
-    const list = selectedVisibleRows();
-    if(!list.length){
-      queueIndex = 0;
-      updateCounts();
-      return;
-    }
-    if(queueIndex > list.length - 1) queueIndex = list.length - 1;
-    updateCounts();
-    focusQueueRowIntoView();
-  }
-
-  async function post(url, payload){
-    const res = await fetch(url, {
-      method:"POST",
-      headers:{
-        "X-Requested-With":"XMLHttpRequest",
-        "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
-        "X-CSRFToken": csrfToken()
-      },
-      body: new URLSearchParams(payload || {}).toString()
-    });
-
-    const data = await res.json().catch(()=>null);
-    if(!res.ok){
-      const err = (data && (data.error || data.detail)) ? (data.error || data.detail) : "تعذر تنفيذ العملية.";
-      throw new Error(err);
-    }
-    return data || {};
-  }
-
-  function rowUrls(tr){
-    return {
-      approve: tr.getAttribute("data-approve-url"),
-      reject: tr.getAttribute("data-reject-url"),
-      unlock: tr.getAttribute("data-unlock-url"),
-      undo: tr.getAttribute("data-undo-url")
-    };
-  }
-
-  function kindToUrl(urls, kind){
-    if(kind === "approve") return urls.approve;
-    if(kind === "reject") return urls.reject;
-    if(kind === "undo") return urls.undo;
-    return urls.unlock;
-  }
-
-  function flashRow(tr, kind){
-    if(!tr) return;
-    tr.classList.remove("flash-ok","flash-warn","flash-bad");
-    const cls = kind === "approve" ? "flash-ok" : (kind === "reject" ? "flash-bad" : "flash-warn");
-    tr.classList.add(cls);
-    clearTimeout(tr._flashTimer);
-    tr._flashTimer = setTimeout(()=>tr.classList.remove(cls), 950);
-  }
-
-  function snapshotRow(tr){
-    return {
-      status: tr.getAttribute("data-status"),
-      statusLabel: tr.getAttribute("data-status-label"),
-      nominated: tr.getAttribute("data-nominated"),
-      nomLabel: tr.getAttribute("data-nomination-label"),
-      priority: tr.getAttribute("data-priority"),
-    };
-  }
-
-  function restoreRow(tr, snap){
-    tr.setAttribute("data-status", snap.status || "");
-    tr.setAttribute("data-status-label", snap.statusLabel || "");
-    tr.setAttribute("data-nominated", snap.nominated || "0");
-    tr.setAttribute("data-nomination-label", snap.nomLabel || "");
-    tr.setAttribute("data-priority", snap.priority || "3");
-    updateRowVisuals(tr);
-  }
-
-  function showUndo(id){
-    if(!toastUndoBtn) return;
-    toastUndoBtn.style.display = "";
-    toastUndoBtn.onclick = async function(){
-      if(!lastAction) return;
-      const tr = rowById(lastAction.id);
-      if(!tr){ lastAction = null; toastUndoBtn.style.display="none"; return; }
-
-      const undoUrl = kindToUrl(rowUrls(tr), "undo");
-      try{
-        if(undoUrl){
-          await post(undoUrl, { prev_status: lastAction.prev.status || "" });
-        }
-      }catch(err){
-        showToast("تنبيه", "تعذر Undo على السيرفر، تم التراجع محليًا فقط.");
-      }
-
-      restoreRow(tr, lastAction.prev);
-      lastAction = null;
-      toastUndoBtn.style.display = "none";
-      applyFilters();
-      showToast("تم التراجع", "#" + id);
-    };
-
-    clearTimeout(showUndo._t);
-    showUndo._t = setTimeout(()=>{
-      toastUndoBtn.style.display = "none";
-      lastAction = null;
-    }, 6000);
-  }
-
-  async function decideRowById(id, kind, note){
-    const tr = rowById(id);
-    if(!tr) throw new Error("لم يتم العثور على الصف.");
-    const url = kindToUrl(rowUrls(tr), kind);
-
-    const prev = snapshotRow(tr);
-    await post(url, {note: note || ""});
-    lastAction = { id, prev };
-
-    applyDecisionLocally(tr, kind);
-    flashRow(tr, kind);
-
-    saveSelection();
-    applyFilters();
-
-    showToast("تم", "#" + id);
-    showUndo(id);
-  }
-
-  window.quickRowAction = function(id, kind){
-    decideRowById(id, kind, "").catch(err=>showToast("فشل", err.message || ""));
-  };
-
-  function openModal(opts){
-    modalTitle.textContent = opts.title || "سبب القرار";
-    modalSub.textContent = opts.sub || "";
-    modalNote.value = "";
-    modalState.onConfirm = opts.onConfirm || null;
-
-    noteModal.classList.add("on");
-    noteModal.setAttribute("aria-hidden","false");
-    setTimeout(()=>modalNote.focus(), 50);
-
-    modalConfirm.onclick = async function(){
-      const note = (modalNote.value || "").trim();
-      if(!note){
-        showToast("ملاحظة مطلوبة","الرفض أو الإرجاع يتطلب سببًا.");
-        modalNote.focus();
-        return;
-      }
-      closeModal();
-      if(typeof modalState.onConfirm === "function"){
-        await modalState.onConfirm(note);
-      }
-    };
-  }
-
-  window.closeModal = function(){
-    noteModal.classList.remove("on");
-    noteModal.setAttribute("aria-hidden","true");
-    modalState.onConfirm = null;
-  };
-
-  noteModal && noteModal.addEventListener("click", (e)=>{
-    if(e.target === noteModal) closeModal();
-  });
-
-  window.askRowAction = function(id, kind){
-    openModal({
-      title: kind === "reject" ? "سبب الرفض" : "سبب الإرجاع",
-      sub: "سيتم تسجيل السبب على هذا الطلب.",
-      onConfirm: async (note)=>{
-        try{
-          await decideRowById(id, kind, note);
-        }catch(err){
-          showToast("فشل", err.message || "");
-        }
-      }
-    });
-  };
-
-  async function queueAction(kind){
-    const tr = currentQueueRow();
-    if(!tr){ showToast("لا يوجد عنصر","حدد طلبًا أولاً."); return; }
-    const id = tr.getAttribute("data-id") || "";
-    if(!id) return;
-
-    if(kind === "approve"){
-      try{ await decideRowById(id, "approve", ""); goQueueAfterAction(); }
-      catch(err){ showToast("فشل", err.message || ""); }
-      return;
-    }
-
-    openModal({
-      title: kind === "reject" ? "سبب الرفض" : "سبب الإرجاع",
-      sub: "سيتم تطبيق القرار على العنصر النشط داخل طابور المراجعة.",
-      onConfirm: async (note)=>{
-        try{ await decideRowById(id, kind, note); goQueueAfterAction(); }
-        catch(err){ showToast("فشل", err.message || ""); }
-      }
-    });
-  }
-
-  window.queueApprove = function(){ queueAction("approve"); };
-  window.queueReject = function(){ queueAction("reject"); };
-  window.queueUnlock = function(){ queueAction("unlock"); };
-
-  window.queueOpenDetails = function(){
-    const tr = currentQueueRow();
-    if(!tr){ showToast("لا يوجد عنصر","حدد طلبًا أولاً."); return; }
-    const link = tr.getAttribute("data-detail-url");
-    if(link) window.location.href = link;
-  };
-
-  async function decideIds(kind, ids, note){
-    let ok = 0, fail = 0;
-    for(const id of ids){
-      try{ await decideRowById(id, kind, note || ""); ok++; }
-      catch(_){ fail++; }
-    }
-    showToast("اكتمل","نجاح: " + ok + " | فشل: " + fail);
-    clearSelection();
-  }
-
-  window.bulkApprove = async function(){
-    const ids = selectedAllIds();
-    if(!ids.length){ showToast("لا يوجد تحديد","حدد طلبات أولاً."); return; }
-    await decideIds("approve", ids, "");
-  };
-
-  window.bulkReject = function(){
-    const ids = selectedAllIds();
-    if(!ids.length){ showToast("لا يوجد تحديد","حدد طلبات أولاً."); return; }
-    const note = (sideNote?.value || "").trim();
-    if(!note){ showToast("ملاحظة مطلوبة","اكتب سببًا في اللوح الجانبي."); sideNote.focus(); return; }
-    decideIds("reject", ids, note);
-  };
-
-  window.bulkUnlock = function(){
-    const ids = selectedAllIds();
-    if(!ids.length){ showToast("لا يوجد تحديد","حدد طلبات أولاً."); return; }
-    const note = (sideNote?.value || "").trim();
-    if(!note){ showToast("ملاحظة مطلوبة","اكتب سببًا في اللوح الجانبي."); sideNote.focus(); return; }
-    decideIds("unlock", ids, note);
-  };
-
-  window.clearSelection = function(){
+  function clearSelection(){
+    [...selectedIds].forEach(id => setRowSelected(id, false));
     selectedIds.clear();
-    queueIndex = 0;
-    if(sideNote) sideNote.value = "";
-    saveSelection();
-    updateCounts();
-  };
-
-  window.selectAllVisible = function(on){
-    rowsVisible().forEach(tr=>{
-      const id = tr.getAttribute("data-id");
-      if(!id) return;
-      if(on) selectedIds.add(id);
-      else selectedIds.delete(id);
-    });
-    if(on) queueIndex = 0;
-    updateCounts();
-  };
-
-  window.exportVisibleCsv = function(){
-    const ids = rowsVisible().map(r => r.getAttribute("data-id")).filter(Boolean);
-    const base = "{% url 'portal:admin_report_csv_visible' %}";
-    const params = new URLSearchParams();
-
-    params.set("status", "{{ f_status|default:'' }}");
-    params.set("sector", "{{ f_sector|default:'' }}");
-    params.set("gender", "{{ f_gender|default:'' }}");
-
-    const idsJoined = ids.join(",");
-    if(idsJoined.length && idsJoined.length <= 1400){
-      params.set("ids", idsJoined);
-    }else{
-      showToast("تنبيه","عدد الصفوف كبير؛ سيتم التصدير حسب الفلاتر.");
-    }
-
-    window.location.href = base + "?" + params.toString();
-  };
-
-  tbody && tbody.addEventListener("change", (e)=>{
-    const t = e.target;
-    if(t && t.classList && t.classList.contains("rowChk")){
-      const tr = t.closest("tr.v963-row");
-      if(!tr) return;
-      const id = tr.getAttribute("data-id");
-      if(!id) return;
-      if(t.checked) selectedIds.add(id);
-      else selectedIds.delete(id);
-      saveSelection();
-      updateCounts();
-    }
-  });
-
-  qLocal && qLocal.addEventListener("input", applyFilters);
-
-  document.addEventListener("click", (e)=>{
-    const more = document.getElementById("moreMenu");
-    if(!more) return;
-    if(!more.contains(e.target)) more.removeAttribute("open");
-  });
-
-  let cmdIndex = 0;
-  const COMMANDS = [
-    {name:"فتح الطلبات المعتمدة", kbd:"F", run:()=>{ window.location.href = "{% url 'portal:admin_final_approvals' %}"; }},
-    {name:"عرض: تحتاج قرار الآن", kbd:"Ready", run:()=>setWorkflow("ready")},
-    {name:"عرض: مرشحون نهائيون", kbd:"Q", run:()=>setWorkflow("nominated")},
-    {name:"عرض: بحاجة مراجعة", kbd:"Q", run:()=>setWorkflow("review")},
-    {name:"عرض: الكل", kbd:"A", run:()=>setWorkflow("all")},
-    {name:"تحديد: الظاهر", kbd:"S", run:()=>selectAllVisible(true)},
-    {name:"تحديد: إلغاء الظاهر", kbd:"Shift+S", run:()=>selectAllVisible(false)},
-    {name:"مسح التحديد (Persist)", kbd:"C", run:()=>clearSelection()},
-    {name:"ترتيب الأولوية: تبديل", kbd:"P", run:()=>togglePrioritySort()},
-    {name:"تصدير CSV الظاهر", kbd:"E", run:()=>exportVisibleCsv()},
-    {name:"اعتماد المحدد (Persist)", kbd:"Enter", run:()=>bulkApprove()},
-    {name:"رفض المحدد (Persist)", kbd:"R", run:()=>bulkReject()},
-    {name:"إرجاع المحدد (Persist)", kbd:"U", run:()=>bulkUnlock()},
-    {name:"طباعة المرشحين", kbd:"Print", run:()=>{ const el=document.getElementById("ctxNomPrint"); if(el) window.open(el.href,"_blank"); }},
-    {name:"تقرير المرشحين", kbd:"Report", run:()=>{ const el=document.getElementById("ctxNomReport"); if(el) window.location.href=el.href; }},
-  ];
-
-  function renderCmdList(q){
-    const term = (q||"").trim().toLowerCase();
-    const items = COMMANDS.filter(c => !term || c.name.toLowerCase().includes(term));
-    cmdList.innerHTML = "";
-    if(!items.length){
-      cmdList.innerHTML = `<div class="v963-empty" style="padding:12px;">لا توجد أوامر مطابقة.</div>`;
-      renderCmdList._items = [];
-      return;
-    }
-    if(cmdIndex > items.length-1) cmdIndex = items.length-1;
-    if(cmdIndex < 0) cmdIndex = 0;
-
-    items.forEach((c, i)=>{
-      const d = document.createElement("div");
-      d.className = "v963-cmd-item" + (i===cmdIndex ? " on":"");
-      d.innerHTML = `<span>${escapeHtml(c.name)}</span><span class="v963-cmd-kbd">${escapeHtml(c.kbd||"")}</span>`;
-      d.addEventListener("click", ()=>{ closeCmd(); c.run(); });
-      cmdList.appendChild(d);
-    });
-
-    renderCmdList._items = items;
+    syncSelectedPanel();
   }
 
-  function openCmd(){
-    if(!cmdModal) return;
-    cmdModal.classList.add("on");
-    cmdModal.setAttribute("aria-hidden","false");
-    cmdIndex = 0;
-    renderCmdList("");
-    setTimeout(()=>{ cmdInput && cmdInput.focus(); cmdInput && cmdInput.select(); }, 30);
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('rowChk')){
+      setRowSelected(e.target.dataset.id, e.target.checked);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('moreWrap');
+    if (wrap && !wrap.contains(e.target)){
+      toggleMoreMenu(false);
+    }
+  });
+
+  async function postAction(url, bodyObj){
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      body: new URLSearchParams(bodyObj)
+    });
+
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'تعذر تنفيذ العملية.');
+    return data;
   }
 
-  window.openCmdPalette = function(){ openCmd(); };
+  async function quickRowAction(id, action){
+    try{
+      const url = action === 'approve'
+        ? `/admin/app/${id}/approve/`
+        : action === 'reject'
+        ? `/admin/app/${id}/reject/`
+        : `/admin/app/${id}/unlock/`;
 
-  window.closeCmd = function(){
-    if(!cmdModal) return;
-    cmdModal.classList.remove("on");
-    cmdModal.setAttribute("aria-hidden","true");
-  };
-
-  cmdInput && cmdInput.addEventListener("input", ()=>renderCmdList(cmdInput.value));
-  cmdInput && cmdInput.addEventListener("keydown", (e)=>{
-    const items = renderCmdList._items || [];
-    if(e.key === "ArrowDown"){ e.preventDefault(); cmdIndex++; renderCmdList(cmdInput.value); }
-    if(e.key === "ArrowUp"){ e.preventDefault(); cmdIndex--; renderCmdList(cmdInput.value); }
-    if(e.key === "Enter"){
-      e.preventDefault();
-      const c = items[cmdIndex];
-      if(c){ closeCmd(); c.run(); }
+      await postAction(url, {note: ''});
+      showToast('تم', 'اكتملت العملية بنجاح.');
+      window.location.reload();
+    }catch(err){
+      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.');
     }
-    if(e.key === "Escape"){ e.preventDefault(); closeCmd(); }
-  });
+  }
 
-  cmdModal && cmdModal.addEventListener("click", (e)=>{ if(e.target===cmdModal) closeCmd(); });
+  function askRowAction(id, action){
+    modalTargetId = id;
+    modalAction = action;
 
-  document.addEventListener("keydown", (e)=>{
-    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
-    const isTyping = tag === "input" || tag === "textarea" || (e.target && e.target.isContentEditable);
+    const modal = document.getElementById('noteModal');
+    const sub = document.getElementById('modalSub');
+    const note = document.getElementById('modalNote');
 
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
-      e.preventDefault();
-      openCmd();
+    if (action === 'reject'){
+      sub.textContent = 'أدخل سبب الرفض قبل تنفيذ الإجراء.';
+    } else if (action === 'unlock'){
+      sub.textContent = 'أدخل ملاحظة الإرجاع للتعديل قبل تنفيذ الإجراء.';
+    } else {
+      sub.textContent = 'أدخل الملاحظة المطلوبة لإتمام الإجراء.';
+    }
+
+    if (note) note.value = '';
+    modal.classList.add('on');
+  }
+
+  function closeNoteModal(){
+    document.getElementById('noteModal')?.classList.remove('on');
+    modalTargetId = null;
+    modalAction = null;
+  }
+
+  async function confirmModalAction(){
+    if (!modalTargetId || !modalAction) return;
+
+    const note = (document.getElementById('modalNote')?.value || '').trim();
+
+    if (!note){
+      showToast('تنبيه', 'فضلاً أدخل الملاحظة أولًا.');
       return;
     }
 
-    if(qLocal && e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey){
-      if(isTyping) return;
-      e.preventDefault();
-      qLocal.focus();
-      qLocal.select();
-      return;
+    try{
+      const url = modalAction === 'reject'
+        ? `/admin/app/${modalTargetId}/reject/`
+        : `/admin/app/${modalTargetId}/unlock/`;
+
+      await postAction(url, {note});
+      closeNoteModal();
+      showToast('تم', 'اكتملت العملية بنجاح.');
+      window.location.reload();
+    }catch(err){
+      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.');
     }
+  }
 
-    if((e.key === "q" || e.key === "Q") && !e.ctrlKey && !e.metaKey && !e.altKey){
-      if(isTyping) return;
-      e.preventDefault();
-      if(workflow === "nominated") setWorkflow("review");
-      else if(workflow === "review") setWorkflow("nominated");
-      else setWorkflow("nominated");
-      return;
-    }
-
-    if(isTyping) return;
-
-    if(e.key === "p" || e.key === "P"){ togglePrioritySort(); }
-    if(e.key === "a" || e.key === "A"){ setWorkflow("all"); }
-    if(e.key === "s" && !e.shiftKey){ selectAllVisible(true); }
-    if((e.key === "S" && e.shiftKey) || (e.key === "s" && e.shiftKey)){ selectAllVisible(false); }
-    if(e.key === "c" || e.key === "C"){ clearSelection(); }
-
-    if(e.key === "ArrowLeft" && !e.ctrlKey && !e.metaKey && !e.altKey){
-      e.preventDefault();
-      queuePrev();
-      return;
-    }
-
-    if(e.key === "ArrowRight" && !e.ctrlKey && !e.metaKey && !e.altKey){
-      e.preventDefault();
-      queueNext();
-      return;
-    }
-
-    if(e.key === "Escape"){
-      closeModal();
-      closeCmd();
-      const more = document.getElementById("moreMenu");
-      if(more) more.removeAttribute("open");
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape'){
+      closeNoteModal();
+      toggleMoreMenu(false);
     }
   });
 
-  try{
-    const savedSearch = localStorage.getItem(STORAGE_SEARCH);
-    if(qLocal && savedSearch) qLocal.value = savedSearch;
-  }catch(_){}
-
-  try{
-    const savedFlow = localStorage.getItem(STORAGE_FLOW);
-    if(["ready","nominated","review","all"].includes(savedFlow)) workflow = savedFlow;
-  }catch(_){}
-
-  try{
-    const savedPriority = localStorage.getItem(STORAGE_PRIORITY);
-    prioritySortEnabled = savedPriority !== "0";
-  }catch(_){}
-
-  loadSelection();
-  initNids();
-  updatePriorityLabel();
-  applyFilters();
-  applySelectionToCheckboxes();
-})();
+  syncSelectedPanel();
+  applyLocalSearch();
 </script>
 {% endblock %}

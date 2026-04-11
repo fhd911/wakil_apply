@@ -4,7 +4,7 @@ import csv
 import os
 from datetime import datetime
 from io import BytesIO
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 from django.conf import settings
 from django.contrib import messages
@@ -97,10 +97,32 @@ def _portal_gate():
     return True, "", win
 
 
+def _normalize_portal_phase(value: str) -> str:
+    value = (value or "").strip()
+
+    aliases = {
+        "closed": "closed",
+
+        "official_only": "official_only",
+        "official": "official_only",
+        "agents_only": "official_only",
+
+        "new_only": "new_only",
+        "new": "new_only",
+        "new_applicants_only": "new_only",
+
+        "all": "all",
+        "both": "all",
+        "all_open": "all",
+        "open_all": "all",
+    }
+    return aliases.get(value, "closed")
+
+
 def _portal_timer_context(win: PortalWindow) -> dict:
     opens_at = getattr(win, "opens_at", None)
     closes_at = getattr(win, "closes_at", None)
-    phase = getattr(win, "phase", "closed")
+    phase = _normalize_portal_phase(getattr(win, "phase", "closed"))
     is_enabled = getattr(win, "is_enabled", False)
 
     now = timezone.now()
@@ -112,7 +134,9 @@ def _portal_timer_context(win: PortalWindow) -> dict:
     if closes_at and now > closes_at:
         open_by_time = False
 
-    is_portal_open_now = bool(is_enabled and phase != "closed" and open_by_time)
+    is_portal_open_now = bool(
+        is_enabled and phase in {"official_only", "new_only", "all"} and open_by_time
+    )
 
     return {
         "portal_phase": phase,
@@ -136,8 +160,11 @@ def _portal_access_for_applicant(applicant: Applicant, win: PortalWindow):
     if not open_now:
         return False, msg or "التقديم مغلق حالياً."
 
-    phase = (getattr(win, "phase", "") or "closed").strip()
+    phase = _normalize_portal_phase(getattr(win, "phase", "closed"))
     is_official = _is_official_proxy(applicant)
+
+    if phase == "all":
+        return True, ""
 
     if phase == "official_only":
         if not is_official:
@@ -346,6 +373,35 @@ def _paginate(request, qs, per_page: int = 40):
     paginator = Paginator(qs, per_page)
     page_number = request.GET.get("page") or 1
     return paginator.get_page(page_number)
+
+
+def _vacancies_filters_querydict(request) -> dict[str, str]:
+    params: dict[str, str] = {}
+    for key in ("q", "open", "gender", "sector", "page"):
+        value = (
+            request.POST.get(key)
+            or request.GET.get(key)
+            or ""
+        ).strip()
+        if value:
+            params[key] = value
+    return params
+
+
+def _redirect_admin_vacancies_list_with_filters(request):
+    base_url = redirect("portal:admin_vacancies_list").url
+    params = _vacancies_filters_querydict(request)
+    if not params:
+        return redirect(base_url)
+    return redirect(f"{base_url}?{urlencode(params)}")
+
+
+def _redirect_admin_app_detail_with_back(app_id: int, back_url: str = ""):
+    detail_url = redirect("portal:admin_app_detail", app_id=app_id).url
+    back_url = (back_url or "").strip()
+    if not back_url:
+        return redirect(detail_url)
+    return redirect(f"{detail_url}?back={quote(back_url, safe='')}")
 
 
 def _set_admin_decision(app: Application, user, decision: str, note: str):
@@ -790,7 +846,7 @@ def admin_portal_window_view(request):
 
     if request.method == "POST":
         win.is_enabled = (request.POST.get("is_enabled") == "1")
-        win.phase = (request.POST.get("phase") or "closed").strip() or "closed"
+        win.phase = _normalize_portal_phase(request.POST.get("phase") or "closed")
 
         opens_at = (request.POST.get("opens_at") or "").strip()
         closes_at = (request.POST.get("closes_at") or "").strip()
@@ -810,6 +866,12 @@ def admin_portal_window_view(request):
             win.new_only_message = (
                 (request.POST.get("new_only_message") or "").strip()
                 or "التقديم متاح حالياً للمتقدمين الجدد فقط."
+            )
+
+        if hasattr(win, "all_message"):
+            win.all_message = (
+                (request.POST.get("all_message") or "").strip()
+                or "التقديم متاح حالياً للجميع."
             )
 
         def parse_dt(v: str):
@@ -841,6 +903,7 @@ def admin_portal_window_view(request):
 def admin_applicants_list(request):
     q = (request.GET.get("q") or "").strip()
     status = (request.GET.get("status") or "").strip()
+    kind = (request.GET.get("kind") or "all").strip()
 
     qs = Applicant.objects.all().order_by("-id")
 
@@ -859,12 +922,32 @@ def admin_applicants_list(request):
             | Q(current_job__icontains=q)
         )
 
-    page_obj = _paginate(request, qs, per_page=40)
+    all_rows = list(qs)
+    official_rows = [a for a in all_rows if a.is_official_agent]
+    new_rows = [a for a in all_rows if a.is_new_applicant]
+
+    if kind == "official":
+        filtered_rows = official_rows
+    elif kind == "new":
+        filtered_rows = new_rows
+    else:
+        filtered_rows = all_rows
+
+    page_obj = _paginate(request, filtered_rows, per_page=40)
 
     return render(
         request,
         "portal/admin_applicants_list.html",
-        {"rows": page_obj, "q": q, "status": status, "total": qs.count()},
+        {
+            "rows": page_obj,
+            "q": q,
+            "status": status,
+            "kind": kind,
+            "total": len(filtered_rows),
+            "all_count": len(all_rows),
+            "official_count": len(official_rows),
+            "new_count": len(new_rows),
+        },
     )
 
 
@@ -1039,7 +1122,7 @@ def admin_vacancies_toggle(request, pk: int):
     obj.is_open = not obj.is_open
     obj.save(update_fields=["is_open"])
     messages.success(request, "تم تحديث حالة الشاغر.")
-    return redirect("portal:admin_vacancies_list")
+    return _redirect_admin_vacancies_list_with_filters(request)
 
 
 @staff_member_required
@@ -1047,7 +1130,7 @@ def admin_vacancies_toggle(request, pk: int):
 def admin_vacancies_disable_all_view(request):
     updated = SchoolVacancy.objects.filter(is_open=True).update(is_open=False)
     messages.success(request, f"تم تعطيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
-    return redirect("portal:admin_vacancies_list")
+    return _redirect_admin_vacancies_list_with_filters(request)
 
 
 @staff_member_required
@@ -1055,7 +1138,7 @@ def admin_vacancies_disable_all_view(request):
 def admin_vacancies_enable_all_view(request):
     updated = SchoolVacancy.objects.filter(is_open=False).update(is_open=True)
     messages.success(request, f"تم تفعيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
-    return redirect("portal:admin_vacancies_list")
+    return _redirect_admin_vacancies_list_with_filters(request)
 
 
 @staff_member_required
@@ -1063,17 +1146,17 @@ def admin_vacancies_enable_all_view(request):
 def admin_vacancies_delete(request, pk: int):
     if not request.user.is_superuser:
         messages.error(request, "غير مصرح بالحذف النهائي. استخدم الإغلاق بدلًا من ذلك.")
-        return redirect("portal:admin_vacancies_list")
+        return _redirect_admin_vacancies_list_with_filters(request)
 
     obj = get_object_or_404(SchoolVacancy, pk=pk)
 
     if ApplicationPreference.objects.filter(vacancy=obj).exists():
         messages.error(request, "لا يمكن الحذف النهائي: يوجد رغبات مرتبطة بهذا الشاغر. استخدم (إغلاق) بدلًا من ذلك.")
-        return redirect("portal:admin_vacancies_list")
+        return _redirect_admin_vacancies_list_with_filters(request)
 
     obj.delete()
     messages.success(request, "تم حذف الشاغر نهائيًا.")
-    return redirect("portal:admin_vacancies_list")
+    return _redirect_admin_vacancies_list_with_filters(request)
 
 
 # =========================================================
@@ -1567,6 +1650,9 @@ def admin_dashboard_view(request):
 
     portal_window = PortalWindow.get()
 
+    current_query = request.GET.urlencode()
+    query_suffix = f"?{current_query}" if current_query else ""
+
     ctx = {
         "rows": rows,
         "total_apps": total_apps,
@@ -1584,6 +1670,17 @@ def admin_dashboard_view(request):
         "f_decision": decision,
         "sectors": sectors,
         "portal_window": portal_window,
+        "current_query": current_query,
+        "current_path": request.get_full_path(),
+
+        # روابط قائمة المزيد
+        "url_general_excel": f'{redirect("portal:admin_export_excel").url}{query_suffix}',
+        "url_general_print": f'{redirect("portal:admin_report_print").url}{query_suffix}',
+        "url_school_demand_report": f'{redirect("portal:admin_vacancies_pressure").url}{query_suffix}',
+        "url_candidates_csv": f'{redirect("portal:admin_nominations_csv").url}{query_suffix}',
+        "url_candidates_excel": f'{redirect("portal:admin_nominations_excel").url}{query_suffix}',
+        "url_candidates_print": f'{redirect("portal:admin_nominations_print").url}{query_suffix}',
+        "url_candidates_report": f'{redirect("portal:admin_nominations_report").url}{query_suffix}',
     }
     return render(request, "portal/admin_dashboard.html", ctx)
 
@@ -1606,7 +1703,16 @@ def admin_application_detail_view(request, app_id: int):
         .select_related("vacancy")
         .order_by("rank")
     )
-    return render(request, "portal/admin_application_detail.html", {"app": app, "a": app.applicant, "prefs": prefs})
+
+    back_url = (request.GET.get("back") or "").strip()
+    if not back_url:
+        back_url = redirect("portal:admin_dashboard").url
+
+    return render(
+        request,
+        "portal/admin_application_detail.html",
+        {"app": app, "a": app.applicant, "prefs": prefs, "back_url": back_url},
+    )
 
 
 @staff_member_required
@@ -1681,13 +1787,14 @@ def admin_application_detail_json_view(request, app_id: int):
 def admin_decide_approve_view(request, app_id: int):
     app = get_object_or_404(Application, id=app_id)
     note = (request.POST.get("note") or "").strip()
+    back_url = (request.GET.get("back") or "").strip()
     _set_admin_decision(app, request.user, "approved", note)
 
     if _is_ajax(request):
         return JsonResponse({"ok": True, "id": app.id, "admin_decision": "approved"}, json_dumps_params={"ensure_ascii": False})
 
     messages.success(request, f"تم اعتماد الطلب #{app.id}")
-    return redirect("portal:admin_app_detail", app_id=app.id)
+    return _redirect_admin_app_detail_with_back(app.id, back_url)
 
 
 @staff_member_required
@@ -1695,11 +1802,12 @@ def admin_decide_approve_view(request, app_id: int):
 def admin_decide_reject_view(request, app_id: int):
     app = get_object_or_404(Application, id=app_id)
     note = (request.POST.get("note") or "").strip()
+    back_url = (request.GET.get("back") or "").strip()
     if not note:
         if _is_ajax(request):
             return JsonResponse({"ok": False, "error": "فضلاً اكتب سبب الرفض."}, status=400, json_dumps_params={"ensure_ascii": False})
         messages.error(request, "فضلاً اكتب سبب الرفض.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     _set_admin_decision(app, request.user, "rejected", note)
 
@@ -1707,7 +1815,7 @@ def admin_decide_reject_view(request, app_id: int):
         return JsonResponse({"ok": True, "id": app.id, "admin_decision": "rejected"}, json_dumps_params={"ensure_ascii": False})
 
     messages.success(request, f"تم رفض الطلب #{app.id}")
-    return redirect("portal:admin_app_detail", app_id=app.id)
+    return _redirect_admin_app_detail_with_back(app.id, back_url)
 
 
 @staff_member_required
@@ -1715,11 +1823,12 @@ def admin_decide_reject_view(request, app_id: int):
 def admin_decide_unlock_view(request, app_id: int):
     app = get_object_or_404(Application, id=app_id)
     note = (request.POST.get("note") or "").strip()
+    back_url = (request.GET.get("back") or "").strip()
     if not note:
         if _is_ajax(request):
             return JsonResponse({"ok": False, "error": "فضلاً اكتب سبب الإرجاع للتعديل."}, status=400, json_dumps_params={"ensure_ascii": False})
         messages.error(request, "فضلاً اكتب سبب الإرجاع للتعديل.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     app.locked = False
     app.status = "draft"
@@ -1731,7 +1840,7 @@ def admin_decide_unlock_view(request, app_id: int):
         return JsonResponse({"ok": True, "id": app.id, "admin_decision": "returned", "status": "draft"}, json_dumps_params={"ensure_ascii": False})
 
     messages.success(request, f"تم فتح التعديل للطلب #{app.id}")
-    return redirect("portal:admin_app_detail", app_id=app.id)
+    return _redirect_admin_app_detail_with_back(app.id, back_url)
 
 
 # =========================================================
@@ -1913,6 +2022,7 @@ def admin_set_achieved_view(request, app_id: int):
         Application.objects.select_related("applicant", "achieved_pref__vacancy"),
         id=app_id,
     )
+    back_url = (request.GET.get("back") or "").strip()
     pref_id_raw = (request.POST.get("achieved_pref_id") or "").strip()
 
     old_vacancy = None
@@ -1931,13 +2041,13 @@ def admin_set_achieved_view(request, app_id: int):
         app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
 
         messages.success(request, "تم إلغاء تحديد الرغبة المتحققة.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     try:
         pref_id = int(pref_id_raw)
     except ValueError:
         messages.error(request, "قيمة غير صحيحة.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     pref = (
         ApplicationPreference.objects
@@ -1947,13 +2057,13 @@ def admin_set_achieved_view(request, app_id: int):
     )
     if not pref:
         messages.error(request, "الرغبة المحددة غير تابعة لهذا الطلب.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     vacancy = pref.vacancy
 
     if vacancy.reserved_application_id and vacancy.reserved_application_id != app.id:
         messages.error(request, "هذا الشاغر محجوز بالفعل لطلب آخر.")
-        return redirect("portal:admin_app_detail", app_id=app.id)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     if (app.admin_decision or "").strip() != "approved":
         app.admin_decision = "approved"
@@ -1979,7 +2089,7 @@ def admin_set_achieved_view(request, app_id: int):
         vacancy.save(update_fields=["reserved_application", "reserved_at"])
 
     messages.success(request, f"تم تحديد الرغبة المتحققة: رغبة #{pref.rank}")
-    return redirect("portal:admin_app_detail", app_id=app.id)
+    return _redirect_admin_app_detail_with_back(app.id, back_url)
 
 
 # =========================================================
@@ -2243,33 +2353,41 @@ def admin_export_excel_view(request):
 # =========================================================
 # Admin: Import Excel
 # =========================================================
-def _activate_new_only_phase():
+def _activate_new_only_phase(force: bool = False) -> bool:
     win = PortalWindow.get()
-    if getattr(win, "phase", "") != "new_only":
-        win.phase = "new_only"
-        win.save(update_fields=["phase"])
+    current_phase = _normalize_portal_phase(getattr(win, "phase", "closed"))
+
+    if not force and current_phase in {"all", "official_only", "new_only"}:
+        return False
+
+    win.phase = "new_only"
+    win.save(update_fields=["phase"])
+    return True
 
 
-def _handle_imported_applicants(uploaded_file):
+def _handle_imported_applicants(uploaded_file, mode="sync"):
     path = _save_uploaded_file(uploaded_file, "applicants")
-    batch, res = import_applicants_xlsx(path)
-    _activate_new_only_phase()
+    batch, res = import_applicants_xlsx(path, mode=mode)
+    portal_phase_switched = _activate_new_only_phase()
     return {
         "batch": batch.id,
         "created": res.created,
         "updated": res.updated,
         "skipped": res.skipped,
+        "mode": mode,
+        "portal_phase_switched": portal_phase_switched,
     }
 
 
-def _handle_imported_schools(uploaded_file):
+def _handle_imported_schools(uploaded_file, mode="sync"):
     path = _save_uploaded_file(uploaded_file, "schools")
-    batch, res = import_schools_xlsx(path)
+    batch, res = import_schools_xlsx(path, mode=mode)
     return {
         "batch": batch.id,
         "created": res.created,
         "updated": res.updated,
         "skipped": res.skipped,
+        "mode": mode,
     }
 
 
@@ -2282,15 +2400,41 @@ def admin_import_view(request):
     if request.method == "POST" and form.is_valid():
         applicants_file = form.cleaned_data.get("applicants_file")
         schools_file = form.cleaned_data.get("schools_file")
+        import_mode = (form.cleaned_data.get("import_mode") or "sync").strip()
 
         if applicants_file:
-            result["applicants"] = _handle_imported_applicants(applicants_file)
-            messages.success(request, f"تم استيراد المتقدمين الجدد بنجاح (Batch #{result['applicants']['batch']})")
-            messages.success(request, "تم تحويل البوابة تلقائيًا إلى مرحلة المتقدمين الجدد.")
+            result["applicants"] = _handle_imported_applicants(
+                applicants_file,
+                mode=import_mode,
+            )
+            messages.success(
+                request,
+                (
+                    f"تم استيراد المتقدمين الجدد بنجاح "
+                    f"(Batch #{result['applicants']['batch']}) — "
+                    f"إضافة: {result['applicants']['created']} | "
+                    f"تحديث: {result['applicants']['updated']} | "
+                    f"تخطي: {result['applicants']['skipped']}"
+                ),
+            )
+            if result["applicants"].get("portal_phase_switched"):
+                messages.success(request, "تم تحويل البوابة تلقائيًا إلى مرحلة المتقدمين الجدد.")
 
         if schools_file:
-            result["schools"] = _handle_imported_schools(schools_file)
-            messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{result['schools']['batch']})")
+            result["schools"] = _handle_imported_schools(
+                schools_file,
+                mode=import_mode,
+            )
+            messages.success(
+                request,
+                (
+                    f"تم استيراد المدارس بنجاح "
+                    f"(Batch #{result['schools']['batch']}) — "
+                    f"إضافة: {result['schools']['created']} | "
+                    f"تحديث: {result['schools']['updated']} | "
+                    f"تخطي: {result['schools']['skipped']}"
+                ),
+            )
 
     return render(request, "portal/admin_import.html", {"form": form, "result": result})
 
@@ -2306,8 +2450,19 @@ def admin_import_new_applicants_view(request):
         messages.error(request, "فضلاً اختر ملف المتقدمين الجدد أولاً.")
         return redirect("portal:admin_import")
 
-    result = _handle_imported_applicants(uploaded_file)
-    messages.success(request, f"تم استيراد المتقدمين الجدد بنجاح (Batch #{result['batch']})")
+    import_mode = (request.POST.get("import_mode") or "sync").strip()
+    result = _handle_imported_applicants(uploaded_file, mode=import_mode)
+
+    messages.success(
+        request,
+        (
+            f"تم استيراد المتقدمين الجدد بنجاح "
+            f"(Batch #{result['batch']}) — "
+            f"إضافة: {result['created']} | "
+            f"تحديث: {result['updated']} | "
+            f"تخطي: {result['skipped']}"
+        ),
+    )
     messages.success(request, "تم تحويل البوابة تلقائيًا إلى مرحلة المتقدمين الجدد.")
     return redirect("portal:admin_import")
 
@@ -2323,8 +2478,19 @@ def admin_import_schools_view(request):
         messages.error(request, "فضلاً اختر ملف المدارس أولاً.")
         return redirect("portal:admin_import")
 
-    result = _handle_imported_schools(uploaded_file)
-    messages.success(request, f"تم استيراد المدارس بنجاح (Batch #{result['batch']})")
+    import_mode = (request.POST.get("import_mode") or "sync").strip()
+    result = _handle_imported_schools(uploaded_file, mode=import_mode)
+
+    messages.success(
+        request,
+        (
+            f"تم استيراد المدارس بنجاح "
+            f"(Batch #{result['batch']}) — "
+            f"إضافة: {result['created']} | "
+            f"تحديث: {result['updated']} | "
+            f"تخطي: {result['skipped']}"
+        ),
+    )
     return redirect("portal:admin_import")
 
 

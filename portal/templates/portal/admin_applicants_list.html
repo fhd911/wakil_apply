@@ -3,572 +3,731 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Applicants List — Unified Ministerial Light Style
-     ✅ تحديث:
-     - إضافة زري: تفعيل جميع المتقدمين / تعطيل جميع المتقدمين
-     - مع بقاء التفعيل الفردي لكل متقدم
-  ========================================================= */
-
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
 
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
-    --min-surface-3:#f8fbf8;
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
 
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
 
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
-    --min-green-4:#4e7b68;
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
 
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
-    --min-gold-3:#efe1bb;
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
 
-    --min-line:#dbe3db;
-    --min-line-2:#cdd8ce;
+    --ok:#215f39;
+    --warn:#8e6113;
+    --danger:#8f2f2f;
+    --info:#355c80;
 
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-soft:0 8px 18px rgba(16,34,27,.05);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+    --moe-deep:#0f5f49;
+    --moe-mid:#1f7a62;
+    --moe-soft:#2e9b81;
+    --moe-mist:#edf6f2;
+    --moe-mist-2:#f7fbf9;
+    --moe-line:#d6e6dd;
 
-    --min-ok:#166534;
-    --min-ok-soft:#eefbf3;
-    --min-ok-line:#b7e4c7;
-
-    --min-warn:#92400e;
-    --min-warn-soft:#fff8ed;
-    --min-warn-line:#f4cf9b;
-
-    --min-danger:#991b1b;
-    --min-danger-soft:#fef2f2;
-    --min-danger-line:#fecaca;
+    --r-2xl:12px;
+    --r-xl:10px;
+    --r-lg:9px;
+    --r-md:8px;
+    --r-sm:7px;
   }
 
-  .ui{
-    position:relative;
-    background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
+  .v963,.v963 *{box-sizing:border-box}
+
+  .v963{
+    direction:rtl;
+    color:var(--ink);
+    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    padding:10px;
   }
 
-  .ui-page{
-    position:relative;
+  .v963-page{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:12px;
+    align-items:start;
   }
 
-  .ui-top{
-    margin-bottom:12px;
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
+  .v963-top,
+  .v963-card{
     position:relative;
     overflow:hidden;
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    align-items:flex-start;
-    flex-wrap:wrap;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:0 1px 4px rgba(17,24,20,.035);
   }
 
-  .ui-top::before{
+  .v963-top::before,
+  .v963-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
-  .ui-top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+  .v963-top{
+    margin-bottom:14px;
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
-  }
-
-  .ui-top > *{
-    position:relative;
-    z-index:1;
-  }
-
-  .ui-title{
-    font-size:20px !important;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff !important;
-    margin:0;
-  }
-
-  .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.6 !important;
-  }
-
-  .ui-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .ui-inline-form{
-    margin:0;
-    display:inline-flex;
-  }
-
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
-  }
-
-  .ui-toolbar{
-    padding:8px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-toolbar-row{
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
     display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
-    align-items:center;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:start;
   }
 
-  .ui-toolbar-left,
-  .ui-toolbar-right{
+  .v963-title{
+    margin:0;
+    font-size:20px;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
+  }
+
+  .v963-sub{
+    margin:6px 0 0;
+    max-width:780px;
+    font-size:10.4px;
+    line-height:1.95;
+    color:var(--muted);
+    font-weight:800;
+  }
+
+  .v963-top-side{
     display:flex;
-    gap:8px;
+    gap:7px;
+    align-items:center;
     flex-wrap:wrap;
-    align-items:center;
+    justify-content:flex-end;
   }
 
-  .ui-foot{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-top:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-muted{
-    color:var(--min-muted) !important;
-    font-size:9.8px;
-  }
-
-  .ui-pill{
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  .v963-btn{
     display:inline-flex;
     align-items:center;
-    gap:6px;
-  }
-
-  .ui-pill-ok{
-    color:var(--min-ok) !important;
-    border-color:var(--min-ok-line) !important;
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
-  }
-
-  .ui-pill-danger{
-    color:var(--min-danger) !important;
-    border-color:var(--min-danger-line) !important;
-    background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
-  }
-
-  .ui-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#16a34a;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
-  }
-
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
     justify-content:center;
-  }
-
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-warn{
-    color:#fff !important;
-    border-color:#b45309 !important;
-    background:linear-gradient(180deg,#d97706,#b45309) !important;
-    box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-danger{
-    color:#fff !important;
-    border-color:#b91c1c !important;
-    background:linear-gradient(180deg,#dc2626,#b91c1c) !important;
-    box-shadow:0 10px 18px rgba(185,28,28,.14), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-sm{
-    min-height:27px;
-    padding:5px 9px;
+    gap:6px;
+    min-height:35px;
+    padding:6px 12px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    text-decoration:none;
+    cursor:pointer;
     font-size:9.4px;
-    border-radius:10px;
+    font-weight:900;
+    box-shadow:none;
+    transition:.16s ease;
   }
 
-  .ui-btn-icon{
+  .v963-btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+    transform:none;
+    box-shadow:none;
+  }
+
+  .v963-btn-primary,
+  .v963-btn-ok{
+    background:var(--green-2);
+    color:#fff;
+    border-color:var(--green-2);
+  }
+
+  .v963-btn-warn{
+    background:var(--warn);
+    color:#fff;
+    border-color:var(--warn);
+  }
+
+  .v963-btn-danger{
+    background:var(--danger);
+    color:#fff;
+    border-color:var(--danger);
+  }
+
+  .v963-btn-info,
+  .v963-btn-soft,
+  .v963-btn-gold{
+    background:#fff;
+    color:var(--green-2);
+    border-color:var(--line-2);
+  }
+
+  .v963-btn-sm{
+    min-height:30px;
+    padding:4px 11px;
+    border-radius:8px;
+    font-size:8.35px;
+  }
+
+  .v963-btn-icon{
     font-size:11px;
     line-height:1;
   }
 
-  .ui-input,
-  .ui-select{
-    min-height:38px;
-    height:38px;
-    padding:8px 12px;
-    font-size:10.5px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    outline:none;
+  .v963-sec{
+    padding:12px 13px;
   }
 
-  .ui-input:focus,
-  .ui-select:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .v963-section-cap{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+    padding:0 0 6px;
+    color:var(--moe-deep);
+    font-size:9.6px;
+    font-weight:900;
+    border-bottom:1px solid #dde8e1;
   }
 
-  .app-list-wrap{
-    overflow:auto;
+  .v963-section-cap::before{
+    content:"";
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:linear-gradient(180deg,var(--moe-soft),var(--moe-mid));
+    box-shadow:0 0 0 4px rgba(46,155,129,.08);
+  }
+
+  .v963-filter-shell{
+    display:grid;
+    gap:12px;
+    padding:11px;
+    border:1px solid var(--moe-line);
+    border-radius:10px;
+    background:var(--moe-mist-2);
+  }
+
+  .v963-kind-row{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .v963-toolbar-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+  }
+
+  .v963-toolbar-left,
+  .v963-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .v963-toolbar-right{
+    justify-content:flex-end;
+  }
+
+  .v963-tab{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:35px;
+    padding:6px 12px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
     background:#fff;
-    border-top:1px solid rgba(219,227,219,.92);
-    position:relative;
+    color:var(--green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:9.4px;
+    font-weight:900;
   }
 
-  .app-list-table{
-    width:100%;
-    min-width:1160px;
-    border-collapse:separate;
-    border-spacing:0;
-    table-layout:fixed;
+  .v963-tab:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
   }
 
-  .app-list-table th,
-  .app-list-table td{
-    overflow:visible;
+  .v963-tab.on{
+    color:#745311;
+    border-color:rgba(171,137,80,.55);
+    background:linear-gradient(180deg,#fff7e8,#fff1d0);
   }
 
-  .app-list-table thead th{
-    position:sticky;
-    top:0;
-    z-index:4;
-    background:#eef3ee !important;
-    color:var(--min-green-2);
-    font-size:10.1px;
-    font-weight:800;
-    padding:10px 8px;
-    border-bottom:1px solid #d7e0d7 !important;
+  .v963-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:18px;
+    height:18px;
+    padding:0 5px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:#62746b;
+    font-size:7.4px;
+    font-weight:900;
+  }
+
+  .v963-tab.on .v963-count{
+    border-color:rgba(171,137,80,.55);
+    background:#fff4d9;
+    color:#7a5712;
+  }
+
+  .v963-input,
+  .v963-select{
+    min-height:39px;
+    height:39px;
+    padding:6px 10px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--ink);
+    font-size:9.5px;
+    outline:none;
+    box-shadow:none;
+  }
+
+  .v963-input:focus,
+  .v963-select:focus{
+    border-color:var(--gold-2);
+    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  }
+
+  .v963-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900;
     white-space:nowrap;
   }
 
-  .app-list-table tbody td{
-    padding:8px 8px;
-    font-size:10.4px;
-    vertical-align:middle;
-    border-bottom:1px solid #e7ede7 !important;
-    background:#ffffff;
-    color:var(--min-ink-2);
+  .v963-pill-ok{
+    background:#eff8f3 !important;
+    border-color:#cfe6d8 !important;
+    color:#1c6a44 !important;
   }
 
-  .app-list-table tbody tr:nth-child(even) td{
-    background:#fbfcfa;
+  .v963-pill-danger{
+    background:#fcf6f6 !important;
+    border-color:#e7c7c7 !important;
+    color:#8f2f2f !important;
   }
 
-  .app-list-table tbody tr:hover td{
-    background:#f8faf7;
+  .v963-pill-info{
+    background:#f3f7fd !important;
+    border-color:#d5e0ef !important;
+    color:#355c80 !important;
   }
 
-  .app-col-name{
-    width:340px;
-  }
-
-  .app-col-actions{
-    width:300px;
-    position:sticky;
-    left:0;
-    z-index:3;
-    background:#fff !important;
-    box-shadow:10px 0 14px rgba(16,34,27,.04);
-  }
-
-  .app-list-table thead .app-col-actions{
-    z-index:7;
-    background:#eef3ee !important;
-  }
-
-  .ui-name .n1{
-    font-size:11px;
-    line-height:1.35;
+  .v963-muted{
+    color:var(--muted) !important;
+    font-size:8px;
     font-weight:800;
-    color:var(--min-green-1);
-    letter-spacing:-.1px;
   }
 
-  .ui-name .n2{
-    margin-top:3px;
-    font-size:9.2px;
-    color:var(--min-muted);
+  .v963-table-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid var(--line);
+  }
+
+  .v963-table{
+    width:100%;
+    min-width:1120px;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  .v963-table th{
+    position:sticky;
+    top:0;
+    z-index:5;
+    padding:12px 8px;
+    white-space:nowrap;
+    font-size:8.8px;
+    font-weight:900;
+    color:var(--green-1);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
+    border-bottom:1px solid var(--line-2);
+    border-inline-start:1px solid #e1e7e2;
+    text-align:center;
+  }
+
+  .v963-table td{
+    padding:11px 8px;
+    font-size:9.35px;
+    vertical-align:middle;
+    background:#fff;
+    color:var(--ink);
+    border-bottom:1px solid #edf1ed;
+    border-inline-start:1px solid #f1f3f1;
+  }
+
+  .v963-table th:first-child,
+  .v963-table td:first-child{
+    border-inline-start:none;
+  }
+
+  .v963-row:nth-child(even) td{
+    background:#fcfdfc;
+  }
+
+  .v963-row:hover td{
+    background:#f8faf8;
+  }
+
+  .c-name{width:300px}
+  .c-type{width:140px}
+  .c-actions{
+    width:260px;
+    position:sticky;
+    inset-inline-start:0;
+    left:auto !important;
+    z-index:6;
+    background:#fdfefe !important;
+    box-shadow:inset 1px 0 0 #e4ece7 !important;
+  }
+
+  .v963-table thead .c-actions{
+    z-index:9;
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
+  }
+
+  .v963-name{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+  }
+
+  .v963-name-main{
+    min-width:0;
+    font-size:10.7px;
+    font-weight:900;
+    color:var(--green-1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:1.35;
+  }
+
+  .v963-name-sub{
+    font-size:8.6px;
+    color:var(--muted);
     direction:ltr;
     text-align:right;
-    font-weight:700;
+    font-weight:900;
   }
 
-  .app-act{
+  .v963-actions{
     display:flex;
-    gap:8px;
-    flex-wrap:nowrap;
+    gap:7px;
     align-items:center;
-    justify-content:flex-start;
-    min-width:280px;
-  }
-
-  .app-act form{
-    display:inline-block;
-    margin:0;
-  }
-
-  .app-act .ui-btn{
-    min-width:78px;
     justify-content:center;
+    flex-wrap:wrap;
+    flex-direction:row-reverse;
   }
 
-  @media (max-width: 900px){
-    .ui-toolbar-row{
+  .c-actions .v963-btn{
+    min-height:30px !important;
+    padding:4px 11px !important;
+    border-radius:8px !important;
+    font-size:8.35px !important;
+    font-weight:900 !important;
+    box-shadow:none !important;
+  }
+
+  .c-actions .v963-btn:hover{
+    transform:none !important;
+    box-shadow:none !important;
+  }
+
+  .c-actions .v963-btn-warn{
+    background:#fcf8ef !important;
+    border-color:#ead6ae !important;
+    color:#8e6113 !important;
+  }
+
+  .c-actions .v963-btn-danger{
+    background:#fcf6f6 !important;
+    border-color:#e7c7c7 !important;
+    color:#8f2f2f !important;
+  }
+
+  .c-actions .v963-btn:not(.v963-btn-primary):not(.v963-btn-ok):not(.v963-btn-danger):not(.v963-btn-warn){
+    background:#ffffff !important;
+    border-color:#d8e2db !important;
+    color:var(--green-2) !important;
+  }
+
+  .v963-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border-top:1px solid var(--line);
+    background:var(--paper);
+  }
+
+  @media (max-width: 920px){
+    .v963-top{
       grid-template-columns:1fr;
-      align-items:stretch;
     }
 
-    .ui-foot{
-      flex-direction:column;
-      align-items:flex-start;
+    .v963-top-side{
+      justify-content:flex-start;
     }
 
-    .app-list-table{
-      min-width:1040px;
+    .v963-toolbar-row{
+      grid-template-columns:1fr;
     }
 
-    .app-col-actions{
-      width:270px;
+    .v963-toolbar-right{
+      justify-content:flex-start;
     }
 
-    .app-act{
-      min-width:250px;
+    .v963-table{
+      min-width:980px;
     }
 
-    .app-act .ui-btn{
-      min-width:70px;
+    .c-actions{
+      width:236px;
     }
   }
 
   @media (max-width: 640px){
-    .ui-top{
-      border-radius:18px;
-      padding:13px 14px;
-    }
-
-    .ui-title{
-      font-size:18px !important;
-    }
-
-    .ui-toolbar{
+    .v963{
       padding:8px;
+    }
+
+    .v963-top{
+      padding:14px;
+    }
+
+    .v963-title{
+      font-size:18px;
+    }
+
+    .v963-foot{
+      flex-direction:column;
+      align-items:flex-start;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="v963">
+  <div class="v963-page">
 
-    <div class="ui-top">
-      <div class="ui-title-wrap">
-        <h1 class="ui-title">إدارة المتقدمين</h1>
-        <p class="ui-subtitle">إضافة، تعديل، تعطيل أو تفعيل المتقدمين — مع دعم التفعيل والتعطيل الجماعي، والحذف النهائي للسوبر فقط.</p>
+    <div class="v963-top">
+      <div>
+        <h1 class="v963-title">إدارة المتقدمين</h1>
+        <p class="v963-sub">
+          إضافة، تعديل، تعطيل أو تفعيل المتقدمين، مع دعم التفعيل والتعطيل الجماعي، وفصل الوكلاء الرسميين عن المتقدمين الجدد.
+        </p>
       </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span class="ui-btn-icon">▦</span>
+      <div class="v963-top-side">
+        <a class="v963-btn v963-btn-gold" href="{% url 'portal:admin_dashboard' %}">
+          <span class="v963-btn-icon">▦</span>
           لوحة القرار
         </a>
 
-        <a class="ui-btn ui-btn-primary" href="{% url 'portal:admin_applicants_create' %}">
-          <span class="ui-btn-icon">＋</span>
+        <a class="v963-btn v963-btn-primary" href="{% url 'portal:admin_applicants_create' %}">
+          <span class="v963-btn-icon">＋</span>
           إضافة متقدم
         </a>
 
-        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
-          <span class="ui-btn-icon">🧩</span>
+        <a class="v963-btn v963-btn-info" href="{% url 'portal:admin_vacancies_list' %}">
+          <span class="v963-btn-icon">🧩</span>
           إدارة الشواغر
         </a>
 
-        <form method="post" action="{% url 'portal:admin_applicants_enable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد تفعيل جميع المتقدمين؟');">
+        <form method="post" action="{% url 'portal:admin_applicants_enable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تفعيل جميع المتقدمين؟');">
           {% csrf_token %}
-          <button class="ui-btn ui-btn-primary" type="submit">
-            <span class="ui-btn-icon">✓</span>
-            تفعيل جميع المتقدمين
+          <button class="v963-btn v963-btn-primary" type="submit">
+            <span class="v963-btn-icon">✓</span>
+            تفعيل الجميع
           </button>
         </form>
 
-        <form method="post" action="{% url 'portal:admin_applicants_disable_all' %}" class="ui-inline-form" onsubmit="return confirm('تأكيد تعطيل جميع المتقدمين؟');">
+        <form method="post" action="{% url 'portal:admin_applicants_disable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تعطيل جميع المتقدمين؟');">
           {% csrf_token %}
-          <button class="ui-btn ui-btn-danger" type="submit">
-            <span class="ui-btn-icon">✕</span>
-            تعطيل جميع المتقدمين
+          <button class="v963-btn v963-btn-danger" type="submit">
+            <span class="v963-btn-icon">✕</span>
+            تعطيل الجميع
           </button>
         </form>
       </div>
     </div>
 
-    <div class="ui-card">
+    <div class="v963-card">
+      <div class="v963-sec">
+        <div class="v963-section-cap">عرض المتقدمين</div>
 
-      <div class="ui-toolbar">
-        <form method="get" class="ui-toolbar-row">
-          <div class="ui-toolbar-left">
-            <input
-              class="ui-input"
-              name="q"
-              value="{{ q }}"
-              placeholder="بحث بالاسم / السجل / القطاع / الجوال / المدرسة الحالية"
-              style="width:min(420px,100%)"
+        <form method="get" class="v963-filter-shell">
+          <div class="v963-kind-row">
+            <a
+              class="v963-tab {% if kind == 'all' or not kind %}on{% endif %}"
+              href="{% url 'portal:admin_applicants_list' %}?kind=all{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
             >
+              الكل
+              <span class="v963-count">{{ all_count|default:total }}</span>
+            </a>
 
-            <select class="ui-select" name="status" style="width:160px">
-              <option value="" {% if not status %}selected{% endif %}>الكل</option>
-              <option value="active" {% if status == "active" %}selected{% endif %}>نشط</option>
-              <option value="inactive" {% if status == "inactive" %}selected{% endif %}>معطل</option>
-            </select>
+            <a
+              class="v963-tab {% if kind == 'official' %}on{% endif %}"
+              href="{% url 'portal:admin_applicants_list' %}?kind=official{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
+            >
+              الوكلاء الرسميون
+              <span class="v963-count">{{ official_count|default:0 }}</span>
+            </a>
+
+            <a
+              class="v963-tab {% if kind == 'new' %}on{% endif %}"
+              href="{% url 'portal:admin_applicants_list' %}?kind=new{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
+            >
+              المتقدمون الجدد
+              <span class="v963-count">{{ new_count|default:0 }}</span>
+            </a>
           </div>
 
-          <div class="ui-toolbar-right">
-            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
-            <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">مسح</a>
-            <span class="ui-pill">
-              <span class="ui-dot"></span>
-              الإجمالي: <b>{{ total }}</b>
-            </span>
+          <div class="v963-toolbar-row">
+            <div class="v963-toolbar-left">
+              <input
+                class="v963-input"
+                name="q"
+                value="{{ q }}"
+                placeholder="بحث بالاسم / السجل / القطاع / الجوال / المدرسة الحالية"
+                style="width:min(420px,100%)"
+              >
+
+              <select class="v963-select" name="status" style="width:160px">
+                <option value="" {% if not status %}selected{% endif %}>الكل</option>
+                <option value="active" {% if status == "active" %}selected{% endif %}>نشط</option>
+                <option value="inactive" {% if status == "inactive" %}selected{% endif %}>معطل</option>
+              </select>
+
+              <input type="hidden" name="kind" value="{{ kind|default:'all' }}">
+            </div>
+
+            <div class="v963-toolbar-right">
+              <button class="v963-btn v963-btn-primary" type="submit">بحث</button>
+              <a class="v963-btn" href="{% url 'portal:admin_applicants_list' %}">مسح</a>
+
+              <span class="v963-pill">الإجمالي: <b>{{ total }}</b></span>
+
+              {% if kind == "official" %}
+                <span class="v963-pill v963-pill-info">الوكلاء الرسميون فقط</span>
+              {% elif kind == "new" %}
+                <span class="v963-pill">المتقدمون الجدد فقط</span>
+              {% else %}
+                <span class="v963-pill">جميع السجلات</span>
+              {% endif %}
+            </div>
           </div>
         </form>
       </div>
 
-      <div class="app-list-wrap">
-        <table class="ui-table app-list-table">
+      <div class="v963-table-wrap">
+        <table class="v963-table">
           <thead>
             <tr>
-              <th class="app-col-name">الاسم</th>
+              <th class="c-name">الاسم</th>
               <th style="width:170px">القطاع</th>
               <th style="width:90px">الجنس</th>
               <th style="width:150px">الجوال</th>
+              <th class="c-type">النوع</th>
               <th style="width:110px">الحالة</th>
-              <th class="app-col-actions">إجراءات</th>
+              <th class="c-actions">إجراءات</th>
             </tr>
           </thead>
 
           <tbody>
             {% for a in rows %}
-            <tr>
-              <td class="app-col-name" title="{{ a.full_name }}">
-                <div class="ui-name">
-                  <div class="n1">{{ a.full_name|default:"—" }}</div>
-                  <div class="n2">{{ a.national_id|default:"—" }}</div>
+            <tr class="v963-row">
+              <td class="c-name" title="{{ a.full_name }}">
+                <div class="v963-name">
+                  <div class="v963-name-main">{{ a.full_name|default:"—" }}</div>
+                  <div class="v963-name-sub">{{ a.national_id|default:"—" }}</div>
                 </div>
               </td>
 
               <td title="{{ a.sector }}">
                 {% if a.sector %}
-                  <span class="ui-pill">{{ a.sector }}</span>
+                  <span class="v963-pill">{{ a.sector }}</span>
                 {% else %}
-                  <span class="ui-pill ui-muted">—</span>
+                  <span class="v963-muted">—</span>
                 {% endif %}
               </td>
 
               <td>
                 {% if a.gender %}
-                  <span class="ui-pill">{{ a.gender }}</span>
+                  <span class="v963-pill">{{ a.gender }}</span>
                 {% else %}
-                  <span class="ui-pill ui-muted">—</span>
+                  <span class="v963-muted">—</span>
                 {% endif %}
               </td>
 
-              <td class="ui-muted" style="direction:ltr; text-align:right;">
+              <td class="v963-muted" style="direction:ltr; text-align:right;">
                 {{ a.mobile|default:"—" }}
               </td>
 
               <td>
-                {% if a.is_active %}
-                  <span class="ui-pill ui-pill-ok">نشط</span>
+                {% if a.is_official_agent %}
+                  <span class="v963-pill v963-pill-info">وكيل رسمي</span>
                 {% else %}
-                  <span class="ui-pill ui-pill-danger">معطل</span>
+                  <span class="v963-pill">متقدم جديد</span>
                 {% endif %}
               </td>
 
-              <td class="app-col-actions">
-                <div class="app-act">
-                  <a class="ui-btn ui-btn-sm" href="{% url 'portal:admin_applicants_edit' a.id %}">
+              <td>
+                {% if a.is_active %}
+                  <span class="v963-pill v963-pill-ok">نشط</span>
+                {% else %}
+                  <span class="v963-pill v963-pill-danger">معطل</span>
+                {% endif %}
+              </td>
+
+              <td class="c-actions">
+                <div class="v963-actions">
+                  <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_applicants_edit' a.id %}">
                     تعديل
                   </a>
 
-                  <form method="post" action="{% url 'portal:admin_applicants_toggle' a.id %}">
+                  <form method="post" action="{% url 'portal:admin_applicants_toggle' a.id %}" style="margin:0;">
                     {% csrf_token %}
-                    <button class="ui-btn ui-btn-sm ui-btn-warn" type="submit">
+                    <button class="v963-btn v963-btn-sm v963-btn-warn" type="submit">
                       {% if a.is_active %}تعطيل{% else %}تفعيل{% endif %}
                     </button>
                   </form>
@@ -576,10 +735,11 @@
                   <form
                     method="post"
                     action="{% url 'portal:admin_applicants_delete' a.id %}"
+                    style="margin:0;"
                     onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كان لديه طلبات.');"
                   >
                     {% csrf_token %}
-                    <button class="ui-btn ui-btn-sm ui-btn-danger" type="submit">
+                    <button class="v963-btn v963-btn-sm v963-btn-danger" type="submit">
                       حذف
                     </button>
                   </form>
@@ -588,7 +748,7 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="6" style="padding:16px; color:var(--min-muted); background:#fff;">
+              <td colspan="7" style="padding:16px; color:var(--muted); background:#fff; text-align:center;">
                 لا توجد بيانات.
               </td>
             </tr>
@@ -597,21 +757,21 @@
         </table>
       </div>
 
-      <div class="ui-foot">
-        <div class="ui-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
+      <div class="v963-foot">
+        <div class="v963-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           {% if rows.has_previous %}
-            <a class="ui-btn" href="?q={{ q }}&status={{ status }}&page={{ rows.previous_page_number }}">السابق</a>
+            <a class="v963-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.previous_page_number }}">السابق</a>
           {% endif %}
 
           {% if rows.has_next %}
-            <a class="ui-btn" href="?q={{ q }}&status={{ status }}&page={{ rows.next_page_number }}">التالي</a>
+            <a class="v963-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.next_page_number }}">التالي</a>
           {% endif %}
         </div>
       </div>
-
     </div>
+
   </div>
 </div>
 {% endblock %}

@@ -3,165 +3,528 @@
 
 {% block extra_css %}
 <style>
-  @media print{
-    .no-print{ display:none !important; }
-    body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-
   :root{
-    --ink:#17261f;
-    --mut:#6f8177;
-    --line:#dbe3db;
-    --head:#eef3ee;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
+
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
+
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
+
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
+
+    --ok:#215f39;
+    --ok-bg:#eff8f3;
+    --ok-bd:#cfe6d8;
+
+    --danger:#8f2f2f;
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --warn:#8e6113;
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
+
+    --moe-mid:#1f7a62;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
   }
 
-  .wrap{
-    max-width: 1100px;
-    margin: 18px auto;
-    padding: 0 12px 24px;
+  .vpr, .vpr *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .head{
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:14px 14px;
-    background:#fff;
-    margin-bottom:10px;
-  }
-
-  .t1{
-    margin:0;
-    font-size:16px;
-    font-weight:900;
+  .vpr{
+    direction:rtl;
     color:var(--ink);
+    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    padding:12px;
   }
 
-  .t2{
+  .vpr-wrap{
+    max-width:1120px;
+    margin:0 auto;
+    display:grid;
+    gap:12px;
+  }
+
+  .vpr-head,
+  .vpr-kpi,
+  .vpr-table-box{
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--shadow);
+  }
+
+  .vpr-head::before,
+  .vpr-kpi::before,
+  .vpr-table-box::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
+  }
+
+  .vpr-head{
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+  }
+
+  .vpr-head-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .vpr-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.2;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
+  }
+
+  .vpr-sub{
     margin:6px 0 0;
-    font-size:11px;
-    color:var(--mut);
-    line-height:1.7;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.9;
+    font-weight:800;
   }
 
-  .kpi{
+  .vpr-meta{
+    margin-top:10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .vpr-pill{
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+
+  .vpr-pill.gold{
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
+    color:#8a6526;
+  }
+
+  .vpr-actions{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
-    margin-top:10px;
+    align-items:center;
   }
 
-  .pill{
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:6px 10px;
-    font-size:11px;
+  .vpr-btn{
+    appearance:none;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    border-radius:8px;
+    padding:6px 12px;
+    min-height:35px;
+    font-size:9.4px;
     font-weight:900;
-    color:var(--ink);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    cursor:pointer;
+    box-shadow:none;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+  }
+
+  .vpr-btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+    transform:translateY(-1px);
+  }
+
+  .vpr-btn:active{
+    transform:translateY(0);
+  }
+
+  .vpr-btn.primary{
+    background:var(--green-2);
+    border-color:var(--green-2);
+    color:#fff;
+  }
+
+  .vpr-btn.gold{
+    background:var(--warn-bg);
+    border-color:var(--warn-bd);
+    color:#8a6526;
+  }
+
+  .vpr-kpis{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .vpr-kpi{
+    padding:12px 14px;
+  }
+
+  .vpr-kpi-label{
+    color:var(--muted);
+    font-size:8.8px;
+    margin-bottom:6px;
+    font-weight:900;
+  }
+
+  .vpr-kpi-value{
+    color:var(--green-1);
+    font-size:24px;
+    line-height:1;
+    font-weight:900;
+    letter-spacing:-.4px;
+  }
+
+  .vpr-kpi.warn .vpr-kpi-value{
+    color:var(--warn);
+  }
+
+  .vpr-kpi.ok .vpr-kpi-value{
+    color:var(--ok);
+  }
+
+  .vpr-table-box{
+    overflow:hidden;
+  }
+
+  .vpr-table-head{
+    padding:11px 12px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .vpr-table-title{
+    margin:0;
+    font-size:12px;
+    font-weight:900;
+    color:var(--green-1);
+  }
+
+  .vpr-table-wrap{
+    overflow:auto;
     background:#fff;
   }
 
-  table{
+  .vpr-table{
     width:100%;
     border-collapse:collapse;
-    background:#fff;
-    border:1px solid var(--line);
+    min-width:980px;
   }
 
-  th, td{
-    border-bottom:1px solid var(--line);
-    padding:8px 8px;
-    font-size:11px;
+  .vpr-table th,
+  .vpr-table td{
+    padding:10px 8px;
+    text-align:right;
     vertical-align:middle;
-    color:var(--ink);
+    border-bottom:1px solid #edf1ed;
+    font-size:9.3px;
   }
 
-  th{
-    background:var(--head);
+  .vpr-table th{
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
+    color:var(--green-1);
     font-weight:900;
     white-space:nowrap;
   }
 
-  td.mut{ color:var(--mut); }
-
-  .actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:10px;
-  }
-
-  .btn{
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:7px 11px;
-    font-size:11px;
-    font-weight:900;
-    text-decoration:none;
+  .vpr-table tbody td{
     color:var(--ink);
     background:#fff;
+  }
+
+  .vpr-table tbody tr:nth-child(even) td{
+    background:#fcfdfc;
+  }
+
+  .vpr-table tbody tr:hover td{
+    background:#f8faf8;
+  }
+
+  .vpr-muted{
+    color:var(--muted);
+    font-weight:800;
+  }
+
+  .vpr-badge{
+    display:inline-flex;
+    align-items:center;
+    min-height:24px;
+    padding:3px 9px;
+    border-radius:999px;
+    font-size:8.5px;
+    font-weight:900;
+    white-space:nowrap;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+  }
+
+  .vpr-badge.ok{
+    border-color:var(--ok-bd);
+    background:var(--ok-bg);
+    color:var(--ok);
+  }
+
+  .vpr-badge.danger{
+    border-color:var(--danger-bd);
+    background:var(--danger-bg);
+    color:var(--danger);
+  }
+
+  .vpr-empty{
+    padding:18px;
+    text-align:center;
+    color:var(--muted);
+    font-size:9px;
+    font-weight:800;
+  }
+
+  .no-print{
+    display:block;
+  }
+
+  @media (max-width: 980px){
+    .vpr-kpis{
+      grid-template-columns:1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px){
+    .vpr{
+      padding:8px;
+    }
+
+    .vpr-head-row{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .vpr-actions{
+      width:100%;
+    }
+
+    .vpr-actions .vpr-btn{
+      width:100%;
+    }
+
+    .vpr-kpis{
+      grid-template-columns:1fr;
+    }
+
+    .vpr-title{
+      font-size:18px;
+    }
+  }
+
+  @media print{
+    .no-print{
+      display:none !important;
+    }
+
+    body{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      background:#fff !important;
+    }
+
+    .vpr{
+      background:#fff !important;
+      padding:0;
+    }
+
+    .vpr-wrap{
+      max-width:none;
+      margin:0;
+      gap:10px;
+    }
+
+    .vpr-head,
+    .vpr-kpi,
+    .vpr-table-box{
+      box-shadow:none !important;
+      border-radius:0 !important;
+    }
+
+    .vpr-head,
+    .vpr-kpi,
+    .vpr-table-head,
+    .vpr-table th,
+    .vpr-badge,
+    .vpr-pill{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    .vpr-table-wrap{
+      overflow:visible !important;
+    }
+
+    .vpr-table{
+      min-width:auto !important;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="wrap">
-  <div class="head">
-    <h1 class="t1">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
-    <div class="t2">
-      تاريخ الإصدار: <b>{{ now|date:"Y-m-d H:i" }}</b>
-      {% if f.sector %} — القطاع: <b>{{ f.sector }}</b>{% endif %}
-      {% if f.gender %} — الجنس: <b>{{ f.gender }}</b>{% endif %}
-      {% if f.open %} — الحالة: <b>{{ f.open }}</b>{% endif %}
+<div class="vpr">
+  <div class="vpr-wrap">
+
+    <div class="vpr-head">
+      <div class="vpr-head-row">
+        <div>
+          <h1 class="vpr-title">طباعة تقرير ضغط المدارس</h1>
+          <div class="vpr-sub">
+            عرض رسمي مختصر يوضح مستوى الإقبال على المدارس والترشيحات النهائية وفق الفلاتر الحالية.
+          </div>
+
+          <div class="vpr-meta">
+            <span class="vpr-pill gold">تاريخ الإصدار: <b>{{ now|date:"Y-m-d H:i" }}</b></span>
+            {% if f.sector %}<span class="vpr-pill">القطاع: <b>{{ f.sector }}</b></span>{% endif %}
+            {% if f.gender %}<span class="vpr-pill">الجنس: <b>{{ f.gender }}</b></span>{% endif %}
+            {% if f.open %}<span class="vpr-pill">الحالة: <b>{{ f.open }}</b></span>{% endif %}
+          </div>
+        </div>
+
+        <div class="vpr-actions no-print">
+          <a class="vpr-btn" href="{% url 'portal:admin_vacancies_pressure' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
+            رجوع للتقرير
+          </a>
+          <a class="vpr-btn primary" href="#" onclick="window.print();return false;">
+            🖨️ طباعة
+          </a>
+        </div>
+      </div>
     </div>
 
-    <div class="kpi">
-      <span class="pill">عدد المدارس: {{ total_schools }}</span>
-      <span class="pill">إجمالي الراغبين: {{ sum_total }}</span>
-      <span class="pill">إجمالي رغبة أولى: {{ sum_rank1 }}</span>
-      <span class="pill">إجمالي الترشيحات النهائية: {{ sum_achieved }}</span>
+    <div class="vpr-kpis">
+      <div class="vpr-kpi">
+        <div class="vpr-kpi-label">عدد المدارس</div>
+        <div class="vpr-kpi-value">{{ total_schools }}</div>
+      </div>
+
+      <div class="vpr-kpi">
+        <div class="vpr-kpi-label">إجمالي الراغبين</div>
+        <div class="vpr-kpi-value">{{ sum_total }}</div>
+      </div>
+
+      <div class="vpr-kpi warn">
+        <div class="vpr-kpi-label">إجمالي رغبة أولى</div>
+        <div class="vpr-kpi-value">{{ sum_rank1 }}</div>
+      </div>
+
+      <div class="vpr-kpi ok">
+        <div class="vpr-kpi-label">إجمالي الترشيحات النهائية</div>
+        <div class="vpr-kpi-value">{{ sum_achieved }}</div>
+      </div>
     </div>
 
-    <div class="actions no-print">
-      <a class="btn" href="{% url 'portal:admin_vacancies_pressure' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">رجوع للتقرير</a>
-      <a class="btn" href="#" onclick="window.print();return false;">🖨️ طباعة</a>
+    <div class="vpr-table-box">
+      <div class="vpr-table-head">
+        <h3 class="vpr-table-title">بيانات المدارس</h3>
+        <span class="vpr-pill">تقرير طباعة</span>
+      </div>
+
+      <div class="vpr-table-wrap">
+        <table class="vpr-table">
+          <thead>
+            <tr>
+              <th style="width:50px">#</th>
+              <th>المدرسة</th>
+              <th style="width:120px">رقم الوزارة</th>
+              <th style="width:170px">القطاع</th>
+              <th style="width:80px">الجنس</th>
+              <th style="width:120px">المرحلة</th>
+              <th style="width:85px">الاحتياج</th>
+              <th style="width:95px">الراغبون</th>
+              <th style="width:95px">رغبة أولى</th>
+              <th style="width:110px">ترشيحات</th>
+              <th style="width:85px">الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in rows %}
+              <tr>
+                <td class="vpr-muted">{{ forloop.counter }}</td>
+                <td>{{ v.school_name }}</td>
+                <td class="vpr-muted">{{ v.ministry_no|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.sector|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.gender|default:"—" }}</td>
+                <td class="vpr-muted">{{ v.stage|default:"—" }}</td>
+                <td>{{ v.deputy_need|default:"0" }}</td>
+                <td>{{ v.interested_total|default:0 }}</td>
+                <td>{{ v.interested_rank1|default:0 }}</td>
+                <td>{{ v.achieved_total|default:0 }}</td>
+                <td>
+                  {% if v.is_open %}
+                    <span class="vpr-badge ok">مفتوح</span>
+                  {% else %}
+                    <span class="vpr-badge danger">مغلق</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="11" class="vpr-empty">لا توجد بيانات.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th style="width:50px">#</th>
-        <th>المدرسة</th>
-        <th style="width:120px">رقم الوزارة</th>
-        <th style="width:170px">القطاع</th>
-        <th style="width:80px">الجنس</th>
-        <th style="width:120px">المرحلة</th>
-        <th style="width:85px">الاحتياج</th>
-        <th style="width:95px">الراغبون</th>
-        <th style="width:95px">رغبة أولى</th>
-        <th style="width:110px">ترشيحات</th>
-        <th style="width:85px">الحالة</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for v in rows %}
-        <tr>
-          <td class="mut">{{ forloop.counter }}</td>
-          <td>{{ v.school_name }}</td>
-          <td class="mut">{{ v.ministry_no|default:"—" }}</td>
-          <td class="mut">{{ v.sector|default:"—" }}</td>
-          <td class="mut">{{ v.gender|default:"—" }}</td>
-          <td class="mut">{{ v.stage|default:"—" }}</td>
-          <td>{{ v.deputy_need|default:"0" }}</td>
-          <td>{{ v.interested_total|default:0 }}</td>
-          <td>{{ v.interested_rank1|default:0 }}</td>
-          <td>{{ v.achieved_total|default:0 }}</td>
-          <td>{% if v.is_open %}مفتوح{% else %}مغلق{% endif %}</td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="11" class="mut">لا توجد بيانات.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </div>
 {% endblock %}

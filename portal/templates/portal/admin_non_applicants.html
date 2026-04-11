@@ -3,356 +3,161 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Non Applicants Report — V3.3 Royal Executive Clean Header
-  ========================================================= */
-
   :root{
-    --royal-bg:#f3f6f2;
-    --royal-bg-2:#edf2ee;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
 
-    --royal-surface:#ffffff;
-    --royal-surface-2:#fbfcfa;
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
 
-    --royal-ink:#13221c;
-    --royal-ink-2:#21342b;
-    --royal-muted:#708178;
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
 
-    --royal-green-1:#0f291f;
-    --royal-green-2:#183629;
-    --royal-green-3:#214637;
-    --royal-green-4:#2d5947;
-    --royal-green-5:#3d6c58;
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
 
-    --royal-gold-1:#8f6927;
-    --royal-gold-2:#ae8334;
-    --royal-gold-3:#c89d49;
-    --royal-gold-4:#e8d8ad;
-    --royal-gold-5:#f7efdc;
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
 
-    --royal-line:#d8e2d9;
-    --royal-line-2:#cad6cc;
-    --royal-line-3:#e6ede7;
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
 
-    --royal-ok:#166534;
-    --royal-ok-bg:#edf8f0;
-    --royal-ok-line:#b7e4c7;
+    --ok:#215f39;
+    --warn:#8e6113;
+    --danger:#8f2f2f;
+    --info:#355c80;
 
-    --royal-danger:#991b1b;
-    --royal-danger-bg:#fef2f2;
-    --royal-danger-line:#fecaca;
+    --ok-bg:#eff8f3;
+    --ok-bd:#cfe6d8;
 
-    --royal-warn:#92400e;
-    --royal-warn-bg:#fff7ed;
-    --royal-warn-line:#efd29c;
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
 
-    --royal-shadow:0 12px 30px rgba(16,34,27,.06);
-    --royal-shadow-soft:0 8px 18px rgba(16,34,27,.05);
-    --royal-shadow-strong:0 20px 46px rgba(10,25,19,.14);
-    --royal-inset:inset 0 1px 0 rgba(255,255,255,.96);
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --info-bg:#f3f7fd;
+    --info-bd:#d5e0ef;
+
+    --moe-deep:#0f5f49;
+    --moe-mid:#1f7a62;
+    --moe-soft:#2e9b81;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
   }
 
-  .ui{
-    position:relative;
-    min-height:100%;
-    color:var(--royal-ink);
-    background:
-      radial-gradient(980px 340px at 100% 0%, rgba(200,157,73,.07), transparent 56%),
-      radial-gradient(760px 260px at 0% 14%, rgba(61,108,88,.055), transparent 62%),
-      linear-gradient(180deg, var(--royal-bg), var(--royal-bg-2));
+  .una,.una *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .ui-page{
+  .una{
+    direction:rtl;
+    color:var(--ink);
+  }
+
+  .una-page{
     display:grid;
-    gap:14px;
+    gap:12px;
   }
 
-  /* =========================
-     Clean Royal Hero
-  ========================= */
-  .ui-top{
+  .una-top,
+  .una-card,
+  .una-kpi{
     position:relative;
     overflow:hidden;
-    border-radius:28px;
-    border:1px solid rgba(201,211,203,.96);
-    box-shadow:var(--royal-shadow-strong);
-    background:
-      linear-gradient(135deg, #214837 0%, #17362a 44%, #10271f 100%);
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
   }
 
-  .ui-top::before{
+  .una-top::before,
+  .una-card::before,
+  .una-kpi::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--royal-gold-3), var(--royal-gold-2), rgba(200,157,73,.24));
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
-  .ui-top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-      radial-gradient(500px 175px at 86% 16%, rgba(247,239,220,.10), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
-  }
-
-  .ui-top-inner{
-    position:relative;
-    z-index:1;
+  .una-top{
     padding:16px 18px 14px;
-    display:grid;
-    gap:12px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
   }
 
-  .ui-top-head{
+  .una-top-main{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:14px;
+    gap:12px;
     align-items:start;
   }
 
-  .ui-top-main{
-    min-width:0;
-  }
-
-  .ui-kicker{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:25px;
-    padding:0 11px;
-    border-radius:999px;
-    font-size:8.4px;
-    font-weight:900;
-    letter-spacing:.45px;
-    color:#f7efd9;
-    border:1px solid rgba(255,255,255,.13);
-    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.055));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
-    backdrop-filter:blur(5px);
-  }
-
-  .ui-title{
-    margin:8px 0 0;
-    font-size:20px !important;
-    line-height:1.18;
+  .una-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.2;
     font-weight:900 !important;
-    color:#fff !important;
-    letter-spacing:-.3px;
+    color:var(--green-1);
+    letter-spacing:0;
   }
 
-  .ui-subtitle{
-    max-width:900px;
+  .una-subtitle{
     margin:6px 0 0;
-    color:rgba(255,255,255,.84) !important;
-    font-size:10.2px !important;
-    line-height:1.9 !important;
+    max-width:900px;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.95;
+    font-weight:800 !important;
   }
 
-  .ui-top-meta{
+  .una-meta{
+    margin-top:10px;
     display:flex;
     flex-wrap:wrap;
-    gap:7px;
-    margin-top:10px;
+    gap:8px;
+    align-items:center;
   }
 
-  .meta-chip{
-    min-height:25px;
-    padding:0 9px;
-    border-radius:999px;
+  .una-chip{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    font-size:8.6px;
-    font-weight:900;
-    color:#eef7f1;
-    border:1px solid rgba(255,255,255,.10);
-    background:rgba(255,255,255,.065);
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900 !important;
+    white-space:nowrap;
   }
 
-  .ui-top-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-items:center;
-  }
-
-  .kpi-grid{
-    display:grid;
-    grid-template-columns:repeat(3, minmax(0,1fr));
-    gap:10px;
-  }
-
-  .kpi-card{
-    position:relative;
-    overflow:hidden;
-    min-height:82px;
-    padding:10px 12px;
-    border-radius:18px;
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05));
-    backdrop-filter:blur(6px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
-  }
-
-  .kpi-card::after{
-    content:"";
-    position:absolute;
-    inset:auto auto 0 0;
-    width:100%;
-    height:2px;
-    opacity:.88;
-  }
-
-  .kpi-card.kpi-active::after{
-    background:linear-gradient(90deg, #cdebd8, transparent 78%);
-  }
-
-  .kpi-card.kpi-submitted::after{
-    background:linear-gradient(90deg, #cfe0ff, transparent 78%);
-  }
-
-  .kpi-card.kpi-missing::after{
-    background:linear-gradient(90deg, #f2ddb1, transparent 78%);
-  }
-
-  .kpi-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-  }
-
-  .kpi-label{
-    font-size:8.6px;
-    font-weight:900;
-    color:rgba(255,255,255,.78);
-  }
-
-  .kpi-icon{
-    width:23px;
-    height:23px;
-    border-radius:9px;
-    display:grid;
-    place-items:center;
-    font-size:10px;
-    color:#fff;
-    background:rgba(255,255,255,.09);
-    border:1px solid rgba(255,255,255,.08);
-  }
-
-  .kpi-value{
-    margin-top:7px;
-    font-size:16px;
-    font-weight:900;
-    line-height:1.05;
-    color:#fff;
-  }
-
-  .kpi-note{
-    margin-top:4px;
-    font-size:8.2px;
-    color:rgba(255,255,255,.67);
-    line-height:1.55;
-  }
-
-  /* =========================
-     Card
-  ========================= */
-  .ui-card{
-    overflow:hidden;
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:24px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--royal-shadow) !important;
-  }
-
-  /* =========================
-     Buttons
-  ========================= */
-  .ui-btn{
-    min-height:34px;
-    padding:6px 12px;
+  .una-dot{
+    width:8px;
+    height:8px;
     border-radius:999px;
-    font-size:9.7px;
-    font-weight:800;
-    text-decoration:none;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    border:1px solid rgba(211,221,212,.95);
-    color:var(--royal-green-3);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    transition:.18s ease;
+    background:var(--moe-mid);
+    flex:0 0 auto;
   }
 
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 11px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
-  }
-
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:rgba(255,255,255,.14) !important;
-    background:linear-gradient(180deg, var(--royal-green-5), var(--royal-green-4)) !important;
-    box-shadow:0 14px 24px rgba(18,45,35,.22), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-hero-main{
-    color:#17382c !important;
-    border-color:rgba(255,255,255,.12) !important;
-    background:linear-gradient(180deg, #f5ecd5, #e3cf9b) !important;
-    box-shadow:0 15px 25px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.48);
-  }
-
-  .ui-btn-hero{
-    color:#fff !important;
-    border-color:rgba(255,255,255,.13) !important;
-    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07)) !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
-    backdrop-filter:blur(4px);
-  }
-
-  .ui-btn-hero:hover{
-    box-shadow:0 11px 18px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-export{
-    color:var(--royal-warn) !important;
-    border-color:#eed29c !important;
-    background:linear-gradient(180deg,#fffaf1,#fff4e3) !important;
-  }
-
-  /* =========================
-     Toolbar
-  ========================= */
-  .ui-toolbar{
-    padding:12px 13px;
-    border-bottom:1px solid rgba(219,227,219,.94);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-toolbar-row{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:end;
-  }
-
-  .ui-toolbar-left{
-    display:flex;
-    flex-wrap:wrap;
-    gap:9px;
-    align-items:end;
-    min-width:0;
-  }
-
-  .ui-toolbar-right{
+  .una-actions{
     display:flex;
     flex-wrap:wrap;
     gap:8px;
@@ -360,161 +165,288 @@
     justify-content:flex-end;
   }
 
-  .ui-field{
+  .una-kpis{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .una-kpi{
+    padding:11px 12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+  }
+
+  .una-kpi-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .una-kpi-label{
+    font-size:8.7px;
+    font-weight:900 !important;
+    color:var(--muted);
+  }
+
+  .una-kpi-icon{
+    width:24px;
+    height:24px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    font-size:10px;
+    font-weight:900;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--green-2);
+  }
+
+  .una-kpi-value{
+    margin-top:8px;
+    font-size:17px;
+    line-height:1;
+    font-weight:900 !important;
+    color:var(--green-1);
+  }
+
+  .una-kpi-note{
+    margin-top:5px;
+    font-size:8.4px;
+    line-height:1.7;
+    color:var(--muted);
+    font-weight:800 !important;
+  }
+
+  .una-btn{
+    appearance:none;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--green-2);
+    border-radius:8px;
+    padding:6px 12px;
+    font-size:9.4px;
+    font-weight:900 !important;
+    line-height:1;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+    box-shadow:none;
+    min-height:35px;
+  }
+
+  .una-btn:hover{
+    transform:translateY(-1px);
+    border-color:#b8c6bb;
+    background:var(--paper-2);
+  }
+
+  .una-btn:active{
+    transform:translateY(0);
+  }
+
+  .una-btn-primary{
+    border-color:var(--green-2);
+    background:var(--green-2);
+    color:#fff;
+  }
+
+  .una-btn-export{
+    color:#8a6526;
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
+  }
+
+  .una-card{
+    overflow:hidden;
+  }
+
+  .una-toolbar{
+    padding:12px 13px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .una-toolbar-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:end;
+  }
+
+  .una-toolbar-left{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    align-items:end;
+    min-width:0;
+  }
+
+  .una-toolbar-right{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    justify-content:flex-end;
+  }
+
+  .una-field{
     display:flex;
     flex-direction:column;
     gap:5px;
   }
 
-  .ui-field-label{
+  .una-field-label{
     font-size:8.6px;
-    font-weight:900;
-    color:var(--royal-muted);
+    font-weight:900 !important;
+    color:var(--muted);
     padding-inline:4px;
   }
 
-  .ui-input,
-  .ui-select{
-    min-height:40px;
-    height:40px;
-    padding:9px 13px;
-    font-size:10.2px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--royal-ink);
-    box-shadow:var(--royal-inset);
+  .una-input,
+  .una-select{
+    min-height:39px;
+    height:39px;
+    padding:7px 10px;
+    font-size:9.5px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--ink);
     outline:none;
+    box-shadow:none;
   }
 
-  .ui-input::placeholder{
+  .una-input::placeholder{
     color:#97a69e;
   }
 
-  .ui-input:focus,
-  .ui-select:focus{
-    border-color:rgba(174,131,52,.38);
-    box-shadow:0 0 0 4px rgba(174,131,52,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .una-input:focus,
+  .una-select:focus{
+    border-color:var(--gold-2);
+    box-shadow:0 0 0 2px rgba(171,137,80,.08);
   }
 
-  .ui-summary{
+  .una-summary{
     display:flex;
     flex-wrap:wrap;
     gap:8px;
     align-items:center;
-    padding:9px 13px;
-    border-bottom:1px solid rgba(231,238,232,.95);
-    background:linear-gradient(180deg, #fcfdfb, #fafcf9);
+    padding:10px 13px;
+    border-bottom:1px solid var(--line-3);
+    background:linear-gradient(180deg,#fcfdfb,#fafcf9);
   }
 
-  .ui-pill{
-    min-height:29px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.3px;
-    font-weight:900;
+  .una-pill{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--royal-green-3);
-    box-shadow:var(--royal-inset);
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
+    font-size:9px;
+    font-weight:900 !important;
+    white-space:nowrap;
   }
 
-  .ui-pill-total{
-    color:var(--royal-green-3);
+  .una-pill-total{
+    color:var(--green-2);
     border-color:#d8e3da;
-    background:linear-gradient(180deg,#ffffff,#f6faf6);
+    background:#f6faf6;
   }
 
-  .ui-pill-search{
+  .una-pill-search{
     color:#365246;
     border-color:#dbe6de;
-    background:linear-gradient(180deg,#ffffff,#fafcfb);
+    background:#fafcfb;
   }
 
-  .ui-pill-filter{
-    color:var(--royal-warn);
-    border-color:#efd7ab;
-    background:linear-gradient(180deg,#fffaf2,#fff5e7);
+  .una-pill-filter{
+    color:#8a6526;
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
   }
 
-  /* =========================
-     Table
-  ========================= */
-  .tbl-wrap{
+  .una-table-wrap{
     overflow:auto;
     background:#fff;
   }
 
-  table.tbl{
+  table.una-table{
     width:100%;
     min-width:1120px;
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse:collapse;
     table-layout:fixed;
   }
 
-  table.tbl thead th{
+  table.una-table thead th{
     position:sticky;
     top:0;
     z-index:4;
-    padding:11px 8px;
+    padding:12px 8px;
     white-space:nowrap;
-    font-size:9.9px;
+    font-size:8.8px;
     font-weight:900;
-    color:var(--royal-green-3);
-    background:linear-gradient(180deg, #eef4ef, #e8efe9) !important;
-    border-bottom:1px solid #d7e0d7 !important;
-    box-shadow:inset 0 -1px 0 rgba(255,255,255,.55);
+    color:var(--green-1);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
+    border-bottom:1px solid var(--line-2) !important;
+    text-align:right;
   }
 
-  table.tbl tbody td{
-    padding:9px 8px;
-    font-size:10.15px;
+  table.una-table tbody td{
+    padding:11px 8px;
+    font-size:9.35px;
     vertical-align:middle;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color:var(--royal-ink-2);
-    background:#ffffff;
-    border-bottom:1px solid #e7ede7 !important;
+    color:var(--ink);
+    background:#fff;
+    border-bottom:1px solid #edf1ed !important;
   }
 
-  table.tbl tbody tr:nth-child(even) td{
-    background:#fbfcfa;
+  table.una-table tbody tr:nth-child(even) td{
+    background:#fcfdfc;
   }
 
-  table.tbl tbody tr:hover td{
-    background:#f8faf7;
+  table.una-table tbody tr:hover td{
+    background:#f8faf8;
   }
 
-  .row-no{
+  .una-row-no{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     min-width:34px;
     height:24px;
     padding:0 8px;
-    border-radius:999px;
-    background:linear-gradient(180deg,#f8fbf8,#f0f6f1);
+    border-radius:8px;
+    background:#f6faf6;
     border:1px solid #dce7de;
-    color:var(--royal-green-4);
-    font-size:9px;
-    font-weight:900;
+    color:var(--green-3);
+    font-size:8.8px;
+    font-weight:900 !important;
   }
 
-  .name{
+  .una-name{
     display:block;
-    font-weight:900;
-    color:var(--royal-green-1);
-    font-size:10.7px;
+    font-weight:900 !important;
+    color:var(--green-1);
+    font-size:10.4px;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
-  .sub{
+  .una-sub{
     display:flex;
     align-items:center;
     gap:6px;
@@ -522,52 +454,53 @@
     min-width:0;
   }
 
-  .status-badge{
+  .una-status{
     display:inline-flex;
     align-items:center;
     gap:5px;
-    min-height:21px;
+    min-height:22px;
     padding:2px 8px;
     border-radius:999px;
-    font-size:8.5px;
-    font-weight:900;
+    font-size:8.3px;
+    font-weight:900 !important;
     border:1px solid transparent;
   }
 
-  .status-yes{
-    color:var(--royal-ok);
-    background:var(--royal-ok-bg);
-    border-color:var(--royal-ok-line);
+  .una-status-yes{
+    color:var(--ok);
+    background:var(--ok-bg);
+    border-color:var(--ok-bd);
   }
 
-  .status-no{
-    color:var(--royal-danger);
-    background:var(--royal-danger-bg);
-    border-color:var(--royal-danger-line);
+  .una-status-no{
+    color:var(--danger);
+    background:var(--danger-bg);
+    border-color:var(--danger-bd);
   }
 
-  .sub-note{
-    font-size:8.5px;
-    color:var(--royal-muted);
+  .una-sub-note{
+    font-size:8.3px;
+    color:var(--muted);
     overflow:hidden;
     text-overflow:ellipsis;
+    font-weight:800 !important;
   }
 
-  .cell-soft{
-    color:var(--royal-muted);
+  .una-cell-soft{
+    color:var(--muted);
   }
 
-  .cell-strong{
-    font-weight:900;
-    color:var(--royal-ink-2);
+  .una-cell-strong{
+    font-weight:900 !important;
+    color:var(--ink-2);
   }
 
-  .empty{
+  .una-empty{
     padding:26px 18px !important;
     background:#fff !important;
   }
 
-  .empty-box{
+  .una-empty-box{
     display:grid;
     place-items:center;
     gap:8px;
@@ -575,85 +508,88 @@
     padding:14px 12px;
   }
 
-  .empty-icon{
+  .una-empty-icon{
     width:52px;
     height:52px;
-    border-radius:18px;
+    border-radius:16px;
     display:grid;
     place-items:center;
     font-size:20px;
-    color:var(--royal-gold-1);
+    color:var(--gold-1);
     border:1px solid #eedcb4;
-    background:linear-gradient(180deg,#fffaf1,#fff4df);
-    box-shadow:var(--royal-shadow-soft);
+    background:#fff4df;
+    box-shadow:var(--shadow-soft);
   }
 
-  .empty-title{
-    font-size:12.5px;
-    font-weight:900;
-    color:var(--royal-green-3);
+  .una-empty-title{
+    font-size:12px;
+    font-weight:900 !important;
+    color:var(--green-2);
   }
 
-  .empty-sub{
+  .una-empty-sub{
     max-width:500px;
-    font-size:9.7px;
+    font-size:8.8px;
     line-height:1.8;
-    color:var(--royal-muted);
+    color:var(--muted);
+    font-weight:800 !important;
   }
 
-  /* =========================
-     Footer
-  ========================= */
-  .ui-foot{
+  .una-foot{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    padding:11px 13px;
-    border-top:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    padding:12px 13px;
+    border-top:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    flex-wrap:wrap;
   }
 
-  .pager{
+  .una-pager{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
     align-items:center;
   }
 
-  .page-chip{
-    min-height:29px;
+  .una-page-chip{
+    min-height:28px;
     padding:4px 10px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:900;
-    color:var(--royal-green-3);
+    border-radius:8px;
+    font-size:8.8px;
+    font-weight:900 !important;
+    color:var(--green-2);
     border:1px solid #dce5dd;
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    box-shadow:var(--royal-inset);
+    background:#f8faf7;
     display:inline-flex;
     align-items:center;
     gap:6px;
   }
 
-  @media (max-width: 980px){
-    .ui-top-head{
+  @media (max-width:980px){
+    .una-top-main{
       grid-template-columns:1fr;
     }
-    .kpi-grid{
+
+    .una-kpis{
       grid-template-columns:1fr;
     }
-    .ui-toolbar-row{
+
+    .una-toolbar-row{
       grid-template-columns:1fr;
     }
-    .ui-toolbar-right{
+
+    .una-toolbar-right{
       justify-content:flex-start;
     }
-    .ui-foot{
+
+    .una-foot{
       flex-direction:column;
       align-items:flex-start;
     }
-    table.tbl{
+
+    table.una-table{
       min-width:1020px;
     }
   }
@@ -661,85 +597,78 @@
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="una">
+  <div class="una-page">
 
-    <div class="ui-top">
-      <div class="ui-top-inner">
+    <div class="una-top">
+      <div class="una-top-main">
+        <div>
+          <h1 class="una-title">تقرير غير المتقدمين</h1>
+          <p class="una-subtitle">
+            لوحة متابعة إدارية مركزة لرصد المرشحين الذين لم يتقدموا أو لم يُكملوا إرسال الطلب، مع أدوات دقيقة للبحث والتصفية والتصدير لدعم المعالجة السريعة.
+          </p>
 
-        <div class="ui-top-head">
-          <div class="ui-top-main">
-            <span class="ui-kicker">ROYAL EXECUTIVE REPORT</span>
-
-            <h1 class="ui-title">تقرير غير المتقدمين</h1>
-
-            <p class="ui-subtitle">
-              لوحة متابعة تنفيذية مضغوطة لرصد المرشحين الذين لم يتقدموا أو لم يُكملوا إرسال الطلب، مع أدوات دقيقة للبحث والتصفية والتصدير لدعم المعالجة الإدارية السريعة.
-            </p>
-
-            <div class="ui-top-meta">
-              <span class="meta-chip">متابعة تنفيذية</span>
-              <span class="meta-chip">تصفية مرنة</span>
-              <span class="meta-chip">تصدير مباشر</span>
-            </div>
-          </div>
-
-          <div class="ui-top-actions">
-            <a class="ui-btn ui-btn-hero-main" href="{% url 'portal:admin_dashboard' %}">
-              <span>▦</span> الرجوع إلى لوحة القرار
-            </a>
-
-            <a class="ui-btn ui-btn-hero" href="{% url 'portal:admin_applicants_list' %}">
-              <span>👤</span> إدارة المتقدمين
-            </a>
-
-            <a class="ui-btn ui-btn-hero" href="{% url 'portal:admin_vacancies_list' %}">
-              <span>🏫</span> إدارة الشواغر
-            </a>
+          <div class="una-meta">
+            <span class="una-chip"><span class="una-dot"></span>متابعة إدارية</span>
+            <span class="una-chip">تصفية مرنة</span>
+            <span class="una-chip">تصدير مباشر</span>
           </div>
         </div>
 
-        <div class="kpi-grid">
-          <div class="kpi-card kpi-active">
-            <div class="kpi-head">
-              <div class="kpi-label">النشطون</div>
-              <div class="kpi-icon">●</div>
-            </div>
-            <div class="kpi-value">{{ kpi.active }}</div>
-            <div class="kpi-note">إجمالي المرشحين النشطين</div>
-          </div>
+        <div class="una-actions">
+          <a class="una-btn una-btn-primary" href="{% url 'portal:admin_dashboard' %}">
+            <span>▦</span> الرجوع إلى لوحة القرار
+          </a>
 
-          <div class="kpi-card kpi-submitted">
-            <div class="kpi-head">
-              <div class="kpi-label">تم الإرسال</div>
-              <div class="kpi-icon">✓</div>
-            </div>
-            <div class="kpi-value">{{ kpi.submitted }}</div>
-            <div class="kpi-note">الطلبات المكتملة بنجاح</div>
-          </div>
+          <a class="una-btn" href="{% url 'portal:admin_applicants_list' %}">
+            <span>👤</span> إدارة المتقدمين
+          </a>
 
-          <div class="kpi-card kpi-missing">
-            <div class="kpi-head">
-              <div class="kpi-label">غير مرسلين</div>
-              <div class="kpi-icon">!</div>
-            </div>
-            <div class="kpi-value">{{ kpi.not_submitted }}</div>
-            <div class="kpi-note">الفئة التي تتطلب متابعة</div>
+          <a class="una-btn" href="{% url 'portal:admin_vacancies_list' %}">
+            <span>🏫</span> إدارة الشواغر
+          </a>
+        </div>
+      </div>
+
+      <div class="una-kpis">
+        <div class="una-kpi">
+          <div class="una-kpi-head">
+            <div class="una-kpi-label">النشطون</div>
+            <div class="una-kpi-icon">●</div>
           </div>
+          <div class="una-kpi-value">{{ kpi.active }}</div>
+          <div class="una-kpi-note">إجمالي المرشحين النشطين</div>
         </div>
 
+        <div class="una-kpi">
+          <div class="una-kpi-head">
+            <div class="una-kpi-label">تم الإرسال</div>
+            <div class="una-kpi-icon">✓</div>
+          </div>
+          <div class="una-kpi-value">{{ kpi.submitted }}</div>
+          <div class="una-kpi-note">الطلبات المكتملة بنجاح</div>
+        </div>
+
+        <div class="una-kpi">
+          <div class="una-kpi-head">
+            <div class="una-kpi-label">غير مرسلين</div>
+            <div class="una-kpi-icon">!</div>
+          </div>
+          <div class="una-kpi-value">{{ kpi.not_submitted }}</div>
+          <div class="una-kpi-note">الفئة التي تتطلب متابعة</div>
+        </div>
       </div>
     </div>
 
-    <div class="ui-card">
+    <div class="una-card">
 
-      <div class="ui-toolbar">
-        <form method="get" class="ui-toolbar-row">
-          <div class="ui-toolbar-left">
-            <div class="ui-field">
-              <label class="ui-field-label">البحث</label>
+      <div class="una-toolbar">
+        <form method="get" class="una-toolbar-row">
+          <div class="una-toolbar-left">
+            <div class="una-field">
+              <label class="una-field-label">البحث</label>
               <input
-                class="ui-input"
+                class="una-input"
                 name="q"
                 value="{{ q }}"
                 placeholder="الاسم / السجل / القطاع / الجوال / المدرسة الحالية"
@@ -747,9 +676,9 @@
               >
             </div>
 
-            <div class="ui-field">
-              <label class="ui-field-label">وضع التقرير</label>
-              <select class="ui-select" name="mode" style="width:240px">
+            <div class="una-field">
+              <label class="una-field-label">وضع التقرير</label>
+              <select class="una-select" name="mode" style="width:240px">
                 <option value="not_submitted" {% if mode == "not_submitted" %}selected{% endif %}>
                   لا يوجد طلب أو لم يُرسل
                 </option>
@@ -763,28 +692,28 @@
             </div>
           </div>
 
-          <div class="ui-toolbar-right">
-            <button class="ui-btn ui-btn-primary" type="submit">بحث</button>
+          <div class="una-toolbar-right">
+            <button class="una-btn una-btn-primary" type="submit">بحث</button>
 
-            <a class="ui-btn" href="{% url 'portal:admin_non_applicants' %}">
+            <a class="una-btn" href="{% url 'portal:admin_non_applicants' %}">
               مسح
             </a>
 
-            <a class="ui-btn ui-btn-export" href="{% url 'portal:admin_non_applicants_csv' %}?q={{ q|urlencode }}&mode={{ mode|urlencode }}">
+            <a class="una-btn una-btn-export" href="{% url 'portal:admin_non_applicants_csv' %}?q={{ q|urlencode }}&mode={{ mode|urlencode }}">
               ⬇︎ تصدير CSV
             </a>
           </div>
         </form>
       </div>
 
-      <div class="ui-summary">
-        <span class="ui-pill ui-pill-total">الإجمالي: <b>{{ total }}</b></span>
+      <div class="una-summary">
+        <span class="una-pill una-pill-total">الإجمالي: <b>{{ total }}</b></span>
 
         {% if q %}
-          <span class="ui-pill ui-pill-search">عبارة البحث: <b>{{ q }}</b></span>
+          <span class="una-pill una-pill-search">عبارة البحث: <b>{{ q }}</b></span>
         {% endif %}
 
-        <span class="ui-pill ui-pill-filter">
+        <span class="una-pill una-pill-filter">
           الوضع:
           <b>
             {% if mode == "none" %}
@@ -798,8 +727,8 @@
         </span>
       </div>
 
-      <div class="tbl-wrap">
-        <table class="tbl">
+      <div class="una-table-wrap">
+        <table class="una-table">
           <thead>
             <tr>
               <th style="width:80px">#</th>
@@ -816,34 +745,34 @@
             {% for r in rows %}
               <tr>
                 <td>
-                  <span class="row-no">{{ forloop.counter0|add:rows.start_index }}</span>
+                  <span class="una-row-no">{{ forloop.counter0|add:rows.start_index }}</span>
                 </td>
 
                 <td title="{{ r.full_name }}">
-                  <span class="name">{{ r.full_name|default:"—" }}</span>
-                  <span class="sub">
+                  <span class="una-name">{{ r.full_name|default:"—" }}</span>
+                  <span class="una-sub">
                     {% if r.is_active %}
-                      <span class="status-badge status-yes">● نشط</span>
+                      <span class="una-status una-status-yes">● نشط</span>
                     {% else %}
-                      <span class="status-badge status-no">● غير نشط</span>
+                      <span class="una-status una-status-no">● غير نشط</span>
                     {% endif %}
-                    <span class="sub-note">سجل مرشح قابل للمتابعة</span>
+                    <span class="una-sub-note">سجل مرشح قابل للمتابعة</span>
                   </span>
                 </td>
 
-                <td class="cell-soft">{{ r.national_id|default:"—" }}</td>
-                <td class="cell-strong">{{ r.mobile|default:"—" }}</td>
+                <td class="una-cell-soft">{{ r.national_id|default:"—" }}</td>
+                <td class="una-cell-strong">{{ r.mobile|default:"—" }}</td>
                 <td title="{{ r.sector }}">{{ r.sector|default:"—" }}</td>
                 <td>{{ r.gender|default:"—" }}</td>
                 <td title="{{ r.current_school }}">{{ r.current_school|default:"—" }}</td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="7" class="empty">
-                  <div class="empty-box">
-                    <div class="empty-icon">⌕</div>
-                    <div class="empty-title">لا توجد نتائج مطابقة</div>
-                    <div class="empty-sub">
+                <td colspan="7" class="una-empty">
+                  <div class="una-empty-box">
+                    <div class="una-empty-icon">⌕</div>
+                    <div class="una-empty-title">لا توجد نتائج مطابقة</div>
+                    <div class="una-empty-sub">
                       لم يتم العثور على بيانات ضمن وضع التقرير الحالي أو عبارة البحث المدخلة. يمكن تعديل الفلاتر أو إعادة ضبط البحث لعرض نتائج أخرى.
                     </div>
                   </div>
@@ -854,20 +783,20 @@
         </table>
       </div>
 
-      <div class="ui-foot">
-        <div class="page-chip">
+      <div class="una-foot">
+        <div class="una-page-chip">
           الصفحة <b>{{ rows.number }}</b> من <b>{{ rows.paginator.num_pages }}</b>
         </div>
 
-        <div class="pager">
+        <div class="una-pager">
           {% if rows.has_previous %}
-            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">
+            <a class="una-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">
               السابق
             </a>
           {% endif %}
 
           {% if rows.has_next %}
-            <a class="ui-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">
+            <a class="una-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">
               التالي
             </a>
           {% endif %}

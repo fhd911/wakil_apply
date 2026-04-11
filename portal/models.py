@@ -30,12 +30,19 @@ class PortalWindow(TimeStampedModel):
         * closed
         * official_only
         * new_only
+        * all
     """
 
+    PHASE_CLOSED = "closed"
+    PHASE_OFFICIAL_ONLY = "official_only"
+    PHASE_NEW_ONLY = "new_only"
+    PHASE_ALL = "all"
+
     PHASES = [
-        ("closed", "مغلق"),
-        ("official_only", "الوكلاء الرسميون فقط"),
-        ("new_only", "المتقدمون الجدد فقط"),
+        (PHASE_CLOSED, "مغلق"),
+        (PHASE_OFFICIAL_ONLY, "الوكلاء الرسميون فقط"),
+        (PHASE_NEW_ONLY, "المتقدمون الجدد فقط"),
+        (PHASE_ALL, "الجميع (الوكلاء الرسميون + المتقدمون الجدد)"),
     ]
 
     is_enabled = models.BooleanField(default=True)
@@ -46,7 +53,7 @@ class PortalWindow(TimeStampedModel):
     phase = models.CharField(
         max_length=20,
         choices=PHASES,
-        default="closed",
+        default=PHASE_CLOSED,
         db_index=True,
     )
 
@@ -68,13 +75,13 @@ class PortalWindow(TimeStampedModel):
         default="التقديم متاح حالياً للمتقدمين الجدد فقط.",
     )
 
-    def is_open_now(self) -> bool:
-        if not self.is_enabled:
-            return False
+    all_message = models.CharField(
+        max_length=255,
+        blank=True,
+        default="التقديم متاح حالياً للجميع.",
+    )
 
-        if self.phase == "closed":
-            return False
-
+    def is_within_time_window(self) -> bool:
         now = timezone.now()
         if self.opens_at and now < self.opens_at:
             return False
@@ -82,11 +89,26 @@ class PortalWindow(TimeStampedModel):
             return False
         return True
 
+    def is_open_now(self) -> bool:
+        if not self.is_enabled:
+            return False
+
+        if self.phase == self.PHASE_CLOSED:
+            return False
+
+        return self.is_within_time_window()
+
+    def allows_official(self) -> bool:
+        return self.phase in {self.PHASE_OFFICIAL_ONLY, self.PHASE_ALL}
+
+    def allows_new(self) -> bool:
+        return self.phase in {self.PHASE_NEW_ONLY, self.PHASE_ALL}
+
     @classmethod
     def get(cls) -> "PortalWindow":
         obj = cls.objects.order_by("-id").first()
         if not obj:
-            obj = cls.objects.create(is_enabled=True, phase="closed")
+            obj = cls.objects.create(is_enabled=True, phase=cls.PHASE_CLOSED)
         return obj
 
     def __str__(self) -> str:

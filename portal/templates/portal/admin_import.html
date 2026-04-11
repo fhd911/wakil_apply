@@ -3,14 +3,6 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Import Excel — Unified Ministerial Light Style
-     ✅ تحديث:
-     - فصل رفع المتقدمين الجدد عن رفع المدارس
-     - إضافة قسم واضح لفرز المتقدمين الجدد
-     - واجهة أوضح للمرحلة الثانية
-  ========================================================= */
-
   :root{
     --min-bg:#f4f7f3;
     --min-bg-2:#eef3ef;
@@ -216,12 +208,6 @@
     padding:12px !important;
   }
 
-  .ui-muted{
-    color:var(--min-muted);
-    font-size:10px;
-    line-height:1.8;
-  }
-
   .ui-pill{
     min-height:30px;
     padding:4px 10px;
@@ -313,7 +299,8 @@
     line-height:1.6;
   }
 
-  .ui-field input[type="file"]{
+  .ui-field input[type="file"],
+  .ui-field select{
     width:100%;
     min-height:42px;
     padding:8px 10px;
@@ -338,7 +325,8 @@
     cursor:pointer;
   }
 
-  .ui-field input[type="file"]:focus{
+  .ui-field input[type="file"]:focus,
+  .ui-field select:focus{
     border-color:rgba(169,130,53,.36);
     box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
@@ -355,13 +343,6 @@
     margin-top:16px;
     padding-top:14px;
     border-top:1px solid rgba(219,227,219,.92);
-  }
-
-  .ui-summary-title{
-    font-weight:800;
-    font-size:11px;
-    color:var(--min-green-2);
-    margin-bottom:8px;
   }
 
   .ui-item{
@@ -424,7 +405,7 @@
     <div class="ui-top">
       <div class="ui-title-wrap">
         <h1 class="ui-title">استيراد ملفات الإكسل</h1>
-        <p class="ui-subtitle">إدارة رفع بيانات المتقدمين الجدد والمدارس، ثم الانتقال إلى فرز المرحلة الثانية بصورة واضحة ومنظمة.</p>
+        <p class="ui-subtitle">إدارة رفع بيانات المتقدمين الجدد والمدارس، مع تحديد وضع الاستيراد ثم الانتقال إلى الفرز بصورة واضحة ومنظمة.</p>
       </div>
 
       <div class="ui-actions">
@@ -445,6 +426,10 @@
       </div>
     </div>
 
+    {% if form.non_field_errors %}
+      <div class="ui-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
     <div class="ui-alert warn">
       <b>تنبيه:</b>
       رفع ملف <b>المتقدمين الجدد</b> يخص المرحلة الثانية، ويفترض بعده مراجعة البيانات ثم تنفيذ الفرز وفق الشواغر المتاحة.
@@ -452,7 +437,6 @@
 
     <div class="ui-grid">
 
-      <!-- المتقدمون الجدد -->
       <div class="ui-card">
         <div class="ui-card-head">
           <h3 class="ui-card-title">رفع المتقدمين الجدد</h3>
@@ -471,10 +455,22 @@
             {% csrf_token %}
 
             <div class="ui-field">
-              <label class="ui-label">ملف المتقدمين الجدد</label>
+              <label class="ui-label" for="id_applicants_file">ملف المتقدمين الجدد</label>
               {{ form.applicants_file }}
               <div class="ui-help">
-                ارفع ملف المتقدمين الجدد بصيغة Excel. سيتم التعامل معه باعتباره ملف المرحلة الثانية.
+                ارفع ملف المتقدمين الجدد بصيغة Excel. سيتم تحديث أو إضافة السجلات حسب وضع الاستيراد الذي تختاره.
+              </div>
+            </div>
+
+            <div class="ui-field">
+              <label class="ui-label" for="import_mode_applicants">وضع الاستيراد</label>
+              <select name="import_mode" id="import_mode_applicants">
+                <option value="sync">إضافة الجديد + تحديث الموجود</option>
+                <option value="create_only">إضافة الجديد فقط</option>
+                <option value="update_only">تحديث الموجود فقط</option>
+              </select>
+              <div class="ui-help">
+                اختر الطريقة المناسبة: إضافة وتحديث معًا، أو إضافة فقط، أو تحديث فقط.
               </div>
             </div>
 
@@ -488,7 +484,6 @@
         </div>
       </div>
 
-      <!-- المدارس / الشواغر -->
       <div class="ui-card">
         <div class="ui-card-head">
           <h3 class="ui-card-title">رفع المدارس / الشواغر</h3>
@@ -507,10 +502,22 @@
             {% csrf_token %}
 
             <div class="ui-field">
-              <label class="ui-label">ملف المدارس / الشواغر</label>
+              <label class="ui-label" for="id_schools_file">ملف المدارس / الشواغر</label>
               {{ form.schools_file }}
               <div class="ui-help">
-                ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث بيانات المدارس المفتوحة والمغلقة وفق الملف.
+                ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث أو إضافة المدارس بحسب وضع الاستيراد المحدد.
+              </div>
+            </div>
+
+            <div class="ui-field">
+              <label class="ui-label" for="import_mode_schools">وضع الاستيراد</label>
+              <select name="import_mode" id="import_mode_schools">
+                <option value="sync">إضافة الجديد + تحديث الموجود</option>
+                <option value="create_only">إضافة الجديد فقط</option>
+                <option value="update_only">تحديث الموجود فقط</option>
+              </select>
+              <div class="ui-help">
+                استخدم هذا الخيار إذا رغبت في تحديث المدارس الموجودة فقط أو إضافة مدارس جديدة فقط أو تنفيذ الأمرين معًا.
               </div>
             </div>
 
@@ -528,7 +535,6 @@
 
     <div class="ui-grid-single">
 
-      <!-- الفرز -->
       <div class="ui-card">
         <div class="ui-card-head">
           <h3 class="ui-card-title">فرز المتقدمين الجدد</h3>
@@ -573,21 +579,14 @@
 
         <div class="ui-card-body">
           <div class="ui-summary">
-            {% if result.applicants or result.new_applicants %}
+            {% if result.applicants %}
               <div class="ui-item">
                 <div class="nm">المتقدمون الجدد</div>
                 <div class="sm">
-                  {% if result.new_applicants %}
-                    Batch #{{ result.new_applicants.batch }}
-                    — Added: {{ result.new_applicants.created }}
-                    — Updated: {{ result.new_applicants.updated }}
-                    — Skipped: {{ result.new_applicants.skipped }}
-                  {% else %}
-                    Batch #{{ result.applicants.batch }}
-                    — Added: {{ result.applicants.created }}
-                    — Updated: {{ result.applicants.updated }}
-                    — Skipped: {{ result.applicants.skipped }}
-                  {% endif %}
+                  الدفعة رقم {{ result.applicants.batch }}
+                  — إضافة: {{ result.applicants.created }}
+                  — تحديث: {{ result.applicants.updated }}
+                  — تخطي: {{ result.applicants.skipped }}
                 </div>
               </div>
             {% endif %}
@@ -596,15 +595,15 @@
               <div class="ui-item">
                 <div class="nm">المدارس / الشواغر</div>
                 <div class="sm">
-                  Batch #{{ result.schools.batch }}
-                  — Added: {{ result.schools.created }}
-                  — Updated: {{ result.schools.updated }}
-                  — Skipped: {{ result.schools.skipped }}
+                  الدفعة رقم {{ result.schools.batch }}
+                  — إضافة: {{ result.schools.created }}
+                  — تحديث: {{ result.schools.updated }}
+                  — تخطي: {{ result.schools.skipped }}
                 </div>
               </div>
             {% endif %}
 
-            {% if not result.applicants and not result.new_applicants and not result.schools %}
+            {% if not result.applicants and not result.schools %}
               <div class="ui-item">
                 <div class="nm">لا يوجد ملخص متاح</div>
                 <div class="sm">لم يتم العثور على نتائج استيراد لعرضها حاليًا.</div>

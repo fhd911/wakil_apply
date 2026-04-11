@@ -4,46 +4,68 @@
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f3f6f3;
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
     --paper:#ffffff;
-    --ink:#17231c;
-    --muted:#6f7d74;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
 
-    --green-1:#17382d;
-    --green-2:#224a3a;
-    --green-3:#315b49;
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
 
-    --gold-1:#9b7833;
-    --gold-2:#b78f4b;
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
 
-    --line:#dde6de;
-    --line-2:#d2dbd3;
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
 
-    --shadow:0 10px 28px rgba(18,34,26,.07);
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
+
+    --ok:#215f39;
+    --warn:#8e6113;
+    --danger:#8f2f2f;
+    --info:#355c80;
+
+    --moe-deep:#0f5f49;
+    --moe-mid:#1f7a62;
+    --moe-soft:#2e9b81;
+    --moe-mist:#edf6f2;
+    --moe-mist-2:#f7fbf9;
+    --moe-line:#d6e6dd;
+
+    --r-2xl:12px;
+    --r-xl:10px;
+    --r-lg:9px;
+    --r-md:8px;
+    --r-sm:7px;
   }
 
-  .prn, .prn *{
+  .v963prn, .v963prn *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .prn{
+  .v963prn{
     direction:rtl;
     color:var(--ink);
-    background:
-      radial-gradient(900px 220px at 100% 0, rgba(183,143,75,.04), transparent 60%),
-      radial-gradient(700px 200px at 0 12%, rgba(34,74,58,.03), transparent 62%);
-    padding:18px;
+    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    padding:10px;
   }
 
-  .prn-wrap{
+  .v963prn-wrap{
     width:min(100%,980px);
     margin:0 auto;
     display:grid;
-    gap:14px;
+    gap:12px;
   }
 
-  .prn-actions{
+  .v963prn-actions{
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -51,142 +73,157 @@
     flex-wrap:wrap;
   }
 
-  .prn-actions-right{
+  .v963prn-actions-right{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
   }
 
-  .prn-btn{
+  .v963prn-btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:38px;
-    padding:7px 14px;
-    border-radius:10px;
+    min-height:35px;
+    padding:6px 12px;
+    border-radius:8px;
     border:1px solid var(--line-2);
-    background:linear-gradient(180deg,#fff,#fafcf9);
+    background:#fff;
     color:var(--green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:11px;
-    font-weight:700;
+    font-size:9.4px;
+    font-weight:900;
+    box-shadow:none;
+    transition:.16s ease;
   }
 
-  .prn-btn-main{
+  .v963prn-btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+  }
+
+  .v963prn-btn-main{
+    background:var(--green-2);
+    border-color:var(--green-2);
     color:#fff;
-    border-color:rgba(34,74,58,.1);
-    background:linear-gradient(180deg,var(--green-3),var(--green-2));
   }
 
-  .prn-paper{
-    background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:18px;
-    box-shadow:var(--shadow);
-    overflow:hidden;
-  }
-
-  .prn-head{
+  .v963prn-paper,
+  .v963prn-notes{
     position:relative;
-    padding:18px 20px 16px;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
-      linear-gradient(180deg,var(--green-2),var(--green-1));
-    color:#f8fbf8;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:0 1px 4px rgba(17,24,20,.035);
   }
 
-  .prn-head::before{
+  .v963prn-paper::before,
+  .v963prn-notes::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:3px;
-    background:linear-gradient(90deg,var(--gold-2),var(--gold-1),rgba(155,120,51,.2));
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
-  .prn-head-grid{
+  .v963prn-head{
+    position:relative;
+    padding:16px 18px 14px;
+    border-inline-start:4px solid var(--moe-mid);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    border-bottom:1px solid var(--line);
+  }
+
+  .v963prn-head-grid{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
-    align-items:center;
+    align-items:start;
   }
 
-  .prn-title{
+  .v963prn-title{
     margin:0;
     font-size:20px;
     line-height:1.2;
-    font-weight:800;
+    font-weight:900;
+    color:var(--green-1);
+    letter-spacing:0;
   }
 
-  .prn-sub{
+  .v963prn-sub{
     margin:6px 0 0;
-    font-size:11px;
-    line-height:1.8;
-    color:rgba(244,248,245,.82);
-    font-weight:500;
+    font-size:10.4px;
+    line-height:1.95;
+    color:var(--muted);
+    font-weight:800;
+    max-width:760px;
   }
 
-  .prn-badge{
+  .v963prn-badge{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:32px;
-    padding:5px 12px;
-    border-radius:999px;
-    border:1px solid rgba(231,219,188,.82);
-    background:linear-gradient(180deg,#fffef9,#fff8ee);
-    color:#294339;
-    font-size:10px;
-    font-weight:700;
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:8px;
+    border:1px solid #e7d7b7;
+    background:#fcf7ee;
+    color:#8a6526;
+    font-size:9px;
+    font-weight:900;
     white-space:nowrap;
   }
 
-  .prn-body{
-    padding:18px;
+  .v963prn-body{
+    padding:12px;
     display:grid;
-    gap:14px;
+    gap:12px;
   }
 
-  .prn-grid{
+  .v963prn-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
     gap:10px;
   }
 
-  .prn-card{
+  .v963prn-card,
+  .v963prn-section{
     border:1px solid var(--line);
-    border-radius:12px;
-    background:linear-gradient(180deg,#fff,#fcfdfc);
-    padding:11px 12px;
-  }
-
-  .prn-k{
-    font-size:10px;
-    color:var(--muted);
-    margin-bottom:5px;
-    font-weight:700;
-  }
-
-  .prn-v{
-    font-size:11px;
-    color:var(--ink);
-    font-weight:700;
-    line-height:1.7;
-    word-break:break-word;
-  }
-
-  .prn-section{
-    border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:10px;
     background:#fff;
     overflow:hidden;
   }
 
-  .prn-section-head{
-    padding:11px 14px;
+  .v963prn-card{
+    padding:11px 12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+  }
+
+  .v963prn-k{
+    font-size:8.7px;
+    color:var(--muted);
+    margin-bottom:5px;
+    font-weight:800;
+  }
+
+  .v963prn-v{
+    font-size:10.2px;
+    color:var(--ink);
+    font-weight:900;
+    line-height:1.8;
+    word-break:break-word;
+  }
+
+  .v963prn-section-head{
+    padding:11px 12px;
     border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#fbfcfb,#f5f8f5);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -194,53 +231,57 @@
     flex-wrap:wrap;
   }
 
-  .prn-section-title{
+  .v963prn-section-title{
     margin:0;
     font-size:12px;
-    color:var(--green-2);
-    font-weight:800;
+    color:var(--green-1);
+    font-weight:900;
   }
 
-  .prn-section-sub{
-    font-size:10px;
+  .v963prn-section-sub{
+    font-size:8.7px;
     color:var(--muted);
-    font-weight:600;
+    font-weight:800;
+    margin-top:3px;
   }
 
-  .prn-table-wrap{
+  .v963prn-table-wrap{
     overflow:auto;
+    background:#fff;
   }
 
-  .prn-table{
+  .v963prn-table{
     width:100%;
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse:collapse;
     min-width:760px;
   }
 
-  .prn-table th{
-    padding:10px 8px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#fafcf9,#f1f5f1);
-    color:var(--green-2);
-    font-size:10px;
-    font-weight:800;
+  .v963prn-table th{
+    padding:12px 8px;
+    border-bottom:1px solid var(--line-2);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
+    color:var(--green-1);
+    font-size:8.8px;
+    font-weight:900;
     white-space:nowrap;
     text-align:center;
   }
 
-  .prn-table td{
-    padding:10px 8px;
-    border-bottom:1px solid #eef3ee;
+  .v963prn-table td{
+    padding:11px 8px;
+    border-bottom:1px solid #edf1ed;
     background:#fff;
-    font-size:11px;
-    line-height:1.6;
+    font-size:9.4px;
+    line-height:1.7;
     vertical-align:middle;
     text-align:center;
-    font-weight:600;
+    font-weight:800;
+    color:var(--ink);
   }
 
-  .prn-table tbody tr:nth-child(even) td{ background:#fcfdfc; }
+  .v963prn-table tbody tr:nth-child(even) td{
+    background:#fcfdfc;
+  }
 
   .c-rank{ width:70px; }
   .c-school{ min-width:260px; text-align:right !important; }
@@ -248,92 +289,91 @@
   .c-kind{ min-width:140px; }
   .c-status{ min-width:130px; }
 
-  .prn-rank{
+  .v963prn-rank{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     min-width:30px;
     height:28px;
     padding:0 10px;
-    border-radius:999px;
-    border:1px solid rgba(183,143,75,.45);
-    background:linear-gradient(180deg,#fffef9,#fff8eb);
-    color:#6b521c;
-    font-size:10px;
-    font-weight:800;
+    border-radius:8px;
+    border:1px solid #e7d7b7;
+    background:#fcf7ee;
+    color:#8a6526;
+    font-size:9px;
+    font-weight:900;
   }
 
-  .prn-status{
+  .v963prn-status{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     min-height:24px;
     padding:4px 10px;
-    border-radius:999px;
+    border-radius:8px;
     border:1px solid var(--line);
-    background:linear-gradient(180deg,#fff,#fafcf9);
+    background:var(--paper-2);
     color:#66746c;
-    font-size:10px;
-    font-weight:700;
+    font-size:8.8px;
+    font-weight:900;
     white-space:nowrap;
   }
 
-  .prn-status.ok{
-    border-color:#cfe9d8;
-    background:linear-gradient(180deg,#f8fff9,#effcf3);
-    color:#166534;
+  .v963prn-status.ok{
+    border-color:#cfe6d8;
+    background:#eff8f3;
+    color:#1c6a44;
   }
 
-  .prn-status.warn{
-    border-color:#f0dcc0;
-    background:linear-gradient(180deg,#fffbf7,#fff8f1);
-    color:#8a5a12;
+  .v963prn-status.warn{
+    border-color:#e7d7b7;
+    background:#fcf7ee;
+    color:#8a6526;
   }
 
-  .prn-notes{
-    border:1px dashed rgba(183,143,75,.34);
-    border-radius:12px;
-    background:linear-gradient(180deg,#fffefb,#fffbf5);
-    padding:12px 14px;
-  }
-
-  .prn-empty{
+  .v963prn-empty{
     padding:26px;
     text-align:center;
     color:var(--muted);
-    font-size:11px;
-    font-weight:600;
+    font-size:10px;
+    font-weight:800;
   }
 
-  .prn-foot{
+  .v963prn-notes{
+    padding:12px 14px;
+    background:linear-gradient(180deg,#fffefb,#fffbf5);
+    border-color:#e7d7b7;
+  }
+
+  .v963prn-foot{
     padding:12px 18px 18px;
-    font-size:10px;
+    font-size:8.8px;
     color:var(--muted);
     text-align:center;
-    line-height:1.8;
-    font-weight:600;
+    line-height:1.9;
+    font-weight:800;
   }
 
   @media (max-width:900px){
-    .prn-grid{
+    .v963prn-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 
   @media (max-width:640px){
-    .prn{
-      padding:12px;
+    .v963prn{
+      padding:6px;
     }
 
-    .prn-grid{
+    .v963prn-grid{
       grid-template-columns:1fr;
     }
 
-    .prn-head-grid{
+    .v963prn-head-grid{
       grid-template-columns:1fr;
     }
 
-    .prn-title{
+    .v963prn-title{
       font-size:18px;
     }
   }
@@ -352,49 +392,44 @@
       visibility:hidden;
     }
 
-    .prn-paper, .prn-paper *{
+    .v963prn-paper, .v963prn-paper *{
       visibility:visible;
     }
 
-    .prn{
+    .v963prn{
       padding:0 !important;
       background:#fff !important;
     }
 
-    .prn-wrap{
+    .v963prn-wrap{
       width:100% !important;
       max-width:none !important;
       margin:0 !important;
       gap:0 !important;
     }
 
-    .prn-actions{
+    .v963prn-actions{
       display:none !important;
     }
 
-    .prn-paper{
+    .v963prn-paper{
       border:none !important;
       border-radius:0 !important;
       box-shadow:none !important;
       overflow:visible !important;
     }
 
-    .prn-head{
-      border-radius:0 !important;
+    .v963prn-head,
+    .v963prn-section-head,
+    .v963prn-table th,
+    .v963prn-rank,
+    .v963prn-status,
+    .v963prn-badge{
       -webkit-print-color-adjust:exact;
       print-color-adjust:exact;
     }
 
-    .prn-section-head,
-    .prn-table th,
-    .prn-rank,
-    .prn-status,
-    .prn-badge{
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
-    }
-
-    .prn-btn{
+    .v963prn-btn{
       display:none !important;
     }
 
@@ -407,54 +442,54 @@
 {% endblock %}
 
 {% block content %}
-<div class="prn">
-  <div class="prn-wrap">
+<div class="v963prn">
+  <div class="v963prn-wrap">
 
-    <div class="prn-actions">
-      <div class="prn-actions-right">
-        <button type="button" class="prn-btn prn-btn-main" onclick="window.print()">طباعة</button>
-        <button type="button" class="prn-btn" onclick="window.close()">إغلاق</button>
+    <div class="v963prn-actions">
+      <div class="v963prn-actions-right">
+        <button type="button" class="v963prn-btn v963prn-btn-main" onclick="window.print()">طباعة</button>
+        <button type="button" class="v963prn-btn" onclick="window.close()">إغلاق</button>
       </div>
 
-      <a href="{% url 'portal:admin_dashboard' %}" class="prn-btn">العودة للوحة القرار</a>
+      <a href="{% url 'portal:admin_dashboard' %}" class="v963prn-btn">العودة للوحة القرار</a>
     </div>
 
-    <div class="prn-paper">
-      <div class="prn-head">
-        <div class="prn-head-grid">
+    <div class="v963prn-paper">
+      <div class="v963prn-head">
+        <div class="v963prn-head-grid">
           <div>
-            <h1 class="prn-title">طباعة الرغبة المعتمدة</h1>
-            <p class="prn-sub">عرض رسمي للرغبة النهائية المعتمدة من قبل الإدارة، مهيأ للطباعة والاعتماد الداخلي.</p>
+            <h1 class="v963prn-title">طباعة الرغبة المعتمدة</h1>
+            <p class="v963prn-sub">عرض رسمي للرغبة النهائية المعتمدة من قبل الإدارة، مهيأ للطباعة والاعتماد الداخلي.</p>
           </div>
 
-          <div class="prn-badge">
+          <div class="v963prn-badge">
             رقم الطلب:
             <b style="margin-inline-start:6px;">#{{ application.id }}</b>
           </div>
         </div>
       </div>
 
-      <div class="prn-body">
+      <div class="v963prn-body">
 
-        <div class="prn-grid">
-          <div class="prn-card">
-            <div class="prn-k">اسم المرشح</div>
-            <div class="prn-v">{{ application.applicant.full_name|default:"—" }}</div>
+        <div class="v963prn-grid">
+          <div class="v963prn-card">
+            <div class="v963prn-k">اسم المرشح</div>
+            <div class="v963prn-v">{{ application.applicant.full_name|default:"—" }}</div>
           </div>
 
-          <div class="prn-card">
-            <div class="prn-k">السجل المدني</div>
-            <div class="prn-v">{{ application.applicant.national_id|default:"—" }}</div>
+          <div class="v963prn-card">
+            <div class="v963prn-k">السجل المدني</div>
+            <div class="v963prn-v">{{ application.applicant.national_id|default:"—" }}</div>
           </div>
 
-          <div class="prn-card">
-            <div class="prn-k">القطاع</div>
-            <div class="prn-v">{{ application.applicant.sector|default:"—" }}</div>
+          <div class="v963prn-card">
+            <div class="v963prn-k">القطاع</div>
+            <div class="v963prn-v">{{ application.applicant.sector|default:"—" }}</div>
           </div>
 
-          <div class="prn-card">
-            <div class="prn-k">حالة الطلب</div>
-            <div class="prn-v">
+          <div class="v963prn-card">
+            <div class="v963prn-k">حالة الطلب</div>
+            <div class="v963prn-v">
               {% if application.status == "submitted" %}
                 مُرسل
               {% elif application.status == "draft" %}
@@ -466,14 +501,14 @@
           </div>
         </div>
 
-        <div class="prn-section">
-          <div class="prn-section-head">
+        <div class="v963prn-section">
+          <div class="v963prn-section-head">
             <div>
-              <h3 class="prn-section-title">الرغبة المعتمدة</h3>
-              <div class="prn-section-sub">هذه هي الرغبة المحددة نهائيًا من قبل الإدارة.</div>
+              <h3 class="v963prn-section-title">الرغبة المعتمدة</h3>
+              <div class="v963prn-section-sub">هذه هي الرغبة المحددة نهائيًا من قبل الإدارة.</div>
             </div>
 
-            <div class="prn-badge">
+            <div class="v963prn-badge">
               الحالة:
               <b style="margin-inline-start:6px;">
                 {% if selected_pref %}معتمدة{% else %}غير محددة{% endif %}
@@ -482,8 +517,8 @@
           </div>
 
           {% if selected_pref and selected_pref.vacancy %}
-            <div class="prn-table-wrap">
-              <table class="prn-table">
+            <div class="v963prn-table-wrap">
+              <table class="v963prn-table">
                 <thead>
                   <tr>
                     <th class="c-rank">الترتيب</th>
@@ -496,54 +531,42 @@
                 <tbody>
                   <tr>
                     <td class="c-rank">
-                      <span class="prn-rank">{{ selected_pref.rank|default:"—" }}</span>
+                      <span class="v963prn-rank">{{ selected_pref.rank|default:"—" }}</span>
                     </td>
 
                     <td class="c-school">
-                      {% if selected_pref.vacancy.school_name %}
-                        {{ selected_pref.vacancy.school_name }}
-                      {% else %}
-                        —
-                      {% endif %}
+                      {{ selected_pref.vacancy.school_name|default:"—" }}
                     </td>
 
                     <td class="c-sector">
-                      {% if selected_pref.vacancy.sector %}
-                        {{ selected_pref.vacancy.sector }}
-                      {% else %}
-                        —
-                      {% endif %}
+                      {{ selected_pref.vacancy.sector|default:"—" }}
                     </td>
 
                     <td class="c-kind">
-                      {% if selected_pref.vacancy.gender %}
-                        {{ selected_pref.vacancy.gender }}
-                      {% else %}
-                        —
-                      {% endif %}
+                      {{ selected_pref.vacancy.gender|default:"—" }}
                     </td>
 
                     <td class="c-status">
-                      <span class="prn-status ok">معتمدة نهائيًا</span>
+                      <span class="v963prn-status ok">معتمدة نهائيًا</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           {% else %}
-            <div class="prn-empty">لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب بعد.</div>
+            <div class="v963prn-empty">لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب بعد.</div>
           {% endif %}
         </div>
 
-        <div class="prn-notes">
-          <div class="prn-k">ملاحظة</div>
-          <div class="prn-v">
+        <div class="v963prn-notes">
+          <div class="v963prn-k">ملاحظة</div>
+          <div class="v963prn-v">
             هذا المستند مخصص للعرض والطباعة الداخلية، ويعكس الرغبة النهائية المعتمدة وقت توليد الصفحة.
           </div>
         </div>
       </div>
 
-      <div class="prn-foot">
+      <div class="v963prn-foot">
         تم إنشاء هذا الكشف من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}
       </div>
     </div>

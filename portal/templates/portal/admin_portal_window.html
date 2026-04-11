@@ -4,524 +4,1003 @@
 {% block extra_css %}
 <style>
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
+    --moe-bg:#f4f6f3;
+    --moe-surface:#ffffff;
+    --moe-surface-2:#fafbf9;
+    --moe-surface-3:#f7f9f6;
 
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
+    --moe-ink:#203229;
+    --moe-ink-2:#42544b;
+    --moe-muted:#73827a;
 
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
+    --moe-green-1:#1f4b3b;
+    --moe-green-2:#2b5e4b;
+    --moe-green-3:#557567;
 
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
+    --moe-gold-1:#8b7447;
+    --moe-gold-2:#b29862;
+    --moe-gold-3:#d7ccaf;
 
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
-    --min-gold-3:#efe1bb;
+    --moe-line:#dde4dd;
+    --moe-line-2:#d2dbd3;
+    --moe-line-soft:#edf1ed;
 
-    --min-line:#dbe3db;
-    --min-line-2:#cdd8ce;
+    --moe-ok:#2f6c4b;
+    --moe-ok-bg:#f2f8f4;
+    --moe-ok-bd:#d9e8de;
 
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
+    --moe-warn:#8a6d32;
+    --moe-warn-bg:#fbf8f1;
+    --moe-warn-bd:#e9ddc3;
 
-    --min-ok:#166534;
-    --min-ok-soft:#eefbf3;
-    --min-ok-line:#b7e4c7;
+    --moe-danger:#8c4a4a;
+    --moe-danger-bg:#fbf6f6;
+    --moe-danger-bd:#e7d4d4;
 
-    --min-danger:#991b1b;
-    --min-danger-soft:#fef2f2;
-    --min-danger-line:#fecaca;
+    --moe-info:#53697e;
+    --moe-info-bg:#f4f7fb;
+    --moe-info-bd:#dee6ef;
 
-    --min-info:#1d4ed8;
-    --min-info-soft:#eff6ff;
-    --min-info-line:#bfdbfe;
+    --moe-shadow:0 1px 3px rgba(18,30,24,.028);
+    --moe-shadow-soft:0 6px 16px rgba(18,30,24,.032);
 
-    --min-warn:#92400e;
-    --min-warn-soft:#fffbeb;
-    --min-warn-line:#fde68a;
+    --moe-radius:14px;
+    --moe-radius-lg:18px;
   }
 
-  .ui{
-    position:relative;
-    background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
+  .moe-window,.moe-window *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .ui-top{
-    margin-bottom:12px;
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
+  .moe-window{
+    direction:rtl;
+    color:var(--moe-ink);
+  }
+
+  .moe-window-page{
+    max-width:1100px;
+    margin:0 auto;
+    display:grid;
+    gap:12px;
+  }
+
+  .moe-window-hero,
+  .moe-window-card,
+  .moe-window-mini{
     position:relative;
+    background:var(--moe-surface);
+    border:1px solid var(--moe-line);
+    border-radius:var(--moe-radius-lg);
+    box-shadow:var(--moe-shadow);
     overflow:hidden;
   }
 
-  .ui-top::before{
+  .moe-window-hero::before,
+  .moe-window-card::before,
+  .moe-window-mini::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    height:1px;
+    background:linear-gradient(90deg,var(--moe-green-2),var(--moe-gold-2));
+    opacity:.95;
   }
 
-  .ui-top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+  .moe-window-hero{
+    padding:0;
+    border-inline-start:3px solid var(--moe-green-2);
     background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
   }
 
-  .ui-title{
-    font-size:20px !important;
+  .moe-window-hero-head{
+    padding:14px 18px 12px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:start;
+    background:
+      radial-gradient(circle at 86% 26%, rgba(85,117,103,.055) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    border-bottom:1px solid var(--moe-line-soft);
+  }
+
+  .moe-window-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid #dfd4bc;
+    background:#fcfaf5;
+    color:var(--moe-gold-1);
+    font-size:8.6px;
+    font-weight:900 !important;
+    margin-bottom:8px;
+  }
+
+  .moe-window-kicker-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--moe-green-2);
+    flex:0 0 auto;
+  }
+
+  .moe-window-title{
+    margin:0;
+    font-size:21px;
+    line-height:1.25;
+    font-weight:900 !important;
+    color:var(--moe-green-1);
+    letter-spacing:0;
+  }
+
+  .moe-window-subtitle{
+    margin:6px 0 0;
+    color:var(--moe-muted);
+    font-size:10.2px;
+    line-height:1.95;
+    max-width:78ch;
+    font-weight:700 !important;
+  }
+
+  .moe-window-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  .moe-window-btn{
+    appearance:none;
+    border:1px solid var(--moe-line-2);
+    background:#fff;
+    color:var(--moe-green-2);
+    border-radius:10px;
+    min-height:35px;
+    padding:7px 12px;
+    font-size:9px;
     font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff !important;
+    line-height:1;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    text-decoration:none;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.12s ease;
+    box-shadow:none;
   }
 
-  .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.6 !important;
+  .moe-window-btn:hover{
+    transform:translateY(-1px);
+    background:var(--moe-surface-2);
+    border-color:#c7d0c8;
   }
 
-  .ui-actions{
+  .moe-window-btn-primary{
+    color:#fff;
+    background:var(--moe-green-2);
+    border-color:var(--moe-green-2);
+  }
+
+  .moe-window-btn-primary:hover{
+    background:var(--moe-green-1);
+    border-color:var(--moe-green-1);
+  }
+
+  .moe-window-btn-soft{
+    color:var(--moe-gold-1);
+    border-color:#ddd1b7;
+  }
+
+  .moe-window-status{
+    padding:10px 18px 12px;
     display:flex;
     gap:8px;
     flex-wrap:wrap;
     align-items:center;
+    background:var(--moe-surface);
   }
 
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
-    overflow:hidden;
-  }
-
-  .ui-toolbar{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-  }
-
-  .ui-foot{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-top:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-  }
-
-  .ui-muted{
-    color:var(--min-muted) !important;
-    font-size:9.8px;
-  }
-
-  .ui-pill{
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+  .moe-badge{
     display:inline-flex;
     align-items:center;
-    gap:6px;
+    gap:7px;
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--moe-line);
+    background:var(--moe-surface-2);
+    color:var(--moe-ink-2);
+    font-size:8.5px;
+    font-weight:800 !important;
   }
 
-  .ui-pill-ok{
-    color:var(--min-ok) !important;
-    border-color:var(--min-ok-line) !important;
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
-  }
-
-  .ui-pill-danger{
-    color:var(--min-danger) !important;
-    border-color:var(--min-danger-line) !important;
-    background:linear-gradient(180deg,#fff5f5,#fef2f2) !important;
-  }
-
-  .ui-pill-info{
-    color:var(--min-info) !important;
-    border-color:var(--min-info-line) !important;
-    background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;
-  }
-
-  .ui-pill-warn{
-    color:var(--min-warn) !important;
-    border-color:var(--min-warn-line) !important;
-    background:linear-gradient(180deg,#fffdf7,#fffbeb) !important;
-  }
-
-  .ui-dot{
+  .moe-badge-dot{
     width:8px;
     height:8px;
     border-radius:50%;
-    background:#16a34a;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
+    background:var(--moe-green-2);
+    flex:0 0 auto;
   }
 
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    text-decoration:none;
-    display:inline-flex;
+  .moe-badge.ok{
+    background:var(--moe-ok-bg);
+    border-color:var(--moe-ok-bd);
+    color:var(--moe-ok);
+  }
+  .moe-badge.ok .moe-badge-dot{ background:var(--moe-ok); }
+
+  .moe-badge.warn{
+    background:var(--moe-warn-bg);
+    border-color:var(--moe-warn-bd);
+    color:var(--moe-warn);
+  }
+  .moe-badge.warn .moe-badge-dot{ background:var(--moe-warn); }
+
+  .moe-badge.info{
+    background:var(--moe-info-bg);
+    border-color:var(--moe-info-bd);
+    color:var(--moe-info);
+  }
+  .moe-badge.info .moe-badge-dot{ background:var(--moe-info); }
+
+  .moe-badge.danger{
+    background:var(--moe-danger-bg);
+    border-color:var(--moe-danger-bd);
+    color:var(--moe-danger);
+  }
+  .moe-badge.danger .moe-badge-dot{ background:var(--moe-danger); }
+
+  .moe-window-top-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .moe-window-mini{
+    padding:12px 14px;
+  }
+
+  .moe-window-mini-label{
+    color:var(--moe-muted);
+    font-size:8.3px;
+    font-weight:700 !important;
+    margin-bottom:5px;
+  }
+
+  .moe-window-mini-value{
+    color:var(--moe-green-1);
+    font-size:14px;
+    line-height:1.45;
+    font-weight:900 !important;
+  }
+
+  .moe-window-mini-note{
+    margin-top:4px;
+    color:var(--moe-muted);
+    font-size:7.9px;
+    line-height:1.8;
+    font-weight:700 !important;
+  }
+
+  .moe-window-card-head{
+    padding:11px 14px;
+    display:flex;
     align-items:center;
-    gap:6px;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--moe-line-soft);
+    background:linear-gradient(180deg,#ffffff,#fafcf9);
+  }
+
+  .moe-window-card-title{
+    font-size:9.6px;
+    color:var(--moe-green-1);
+    font-weight:900 !important;
+  }
+
+  .moe-window-card-subtitle{
+    margin-top:2px;
+    font-size:8.1px;
+    color:var(--moe-muted);
+    font-weight:700 !important;
+  }
+
+  .moe-window-card-body{
+    padding:14px;
+  }
+
+  .moe-window-switch{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:11px 12px;
+    border:1px solid var(--moe-line);
+    border-radius:13px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+  }
+
+  .moe-window-switch input{
+    width:18px;
+    height:18px;
+    accent-color:#2b5e4b;
     cursor:pointer;
-    justify-content:center;
+    flex:0 0 auto;
+    margin-top:2px;
   }
 
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
+  .moe-window-switch-title{
+    font-size:9.5px;
+    color:var(--moe-green-1);
+    font-weight:900 !important;
   }
 
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
+  .moe-window-switch-note{
+    margin-top:4px;
+    color:var(--moe-muted);
+    font-size:8px;
+    line-height:1.8;
+    font-weight:700 !important;
   }
 
-  .ui-input,
-  .ui-select,
-  .ui-textarea{
-    width:100%;
-    min-height:38px;
-    padding:8px 12px;
-    font-size:10.5px;
+  .moe-window-section{
+    display:grid;
+    gap:8px;
+  }
+
+  .moe-window-section-title{
+    color:var(--moe-green-1);
+    font-size:9.5px;
+    font-weight:900 !important;
+  }
+
+  .moe-window-section-note{
+    color:var(--moe-muted);
+    font-size:8px;
+    line-height:1.8;
+    font-weight:700 !important;
+  }
+
+  .moe-window-phases{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .moe-window-phase{
+    position:relative;
+    display:block;
+    cursor:pointer;
+  }
+
+  .moe-window-phase input{
+    display:none;
+  }
+
+  .moe-window-phase-box{
+    height:100%;
+    padding:11px;
+    border:1px solid var(--moe-line);
     border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    outline:none;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    transition:.12s ease;
   }
 
-  .ui-textarea{
-    min-height:72px;
-    resize:vertical;
+  .moe-window-phase:hover .moe-window-phase-box{
+    transform:translateY(-1px);
+    border-color:#cad3cb;
   }
 
-  .ui-input:focus,
-  .ui-select:focus,
-  .ui-textarea:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .moe-window-phase.active .moe-window-phase-box{
+    border-color:#ccb07a;
+    box-shadow:0 0 0 1px rgba(178,152,98,.13);
+    background:linear-gradient(180deg,#fffdfa,#fcf9f3);
   }
 
-  .panel{
-    padding:14px 14px 8px;
+  .moe-window-phase-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:7px;
   }
 
-  .grid{
+  .moe-window-phase-name{
+    color:var(--moe-green-1);
+    font-size:9.4px;
+    font-weight:900 !important;
+    line-height:1.5;
+  }
+
+  .moe-window-phase-mark{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    border:2px solid var(--moe-line-2);
+    flex:0 0 auto;
+    position:relative;
+  }
+
+  .moe-window-phase.active .moe-window-phase-mark{
+    border-color:var(--moe-gold-2);
+  }
+
+  .moe-window-phase.active .moe-window-phase-mark::after{
+    content:"";
+    position:absolute;
+    inset:3px;
+    border-radius:50%;
+    background:var(--moe-gold-2);
+  }
+
+  .moe-window-phase-desc{
+    color:var(--moe-muted);
+    font-size:7.9px;
+    line-height:1.8;
+    font-weight:700 !important;
+  }
+
+  .moe-window-preview{
+    padding:11px;
+    border:1px dashed var(--moe-line-2);
+    border-radius:13px;
+    background:linear-gradient(180deg,#fff,#fbfcfa);
+    display:grid;
+    gap:7px;
+  }
+
+  .moe-window-preview-title{
+    color:var(--moe-green-1);
+    font-size:8.8px;
+    font-weight:900 !important;
+  }
+
+  .moe-window-preview-box{
+    padding:10px 11px;
+    border-radius:10px;
+    font-size:8.6px;
+    line-height:1.9;
+    font-weight:700 !important;
+  }
+
+  .moe-window-preview-box.closed{
+    background:var(--moe-danger-bg);
+    border:1px solid var(--moe-danger-bd);
+    color:var(--moe-danger);
+  }
+
+  .moe-window-preview-box.official{
+    background:var(--moe-warn-bg);
+    border:1px solid var(--moe-warn-bd);
+    color:var(--moe-warn);
+  }
+
+  .moe-window-preview-box.new{
+    background:var(--moe-info-bg);
+    border:1px solid var(--moe-info-bd);
+    color:var(--moe-info);
+  }
+
+  .moe-window-preview-box.all{
+    background:var(--moe-ok-bg);
+    border:1px solid var(--moe-ok-bd);
+    color:var(--moe-ok);
+  }
+
+  .moe-window-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:12px;
+    gap:10px;
   }
 
-  .field{
+  .moe-window-field{
     display:flex;
     flex-direction:column;
     gap:6px;
   }
 
-  .field-full{
+  .moe-window-field-full{
     grid-column:1 / -1;
   }
 
-  .lbl{
-    font-size:10px;
-    font-weight:900;
-    color:var(--min-green-2);
+  .moe-window-label{
+    color:var(--moe-green-1);
+    font-size:8.7px;
+    font-weight:900 !important;
+    line-height:1.6;
+  }
+
+  .moe-window-hint{
+    color:var(--moe-muted);
+    font-size:7.9px;
+    line-height:1.8;
+    font-weight:700 !important;
+  }
+
+  .moe-window-input,
+  .moe-window-textarea{
+    width:100%;
+    min-height:38px;
+    padding:8px 10px;
+    border:1px solid var(--moe-line-2);
+    border-radius:9px;
+    background:#fff;
+    color:var(--moe-ink);
+    font-size:8.9px;
+    outline:none;
+    box-shadow:none;
+  }
+
+  .moe-window-textarea{
+    min-height:82px;
+    resize:vertical;
+    line-height:1.85;
+  }
+
+  .moe-window-input:focus,
+  .moe-window-textarea:focus{
+    border-color:var(--moe-gold-2);
+    box-shadow:0 0 0 2px rgba(178,152,98,.065);
+  }
+
+  .moe-window-message-box{
+    padding:11px;
+    border:1px solid var(--moe-line);
+    border-radius:13px;
+    background:var(--moe-surface-2);
+  }
+
+  .moe-window-footer{
     display:flex;
     align-items:center;
-    gap:8px;
-  }
-
-  .hint{
-    font-size:9.3px;
-    color:var(--min-muted);
-    line-height:1.5;
-  }
-
-  .switch{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border:1px solid rgba(219,227,219,.95);
-    border-radius:16px;
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-  }
-
-  .switch input{
-    width:18px;
-    height:18px;
-    accent-color:#1f7a4d;
-    cursor:pointer;
-  }
-
-  .status-badge{
-    display:flex;
-    align-items:center;
-    gap:10px;
+    justify-content:space-between;
+    gap:12px;
     flex-wrap:wrap;
+    padding-top:12px;
   }
 
-  .status-line{
-    font-size:10px;
-    font-weight:900;
-    color:#fff;
-    display:inline-flex;
-    gap:8px;
-    align-items:center;
-    padding:6px 10px;
-    border-radius:999px;
-    background:rgba(255,255,255,.10);
-    border:1px solid rgba(255,255,255,.20);
+  .moe-window-footer-note{
+    color:var(--moe-muted);
+    font-size:8.1px;
+    line-height:1.9;
+    font-weight:700 !important;
   }
 
-  .status-line .light{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#22c55e;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
-  }
-
-  .status-line.off .light{
-    background:#ef4444;
-  }
-
-  .phase-box{
-    padding:12px;
-    border:1px solid rgba(219,227,219,.95);
-    border-radius:18px;
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-  }
-
-  .phase-box-title{
-    font-size:10.4px;
-    font-weight:900;
-    color:var(--min-green-2);
-    margin-bottom:8px;
-  }
-
-  .phase-note{
-    margin-top:8px;
+  .moe-window-footer-actions{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
   }
 
-  @media (max-width: 900px){
-    .grid{ grid-template-columns:1fr; }
-    .field-full{ grid-column:auto; }
+  .is-hidden{
+    display:none !important;
+  }
+
+  @media (max-width:1080px){
+    .moe-window-phases{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .moe-window-top-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width:900px){
+    .moe-window-hero-head{
+      grid-template-columns:1fr;
+    }
+
+    .moe-window-actions{
+      justify-content:flex-start;
+    }
+
+    .moe-window-grid{
+      grid-template-columns:1fr;
+    }
+
+    .moe-window-field-full{
+      grid-column:auto;
+    }
+  }
+
+  @media (max-width:640px){
+    .moe-window-phases{
+      grid-template-columns:1fr;
+    }
+
+    .moe-window-title{
+      font-size:18px;
+    }
+
+    .moe-window-hero-head,
+    .moe-window-card-body,
+    .moe-window-mini{
+      padding:12px;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="moe-window">
+  <div class="moe-window-page">
 
-    <div class="ui-top">
-      <div class="ui-title-wrap">
-        <h1 class="ui-title">ضابط فترة التقديم</h1>
-        <p class="ui-subtitle">
-          تحكم مركزي لفتح/إغلاق التقديم حسب المرحلة: مغلق / الوكلاء الرسميون / المتقدمون الجدد — ويطبق مباشرة على الدخول والإرسال.
-        </p>
+    <div class="moe-window-hero">
+      <div class="moe-window-hero-head">
+        <div>
+          <span class="moe-window-kicker">
+            <span class="moe-window-kicker-dot"></span>
+            إعدادات مركزية
+          </span>
+          <h1 class="moe-window-title">إعدادات نافذة التقديم</h1>
+          <p class="moe-window-subtitle">
+            تحكم مباشر في فتح وإغلاق التقديم، وتحديد الفئة المسموح لها بالدخول، مع معاينة فورية للحالة والرسائل الظاهرة للمستخدمين.
+          </p>
+        </div>
+
+        <div class="moe-window-actions">
+          <a class="moe-window-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
+          <a class="moe-window-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
+          <a class="moe-window-btn" href="{% url 'portal:admin_applicants_list' %}">👤 إدارة المتقدمين</a>
+        </div>
       </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span>▦</span>
-          لوحة القرار
-        </a>
-
-        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
-          <span>🏫</span>
-          إدارة الشواغر
-        </a>
-
-        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
-          <span>👤</span>
-          إدارة المتقدمين
-        </a>
-      </div>
-
-      <div class="status-badge" style="margin-top:10px;">
+      <div class="moe-window-status">
         {% if not win.is_enabled or win.phase == "closed" %}
-          <div class="status-line off">
-            <span class="light"></span>
+          <span class="moe-badge danger">
+            <span class="moe-badge-dot"></span>
             الحالة الحالية: مغلق
-          </div>
+          </span>
         {% elif win.phase == "official_only" %}
-          <div class="status-line">
-            <span class="light"></span>
-            الحالة الحالية: الوكلاء الرسميون
-          </div>
+          <span class="moe-badge warn">
+            <span class="moe-badge-dot"></span>
+            الحالة الحالية: الوكلاء الرسميون فقط
+          </span>
         {% elif win.phase == "new_only" %}
-          <div class="status-line">
-            <span class="light"></span>
-            الحالة الحالية: المتقدمون الجدد
-          </div>
-        {% else %}
-          <div class="status-line off">
-            <span class="light"></span>
-            الحالة الحالية: غير محددة
-          </div>
+          <span class="moe-badge info">
+            <span class="moe-badge-dot"></span>
+            الحالة الحالية: المتقدمون الجدد فقط
+          </span>
+        {% elif win.phase == "all" %}
+          <span class="moe-badge ok">
+            <span class="moe-badge-dot"></span>
+            الحالة الحالية: الجميع
+          </span>
         {% endif %}
 
-        <span class="ui-pill" style="border-color:rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#fff;">
+        <span class="moe-badge">
+          <span class="moe-badge-dot"></span>
           آخر تحديث: <b>{{ win.updated_at|date:"Y-m-d H:i" }}</b>
         </span>
       </div>
     </div>
 
-    <div class="ui-card">
-      <div class="ui-toolbar">
-        <div class="ui-muted">
-          ملاحظة: إذا لم تحدد بداية/نهاية، يعتمد النظام على (التفعيل + المرحلة) فقط.
+    <div class="moe-window-top-grid">
+      <div class="moe-window-mini">
+        <div class="moe-window-mini-label">التفعيل العام</div>
+        <div class="moe-window-mini-value">
+          {% if win.is_enabled %}مفعّل{% else %}متوقف{% endif %}
         </div>
-        <div class="ui-pill">
-          <span class="ui-dot"></span>
-          إعدادات عامة
-        </div>
+        <div class="moe-window-mini-note">عند إيقاف النظام تُغلق البوابة بالكامل مهما كانت المرحلة.</div>
       </div>
 
-      <form method="post" class="panel">
+      <div class="moe-window-mini">
+        <div class="moe-window-mini-label">بداية التقديم</div>
+        <div class="moe-window-mini-value">
+          {% if win.opens_at %}{{ win.opens_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}
+        </div>
+        <div class="moe-window-mini-note">يمكن تركها فارغة إذا كان التحكم يدويًا فقط.</div>
+      </div>
+
+      <div class="moe-window-mini">
+        <div class="moe-window-mini-label">نهاية التقديم</div>
+        <div class="moe-window-mini-value">
+          {% if win.closes_at %}{{ win.closes_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}
+        </div>
+        <div class="moe-window-mini-note">يمكن تركها فارغة إذا لم يكن هناك إغلاق تلقائي.</div>
+      </div>
+    </div>
+
+    <div class="moe-window-card">
+      <div class="moe-window-card-head">
+        <div>
+          <div class="moe-window-card-title">ضبط المرحلة والفترة الزمنية</div>
+          <div class="moe-window-card-subtitle">اختر حالة البوابة الحالية ورسائل الظهور لكل فئة</div>
+        </div>
+
+        <span class="moe-badge">
+          <span class="moe-badge-dot"></span>
+          إعداد مباشر
+        </span>
+      </div>
+
+      <form method="post" class="moe-window-card-body" id="portalWindowForm">
         {% csrf_token %}
 
-        <div class="switch">
-          <input type="checkbox" name="is_enabled" value="1" {% if win.is_enabled %}checked{% endif %}>
+        <div class="moe-window-switch">
+          <input type="checkbox" id="is_enabled" name="is_enabled" value="1" {% if win.is_enabled %}checked{% endif %}>
           <div>
-            <div class="lbl">تفعيل النظام</div>
-            <div class="hint">
-              عند إلغاء التفعيل تصبح البوابة مغلقة بالكامل مهما كانت المرحلة أو التواريخ.
+            <div class="moe-window-switch-title">تفعيل النظام</div>
+            <div class="moe-window-switch-note">
+              عند إلغاء هذا الخيار تصبح البوابة مغلقة بالكامل ولا يُسمح بالدخول أو الإرسال مهما كانت المرحلة المحددة.
             </div>
           </div>
         </div>
 
         <div style="height:12px;"></div>
 
-        <div class="phase-box">
-          <div class="phase-box-title">مرحلة التقديم الحالية</div>
-
-          <div class="field">
-            <label class="lbl" for="phase">اختر المرحلة</label>
-            <select class="ui-select" id="phase" name="phase">
-              <option value="closed" {% if win.phase == "closed" or not win.phase %}selected{% endif %}>مغلق</option>
-              <option value="official_only" {% if win.phase == "official_only" %}selected{% endif %}>الوكلاء الرسميون فقط</option>
-              <option value="new_only" {% if win.phase == "new_only" %}selected{% endif %}>المتقدمون الجدد فقط</option>
-            </select>
-            <div class="hint">
-              هذا هو العنصر الأهم في النظام الجديد.  
-              عند اختيار "الوكلاء الرسميون فقط" يسمح فقط لمن وُصفهم يحتوي على "وكيل"، وعند اختيار "المتقدمون الجدد فقط" يسمح لغيرهم.
-            </div>
+        <div class="moe-window-section">
+          <div class="moe-window-section-title">اختر مرحلة التقديم</div>
+          <div class="moe-window-section-note">
+            يفضّل استخدام مرحلة "الجميع" عندما ترغب في فتح البوابة للوكلاء الرسميين والمتقدمين الجدد في الوقت نفسه.
           </div>
 
-          <div class="phase-note">
-            <span class="ui-pill ui-pill-danger">مغلق = لا أحد يدخل</span>
-            <span class="ui-pill ui-pill-warn">الوكلاء الرسميون = المرحلة الأولى</span>
-            <span class="ui-pill ui-pill-info">المتقدمون الجدد = المرحلة الثانية</span>
+          <div class="moe-window-phases" id="phaseCards">
+
+            <label class="moe-window-phase {% if win.phase == 'closed' or not win.phase %}active{% endif %}" data-phase="closed">
+              <input type="radio" name="phase" value="closed" {% if win.phase == "closed" or not win.phase %}checked{% endif %}>
+              <div class="moe-window-phase-box">
+                <div class="moe-window-phase-top">
+                  <div class="moe-window-phase-name">مغلق</div>
+                  <div class="moe-window-phase-mark"></div>
+                </div>
+                <div class="moe-window-phase-desc">
+                  يمنع الدخول على الجميع، وتظهر رسالة الإغلاق العامة.
+                </div>
+              </div>
+            </label>
+
+            <label class="moe-window-phase {% if win.phase == 'official_only' %}active{% endif %}" data-phase="official_only">
+              <input type="radio" name="phase" value="official_only" {% if win.phase == "official_only" %}checked{% endif %}>
+              <div class="moe-window-phase-box">
+                <div class="moe-window-phase-top">
+                  <div class="moe-window-phase-name">الوكلاء الرسميون فقط</div>
+                  <div class="moe-window-phase-mark"></div>
+                </div>
+                <div class="moe-window-phase-desc">
+                  يسمح فقط للوكلاء الرسميين بالدخول، ويُمنع غيرهم برسالة المرحلة.
+                </div>
+              </div>
+            </label>
+
+            <label class="moe-window-phase {% if win.phase == 'new_only' %}active{% endif %}" data-phase="new_only">
+              <input type="radio" name="phase" value="new_only" {% if win.phase == "new_only" %}checked{% endif %}>
+              <div class="moe-window-phase-box">
+                <div class="moe-window-phase-top">
+                  <div class="moe-window-phase-name">المتقدمون الجدد فقط</div>
+                  <div class="moe-window-phase-mark"></div>
+                </div>
+                <div class="moe-window-phase-desc">
+                  يسمح فقط للمتقدمين الجدد، ويُمنع الوكلاء الرسميون خلال هذه المرحلة.
+                </div>
+              </div>
+            </label>
+
+            <label class="moe-window-phase {% if win.phase == 'all' %}active{% endif %}" data-phase="all">
+              <input type="radio" name="phase" value="all" {% if win.phase == "all" %}checked{% endif %}>
+              <div class="moe-window-phase-box">
+                <div class="moe-window-phase-top">
+                  <div class="moe-window-phase-name">الجميع</div>
+                  <div class="moe-window-phase-mark"></div>
+                </div>
+                <div class="moe-window-phase-desc">
+                  يفتح البوابة لجميع الفئات: الوكلاء الرسميون والمتقدمون الجدد.
+                </div>
+              </div>
+            </label>
+
+          </div>
+
+          <div class="moe-window-preview">
+            <div class="moe-window-preview-title">معاينة فورية للحالة المختارة</div>
+            <div id="phasePreview" class="moe-window-preview-box">—</div>
           </div>
         </div>
 
         <div style="height:12px;"></div>
 
-        <div class="grid">
-          <div class="field">
-            <div class="lbl">بداية التقديم</div>
-            <input class="ui-input" type="datetime-local" name="opens_at"
-              value="{% if win.opens_at %}{{ win.opens_at|date:'Y-m-d\\TH:i' }}{% endif %}">
-            <div class="hint">اختياري — إذا تركته فارغًا لا يتم منع التقديم قبل موعد معين.</div>
+        <div class="moe-window-grid">
+          <div class="moe-window-field">
+            <label class="moe-window-label">بداية التقديم</label>
+            <input
+              class="moe-window-input"
+              type="datetime-local"
+              name="opens_at"
+              value="{% if win.opens_at %}{{ win.opens_at|date:'Y-m-d\\TH:i' }}{% endif %}"
+            >
+            <div class="moe-window-hint">اختياري — يبدأ السماح بالدخول تلقائيًا من هذا الوقت.</div>
           </div>
 
-          <div class="field">
-            <div class="lbl">نهاية التقديم</div>
-            <input class="ui-input" type="datetime-local" name="closes_at"
-              value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}">
-            <div class="hint">اختياري — إذا تركته فارغًا لا يتم إغلاق التقديم تلقائيًا بوقت.</div>
+          <div class="moe-window-field">
+            <label class="moe-window-label">نهاية التقديم</label>
+            <input
+              class="moe-window-input"
+              type="datetime-local"
+              name="closes_at"
+              value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}"
+            >
+            <div class="moe-window-hint">اختياري — يتم الإغلاق تلقائيًا بعد هذا الوقت.</div>
           </div>
 
-          <div class="field field-full">
-            <div class="lbl">رسالة الإغلاق العامة</div>
-            <input class="ui-input" type="text" name="closed_message"
-                   value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
-                   placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان.">
-            <div class="hint">
-              تظهر عند الإغلاق الكامل أو عند تعطيل النظام.
+          <div class="moe-window-field moe-window-field-full">
+            <div class="moe-window-message-box">
+              <label class="moe-window-label">رسالة الإغلاق العامة</label>
+              <input
+                class="moe-window-input"
+                type="text"
+                name="closed_message"
+                id="closed_message"
+                value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
+                placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان."
+              >
+              <div class="moe-window-hint">تظهر عند الإغلاق الكامل أو عند تعطيل النظام.</div>
             </div>
           </div>
 
-          <div class="field">
-            <div class="lbl">رسالة مرحلة الوكلاء الرسميين</div>
-            <textarea class="ui-textarea" name="official_only_message" placeholder="مثال: التقديم متاح حالياً للوكلاء الرسميين فقط.">{{ win.official_only_message|default:'التقديم متاح حالياً للوكلاء الرسميين فقط.' }}</textarea>
-            <div class="hint">
-              تظهر لغير الوكلاء عند تفعيل مرحلة "الوكلاء الرسميون فقط".
+          <div class="moe-window-field" id="officialBox">
+            <div class="moe-window-message-box">
+              <label class="moe-window-label">رسالة مرحلة الوكلاء الرسميين</label>
+              <textarea
+                class="moe-window-textarea"
+                name="official_only_message"
+                id="official_only_message"
+                placeholder="مثال: التقديم متاح حالياً للوكلاء الرسميين فقط."
+              >{{ win.official_only_message|default:'التقديم متاح حالياً للوكلاء الرسميين فقط.' }}</textarea>
+              <div class="moe-window-hint">تظهر لغير الوكلاء عند تفعيل هذه المرحلة.</div>
             </div>
           </div>
 
-          <div class="field">
-            <div class="lbl">رسالة مرحلة المتقدمين الجدد</div>
-            <textarea class="ui-textarea" name="new_only_message" placeholder="مثال: التقديم متاح حالياً للمتقدمين الجدد فقط.">{{ win.new_only_message|default:'التقديم متاح حالياً للمتقدمين الجدد فقط.' }}</textarea>
-            <div class="hint">
-              تظهر للوكلاء الرسميين عند تفعيل مرحلة "المتقدمون الجدد فقط".
+          <div class="moe-window-field" id="newBox">
+            <div class="moe-window-message-box">
+              <label class="moe-window-label">رسالة مرحلة المتقدمين الجدد</label>
+              <textarea
+                class="moe-window-textarea"
+                name="new_only_message"
+                id="new_only_message"
+                placeholder="مثال: التقديم متاح حالياً للمتقدمين الجدد فقط."
+              >{{ win.new_only_message|default:'التقديم متاح حالياً للمتقدمين الجدد فقط.' }}</textarea>
+              <div class="moe-window-hint">تظهر للوكلاء الرسميين عند تفعيل هذه المرحلة.</div>
+            </div>
+          </div>
+
+          <div class="moe-window-field moe-window-field-full" id="allBox">
+            <div class="moe-window-message-box">
+              <label class="moe-window-label">رسالة مرحلة الجميع</label>
+              <textarea
+                class="moe-window-textarea"
+                name="all_message"
+                id="all_message"
+                placeholder="مثال: التقديم متاح حالياً للجميع."
+              >{{ win.all_message|default:'التقديم متاح حالياً للجميع.' }}</textarea>
+              <div class="moe-window-hint">رسالة تعريفية عامة عند فتح التقديم لجميع الفئات.</div>
             </div>
           </div>
         </div>
 
-        <div style="height:14px;"></div>
-
-        <div class="ui-foot" style="padding:10px 0 0; border-top:0; background:transparent;">
-          <div class="ui-muted">
-            {% if win.opens_at %}من: {{ win.opens_at|date:"Y-m-d H:i" }}{% endif %}
-            {% if win.opens_at and win.closes_at %} | {% endif %}
-            {% if win.closes_at %}إلى: {{ win.closes_at|date:"Y-m-d H:i" }}{% endif %}
+        <div class="moe-window-footer">
+          <div class="moe-window-footer-note">
+            {% if win.opens_at %}من: {{ win.opens_at|date:"Y-m-d H:i" }}{% else %}من: غير محدد{% endif %}
+            |
+            {% if win.closes_at %}إلى: {{ win.closes_at|date:"Y-m-d H:i" }}{% else %}إلى: غير محدد{% endif %}
           </div>
 
-          <button class="ui-btn ui-btn-primary" type="submit">
-            💾 حفظ الإعدادات
-          </button>
+          <div class="moe-window-footer-actions">
+            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="closed">إغلاق سريع</button>
+            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="official_only">الوكلاء فقط</button>
+            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="new_only">الجدد فقط</button>
+            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="all">فتح للجميع</button>
+            <button class="moe-window-btn moe-window-btn-primary" type="submit">💾 حفظ الإعدادات</button>
+          </div>
         </div>
       </form>
-
     </div>
 
   </div>
 </div>
+
+<script>
+(function(){
+  const phaseCards = Array.from(document.querySelectorAll('.moe-window-phase'));
+  const radios = Array.from(document.querySelectorAll('input[name="phase"]'));
+  const preview = document.getElementById('phasePreview');
+
+  const officialBox = document.getElementById('officialBox');
+  const newBox = document.getElementById('newBox');
+  const allBox = document.getElementById('allBox');
+
+  const closedInput = document.getElementById('closed_message');
+  const officialInput = document.getElementById('official_only_message');
+  const newInput = document.getElementById('new_only_message');
+  const allInput = document.getElementById('all_message');
+
+  const quickButtons = Array.from(document.querySelectorAll('[data-quick-phase]'));
+
+  const previewMap = {
+    closed: {
+      cls: 'closed',
+      text: () => closedInput.value.trim() || 'التقديم مغلق حالياً.'
+    },
+    official_only: {
+      cls: 'official',
+      text: () => officialInput.value.trim() || 'التقديم متاح حالياً للوكلاء الرسميين فقط.'
+    },
+    new_only: {
+      cls: 'new',
+      text: () => newInput.value.trim() || 'التقديم متاح حالياً للمتقدمين الجدد فقط.'
+    },
+    all: {
+      cls: 'all',
+      text: () => allInput.value.trim() || 'التقديم متاح حالياً للجميع.'
+    }
+  };
+
+  function getCurrentPhase(){
+    const checked = document.querySelector('input[name="phase"]:checked');
+    return checked ? checked.value : 'closed';
+  }
+
+  function refreshCards(){
+    const phase = getCurrentPhase();
+    phaseCards.forEach(card => {
+      card.classList.toggle('active', card.dataset.phase === phase);
+    });
+  }
+
+  function refreshMessageBoxes(){
+    const phase = getCurrentPhase();
+    officialBox.classList.toggle('is-hidden', !(phase === 'official_only' || phase === 'all'));
+    newBox.classList.toggle('is-hidden', !(phase === 'new_only' || phase === 'all'));
+    allBox.classList.toggle('is-hidden', phase !== 'all');
+  }
+
+  function refreshPreview(){
+    const phase = getCurrentPhase();
+    const item = previewMap[phase] || previewMap.closed;
+    preview.className = 'moe-window-preview-box ' + item.cls;
+    preview.textContent = item.text();
+  }
+
+  function setPhase(phase){
+    const target = document.querySelector(`input[name="phase"][value="${phase}"]`);
+    if(target){
+      target.checked = true;
+      refreshCards();
+      refreshMessageBoxes();
+      refreshPreview();
+    }
+  }
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      refreshCards();
+      refreshMessageBoxes();
+      refreshPreview();
+    });
+  });
+
+  [closedInput, officialInput, newInput, allInput].forEach(el => {
+    if(el){
+      el.addEventListener('input', refreshPreview);
+    }
+  });
+
+  quickButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setPhase(btn.dataset.quickPhase);
+    });
+  });
+
+  refreshCards();
+  refreshMessageBoxes();
+  refreshPreview();
+})();
+</script>
 {% endblock %}

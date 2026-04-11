@@ -3,6 +3,51 @@
 
 {% block extra_css %}
 <style>
+  :root{
+    --bg:#f6f7f5;
+    --bg-2:#f0f2ef;
+    --bg-3:#e8eeea;
+
+    --paper:#ffffff;
+    --paper-2:#f9fbf8;
+    --paper-3:#f3f6f3;
+
+    --ink:#203128;
+    --ink-2:#33453b;
+    --muted:#6f7f76;
+
+    --green-1:#1f3a2d;
+    --green-2:#294638;
+    --green-3:#4b6457;
+    --green-4:#7b8f84;
+
+    --gold-1:#846735;
+    --gold-2:#ab8950;
+    --gold-3:#d7c190;
+
+    --line:#d7dfd8;
+    --line-2:#c8d2ca;
+    --line-3:#ebf0eb;
+
+    --ok:#215f39;
+    --ok-bg:#eff8f3;
+    --ok-bd:#cfe6d8;
+
+    --warn:#8e6113;
+    --warn-bg:#fcf7ee;
+    --warn-bd:#e7d7b7;
+
+    --danger:#8f2f2f;
+    --danger-bg:#fcf6f6;
+    --danger-bd:#e7c7c7;
+
+    --moe-mid:#1f7a62;
+
+    --shadow:0 1px 4px rgba(17,24,20,.035);
+    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+  }
+
   .faX, .faX *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
@@ -10,16 +55,26 @@
 
   .faX{
     direction:rtl;
-    color:var(--min-ink);
+    color:var(--ink);
     font-size:13px;
   }
 
   .faX .shell{
-    border:1px solid rgba(211,221,212,.95);
-    border-radius:22px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow);
+    position:relative;
     overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    box-shadow:var(--shadow);
+  }
+
+  .faX .shell::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    opacity:.95;
   }
 
   .faX .top{
@@ -29,16 +84,13 @@
     align-items:flex-start;
     justify-content:space-between;
     gap:12px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
+    background:
+      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
+      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
     overflow:hidden;
-  }
-
-  .faX .top::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
+    border-bottom:1px solid var(--line);
+    border-inline-start:4px solid var(--moe-mid);
   }
 
   .faX .top > *{
@@ -48,32 +100,34 @@
 
   .faX h1{
     margin:0;
-    font-size:18px;
-    font-weight:800;
-    color:#fff;
-    line-height:1.35;
+    font-size:20px;
+    font-weight:900;
+    color:var(--green-1);
+    line-height:1.2;
+    letter-spacing:0;
   }
 
   .faX .sub{
-    margin:5px 0 0;
-    color:rgba(255,255,255,.84);
-    font-size:10.6px;
-    line-height:1.8;
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:10.4px;
+    line-height:1.95;
     max-width:70ch;
+    font-weight:800;
   }
 
   .faX .pill{
     display:inline-flex;
     align-items:center;
     gap:8px;
-    min-height:30px;
+    min-height:28px;
     padding:4px 10px;
-    border-radius:999px;
-    border:1px solid rgba(239,225,187,.95);
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    font-size:9.8px;
-    font-weight:800;
+    border-radius:8px;
+    border:1px solid var(--warn-bd);
+    background:var(--warn-bg);
+    color:#8a6526;
+    font-size:9px;
+    font-weight:900;
     white-space:nowrap;
   }
 
@@ -81,6 +135,8 @@
     padding:12px;
     display:grid;
     gap:12px;
+    position:relative;
+    z-index:1;
   }
 
   .faX .kpis{
@@ -90,49 +146,51 @@
   }
 
   .faX .kpi{
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:18px;
+    border:1px solid var(--line);
+    border-radius:10px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow-soft);
+    box-shadow:var(--shadow-soft);
     padding:12px;
   }
 
   .faX .kpi .label{
-    color:var(--min-muted);
-    font-size:9.6px;
+    color:var(--muted);
+    font-size:8.8px;
     margin-bottom:6px;
+    font-weight:900;
   }
 
   .faX .kpi .num{
-    color:var(--min-green-1);
-    font-size:22px;
-    font-weight:800;
+    color:var(--green-1);
+    font-size:24px;
+    font-weight:900;
     line-height:1;
+    letter-spacing:-.4px;
   }
 
   .faX .card{
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:18px;
+    border:1px solid var(--line);
+    border-radius:10px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow-soft);
+    box-shadow:var(--shadow-soft);
     overflow:hidden;
   }
 
   .faX .ch{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
+    padding:11px 12px;
+    border-bottom:1px solid var(--line);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
   .faX .ch h3{
     margin:0;
-    font-size:11px;
-    font-weight:800;
-    color:var(--min-green-2);
+    font-size:12px;
+    font-weight:900;
+    color:var(--green-1);
   }
 
   .faX .cb{
@@ -156,65 +214,92 @@
   .faX label{
     display:block;
     margin-bottom:6px;
-    color:var(--min-green-2);
-    font-size:10px;
-    font-weight:800;
+    color:var(--green-1);
+    font-size:9px;
+    font-weight:900;
   }
 
-  .faX .inp, .faX .sel{
+  .faX .inp,
+  .faX .sel{
     width:100%;
-    min-height:38px;
-    padding:8px 10px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    font-size:10.4px;
+    min-height:39px;
+    padding:7px 10px;
+    border-radius:8px;
+    border:1px solid var(--line-2);
+    background:#fff;
+    color:var(--ink);
+    font-size:9.5px;
     outline:none;
+    box-shadow:none;
+  }
+
+  .faX .inp:focus,
+  .faX .sel:focus{
+    border-color:var(--gold-2);
+    box-shadow:0 0 0 2px rgba(171,137,80,.08);
   }
 
   .faX .check{
     display:flex;
     align-items:center;
     gap:8px;
-    min-height:38px;
+    min-height:39px;
     padding:0 6px;
-    font-size:10px;
-    color:var(--min-ink-2);
+    font-size:9px;
+    color:var(--ink-2);
     white-space:nowrap;
+    font-weight:800;
+  }
+
+  .faX .check input{
+    accent-color:var(--green-2);
   }
 
   .faX .btn{
     appearance:none;
-    border:1px solid rgba(211,221,212,.95);
+    border:1px solid var(--line-2);
     cursor:pointer;
-    min-height:38px;
+    min-height:35px;
     padding:8px 14px;
-    border-radius:999px;
-    font-size:10.2px;
-    font-weight:800;
+    border-radius:8px;
+    font-size:9.4px;
+    font-weight:900;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     text-decoration:none;
     gap:8px;
+    background:#fff;
+    color:var(--green-2);
+    box-shadow:none;
+    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+  }
+
+  .faX .btn:hover{
+    background:var(--paper-2);
+    border-color:#b8c6bb;
+    transform:translateY(-1px);
+  }
+
+  .faX .btn:active{
+    transform:translateY(0);
   }
 
   .faX .btn.primary{
     color:#fff;
-    border-color:var(--min-green-2);
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2));
+    border-color:var(--green-2);
+    background:var(--green-2);
   }
 
   .faX .btn.secondary{
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
+    background:#fff;
+    color:var(--green-2);
   }
 
   .faX .btn.gold{
-    background:linear-gradient(180deg,#fffdf7,#fff8ea);
-    color:#7f5d1a;
-    border-color:rgba(239,225,187,.95);
+    background:var(--warn-bg);
+    color:#8a6526;
+    border-color:var(--warn-bd);
   }
 
   .faX .table-wrap{
@@ -224,24 +309,37 @@
 
   .faX table{
     width:100%;
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse:collapse;
     min-width:980px;
   }
 
-  .faX th, .faX td{
+  .faX th,
+  .faX td{
     padding:10px 8px;
     text-align:right;
     vertical-align:middle;
-    border-bottom:1px solid rgba(233,239,234,.96);
-    font-size:10px;
+    border-bottom:1px solid #edf1ed;
+    font-size:9.3px;
   }
 
   .faX th{
-    background:#f8fbf8;
-    color:var(--min-green-2);
-    font-weight:800;
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
+    color:var(--green-1);
+    font-weight:900;
     white-space:nowrap;
+  }
+
+  .faX tbody td{
+    color:var(--ink);
+    background:#fff;
+  }
+
+  .faX tbody tr:nth-child(even) td{
+    background:#fcfdfc;
+  }
+
+  .faX tbody tr:hover td{
+    background:#f8faf8;
   }
 
   .faX tr:last-child td{
@@ -249,45 +347,48 @@
   }
 
   .faX .name{
-    font-weight:800;
-    color:var(--min-green-1);
+    font-weight:900;
+    color:var(--green-1);
+    font-size:10.2px;
   }
 
   .faX .muted{
-    color:var(--min-muted);
+    color:var(--muted);
+    font-weight:800;
   }
 
   .faX .badge{
     display:inline-flex;
     align-items:center;
-    min-height:26px;
-    padding:4px 10px;
+    min-height:24px;
+    padding:3px 9px;
     border-radius:999px;
-    font-size:9px;
-    font-weight:800;
+    font-size:8.5px;
+    font-weight:900;
     white-space:nowrap;
-    border:1px solid rgba(209,220,210,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf8);
-    color:var(--min-ink-2);
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-2);
   }
 
   .faX .badge.ok{
-    border-color:var(--min-ok-line);
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5);
-    color:#14532d;
+    border-color:var(--ok-bd);
+    background:var(--ok-bg);
+    color:var(--ok);
   }
 
   .faX .badge.warn{
-    border-color:var(--min-warn-line);
-    background:linear-gradient(180deg,#fffaf3,#fff7ed);
-    color:#9a3412;
+    border-color:var(--warn-bd);
+    background:var(--warn-bg);
+    color:var(--warn);
   }
 
   .faX .empty{
     padding:18px;
     text-align:center;
-    color:var(--min-muted);
-    font-size:10.4px;
+    color:var(--muted);
+    font-size:9px;
+    font-weight:800;
   }
 
   .faX .pager{
@@ -304,21 +405,22 @@
     min-width:34px;
     min-height:34px;
     padding:6px 10px;
-    border-radius:12px;
-    border:1px solid rgba(211,221,212,.95);
+    border-radius:8px;
+    border:1px solid var(--line);
     display:inline-flex;
     align-items:center;
     justify-content:center;
     text-decoration:none;
-    font-size:10px;
-    color:var(--min-green-2);
+    font-size:9px;
+    color:var(--green-2);
     background:#fff;
+    font-weight:900;
   }
 
   .faX .pager .current{
-    background:linear-gradient(180deg,#1f5a45,#184736);
+    background:var(--green-2);
     color:#fff;
-    border-color:#184736;
+    border-color:var(--green-2);
   }
 
   .faX .print-note{
@@ -330,6 +432,7 @@
       background:#fff !important;
       color:#000 !important;
       border-bottom:1px solid #d1d5db !important;
+      border-inline-start:0 !important;
     }
 
     .faX .top::before,
@@ -344,7 +447,8 @@
       display:block;
       margin-top:8px;
       color:#000 !important;
-      font-size:11px;
+      font-size:10px;
+      font-weight:800;
     }
 
     .faX h1,
@@ -386,6 +490,7 @@
     .faX .top{
       flex-direction:column;
       align-items:flex-start;
+      padding:14px;
     }
 
     .faX .pill{
@@ -403,6 +508,10 @@
 
     .faX .filters{
       grid-template-columns:1fr;
+    }
+
+    .faX h1{
+      font-size:18px;
     }
   }
 </style>
