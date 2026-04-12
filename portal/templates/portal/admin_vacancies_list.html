@@ -4,739 +4,986 @@
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --vx-bg:#f4f7f4;
+    --vx-bg-2:#eef3ef;
+    --vx-surface:#ffffff;
+    --vx-surface-2:#fbfcfb;
+    --vx-surface-3:#f7faf7;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --vx-ink:#183127;
+    --vx-ink-2:#31483d;
+    --vx-muted:#6d7d74;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --vx-green-1:#183a2d;
+    --vx-green-2:#214738;
+    --vx-green-3:#345a49;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --vx-gold-1:#8c7543;
+    --vx-gold-2:#a78d59;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --vx-line:#d9e1da;
+    --vx-line-2:#ccd6ce;
+    --vx-line-3:#e8ede9;
 
-    --ok:#215f39;
-    --warn:#8e6113;
-    --danger:#8f2f2f;
-    --info:#355c80;
+    --vx-ok:#1f6239;
+    --vx-ok-bg:#eef7f1;
+    --vx-ok-bd:#d2e4d7;
 
-    --moe-deep:#0f5f49;
-    --moe-mid:#1f7a62;
-    --moe-soft:#2e9b81;
-    --moe-mist:#edf6f2;
-    --moe-mist-2:#f7fbf9;
-    --moe-line:#d6e6dd;
+    --vx-warn:#88621f;
+    --vx-warn-bg:#faf6ee;
+    --vx-warn-bd:#e7d9be;
 
-    --r-2xl:12px;
-    --r-xl:10px;
-    --r-lg:9px;
-    --r-md:8px;
-    --r-sm:7px;
+    --vx-danger:#8d3333;
+    --vx-danger-bg:#fbf5f5;
+    --vx-danger-bd:#e7cbcb;
+
+    --vx-info:#395f7b;
+    --vx-info-bg:#f2f6fb;
+    --vx-info-bd:#d7e1ec;
+
+    --vx-shadow:0 1px 3px rgba(16,24,20,.035);
+    --vx-shadow-soft:0 8px 22px rgba(16,24,20,.05);
   }
 
-  .v963v,.v963v *{box-sizing:border-box}
+  .v963vh,.v963vh *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
 
-  .v963v{
+  .v963vh{
     direction:rtl;
-    color:var(--ink);
-    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    color:var(--vx-ink);
+    background:linear-gradient(180deg,#f7f9f7 0%, #f1f5f1 52%, #edf2ee 100%);
     padding:10px;
   }
 
-  .v963v-page{
-    position:relative;
+  .v963vh-page{
+    max-width:1540px;
+    margin:0 auto;
+    display:grid;
+    gap:10px;
   }
 
-  .v963v-top,
-  .v963v-card{
+  .v963vh-top,
+  .v963vh-bar,
+  .v963vh-card,
+  .v963vh-menu{
     position:relative;
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:0 1px 4px rgba(17,24,20,.035);
+    border:1px solid var(--vx-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
+    box-shadow:var(--vx-shadow);
   }
 
-  .v963v-top::before,
-  .v963v-card::before{
+  .v963vh-bar::before,
+  .v963vh-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    background:linear-gradient(90deg,rgba(33,71,56,.7) 0%, rgba(167,141,89,.55) 100%);
     opacity:.95;
   }
 
-  .v963v-top{
-    margin-bottom:14px;
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
+  .v963vh-top{
+    position:relative;
+    padding:16px 18px 15px;
+    border:1px solid rgba(140,117,67,.35);
+    border-radius:22px;
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,0) 34%),
+      linear-gradient(135deg,#1f4738 0%, #173a2f 62%, #143329 100%);
+    box-shadow:0 10px 24px rgba(16,24,20,.08);
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
-    align-items:start;
+    align-items:center;
   }
 
-  .v963v-title{
+  .v963vh-top::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:3px;
+    background:linear-gradient(90deg,rgba(191,168,119,.8) 0%, rgba(102,134,118,.74) 100%);
+    opacity:.95;
+  }
+
+  .v963vh-title{
     margin:0;
-    font-size:20px;
-    line-height:1.15;
+    font-size:22px;
+    line-height:1.1;
     font-weight:900;
-    color:var(--green-1);
-    letter-spacing:0;
+    color:#ffffff;
   }
 
-  .v963v-subtitle{
-    margin:6px 0 0;
-    max-width:820px;
-    font-size:10.4px;
-    line-height:1.95;
-    color:var(--muted);
+  .v963vh-subtitle{
+    margin:7px 0 0;
+    max-width:860px;
+    color:rgba(255,255,255,.9);
+    font-size:10px;
+    line-height:1.9;
     font-weight:800;
   }
 
-  .v963v-actions{
+  .v963vh-top-actions,
+  .v963vh-bar-actions,
+  .v963vh-toolbar-right,
+  .v963vh-toolbar-left,
+  .v963vh-foot-right,
+  .v963vh-foot-left{
     display:flex;
+    align-items:center;
     gap:8px;
     flex-wrap:wrap;
-    align-items:center;
-    justify-content:flex-end;
   }
 
-  .v963v-inline-form{
-    margin:0;
-    display:inline-flex;
-  }
+  .v963vh-top-actions{justify-content:flex-end}
 
-  .v963v-btn{
+  .v963vh-btn,
+  .v963vh-tab,
+  .v963vh-menu-btn,
+  .v963vh-menu-link{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:37px;
+    padding:7px 13px;
+    border-radius:10px;
+    border:1px solid var(--vx-line-2);
     background:#fff;
-    color:var(--green-2);
+    color:var(--vx-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:9.4px;
+    font-size:9px;
     font-weight:900;
+    transition:background .15s ease,border-color .15s ease,transform .15s ease;
     box-shadow:none;
-    transition:.16s ease;
   }
 
-  .v963v-btn:hover{
-    background:var(--paper-2);
-    border-color:#b8c6bb;
+  .v963vh-btn:hover,
+  .v963vh-tab:hover,
+  .v963vh-menu-btn:hover,
+  .v963vh-menu-link:hover{
+    transform:translateY(-1px);
+    background:#f7faf8;
+    border-color:#bcc9c0;
   }
 
-  .v963v-btn-primary{
-    background:var(--green-2);
+  .v963vh-btn.is-disabled,
+  .v963vh-btn[aria-disabled="true"]{
+    opacity:.48;
+    cursor:default;
+    pointer-events:none;
+    transform:none !important;
+    box-shadow:none !important;
+    background:#f7f9f7;
+    color:#8b988f;
+    border-color:#dde5de;
+  }
+
+  .v963vh-top .v963vh-btn{
+    background:rgba(255,255,255,.96);
+    border-color:rgba(255,255,255,.18);
+    color:var(--vx-green-1);
+  }
+
+  .v963vh-top .v963vh-btn:hover{
+    background:#ffffff;
+    border-color:rgba(255,255,255,.28);
+  }
+
+  .v963vh-top .v963vh-btn-primary{
+    background:linear-gradient(180deg,#2a4b3b 0%, #1d3b2e 100%);
+    border-color:#1d3b2e;
     color:#fff;
-    border-color:var(--green-2);
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
   }
 
-  .v963v-btn-danger{
-    background:var(--danger);
+  .v963vh-top .v963vh-btn-primary:hover{
+    background:linear-gradient(180deg,#315242 0%, #244133 100%);
+    border-color:#244133;
     color:#fff;
-    border-color:var(--danger);
   }
 
-  .v963v-btn-warn{
-    background:var(--warn);
+
+  .v963vh-btn-primary{
+    background:linear-gradient(180deg,#26493a 0%, #1d3f31 100%);
+    border-color:#1d3f31;
     color:#fff;
-    border-color:var(--warn);
   }
 
-  .v963v-btn-info,
-  .v963v-btn-gold,
-  .v963v-btn-soft{
+  .v963vh-btn-danger{
+    background:var(--vx-danger-bg);
+    border-color:var(--vx-danger-bd);
+    color:var(--vx-danger);
+  }
+
+  .v963vh-btn-info,
+  .v963vh-btn-gold{
     background:#fff;
-    color:var(--green-2);
-    border-color:var(--line-2);
+    color:var(--vx-green-2);
+    border-color:var(--vx-line-2);
   }
 
-  .v963v-btn-sm{
+  .v963vh-btn-sm,
+  .v963vh-menu-btn,
+  .v963vh-menu-link{
     min-height:30px;
-    padding:4px 10px;
-    font-size:8.4px;
+    padding:5px 11px;
     border-radius:8px;
+    font-size:8.15px;
   }
 
-  .v963v-btn-icon{
-    font-size:11px;
-    line-height:1;
+  .v963vh-menu-btn{
+    background:#fbfcfb;
+    color:var(--vx-green-3);
   }
 
-  .v963v-toolbar{
-    padding:12px 13px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-  }
-
-  .v963v-filter-shell{
-    display:grid;
-    gap:12px;
-    padding:11px;
-    border:1px solid var(--moe-line);
-    border-radius:10px;
-    background:var(--moe-mist-2);
-  }
-
-  .v963v-toolbar-row{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
+  .v963vh-pill,
+  .v963vh-status,
+  .v963vh-mini{
+    display:inline-flex;
     align-items:center;
+    justify-content:center;
+    gap:5px;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--vx-line-2);
+    background:#fff;
+    color:var(--vx-ink-2);
+    font-size:8px;
+    font-weight:900;
+    white-space:nowrap;
   }
 
-  .v963v-toolbar-left,
-  .v963v-toolbar-right{
+  .v963vh-pill.ok,
+  .v963vh-status.open{
+    background:var(--vx-ok-bg);
+    border-color:var(--vx-ok-bd);
+    color:var(--vx-ok);
+  }
+
+  .v963vh-pill.danger,
+  .v963vh-status.closed{
+    background:var(--vx-danger-bg);
+    border-color:var(--vx-danger-bd);
+    color:var(--vx-danger);
+  }
+
+  .v963vh-pill.info{
+    background:var(--vx-info-bg);
+    border-color:var(--vx-info-bd);
+    color:var(--vx-info);
+  }
+
+  .v963vh-pill.warn{
+    background:var(--vx-warn-bg);
+    border-color:var(--vx-warn-bd);
+    color:var(--vx-warn);
+  }
+
+  .v963vh-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#2c7a62;
+    flex:0 0 auto;
+  }
+
+  .v963vh-bar{
+    padding:10px 12px;
+    display:grid;
+    gap:10px;
+  }
+
+  .v963vh-bar-head{
     display:flex;
-    gap:8px;
-    flex-wrap:wrap;
     align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
   }
 
-  .v963v-toolbar-right{
-    justify-content:flex-end;
+  .v963vh-bar-title{
+    color:var(--vx-green-1);
+    font-size:9px;
+    font-weight:900;
   }
 
-  .v963v-input,
-  .v963v-select{
+  .v963vh-filter-shell{
+    display:grid;
+    gap:10px;
+    padding:10px;
+    border:1px solid var(--vx-line);
+    border-radius:14px;
+    background:var(--vx-surface-3);
+  }
+
+  .v963vh-toolbar{
+    display:grid;
+    gap:10px;
+    align-items:start;
+  }
+
+  .v963vh-filter-grid{
+    display:grid;
+    grid-template-columns:minmax(240px,1.7fr) repeat(3,minmax(120px,.8fr));
+    gap:9px;
+    align-items:end;
+  }
+
+  .v963vh-filter-field{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .v963vh-filter-label{
+    color:var(--vx-green-1);
+    font-size:7.75px;
+    font-weight:900;
+    line-height:1.4;
+    padding-inline-start:2px;
+  }
+
+  .v963vh-filter-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-top:2px;
+  }
+
+  .v963vh-input,
+  .v963vh-select{
     min-height:39px;
     height:39px;
-    padding:6px 10px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    padding:7px 10px;
+    border-radius:10px;
+    border:1px solid var(--vx-line-2);
     background:#fff;
-    color:var(--ink);
-    font-size:9.5px;
+    color:var(--vx-ink);
+    font-size:9px;
+    font-weight:700;
     outline:none;
     box-shadow:none;
   }
 
-  .v963v-input:focus,
-  .v963v-select:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  .v963vh-input:focus,
+  .v963vh-select:focus{
+    border-color:var(--vx-gold-2);
+    box-shadow:0 0 0 2px rgba(167,141,89,.08);
   }
 
-  .v963v-pill{
-    display:inline-flex;
+  .v963vh-card-head{
+    display:flex;
     align-items:center;
-    gap:6px;
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-    font-size:9px;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 13px;
+    border-bottom:1px solid var(--vx-line-3);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .v963vh-card-title{
+    margin:0;
+    color:var(--vx-green-1);
+    font-size:10px;
     font-weight:900;
-    white-space:nowrap;
   }
 
-  .v963v-pill-ok{
-    background:#eff8f3 !important;
-    border-color:#cfe6d8 !important;
-    color:#1c6a44 !important;
-  }
-
-  .v963v-pill-danger{
-    background:#fcf6f6 !important;
-    border-color:#e7c7c7 !important;
-    color:#8f2f2f !important;
-  }
-
-  .v963v-pill-info{
-    background:#f3f7fd !important;
-    border-color:#d5e0ef !important;
-    color:#355c80 !important;
-  }
-
-  .v963v-muted{
-    color:var(--muted) !important;
-    font-size:8.5px;
+  .v963vh-card-sub{
+    color:var(--vx-muted);
+    font-size:8px;
     font-weight:800;
   }
 
-  .v963v-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#1f7a62;
-  }
-
-  .v963v-table-wrap{
-    overflow:auto;
+  .v963vh-table-wrap{
+    overflow-x:auto;
+    overflow-y:visible;
     background:#fff;
-    border-top:1px solid var(--line);
-    position:relative;
   }
 
-  .v963v-table{
+  .v963vh-table{
     width:100%;
-    min-width:1440px;
-    border-collapse:collapse;
+    min-width:1180px;
+    border-collapse:separate;
+    border-spacing:0;
     table-layout:fixed;
   }
 
-  .v963v-table th{
-    position:sticky;
-    top:0;
-    z-index:5;
-    padding:12px 8px;
+  .v963vh-table th{
+    padding:11px 8px;
     white-space:nowrap;
-    font-size:8.8px;
+    font-size:8.35px;
     font-weight:900;
-    color:var(--green-1);
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    border-bottom:1px solid var(--line-2);
+    color:var(--vx-green-1);
+    background:linear-gradient(180deg,#f3f6f2 0%, #edf2ed 100%);
+    border-bottom:1px solid var(--vx-line-2);
     border-inline-start:1px solid #e1e7e2;
     text-align:center;
   }
 
-  .v963v-table td{
-    padding:11px 8px;
-    font-size:9.35px;
+  .v963vh-table td{
+    padding:10px 8px;
+    font-size:8.95px;
+    font-weight:700;
     vertical-align:middle;
     background:#fff;
-    color:var(--ink);
+    color:var(--vx-ink);
     border-bottom:1px solid #edf1ed;
     border-inline-start:1px solid #f1f3f1;
   }
 
-  .v963v-table th:first-child,
-  .v963v-table td:first-child{
+  .v963vh-table th:first-child,
+  .v963vh-table td:first-child{
     border-inline-start:none;
   }
 
-  .v963v-row:nth-child(even) td{
+  .v963vh-row:nth-child(even) td{
     background:#fcfdfc;
   }
 
-  .v963v-row:hover td{
+  .v963vh-row:hover td{
     background:#f8faf8;
   }
 
-  .vac-col-school{
-    width:320px;
+  .vac-col-school{width:340px}
+  .vac-col-metrics{width:185px}
+  .vac-col-actions{width:190px}
+
+  .v963vh-school{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    min-width:0;
   }
 
-  .vac-col-actions{
-    width:290px;
-    position:sticky;
-    left:0;
-    z-index:6;
-    background:#fdfefe !important;
-    box-shadow:inset 1px 0 0 #e4ece7 !important;
-  }
-
-  .v963v-table thead .vac-col-actions{
-    z-index:9;
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-  }
-
-  .v963v-name .n1{
-    font-size:10.7px;
+  .v963vh-school-main{
+    font-size:10px;
     line-height:1.35;
     font-weight:900;
-    color:var(--green-1);
-    letter-spacing:0;
+    color:var(--vx-green-1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  .v963v-name .n2{
-    margin-top:3px;
-    font-size:8.8px;
-    color:var(--muted);
+  .v963vh-school-sub{
+    color:var(--vx-muted);
+    font-size:8px;
+    line-height:1.6;
     font-weight:800;
   }
 
-  .vac-act{
+  .v963vh-school-ministry{
+    color:var(--vx-muted);
+    font-size:7.6px;
+    line-height:1.55;
+    font-weight:800;
+  }
+
+  .v963vh-metrics-line{
     display:flex;
-    gap:7px;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
     flex-wrap:nowrap;
-    align-items:center;
-    justify-content:center;
-    min-width:264px;
-    flex-direction:row-reverse;
   }
 
-  .vac-act form{
-    display:inline-block;
-    margin:0;
+  .v963vh-metric-chip{
+    flex:1 1 0;
+    min-width:0;
+    border:1px solid var(--vx-line);
+    border-radius:999px;
+    background:#fff;
+    padding:5px 6px;
+    text-align:center;
+    line-height:1.25;
   }
 
-  .vac-act .v963v-btn{
-    min-width:74px;
-    justify-content:center;
-  }
-
-  .vac-col-actions .v963v-btn-warn{
-    background:#fcf8ef !important;
-    border-color:#ead6ae !important;
-    color:#8e6113 !important;
-  }
-
-  .vac-col-actions .v963v-btn-danger{
-    background:#fcf6f6 !important;
-    border-color:#e7c7c7 !important;
-    color:#8f2f2f !important;
-  }
-
-  .vac-col-actions .v963v-btn:not(.v963v-btn-primary):not(.v963v-btn-danger):not(.v963v-btn-warn){
-    background:#ffffff !important;
-    border-color:#d8e2db !important;
-    color:var(--green-2) !important;
-  }
-
-  .cnt{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:44px;
-    height:28px;
-    padding:0 9px;
-    border-radius:8px;
+  .v963vh-metric-chip b{
+    display:block;
+    font-size:9.2px;
+    line-height:1.05;
     font-weight:900;
-    font-size:9px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
+    color:var(--vx-green-1);
   }
 
-  .cnt-strong{
+  .v963vh-metric-chip span{
+    display:block;
+    margin-top:2px;
+    color:var(--vx-muted);
+    font-size:6.75px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .v963vh-metric-chip.rank1{
     background:#fcf7ee;
-    border-color:#e7d7b7;
-    color:#8a6526;
+    border-color:#e7d9be;
   }
 
-  .cnt-ok{
-    background:#eff8f3;
-    border-color:#cfe6d8;
-    color:#1c6a44;
+  .v963vh-metric-chip.rank1 b{color:#85621e}
+
+  .v963vh-metric-chip.final{
+    background:#eef7f1;
+    border-color:#d2e4d7;
   }
 
-  .v963v-foot{
+  .v963vh-metric-chip.final b{color:#1f6239}
+
+  .v963vh-actions{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:nowrap;
+    position:relative;
+  }
+
+  .v963vh-more{
+    position:relative;
+  }
+
+  .v963vh-menu{
+    position:absolute;
+    top:calc(100% + 6px);
+    inset-inline-start:0;
+    min-width:126px;
+    padding:5px;
+    display:none;
+    z-index:20;
+    border-radius:12px;
+  }
+
+  .v963vh-more.open .v963vh-menu{
+    display:grid;
+    gap:5px;
+  }
+
+  .v963vh-menu-link{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .v963vh-menu-link.warn{
+    background:var(--vx-warn-bg);
+    border-color:var(--vx-warn-bd);
+    color:var(--vx-warn);
+  }
+
+  .v963vh-menu-link.danger{
+    background:var(--vx-danger-bg);
+    border-color:var(--vx-danger-bd);
+    color:var(--vx-danger);
+  }
+
+  .v963vh-empty{
+    padding:18px;
+    text-align:center;
+    color:var(--vx-muted);
+    font-size:9px;
+    font-weight:800;
+    background:#fff;
+  }
+
+  .v963vh-foot{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    padding:12px 14px;
-    border-top:1px solid var(--line);
-    background:var(--paper);
+    padding:11px 13px;
+    border-top:1px solid var(--vx-line);
+    background:#fff;
   }
 
-  @media (max-width: 900px){
-    .v963v-toolbar-row{
+  .v963vh-foot-note{
+    color:var(--vx-muted);
+    font-size:8px;
+    font-weight:800;
+  }
+
+  .v963vh-foot-summary{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .v963vh-page-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:28px;
+    padding:4px 11px;
+    border-radius:999px;
+    border:1px solid var(--vx-line-2);
+    background:#f8faf8;
+    color:var(--vx-green-1);
+    font-size:8px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  @media (max-width:980px){
+    .v963vh-top{
       grid-template-columns:1fr;
-      align-items:stretch;
+      align-items:start;
     }
 
-    .v963v-toolbar-right{
+    .v963vh-top-actions{
       justify-content:flex-start;
     }
 
-    .v963v-foot{
+    .v963vh-filter-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .v963vh-filter-actions,
+    .v963vh-toolbar-right{
+      justify-content:flex-start;
+    }
+
+    .v963vh-foot{
       flex-direction:column;
       align-items:flex-start;
     }
-
-    .v963v-table{
-      min-width:1360px;
-    }
-
-    .vac-col-actions{
-      width:270px;
-    }
-
-    .vac-act{
-      min-width:246px;
-    }
   }
 
-  @media (max-width: 640px){
-    .v963v{
-      padding:6px;
-    }
-
-    .v963v-top{
-      padding:14px;
-      grid-template-columns:1fr;
-    }
-
-    .v963v-title{
-      font-size:18px;
-    }
-
-    .v963v-toolbar{
-      padding:10px;
-    }
+  @media (max-width:640px){
+    .v963vh{padding:6px}
+    .v963vh-top{padding:14px}
+    .v963vh-title{font-size:18px}
+    .v963vh-bar{padding:10px}
+    .v963vh-filter-grid{grid-template-columns:1fr}
+    .v963vh-filter-actions{align-items:flex-start}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="v963v">
-  <div class="v963v-page">
+<div class="v963vh">
+  <div class="v963vh-page">
 
-    <div class="v963v-top">
+    <div class="v963vh-top">
       <div>
-        <h1 class="v963v-title">إدارة الشواغر / المدارس</h1>
-        <p class="v963v-subtitle">إضافة، تعديل، فتح وإغلاق الشاغر، مع دعم التفعيل والتعطيل الجماعي، وعرض مؤشرات الإقبال والترشيحات النهائية ضمن نفس الهوية البصرية الرسمية.</p>
+        <h1 class="v963vh-title">إدارة الشواغر / المدارس</h1>
+        <p class="v963vh-subtitle">
+          متابعة الشواغر وفتحها أو إغلاقها وتحديث بياناتها ضمن قائمة تشغيلية ثقيلة مضبوطة وسريعة القراءة.
+        </p>
       </div>
 
-      <div class="v963v-actions">
-        <a class="v963v-btn v963v-btn-gold" href="{% url 'portal:admin_dashboard' %}">
-          <span class="v963v-btn-icon">▦</span>
+      <div class="v963vh-top-actions">
+        <a class="v963vh-btn v963vh-btn-gold" href="{% url 'portal:admin_dashboard' %}">
+          <span>▦</span>
           لوحة القرار
         </a>
 
-        <a class="v963v-btn v963v-btn-primary" href="{% url 'portal:admin_vacancies_create' %}">
-          <span class="v963v-btn-icon">＋</span>
+        <a class="v963vh-btn v963vh-btn-primary" href="{% url 'portal:admin_vacancies_create' %}">
+          <span>＋</span>
           إضافة شاغر
         </a>
-
-        <a class="v963v-btn v963v-btn-info" href="{% url 'portal:admin_applicants_list' %}">
-          <span class="v963v-btn-icon">👤</span>
-          إدارة المتقدمين
-        </a>
-
-        <form method="post" action="{% url 'portal:admin_vacancies_enable_all' %}" class="v963v-inline-form" onsubmit="return confirm('تأكيد فتح جميع المدارس؟');">
-          {% csrf_token %}
-          <input type="hidden" name="q" value="{{ q }}">
-          <input type="hidden" name="sector" value="{{ sector }}">
-          <input type="hidden" name="gender" value="{{ gender }}">
-          <input type="hidden" name="open" value="{{ open }}">
-          <input type="hidden" name="page" value="{{ rows.number }}">
-          <button class="v963v-btn v963v-btn-primary" type="submit">
-            <span class="v963v-btn-icon">✓</span>
-            تفعيل جميع المدارس
-          </button>
-        </form>
-
-        <form method="post" action="{% url 'portal:admin_vacancies_disable_all' %}" class="v963v-inline-form" onsubmit="return confirm('تأكيد إغلاق جميع المدارس؟');">
-          {% csrf_token %}
-          <input type="hidden" name="q" value="{{ q }}">
-          <input type="hidden" name="sector" value="{{ sector }}">
-          <input type="hidden" name="gender" value="{{ gender }}">
-          <input type="hidden" name="open" value="{{ open }}">
-          <input type="hidden" name="page" value="{{ rows.number }}">
-          <button class="v963v-btn v963v-btn-danger" type="submit">
-            <span class="v963v-btn-icon">✕</span>
-            تعطيل جميع المدارس
-          </button>
-        </form>
       </div>
     </div>
 
-    <div class="v963v-card">
+    <div class="v963vh-bar">
+      <div class="v963vh-bar-head">
+        <div class="v963vh-bar-title">إجراءات جماعية</div>
 
-      <div class="v963v-toolbar">
-        <form method="get" class="v963v-filter-shell">
-          <div class="v963v-toolbar-row">
-            <div class="v963v-toolbar-left">
-              <input
-                class="v963v-input"
-                name="q"
-                value="{{ q }}"
-                placeholder="بحث: المدرسة / رقم الوزارة / القطاع / المدير"
-                style="width:min(360px,100%)"
-              >
+        <div class="v963vh-bar-actions">
+          <a class="v963vh-btn v963vh-btn-info" href="{% url 'portal:admin_applicants_list' %}">
+            <span>👤</span>
+            إدارة المتقدمين
+          </a>
 
-              <input
-                class="v963v-input"
-                name="sector"
-                value="{{ sector }}"
-                placeholder="فلتر قطاع"
-                style="width:170px"
-              >
+          <form method="post" action="{% url 'portal:admin_vacancies_enable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد فتح جميع المدارس؟');">
+            {% csrf_token %}
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="sector" value="{{ sector }}">
+            <input type="hidden" name="gender" value="{{ gender }}">
+            <input type="hidden" name="open" value="{{ open }}">
+            <input type="hidden" name="page" value="{{ rows.number }}">
+            <button class="v963vh-btn v963vh-btn-primary" type="submit">
+              <span>✓</span>
+              فتح جميع المدارس
+            </button>
+          </form>
 
-              <input
-                class="v963v-input"
-                name="gender"
-                value="{{ gender }}"
-                placeholder="فلتر جنس"
-                style="width:140px"
-              >
-
-              <select class="v963v-select" name="open" style="width:150px">
-                <option value="" {% if not open %}selected{% endif %}>الكل</option>
-                <option value="open" {% if open == "open" %}selected{% endif %}>مفتوح</option>
-                <option value="closed" {% if open == "closed" %}selected{% endif %}>مغلق</option>
-              </select>
-            </div>
-
-            <div class="v963v-toolbar-right">
-              <button class="v963v-btn v963v-btn-primary" type="submit">بحث</button>
-              <a class="v963v-btn" href="{% url 'portal:admin_vacancies_list' %}">مسح</a>
-
-              <span class="v963v-pill">
-                <span class="v963v-dot"></span>
-                الإجمالي: <b>{{ total }}</b>
-              </span>
-            </div>
-          </div>
-        </form>
+          <form method="post" action="{% url 'portal:admin_vacancies_disable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد إغلاق جميع المدارس؟');">
+            {% csrf_token %}
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="sector" value="{{ sector }}">
+            <input type="hidden" name="gender" value="{{ gender }}">
+            <input type="hidden" name="open" value="{{ open }}">
+            <input type="hidden" name="page" value="{{ rows.number }}">
+            <button class="v963vh-btn v963vh-btn-danger" type="submit">
+              <span>✕</span>
+              إغلاق جميع المدارس
+            </button>
+          </form>
+        </div>
       </div>
 
-      <div class="v963v-table-wrap">
-        <table class="v963v-table">
+      <form method="get" class="v963vh-filter-shell">
+        <div class="v963vh-filter-grid">
+          <div class="v963vh-filter-field">
+            <label class="v963vh-filter-label">بحث عام</label>
+            <input
+              class="v963vh-input"
+              name="q"
+              value="{{ q }}"
+              placeholder="اسم المدرسة / رقم الوزارة / القطاع / المدير"
+            >
+          </div>
+
+          <div class="v963vh-filter-field">
+            <label class="v963vh-filter-label">القطاع</label>
+            <input
+              class="v963vh-input"
+              name="sector"
+              value="{{ sector }}"
+              placeholder="كل القطاعات"
+            >
+          </div>
+
+          <div class="v963vh-filter-field">
+            <label class="v963vh-filter-label">الجنس</label>
+            <input
+              class="v963vh-input"
+              name="gender"
+              value="{{ gender }}"
+              placeholder="كل الأنواع"
+            >
+          </div>
+
+          <div class="v963vh-filter-field">
+            <label class="v963vh-filter-label">حالة الشاغر</label>
+            <select class="v963vh-select" name="open">
+              <option value="" {% if not open %}selected{% endif %}>كل الحالات</option>
+              <option value="open" {% if open == "open" %}selected{% endif %}>مفتوح</option>
+              <option value="closed" {% if open == "closed" %}selected{% endif %}>مغلق</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="v963vh-filter-actions">
+          <div class="v963vh-toolbar-left">
+            <button class="v963vh-btn v963vh-btn-primary" type="submit">تطبيق الفلاتر</button>
+            <a class="v963vh-btn" href="{% url 'portal:admin_vacancies_list' %}">إعادة ضبط</a>
+          </div>
+
+          <div class="v963vh-toolbar-right">
+            <span class="v963vh-pill info">
+              <span class="v963vh-dot"></span>
+              إجمالي السجلات: <b>{{ total }}</b>
+            </span>
+
+            {% if open == "open" %}
+              <span class="v963vh-pill ok">الشواغر المفتوحة فقط</span>
+            {% elif open == "closed" %}
+              <span class="v963vh-pill danger">الشواغر المغلقة فقط</span>
+            {% else %}
+              <span class="v963vh-pill">كل السجلات الحالية</span>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="v963vh-card">
+      <div class="v963vh-card-head">
+        <div>
+          <h2 class="v963vh-card-title">سجل الشواغر</h2>
+          <div class="v963vh-card-sub">عرض مختصر للمدرسة مع مؤشرات الإقبال والترشيحات ضمن صف واحد أوضح.</div>
+        </div>
+
+        <span class="v963vh-pill">عدد الصفوف: {{ rows|length }}</span>
+      </div>
+
+      <div class="v963vh-table-wrap">
+        <table class="v963vh-table">
           <thead>
             <tr>
               <th class="vac-col-school">المدرسة</th>
-              <th style="width:130px">رقم الوزارة</th>
-              <th style="width:190px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:120px">المرحلة</th>
-              <th style="width:95px">الاحتياج</th>
-              <th style="width:110px">الراغبون</th>
-              <th style="width:110px">رغبة أولى</th>
-              <th style="width:120px">ترشيحات نهائية</th>
-              <th style="width:100px">الحالة</th>
-              <th class="vac-col-actions">إجراءات</th>
+              <th style="width:180px">القطاع</th>
+              <th style="width:95px">الجنس</th>
+              <th style="width:115px">المرحلة</th>
+              <th style="width:100px">الاحتياج</th>
+              <th class="vac-col-metrics">مؤشرات الإقبال</th>
+              <th style="width:105px">الحالة</th>
+              <th class="vac-col-actions">الإجراءات</th>
             </tr>
           </thead>
 
           <tbody>
             {% for v in rows %}
-            <tr class="v963v-row">
+            <tr class="v963vh-row">
               <td class="vac-col-school" title="{{ v.school_name }}">
-                <div class="v963v-name">
-                  <div class="n1">{{ v.school_name|default:"—" }}</div>
-                  <div class="n2">{{ v.manager_name|default:"-" }}</div>
+                <div class="v963vh-school">
+                  <div class="v963vh-school-main">{{ v.school_name|default:"—" }}</div>
+                  <div class="v963vh-school-sub">{{ v.manager_name|default:"-" }}</div>
+                  <div class="v963vh-school-ministry">رقم الوزارة: {{ v.ministry_no|default:"—" }}</div>
                 </div>
               </td>
 
-              <td class="v963v-muted">{{ v.ministry_no|default:"—" }}</td>
-
               <td title="{{ v.sector }}">
                 {% if v.sector %}
-                  <span class="v963v-pill">{{ v.sector }}</span>
+                  <span class="v963vh-pill">{{ v.sector }}</span>
                 {% else %}
-                  <span class="v963v-pill v963v-muted">—</span>
+                  <span class="v963vh-foot-note">—</span>
                 {% endif %}
               </td>
 
               <td>
                 {% if v.gender %}
-                  <span class="v963v-pill">{{ v.gender }}</span>
+                  <span class="v963vh-pill">{{ v.gender }}</span>
                 {% else %}
-                  <span class="v963v-pill v963v-muted">—</span>
+                  <span class="v963vh-foot-note">—</span>
                 {% endif %}
               </td>
 
-              <td class="v963v-muted">{{ v.stage|default:"—" }}</td>
+              <td class="v963vh-foot-note">{{ v.stage|default:"—" }}</td>
 
               <td>
-                <span class="v963v-pill">{{ v.deputy_need|default:"0" }}</span>
+                <span class="v963vh-pill">{{ v.deputy_need|default:"0" }}</span>
               </td>
 
-              <td>
-                <span class="cnt">{{ v.interested_total|default:0 }}</span>
-              </td>
-
-              <td>
-                <span class="cnt cnt-strong">{{ v.interested_rank1|default:0 }}</span>
-              </td>
-
-              <td>
-                {% if v.achieved_total|default:0|add:0 > 0 %}
-                  <span class="cnt cnt-ok">{{ v.achieved_total }}</span>
-                {% else %}
-                  <span class="cnt">{{ v.achieved_total|default:0 }}</span>
-                {% endif %}
+              <td class="vac-col-metrics">
+                <div class="v963vh-metrics-line">
+                  <div class="v963vh-metric-chip">
+                    <b>{{ v.interested_total|default:0 }}</b>
+                    <span>الراغبون</span>
+                  </div>
+                  <div class="v963vh-metric-chip rank1">
+                    <b>{{ v.interested_rank1|default:0 }}</b>
+                    <span>أولى</span>
+                  </div>
+                  <div class="v963vh-metric-chip final">
+                    <b>{{ v.achieved_total|default:0 }}</b>
+                    <span>نهائي</span>
+                  </div>
+                </div>
               </td>
 
               <td>
                 {% if v.is_open %}
-                  <span class="v963v-pill v963v-pill-ok">مفتوح</span>
+                  <span class="v963vh-status open">مفتوح</span>
                 {% else %}
-                  <span class="v963v-pill v963v-pill-danger">مغلق</span>
+                  <span class="v963vh-status closed">مغلق</span>
                 {% endif %}
               </td>
 
               <td class="vac-col-actions">
-                <div class="vac-act">
-                  <a class="v963v-btn v963v-btn-sm" href="{% url 'portal:admin_vacancies_edit' v.id %}">
+                <div class="v963vh-actions">
+                  <a class="v963vh-btn v963vh-btn-sm" href="{% url 'portal:admin_vacancies_edit' v.id %}">
                     تعديل
                   </a>
 
-                  <form method="post" action="{% url 'portal:admin_vacancies_toggle' v.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="q" value="{{ q }}">
-                    <input type="hidden" name="sector" value="{{ sector }}">
-                    <input type="hidden" name="gender" value="{{ gender }}">
-                    <input type="hidden" name="open" value="{{ open }}">
-                    <input type="hidden" name="page" value="{{ rows.number }}">
-                    <button class="v963v-btn v963v-btn-sm v963v-btn-warn" type="submit">
-                      {% if v.is_open %}إغلاق{% else %}فتح{% endif %}
+                  <div class="v963vh-more" id="vacMenuWrap{{ v.id }}">
+                    <button class="v963vh-menu-btn" type="button" onclick="toggleVacancyMenu('{{ v.id }}')">
+                      المزيد
                     </button>
-                  </form>
 
-                  <form
-                    method="post"
-                    action="{% url 'portal:admin_vacancies_delete' v.id %}"
-                    onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كانت هناك رغبات مرتبطة.');"
-                  >
-                    {% csrf_token %}
-                    <input type="hidden" name="q" value="{{ q }}">
-                    <input type="hidden" name="sector" value="{{ sector }}">
-                    <input type="hidden" name="gender" value="{{ gender }}">
-                    <input type="hidden" name="open" value="{{ open }}">
-                    <input type="hidden" name="page" value="{{ rows.number }}">
-                    <button class="v963v-btn v963v-btn-sm v963v-btn-danger" type="submit">
-                      حذف
-                    </button>
-                  </form>
+                    <div class="v963vh-menu">
+                      <form method="post" action="{% url 'portal:admin_vacancies_toggle' v.id %}" style="margin:0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="q" value="{{ q }}">
+                        <input type="hidden" name="sector" value="{{ sector }}">
+                        <input type="hidden" name="gender" value="{{ gender }}">
+                        <input type="hidden" name="open" value="{{ open }}">
+                        <input type="hidden" name="page" value="{{ rows.number }}">
+                        <button class="v963vh-menu-link warn" type="submit">
+                          {% if v.is_open %}إغلاق الشاغر{% else %}فتح الشاغر{% endif %}
+                        </button>
+                      </form>
+
+                      <form
+                        method="post"
+                        action="{% url 'portal:admin_vacancies_delete' v.id %}"
+                        style="margin:0;"
+                        onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كانت هناك رغبات مرتبطة.');"
+                      >
+                        {% csrf_token %}
+                        <input type="hidden" name="q" value="{{ q }}">
+                        <input type="hidden" name="sector" value="{{ sector }}">
+                        <input type="hidden" name="gender" value="{{ gender }}">
+                        <input type="hidden" name="open" value="{{ open }}">
+                        <input type="hidden" name="page" value="{{ rows.number }}">
+                        <button class="v963vh-menu-link danger" type="submit">حذف الشاغر</button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="11" style="padding:16px; color:var(--muted); background:#fff; text-align:center;">
-                لا توجد بيانات.
-              </td>
+              <td colspan="8" class="v963vh-empty">لا توجد شواغر مطابقة للفلاتر الحالية.</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
-      <div class="v963v-foot">
-        <div class="v963v-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
+      <div class="v963vh-foot">
+        <div class="v963vh-foot-left">
+          <div class="v963vh-foot-summary">
+            <div class="v963vh-foot-note">
+              عرض {{ rows.start_index }}–{{ rows.end_index }} من أصل {{ rows.paginator.count }}
+            </div>
+            <span class="v963vh-page-pill">الصفحة {{ rows.number }} / {{ rows.paginator.num_pages }}</span>
+          </div>
+        </div>
 
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="v963vh-foot-right">
           {% if rows.has_previous %}
-            <a class="v963v-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.previous_page_number }}">السابق</a>
+            <a class="v963vh-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.previous_page_number }}">السابق</a>
+          {% else %}
+            <span class="v963vh-btn is-disabled" aria-disabled="true">السابق</span>
           {% endif %}
 
           {% if rows.has_next %}
-            <a class="v963v-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.next_page_number }}">التالي</a>
+            <a class="v963vh-btn" href="?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&open={{ open|urlencode }}&page={{ rows.next_page_number }}">التالي</a>
+          {% else %}
+            <span class="v963vh-btn is-disabled" aria-disabled="true">التالي</span>
           {% endif %}
         </div>
       </div>
-
     </div>
+
   </div>
 </div>
+
+<script>
+  function closeAllVacancyMenus(){
+    document.querySelectorAll('.v963vh-more.open').forEach(el => el.classList.remove('open'));
+  }
+
+  function toggleVacancyMenu(id){
+    const wrap = document.getElementById(`vacMenuWrap${id}`);
+    if(!wrap) return;
+    const isOpen = wrap.classList.contains('open');
+    closeAllVacancyMenus();
+    wrap.classList.toggle('open', !isOpen);
+  }
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.v963vh-more')){
+      closeAllVacancyMenus();
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closeAllVacancyMenus();
+    }
+  });
+</script>
 {% endblock %}

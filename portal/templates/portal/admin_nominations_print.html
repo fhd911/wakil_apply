@@ -3,59 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>تقرير الترشيح النهائي</title>
+  <title>كشف الترشيح النهائي</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#f6f7f5;
-      --bg-2:#f0f2ef;
-      --bg-3:#e8eeea;
-
+      --bg:#f5f7f4;
+      --bg-2:#eef2ee;
       --paper:#ffffff;
-      --paper-2:#f9fbf8;
-      --paper-3:#f3f6f3;
+      --paper-2:#fbfcfb;
+      --paper-3:#f6f8f6;
 
-      --ink:#203128;
-      --ink-2:#33453b;
-      --muted:#6f7f76;
+      --ink:#1d2e25;
+      --ink-2:#33473d;
+      --muted:#6f8077;
 
-      --green-1:#1f3a2d;
-      --green-2:#294638;
-      --green-3:#4b6457;
-      --green-4:#7b8f84;
+      --green-1:#17372b;
+      --green-2:#214739;
+      --green-3:#345b49;
 
-      --gold-1:#846735;
-      --gold-2:#ab8950;
-      --gold-3:#d7c190;
+      --gold-1:#8b7442;
+      --gold-2:#a68d59;
+      --gold-3:#e8ddc0;
 
-      --line:#d7dfd8;
-      --line-2:#c8d2ca;
-      --line-3:#ebf0eb;
+      --line:#d8e0d8;
+      --line-2:#cbd5cc;
+      --line-3:#e8ede9;
 
-      --ok:#215f39;
-      --ok-bg:#eff8f3;
-      --ok-bd:#cfe6d8;
+      --ok:#1f6239;
+      --ok-bg:#eef7f1;
+      --ok-bd:#d2e4d7;
 
-      --warn:#8e6113;
-      --warn-bg:#fcf7ee;
-      --warn-bd:#e7d7b7;
-
-      --danger:#8f2f2f;
-      --danger-bg:#fcf6f6;
-      --danger-bd:#e7c7c7;
-
-      --moe-mid:#1f7a62;
+      --warn:#88621f;
+      --warn-bg:#faf6ee;
+      --warn-bd:#e7d9be;
 
       --shadow:0 1px 4px rgba(17,24,20,.035);
-      --shadow-soft:0 2px 8px rgba(17,24,20,.04);
-      --shadow-strong:0 8px 22px rgba(17,24,20,.06);
-
-      --r:12px;
+      --shadow-soft:0 8px 22px rgba(17,24,20,.06);
     }
 
     *{
       box-sizing:border-box;
-      font-family:"Cairo","Tajawal",Tahoma,Arial,sans-serif;
+      font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
     }
 
     body{
@@ -65,59 +57,68 @@
     }
 
     .wrap{
-      padding:12px;
       max-width:1400px;
       margin:0 auto;
+      padding:12px;
     }
 
-    /* ===== شاشة فقط ===== */
     .screenHead{
       position:relative;
       overflow:hidden;
       border:1px solid var(--line);
-      border-radius:12px;
+      border-radius:16px;
       padding:16px 18px 14px;
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
-      background:
-        radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-        radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-        linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-      box-shadow:var(--shadow);
+      background:linear-gradient(135deg,#1f4738 0%, #173b2f 56%, #143328 100%);
+      box-shadow:var(--shadow-soft);
       margin-bottom:12px;
-      border-inline-start:4px solid var(--moe-mid);
+      color:#fff;
     }
 
     .screenHead::before{
       content:"";
       position:absolute;
       inset:0 0 auto 0;
-      height:1px;
-      background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-      opacity:.95;
+      height:4px;
+      background:linear-gradient(90deg,rgba(199,171,112,.92), rgba(166,141,89,.72), rgba(199,171,112,.26));
     }
 
-    .screenHead > *{
-      position:relative;
-      z-index:1;
+    .screenHead::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(380px 150px at 88% 18%, rgba(255,255,255,.07), transparent 60%),
+        linear-gradient(135deg, transparent 0 68%, rgba(255,255,255,.03) 68% 100%);
     }
+
+    .screenHead > *{ position:relative; z-index:1; }
 
     .screenHead h1{
       margin:0;
       font-size:20px;
       font-weight:900;
-      color:var(--green-1);
-      letter-spacing:0;
       line-height:1.2;
+      color:#fff;
     }
 
     .screenHead .meta{
       margin-top:6px;
-      color:var(--muted);
-      font-size:10.4px;
-      line-height:1.9;
+      color:rgba(255,255,255,.84);
+      font-size:10.2px;
+      line-height:1.85;
+      font-weight:800;
+    }
+
+    .screenHead .hint{
+      margin-top:7px;
+      color:rgba(255,255,255,.76);
+      font-size:8.7px;
+      line-height:1.8;
       font-weight:800;
     }
 
@@ -129,36 +130,32 @@
       align-items:center;
     }
 
-    .pill{
-      min-height:28px;
-      border:1px solid var(--line);
-      background:var(--paper-2);
-      border-radius:8px;
-      padding:4px 10px;
-      font-size:9px;
-      font-weight:900;
-      color:var(--ink-2);
-      white-space:nowrap;
+    .pill,
+    .btn{
+      min-height:34px;
+      border-radius:999px;
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:6px;
+      font-weight:900;
+      white-space:nowrap;
     }
 
-    .pill.gold{
-      border-color:var(--warn-bd);
-      background:var(--warn-bg);
-      color:#8a6526;
+    .pill{
+      padding:4px 11px;
+      border:1px solid rgba(231,217,190,.82);
+      background:rgba(255,248,237,.95);
+      color:#7a5a19;
+      font-size:9px;
     }
 
     .btn{
-      min-height:35px;
-      border:1px solid var(--line-2);
-      background:#fff;
-      border-radius:8px;
       padding:6px 12px;
-      font-size:9.4px;
-      font-weight:900;
+      border:1px solid rgba(211,221,212,.95);
+      background:linear-gradient(180deg,#ffffff,#f8faf7);
       color:var(--green-2);
+      font-size:9.2px;
       cursor:pointer;
       box-shadow:none;
       transition:background .12s ease, border-color .12s ease, transform .12s ease;
@@ -171,27 +168,18 @@
     }
 
     .btn.primary{
-      background:var(--green-2);
-      border-color:var(--green-2);
+      background:linear-gradient(180deg,#26493a 0%, #1d3f31 100%);
+      border-color:#1d3f31;
       color:#fff;
     }
 
-    .hint{
-      color:var(--muted);
-      font-size:8.8px;
-      margin-top:6px;
-      line-height:1.8;
-      font-weight:800;
-    }
-
-    /* ===== صفحات الطباعة ===== */
     #pages{ display:block; }
 
     .page{
       position:relative;
       overflow:hidden;
       border:1px solid var(--line);
-      border-radius:12px;
+      border-radius:14px;
       background:linear-gradient(180deg,#ffffff,#fbfcfa);
       box-shadow:var(--shadow);
       margin-bottom:14px;
@@ -206,69 +194,126 @@
       opacity:.95;
     }
 
-    /* ===== ترويسة الصفحة ===== */
     .pageHeader{
       position:relative;
-      padding:16px 18px 14px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
+      padding:14px 18px 12px;
+      display:grid;
+      grid-template-columns:230px minmax(0,1fr) 170px;
       gap:12px;
-      background:
-        radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-        radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-        linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      align-items:start;
+      background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
       border-bottom:1px solid var(--line);
-      border-inline-start:4px solid var(--moe-mid);
+      border-inline-start:4px solid #2b7560;
     }
 
-    .pageHeader .t{
-      font-weight:900;
-      font-size:16px;
-      line-height:1.25;
-      color:var(--green-1);
-      letter-spacing:0;
+    .pageHeader::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 88% 22%, rgba(46,155,129,.08) 0 2px, transparent 2.5px) 0 0/18px 18px,
+        radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px;
     }
 
-    .pageHeader .s{
-      margin-top:5px;
+    .pageHeader > *{ position:relative; z-index:1; }
+
+    .metaBox,
+    .orgBox,
+    .reportBox{
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:rgba(255,255,255,.92);
+      padding:8px 10px;
+      min-height:72px;
+    }
+
+    .metaBox .k,
+    .reportBox .k{
       color:var(--muted);
-      font-size:9.2px;
-      line-height:1.8;
+      font-size:7.9px;
       font-weight:800;
+      margin-bottom:3px;
+      line-height:1.5;
     }
 
-    .pageHeader .r{
-      text-align:left;
-      direction:ltr;
-      color:var(--muted);
-      font-size:8.8px;
-      line-height:1.9;
-      white-space:nowrap;
-      font-weight:800;
-    }
-
-    /* ===== تذييل الصفحة ===== */
-    .pageFooter{
-      border-top:1px solid var(--line);
-      padding:10px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+    .metaBox .v,
+    .reportBox .v{
       color:var(--ink-2);
       font-size:8.8px;
-      background:linear-gradient(180deg,#ffffff,#f8fbf9);
-      font-weight:800;
+      font-weight:900;
+      line-height:1.7;
     }
 
-    .pageFooter .mut{ color:var(--muted); }
-    .pageFooter .num{ direction:ltr; font-variant-numeric:tabular-nums; }
+    .orgBox{
+      text-align:center;
+      border-color:#e2e8e3;
+      background:linear-gradient(180deg,#ffffff,#f9fbf9);
+    }
 
-    /* ===== جسم الصفحة ===== */
+    .orgBox .org1{
+      color:var(--green-2);
+      font-size:10.2px;
+      font-weight:900;
+      line-height:1.6;
+    }
+
+    .orgBox .org2{
+      color:var(--muted);
+      font-size:8.6px;
+      font-weight:800;
+      line-height:1.7;
+      margin-top:3px;
+    }
+
+    .reportTitle{
+      margin-top:8px;
+      color:var(--green-1);
+      font-size:16px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .reportSub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:8.9px;
+      font-weight:800;
+      line-height:1.8;
+    }
+
     .pageBody{
       padding:10px 12px;
       background:#fff;
+    }
+
+    .summaryBand{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .summaryItem{
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:linear-gradient(180deg,#ffffff,#fbfcfa);
+      padding:8px 10px;
+    }
+
+    .summaryItem .k{
+      color:var(--muted);
+      font-size:7.8px;
+      font-weight:800;
+      margin-bottom:3px;
+      line-height:1.5;
+    }
+
+    .summaryItem .v{
+      color:var(--green-1);
+      font-size:9px;
+      font-weight:900;
+      line-height:1.7;
     }
 
     table{
@@ -287,7 +332,7 @@
       background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
       border-bottom:1px solid var(--line-2);
       padding:10px 8px;
-      font-size:8.8px;
+      font-size:8.55px;
       font-weight:900;
       text-align:right;
       white-space:nowrap;
@@ -297,10 +342,11 @@
     tbody td{
       border-bottom:1px solid #edf1ed;
       padding:9px 8px;
-      font-size:9.15px;
+      font-size:8.95px;
       vertical-align:top;
       background:#fff;
       color:var(--ink);
+      font-weight:700;
     }
 
     tbody tr:nth-child(even) td{ background:#fcfdfc; }
@@ -310,16 +356,21 @@
     .mut{ color:var(--muted); }
     .tight{ line-height:1.6; }
 
-    col.c1{ width:32px; }
+    col.c1{ width:34px; }
+    col.c2{ width:34%; }
+    col.c3{ width:8%; }
+    col.c4{ width:28%; }
+    col.c5{ width:16%; }
+    col.c6{ width:14%; }
+
     th.col-idx, td.col-idx{
       padding-inline:6px !important;
       text-align:center;
     }
 
-    /* ===== بطاقة المتقدم ===== */
     .who .name{
       font-weight:900;
-      font-size:10.2px;
+      font-size:9.9px;
       line-height:1.35;
       margin:0;
       color:var(--green-1);
@@ -330,7 +381,7 @@
 
     .who .nid{
       margin-top:3px;
-      font-size:8.7px;
+      font-size:8.45px;
       color:var(--muted);
       direction:ltr;
       unicode-bidi:embed;
@@ -350,7 +401,7 @@
       display:flex;
       gap:8px;
       align-items:baseline;
-      font-size:8.9px;
+      font-size:8.6px;
       line-height:1.7;
       min-width:0;
     }
@@ -378,7 +429,7 @@
       border-radius:8px;
       border:1px solid var(--ok-bd);
       background:var(--ok-bg);
-      font-size:8.7px;
+      font-size:8.45px;
       font-weight:900;
       white-space:nowrap;
       color:var(--ok);
@@ -392,12 +443,12 @@
       text-overflow:ellipsis;
       margin-top:6px;
       color:var(--green-1);
-      font-size:9.9px;
+      font-size:9.45px;
     }
 
     .nom .sub{
       margin-top:3px;
-      font-size:8.6px;
+      font-size:8.35px;
       color:var(--muted);
       line-height:1.65;
       white-space:nowrap;
@@ -406,17 +457,70 @@
       font-weight:800;
     }
 
+    .signBlock{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:linear-gradient(180deg,#fffefb,#fbfcfb);
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .signCell{
+      border:1px dashed #d7dfd8;
+      border-radius:10px;
+      min-height:84px;
+      padding:10px 10px 8px;
+      background:#fff;
+    }
+
+    .signCell .k{
+      color:var(--muted);
+      font-size:8px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .signLine{
+      margin-top:24px;
+      border-top:1px solid #cfd8d1;
+      height:1px;
+    }
+
+    .pageFooter{
+      border-top:1px solid var(--line);
+      padding:10px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      color:var(--ink-2);
+      font-size:8.55px;
+      background:linear-gradient(180deg,#ffffff,#f8fbf9);
+      font-weight:800;
+    }
+
+    .pageFooter .mut{ color:var(--muted); }
+    .pageFooter .num{ direction:ltr; font-variant-numeric:tabular-nums; }
+
     .no-print{ display:block; }
 
-    /* ===== الطباعة ===== */
+    @media (max-width:900px){
+      .pageHeader,
+      .summaryBand,
+      .signBlock{
+        grid-template-columns:1fr;
+      }
+    }
+
     @media print{
       @page{ size:A4 portrait; margin:10mm 9mm 12mm 9mm; }
 
       .no-print{ display:none !important; }
 
-      body{
-        background:#fff !important;
-      }
+      body{ background:#fff !important; }
 
       .wrap{
         max-width:none !important;
@@ -431,16 +535,12 @@
         box-shadow:none !important;
         page-break-after:always;
         break-after:page;
+        min-height:277mm;
       }
 
       .page:last-child{
         page-break-after:auto;
         break-after:auto;
-      }
-
-      .page{
-        position:relative;
-        min-height:277mm;
       }
 
       .pageFooter{
@@ -450,20 +550,11 @@
         background:#fff;
       }
 
-      .pageBody{
-        padding-bottom:44px;
-      }
-
-      col.c1{ width:4%; }
-      col.c2{ width:34%; }
-      col.c3{ width:7%; }
-      col.c4{ width:30%; }
-      col.c5{ width:15%; }
-      col.c6{ width:10%; }
+      .pageBody{ padding-bottom:48px; }
 
       thead th{
         padding:7px 7px;
-        font-size:10.5px;
+        font-size:10.2px;
         background:#eee !important;
         -webkit-print-color-adjust:exact;
         print-color-adjust:exact;
@@ -471,7 +562,7 @@
 
       tbody td{
         padding:7px 7px;
-        font-size:10.2px;
+        font-size:9.95px;
       }
 
       tbody tr{
@@ -480,24 +571,24 @@
       }
 
       .who .name,
-      .nom .school{
+      .nom .school,
+      .who .v,
+      .nom .sub{
         white-space:normal;
         overflow:visible;
         text-overflow:clip;
       }
 
-      .who .v,
-      .nom .sub{
-        white-space:normal;
-      }
-
       .pageHeader,
       .pageFooter,
       .chip,
-      .pill{
+      .pill,
+      .summaryItem{
         -webkit-print-color-adjust:exact;
         print-color-adjust:exact;
       }
+
+      .signBlock{ break-inside:avoid; page-break-inside:avoid; }
     }
   </style>
 </head>
@@ -507,19 +598,19 @@
 
     <div class="screenHead no-print">
       <div>
-        <h1>تقرير الترشيح النهائي</h1>
+        <h1>كشف الترشيح النهائي</h1>
         <div class="meta">
-          يعرض فقط الطلبات ذات الرغبة المتحققة <b>(achieved_pref)</b>.<br>
-          تاريخ العرض: <span class="num">{{ now|date:"Y-m-d H:i" }}</span>
+          كشف داخلي رسمي للطلبات ذات الرغبة المتحققة فقط، مهيأ للطباعة والأرشفة الداخلية.<br>
+          تاريخ التوليد: <span class="num">{{ now|date:"Y-m-d H:i" }}</span>
         </div>
         <div class="hint">
-          هذه النسخة تقسم النتائج تلقائيًا إلى صفحات A4، وتضيف تذييلًا ثابتًا لكل صفحة بشكل موحّد ورسمي.
+          يعتمد هذا الكشف على الطلبات التي تم تعيين <b>الرغبة المتحققة</b> لها، مع تقسيم تلقائي لصفحات A4 وتذييل موحد.
         </div>
       </div>
 
       <div class="screenActions">
-        <span class="pill gold">الإجمالي: <b>{{ total|default:"0" }}</b></span>
-        <button class="btn primary" onclick="window.print()">طباعة</button>
+        <span class="pill">إجمالي المرشحين: <b>{{ total|default:"0" }}</b></span>
+        <button class="btn primary" onclick="window.print()">طباعة الكشف</button>
       </div>
     </div>
 
@@ -589,12 +680,57 @@
 
       const printedAt = "{{ now|date:'Y-m-d H:i' }}";
       const total = "{{ total|default:'0' }}";
-
+      const department = "بوابة التقديم على شواغر وكيل";
+      const unit = "كشف داخلي معتمد للترشيحات النهائية";
       const ROWS_PER_PAGE = 18;
 
       if(!rows.length){
         pagesEl.innerHTML = '';
         return;
+      }
+
+      function makeSummaryBand(){
+        const band = document.createElement('div');
+        band.className = 'summaryBand';
+        band.innerHTML = `
+          <div class="summaryItem">
+            <div class="k">نوع التقرير</div>
+            <div class="v">كشف ترشيح نهائي داخلي</div>
+          </div>
+          <div class="summaryItem">
+            <div class="k">نطاق التقرير</div>
+            <div class="v">الطلبات ذات الرغبة المتحققة فقط</div>
+          </div>
+          <div class="summaryItem">
+            <div class="k">إجمالي المرشحين</div>
+            <div class="v">${total}</div>
+          </div>
+          <div class="summaryItem">
+            <div class="k">وقت التوليد</div>
+            <div class="v">${printedAt}</div>
+          </div>
+        `;
+        return band;
+      }
+
+      function makeSignBlock(){
+        const sign = document.createElement('div');
+        sign.className = 'signBlock';
+        sign.innerHTML = `
+          <div class="signCell">
+            <div class="k">إعداد التقرير</div>
+            <div class="signLine"></div>
+          </div>
+          <div class="signCell">
+            <div class="k">المراجعة</div>
+            <div class="signLine"></div>
+          </div>
+          <div class="signCell">
+            <div class="k">الاعتماد</div>
+            <div class="signLine"></div>
+          </div>
+        `;
+        return sign;
       }
 
       function makePage(pageNo, totalPages, pageRows){
@@ -604,19 +740,28 @@
         const header = document.createElement('div');
         header.className = 'pageHeader';
         header.innerHTML = `
-          <div>
-            <div class="t">تقرير الترشيح النهائي</div>
-            <div class="s">يعرض فقط الطلبات ذات الرغبة المتحققة (achieved_pref)</div>
+          <div class="metaBox">
+            <div class="k">بيانات التقرير</div>
+            <div class="v">التاريخ: ${printedAt}<br>الإجمالي: ${total}</div>
           </div>
-          <div class="r">
-            Printed: ${printedAt}<br>
-            Total: ${total}
+          <div class="orgBox">
+            <div class="org1">${department}</div>
+            <div class="org2">${unit}</div>
+            <div class="reportTitle">كشف الترشيح النهائي</div>
+            <div class="reportSub">خاص بالطلبات التي تم تعيين الرغبة المتحققة لها داخل النظام</div>
+          </div>
+          <div class="reportBox">
+            <div class="k">بيانات الصفحة</div>
+            <div class="v">صفحة ${pageNo} من ${totalPages}<br>نسخة داخلية للطباعة</div>
           </div>
         `;
 
         const body = document.createElement('div');
         body.className = 'pageBody';
-        body.innerHTML = `
+        if(pageNo === 1){
+          body.appendChild(makeSummaryBand());
+        }
+        body.insertAdjacentHTML('beforeend', `
           <table>
             <colgroup>
               <col class="c1">
@@ -638,10 +783,9 @@
             </thead>
             <tbody></tbody>
           </table>
-        `;
+        `);
 
         const tbody = body.querySelector('tbody');
-
         pageRows.forEach((tr, i)=>{
           const clone = tr.cloneNode(true);
           const idxCell = clone.querySelector('td.col-idx');
@@ -651,10 +795,14 @@
           tbody.appendChild(clone);
         });
 
+        if(pageNo === totalPages){
+          body.appendChild(makeSignBlock());
+        }
+
         const footer = document.createElement('div');
         footer.className = 'pageFooter';
         footer.innerHTML = `
-          <div class="mut">بوابة التقديم على شواغر وكيل</div>
+          <div class="mut">بوابة التقديم على شواغر وكيل — كشف داخلي</div>
           <div>
             <span class="mut">صفحة</span>
             <span class="num">${pageNo}</span>

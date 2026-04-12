@@ -4,531 +4,819 @@
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
+    --s-bg:#f3f6f3;
+    --s-bg-2:#edf2ee;
+    --s-surface:#ffffff;
+    --s-surface-2:#fbfcfb;
+    --s-surface-3:#f7faf7;
 
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --s-ink:#183127;
+    --s-ink-2:#2f483d;
+    --s-muted:#6f8177;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --s-green-1:#17382c;
+    --s-green-2:#214738;
+    --s-green-3:#2f5e4a;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --s-gold-1:#8c7543;
+    --s-gold-2:#a78d59;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --s-line:#d9e1da;
+    --s-line-2:#ccd6ce;
+    --s-line-3:#e7ece8;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --s-ok:#1f6239;
+    --s-ok-bg:#eef7f1;
+    --s-ok-bd:#d2e4d7;
 
-    --ok:#215f39;
-    --ok-bg:#eff8f3;
-    --ok-bd:#cfe6d8;
+    --s-warn:#88621f;
+    --s-warn-bg:#faf6ee;
+    --s-warn-bd:#e7d9be;
 
-    --warn:#8e6113;
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
+    --s-danger:#8d3333;
+    --s-danger-bg:#fbf5f5;
+    --s-danger-bd:#e7cbcb;
 
-    --danger:#8f2f2f;
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
+    --s-info:#395f7b;
+    --s-info-bg:#f2f6fb;
+    --s-info-bd:#d7e1ec;
 
-    --info:#355c80;
-    --info-bg:#f3f7fd;
-    --info-bd:#d5e0ef;
-
-    --moe-mid:#1f7a62;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
-    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+    --s-shadow:0 1px 3px rgba(16,24,20,.035);
+    --s-shadow-soft:0 8px 22px rgba(16,24,20,.05);
   }
 
-  .nas,.nas *{
+  .soc,.soc *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .nas{
+  .soc{
     direction:rtl;
-    color:var(--ink);
+    color:var(--s-ink);
+    background:linear-gradient(180deg,#f7f9f7 0%, #f1f5f1 52%, #edf2ee 100%);
+    padding:10px;
   }
 
-  .nas-page{
+  .soc-page{
+    max-width:1540px;
+    margin:0 auto;
     display:grid;
-    gap:12px;
+    gap:10px;
   }
 
-  .nas-top,
-  .nas-stat,
-  .nas-card{
+  .soc-hero,
+  .soc-card,
+  .soc-statusbar,
+  .soc-menu,
+  .soc-modal-card{
     position:relative;
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:var(--shadow);
+    border:1px solid var(--s-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
+    box-shadow:var(--s-shadow);
   }
 
-  .nas-top::before,
-  .nas-stat::before,
-  .nas-card::before{
+  .soc-card::before,
+  .soc-statusbar::before,
+  .soc-modal-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
+    background:linear-gradient(90deg,rgba(33,71,56,.72) 0%, rgba(167,141,89,.52) 100%);
     opacity:.95;
   }
 
-  .nas-top{
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
+  .soc-hero{
+    padding:14px 16px;
+    border:1px solid rgba(167,141,89,.24);
+    box-shadow:var(--s-shadow-soft);
+    color:#fff;
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,0) 34%),
+      linear-gradient(135deg,#214738 0%, #17382c 60%, #123126 100%);
+  }
+
+  .soc-hero::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:3px;
+    background:linear-gradient(90deg,rgba(167,141,89,.92) 0%, rgba(109,146,127,.82) 100%);
+    opacity:.95;
+  }
+
+  .soc-hero-grid{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:start;
+    gap:14px;
+    align-items:center;
   }
 
-  .nas-top > *{
-    position:relative;
-    z-index:1;
-  }
-
-  .nas-title{
+  .soc-title{
     margin:0;
-    font-size:20px;
-    line-height:1.2;
+    font-size:21px;
+    line-height:1.12;
     font-weight:900 !important;
-    color:var(--green-1);
-    letter-spacing:0;
+    color:#fff;
   }
 
-  .nas-subtitle{
+  .soc-subtitle{
     margin:6px 0 0;
-    color:var(--muted);
-    font-size:10.4px;
-    line-height:1.95;
+    color:rgba(255,255,255,.9);
+    font-size:10px;
+    line-height:1.9;
     font-weight:800 !important;
     max-width:860px;
   }
 
-  .nas-actions{
+  .soc-hero-actions,
+  .soc-top-pills,
+  .soc-status-grid,
+  .soc-stats,
+  .soc-table-head,
+  .soc-table-foot,
+  .soc-modal-actions{
     display:flex;
+    align-items:center;
     gap:8px;
     flex-wrap:wrap;
-    align-items:center;
-    justify-content:flex-end;
   }
 
-  .nas-inline-form{
-    margin:0;
+  .soc-hero-actions{justify-content:flex-end}
+  .soc-top-pills{margin-top:10px}
+
+  .soc-btn,
+  .soc-pill,
+  .soc-mini,
+  .soc-status-pill,
+  .soc-chip,
+  .soc-modal-close{
     display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:36px;
+    padding:7px 13px;
+    border-radius:10px;
+    border:1px solid var(--s-line-2);
+    background:#fff;
+    color:var(--s-green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:9px;
+    font-weight:900 !important;
+    transition:background .15s ease,border-color .15s ease,transform .15s ease,opacity .15s ease;
+    box-shadow:none;
   }
 
-  .nas-grid{
+  .soc-btn:hover,
+  .soc-modal-close:hover{
+    transform:translateY(-1px);
+    background:#f7faf8;
+    border-color:#bcc9c0;
+  }
+
+  .soc-btn-primary{
+    background:linear-gradient(180deg,#26493a 0%, #1d3f31 100%);
+    border-color:#1d3f31;
+    color:#fff;
+  }
+
+  .soc-btn-primary[disabled]{
+    opacity:.78;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .soc-btn-warn{
+    background:linear-gradient(180deg,#b07a1e 0%, #93651a 100%);
+    border-color:#93651a;
+    color:#fff;
+  }
+
+  .soc-btn-danger{
+    background:var(--s-danger-bg);
+    border-color:var(--s-danger-bd);
+    color:var(--s-danger);
+  }
+
+  .soc-btn-soft,
+  .soc-btn-info{
+    background:#fff;
+    border-color:var(--s-line-2);
+    color:var(--s-green-2);
+  }
+
+  .soc-pill,
+  .soc-status-pill,
+  .soc-chip,
+  .soc-mini{
+    min-height:28px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:8px;
+  }
+
+  .soc-pill.ok,
+  .soc-status-pill.ok,
+  .soc-chip.ok{
+    background:var(--s-ok-bg);
+    border-color:var(--s-ok-bd);
+    color:var(--s-ok);
+  }
+
+  .soc-pill.warn,
+  .soc-status-pill.warn,
+  .soc-chip.warn{
+    background:var(--s-warn-bg);
+    border-color:var(--s-warn-bd);
+    color:var(--s-warn);
+  }
+
+  .soc-pill.danger,
+  .soc-status-pill.danger,
+  .soc-chip.danger{
+    background:var(--s-danger-bg);
+    border-color:var(--s-danger-bd);
+    color:var(--s-danger);
+  }
+
+  .soc-pill.info,
+  .soc-status-pill.info,
+  .soc-chip.info{
+    background:var(--s-info-bg);
+    border-color:var(--s-info-bd);
+    color:var(--s-info);
+  }
+
+  .soc-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#2c7a62;
+    flex:0 0 auto;
+  }
+
+  .soc-statusbar{
+    padding:11px 13px;
     display:grid;
-    grid-template-columns:repeat(4, minmax(0, 1fr));
-    gap:12px;
+    gap:10px;
   }
 
-  .nas-stat{
-    padding:12px 14px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-  }
-
-  .nas-stat-k{
-    font-size:8.8px;
-    color:var(--muted);
-    margin-bottom:6px;
-    font-weight:900 !important;
-  }
-
-  .nas-stat-v{
-    font-size:24px;
-    line-height:1;
-    font-weight:900 !important;
-    color:var(--green-2);
-    letter-spacing:-.4px;
-  }
-
-  .nas-stat.ok .nas-stat-v{
-    color:var(--ok);
-  }
-
-  .nas-stat.warn .nas-stat-v{
-    color:var(--warn);
-  }
-
-  .nas-stat.info .nas-stat-v{
-    color:var(--info);
-  }
-
-  .nas-card{
-    overflow:hidden;
-  }
-
-  .nas-card-head{
+  .soc-statusbar-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    padding:11px 12px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-    position:relative;
-    z-index:1;
+    flex-wrap:wrap;
   }
 
-  .nas-card-title{
-    font-size:12px;
-    font-weight:900 !important;
-    color:var(--green-1);
+  .soc-section-title{
     margin:0;
+    color:var(--s-green-1);
+    font-size:10px;
+    font-weight:900 !important;
   }
 
-  .nas-card-body{
-    padding:12px !important;
-    position:relative;
-    z-index:1;
-  }
-
-  .nas-muted{
-    color:var(--muted);
-    font-size:8.8px;
+  .soc-section-sub{
+    color:var(--s-muted);
+    font-size:8px;
     line-height:1.8;
     font-weight:800 !important;
   }
 
-  .nas-pill{
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    font-size:9px;
+  .soc-status-grid{
+    align-items:stretch;
+    gap:10px;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .soc-status-card,
+  .soc-stat,
+  .soc-summary-item{
+    border:1px solid var(--s-line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    padding:11px 12px;
+    box-shadow:var(--s-shadow);
+  }
+
+  .soc-status-card .k,
+  .soc-stat .k,
+  .soc-summary-item .k{
+    color:var(--s-muted);
+    font-size:8px;
     font-weight:900 !important;
-    color:var(--green-2);
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    white-space:nowrap;
+    margin-bottom:6px;
   }
 
-  .nas-pill-ok{
-    color:var(--ok) !important;
-    border-color:var(--ok-bd) !important;
-    background:var(--ok-bg) !important;
-  }
-
-  .nas-pill-warn{
-    color:var(--warn) !important;
-    border-color:var(--warn-bd) !important;
-    background:var(--warn-bg) !important;
-  }
-
-  .nas-pill-danger{
-    color:var(--danger) !important;
-    border-color:var(--danger-bd) !important;
-    background:var(--danger-bg) !important;
-  }
-
-  .nas-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--moe-mid);
-    flex:0 0 auto;
-  }
-
-  .nas-btn{
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    font-size:9.4px;
+  .soc-status-card .v{
+    font-size:10px;
+    line-height:1.55;
     font-weight:900 !important;
-    border:1px solid var(--line-2);
-    background:#fff;
-    color:var(--green-2);
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    justify-content:center;
-    box-shadow:none;
-    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+    color:var(--s-green-1);
   }
 
-  .nas-btn:hover{
-    transform:translateY(-1px);
-    background:var(--paper-2);
-    border-color:#b8c6bb;
+  .soc-status-card .s{
+    margin-top:6px;
+    font-size:7.4px;
+    line-height:1.7;
+    color:var(--s-muted);
+    font-weight:800 !important;
   }
 
-  .nas-btn:active{
-    transform:translateY(0);
+  .soc-stats{
+    align-items:stretch;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
   }
 
-  .nas-btn-primary{
-    color:#fff !important;
-    border-color:var(--green-2) !important;
-    background:var(--green-2) !important;
-  }
-
-  .nas-btn-warn{
-    color:#fff !important;
-    border-color:var(--warn) !important;
-    background:var(--warn) !important;
-  }
-
-  .nas-btn-icon{
-    font-size:11px;
+  .soc-stat .v{
+    font-size:24px;
     line-height:1;
+    font-weight:900 !important;
+    color:var(--s-green-2);
+    letter-spacing:-.4px;
   }
 
-  .nas-alert{
-    border:1px solid var(--info-bd);
-    background:var(--info-bg);
-    color:#1e3a8a;
+  .soc-stat.ok .v{color:var(--s-ok)}
+  .soc-stat.warn .v{color:var(--s-warn)}
+  .soc-stat.info .v{color:var(--s-info)}
+
+  .soc-card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 13px;
+    border-bottom:1px solid var(--s-line-3);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .soc-card-body{
+    padding:12px !important;
+    display:grid;
+    gap:12px;
+  }
+
+  .soc-alert{
+    border:1px solid var(--s-info-bd);
+    background:var(--s-info-bg);
+    color:#1f4175;
     padding:10px 12px;
-    border-radius:10px;
+    border-radius:12px;
     line-height:1.8;
     font-size:8.9px;
     font-weight:800 !important;
   }
 
-  .nas-alert.warn{
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-    color:var(--warn);
+  .soc-alert.warn{
+    border-color:var(--s-warn-bd);
+    background:var(--s-warn-bg);
+    color:var(--s-warn);
   }
 
-  .nas-table-wrap{
+  .soc-alert.danger{
+    border-color:var(--s-danger-bd);
+    background:var(--s-danger-bg);
+    color:var(--s-danger);
+  }
+
+  .soc-summary{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .soc-summary-item .v{
+    font-size:9.2px;
+    line-height:1.7;
+    color:var(--s-green-1);
+    font-weight:900 !important;
+  }
+
+  .soc-summary-note{
+    border:1px dashed var(--s-line-2);
+    border-radius:12px;
+    padding:10px 12px;
+    background:var(--s-surface-3);
+    color:var(--s-muted);
+    font-size:8.2px;
+    line-height:1.85;
+    font-weight:800 !important;
+  }
+
+  .soc-table-wrap{
     overflow:auto;
     background:#fff;
-    border-top:1px solid var(--line);
+    border-top:1px solid var(--s-line);
   }
 
-  .nas-table{
+  .soc-table{
     width:100%;
-    min-width:1320px;
+    min-width:1240px;
     border-collapse:collapse;
     table-layout:fixed;
   }
 
-  .nas-table thead th{
+  .soc-table thead th{
     position:sticky;
     top:0;
     z-index:4;
     background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-    color:var(--green-1);
-    font-size:8.8px;
-    font-weight:900;
+    color:var(--s-green-1);
+    font-size:8.75px;
+    font-weight:900 !important;
     padding:12px 8px;
-    border-bottom:1px solid var(--line-2) !important;
+    border-bottom:1px solid var(--s-line-2) !important;
     white-space:nowrap;
     text-align:right;
   }
 
-  .nas-table tbody td{
+  .soc-table tbody td{
     padding:11px 8px;
-    font-size:9.35px;
+    font-size:9.25px;
     vertical-align:top;
     border-bottom:1px solid #edf1ed !important;
     background:#ffffff;
-    color:var(--ink);
+    color:var(--s-ink);
+    font-weight:700 !important;
   }
 
-  .nas-table tbody tr:nth-child(even) td{
-    background:#fcfdfc;
-  }
+  .soc-table tbody tr:nth-child(even) td{background:#fcfdfc}
+  .soc-table tbody tr:hover td{background:#f8faf8}
 
-  .nas-table tbody tr:hover td{
-    background:#f8faf8;
-  }
+  .col-name{width:255px}
+  .col-prefs{width:390px}
 
-  .col-name{
-    width:260px;
-  }
-
-  .col-prefs{
-    width:420px;
-  }
-
-  .nas-name .n1{
-    font-size:10.6px;
+  .soc-name .n1{
+    font-size:10.5px;
     line-height:1.35;
     font-weight:900 !important;
-    color:var(--green-1);
-    letter-spacing:0;
+    color:var(--s-green-1);
   }
 
-  .nas-name .n2{
+  .soc-name .n2{
     margin-top:3px;
-    font-size:8.8px;
-    color:var(--muted);
+    font-size:8.7px;
+    color:var(--s-muted);
     direction:ltr;
     text-align:right;
     font-weight:800 !important;
   }
 
-  .pref-stack{
+  .soc-pref-stack{
     display:flex;
     flex-wrap:wrap;
     gap:6px;
   }
 
-  .pref-chip{
+  .soc-pref-chip{
     display:inline-flex;
     align-items:center;
     gap:6px;
     padding:4px 9px;
     min-height:28px;
     border-radius:999px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--green-2);
-    font-size:8.8px;
+    border:1px solid var(--s-line);
+    background:var(--s-surface-2);
+    color:var(--s-green-2);
+    font-size:8.75px;
     font-weight:900 !important;
+    max-width:100%;
   }
 
-  .pref-rank{
+  .soc-pref-chip.more{
+    background:#f7faf8;
+    color:var(--s-muted);
+  }
+
+  .soc-pref-rank{
     width:18px;
     height:18px;
     border-radius:999px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    background:var(--warn-bg);
-    color:#8a6526;
-    font-size:8.1px;
+    background:var(--s-warn-bg);
+    color:var(--s-warn);
+    font-size:8px;
     font-weight:900 !important;
-    border:1px solid var(--warn-bd);
+    border:1px solid var(--s-warn-bd);
+    flex:0 0 auto;
   }
 
-  .empty-box{
+  .soc-empty{
     padding:20px 14px;
     text-align:center;
-    color:var(--muted);
+    color:var(--s-muted);
     font-size:8.9px;
     line-height:1.9;
     font-weight:800 !important;
+    background:#fff;
   }
 
-  @media (max-width: 980px){
-    .nas-grid{
-      grid-template-columns:1fr 1fr;
+  .soc-table-foot{
+    justify-content:space-between;
+    padding:11px 13px;
+    border-top:1px solid var(--s-line);
+    background:#fff;
+  }
+
+  .soc-foot-note{
+    color:var(--s-muted);
+    font-size:8px;
+    font-weight:800 !important;
+  }
+
+  .soc-modal{
+    position:fixed;
+    inset:0;
+    z-index:100001;
+    background:rgba(15,23,20,.14);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+  }
+
+  .soc-modal.on{display:flex}
+
+  .soc-modal-card{
+    width:min(100%,520px);
+    border-radius:18px;
+  }
+
+  .soc-modal-head,
+  .soc-modal-foot{
+    padding:12px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    border-bottom:1px solid var(--s-line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .soc-modal-foot{
+    border-top:1px solid var(--s-line);
+    border-bottom:none;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .soc-modal-body{padding:13px}
+
+  .soc-modal-title{
+    margin:0;
+    color:var(--s-green-1);
+    font-size:11px;
+    font-weight:900 !important;
+  }
+
+  .soc-modal-list{
+    display:grid;
+    gap:8px;
+    margin:0;
+    padding:0;
+    list-style:none;
+  }
+
+  .soc-modal-list li{
+    border:1px solid var(--s-line);
+    border-radius:12px;
+    padding:9px 10px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    color:var(--s-ink-2);
+    font-size:8.8px;
+    line-height:1.75;
+    font-weight:800 !important;
+  }
+
+  @media (max-width:1100px){
+    .soc-status-grid,
+    .soc-stats,
+    .soc-summary{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 
-  @media (max-width: 640px){
-    .nas-top{
-      grid-template-columns:1fr;
-      padding:14px;
-    }
-
-    .nas-title{
-      font-size:18px !important;
-    }
-
-    .nas-grid{
+  @media (max-width:980px){
+    .soc-hero-grid,
+    .soc-hero-actions,
+    .soc-statusbar-head,
+    .soc-card-head,
+    .soc-table-foot{
       grid-template-columns:1fr;
     }
 
-    .nas-card-body{
-      padding:10px !important;
+    .soc-hero-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      align-items:start;
     }
 
-    .nas-actions{
-      justify-content:flex-start;
-    }
+    .soc-hero-actions{justify-content:flex-start}
+  }
+
+  @media (max-width:640px){
+    .soc{padding:6px}
+    .soc-hero{padding:14px}
+    .soc-title{font-size:18px}
+    .soc-status-grid,
+    .soc-stats,
+    .soc-summary{grid-template-columns:1fr}
+    .soc-card-body,
+    .soc-modal-body{padding:10px}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="nas">
-  <div class="nas-page">
+<div class="soc">
+  <div class="soc-page">
 
-    <div class="nas-top">
-      <div>
-        <h1 class="nas-title">فرز المتقدمين الجدد</h1>
-        <p class="nas-subtitle">معاينة الطلبات المرسلة للمتقدمين الجدد قبل تشغيل الفرز النهائي على الشواغر المتاحة.</p>
-      </div>
+    <div class="soc-hero">
+      <div class="soc-hero-grid">
+        <div>
+          <h1 class="soc-title">فرز المتقدمين الجدد</h1>
+          <p class="soc-subtitle">مركز تشغيل ومراقبة للفرز يوضح الجاهزية الحالية قبل التنفيذ، ويعرض النتيجة الظاهرة بعد التشغيل بصورة أوضح وأكثر طمأنينة.</p>
 
-      <div class="nas-actions">
-        <a class="nas-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span class="nas-btn-icon">▦</span>
-          لوحة الإدارة
-        </a>
+          <div class="soc-top-pills">
+            {% if total_applications and total_open_vacancies %}
+              <span class="soc-pill ok"><span class="soc-dot"></span>جاهز للتشغيل</span>
+            {% elif total_applications and not total_open_vacancies %}
+              <span class="soc-pill warn"><span class="soc-dot"></span>توجد طلبات ولا توجد شواغر مفتوحة</span>
+            {% elif not total_applications and total_open_vacancies %}
+              <span class="soc-pill warn"><span class="soc-dot"></span>توجد شواغر ولا توجد طلبات مرسلة</span>
+            {% else %}
+              <span class="soc-pill danger"><span class="soc-dot"></span>البيانات غير مكتملة للتشغيل</span>
+            {% endif %}
 
-        <a class="nas-btn" href="{% url 'portal:admin_import' %}">
-          <span class="nas-btn-icon">⤴</span>
-          صفحة الاستيراد
-        </a>
+            {% if total_assigned or total_unassigned %}
+              <span class="soc-pill info">نتيجة ظاهرة في النظام: {{ total_assigned|default:0 }} مرشح / {{ total_unassigned|default:0 }} بلا ترشيح</span>
+            {% endif %}
+          </div>
+        </div>
 
-        <form method="post" action="{% url 'portal:admin_run_new_applicants_sorting' %}" class="nas-inline-form" onsubmit="return confirm('تأكيد تشغيل الفرز على طلبات المتقدمين الجدد؟');">
-          {% csrf_token %}
-          <button class="nas-btn nas-btn-warn" type="submit">
-            <span class="nas-btn-icon">⚙</span>
-            تشغيل الفرز الآن
-          </button>
-        </form>
-      </div>
-    </div>
+        <div class="soc-hero-actions">
+          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_dashboard' %}">
+            <span>▦</span>
+            لوحة الإدارة
+          </a>
 
-    <div class="nas-grid">
-      <div class="nas-stat">
-        <div class="nas-stat-k">إجمالي الطلبات</div>
-        <div class="nas-stat-v">{{ total_applications|default:0 }}</div>
-      </div>
+          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_import' %}">
+            <span>⤴</span>
+            صفحة الاستيراد
+          </a>
 
-      <div class="nas-stat info">
-        <div class="nas-stat-k">الشواغر المفتوحة</div>
-        <div class="nas-stat-v">{{ total_open_vacancies|default:0 }}</div>
-      </div>
-
-      <div class="nas-stat ok">
-        <div class="nas-stat-k">طلبات لها ترشيح</div>
-        <div class="nas-stat-v">{{ total_assigned|default:0 }}</div>
-      </div>
-
-      <div class="nas-stat warn">
-        <div class="nas-stat-k">طلبات بلا ترشيح</div>
-        <div class="nas-stat-v">{{ total_unassigned|default:0 }}</div>
+          <form method="post" action="{% url 'portal:admin_run_new_applicants_sorting' %}" class="nas-inline-form" id="sortingRunForm" onsubmit="return false;">
+            {% csrf_token %}
+            <button class="soc-btn soc-btn-warn" type="button" id="sortingRunBtn" onclick="openSortingConfirm()">
+              <span>⚙</span>
+              تشغيل الفرز الآن
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
-    <div class="nas-card">
-      <div class="nas-card-head">
-        <h3 class="nas-card-title">معاينة الفرز</h3>
-        <span class="nas-pill">
-          <span class="nas-dot"></span>
-          المرحلة الثانية
-        </span>
-      </div>
+    <div class="soc-statusbar">
+      <div class="soc-statusbar-head">
+        <div>
+          <h2 class="soc-section-title">فحص الجاهزية قبل التشغيل</h2>
+          <div class="soc-section-sub">تأكد من اكتمال المتطلبات الأساسية قبل تنفيذ الفرز لتجنب تشغيل غير مكتمل أو نتائج غير موثوقة.</div>
+        </div>
 
-      <div class="nas-card-body">
-        {% if message %}
-          <div class="nas-alert warn">{{ message }}</div>
+        {% if total_applications and total_open_vacancies %}
+          <span class="soc-status-pill ok">الحالة العامة: جاهز للتشغيل</span>
+        {% else %}
+          <span class="soc-status-pill warn">الحالة العامة: يحتاج استكمال</span>
         {% endif %}
       </div>
 
-      <div class="nas-table-wrap">
-        <table class="nas-table">
+      <div class="soc-status-grid">
+        <div class="soc-status-card">
+          <div class="k">جاهزية الطلبات</div>
+          <div class="v">{% if total_applications %}تم رصد طلبات مرسلة{% else %}لا توجد طلبات مرسلة{% endif %}</div>
+          <div class="s">{% if total_applications %}إجمالي الطلبات الحالية: {{ total_applications|default:0 }}{% else %}لن يعمل الفرز دون وجود طلبات مرسلة للمتقدمين الجدد.{% endif %}</div>
+        </div>
+
+        <div class="soc-status-card">
+          <div class="k">جاهزية الشواغر</div>
+          <div class="v">{% if total_open_vacancies %}توجد شواغر مفتوحة{% else %}لا توجد شواغر مفتوحة{% endif %}</div>
+          <div class="s">{% if total_open_vacancies %}إجمالي الشواغر المفتوحة الحالية: {{ total_open_vacancies|default:0 }}{% else %}يفضل فتح الشواغر المطلوبة قبل تشغيل الفرز.{% endif %}</div>
+        </div>
+
+        <div class="soc-status-card">
+          <div class="k">أمان التنفيذ</div>
+          <div class="v">يتطلب تأكيدًا قبل التشغيل</div>
+          <div class="s">سيتم عرض ملخص سريع قبل التنفيذ، مع تعطيل الزر أثناء التشغيل لمنع التكرار المتتابع.</div>
+        </div>
+
+        <div class="soc-status-card">
+          <div class="k">الخطوة التالية</div>
+          <div class="v">{% if total_applications and total_open_vacancies %}يمكن تنفيذ الفرز الآن{% else %}استكمل البيانات أولًا{% endif %}</div>
+          <div class="s">بعد التشغيل راجع الملخص والنتيجة الظاهرة قبل الانتقال لأي قرارات لاحقة.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="soc-stats">
+      <div class="soc-stat">
+        <div class="k">إجمالي الطلبات</div>
+        <div class="v">{{ total_applications|default:0 }}</div>
+      </div>
+
+      <div class="soc-stat info">
+        <div class="k">الشواغر المفتوحة</div>
+        <div class="v">{{ total_open_vacancies|default:0 }}</div>
+      </div>
+
+      <div class="soc-stat ok">
+        <div class="k">طلبات لها ترشيح</div>
+        <div class="v">{{ total_assigned|default:0 }}</div>
+      </div>
+
+      <div class="soc-stat warn">
+        <div class="k">طلبات بلا ترشيح</div>
+        <div class="v">{{ total_unassigned|default:0 }}</div>
+      </div>
+    </div>
+
+    <div class="soc-card">
+      <div class="soc-card-head">
+        <div>
+          <h3 class="soc-section-title">خلاصة الوضع التشغيلي</h3>
+          <div class="soc-section-sub">ملخص سريع يوضح الوضع الحالي والنتيجة الظاهرة في النظام قبل أو بعد التشغيل.</div>
+        </div>
+
+        {% if total_assigned or total_unassigned %}
+          <span class="soc-chip info">توجد نتيجة ظاهرة</span>
+        {% else %}
+          <span class="soc-chip warn">لا توجد نتيجة مؤكدة بعد</span>
+        {% endif %}
+      </div>
+
+      <div class="soc-card-body">
+        {% if message %}
+          <div class="soc-alert warn">{{ message }}</div>
+        {% endif %}
+
+        {% if total_applications and total_open_vacancies %}
+          <div class="soc-alert">
+            البيانات الحالية تسمح بتشغيل الفرز. يوصى بمراجعة النتائج الظاهرة بعد التنفيذ، خاصة الطلبات التي لم تحصل على ترشيح.
+          </div>
+        {% else %}
+          <div class="soc-alert danger">
+            لا ينصح بتشغيل الفرز قبل اكتمال المتطلبات الأساسية. تأكد من وجود طلبات مرسلة وشواغر مفتوحة أولًا.
+          </div>
+        {% endif %}
+
+        <div class="soc-summary">
+          <div class="soc-summary-item">
+            <div class="k">الوضع الحالي</div>
+            <div class="v">{% if total_applications and total_open_vacancies %}جاهز للتشغيل{% else %}يحتاج استكمال بيانات{% endif %}</div>
+          </div>
+
+          <div class="soc-summary-item">
+            <div class="k">الطلبات المرشحة</div>
+            <div class="v">{{ total_assigned|default:0 }} طلبًا يحمل ترشيحًا ظاهرًا</div>
+          </div>
+
+          <div class="soc-summary-item">
+            <div class="k">الطلبات غير المرشحة</div>
+            <div class="v">{{ total_unassigned|default:0 }} طلبًا ما زال بلا ترشيح</div>
+          </div>
+
+          <div class="soc-summary-item">
+            <div class="k">الإجراء التالي</div>
+            <div class="v">{% if total_applications and total_open_vacancies %}تشغيل الفرز ثم مراجعة النتائج{% else %}استكمال بيانات الإدخال ثم إعادة الفحص{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="soc-summary-note">
+          هذه الصفحة مخصصة للتشغيل والمراقبة. الأرقام المعروضة تعكس الحالة الحالية الظاهرة في النظام، وقد تختلف بعد إعادة تشغيل الفرز أو تحديث بيانات الطلبات والشواغر.
+        </div>
+      </div>
+    </div>
+
+    <div class="soc-card">
+      <div class="soc-card-head">
+        <div>
+          <h3 class="soc-section-title">معاينة النتائج الحالية</h3>
+          <div class="soc-section-sub">عرض مختصر للطلبات مع أعلى الرغبات وحالة الترشيح الحالية قبل أو بعد تشغيل الفرز.</div>
+        </div>
+
+        <span class="soc-pill info">المرحلة الثانية</span>
+      </div>
+
+      <div class="soc-table-wrap">
+        <table class="soc-table">
           <thead>
             <tr>
               <th style="width:60px">#</th>
@@ -538,7 +826,7 @@
               <th style="width:150px">تاريخ الإرسال</th>
               <th style="width:110px">عدد الرغبات</th>
               <th class="col-prefs">أعلى الرغبات</th>
-              <th style="width:160px">حالة الترشيح</th>
+              <th style="width:210px">حالة الترشيح</th>
             </tr>
           </thead>
 
@@ -548,7 +836,7 @@
               <td>{{ forloop.counter }}</td>
 
               <td class="col-name">
-                <div class="nas-name">
+                <div class="soc-name">
                   <div class="n1">{{ row.applicant.full_name|default:"—" }}</div>
                   <div class="n2">{{ row.applicant.national_id|default:"—" }}</div>
                 </div>
@@ -556,59 +844,65 @@
 
               <td>
                 {% if row.applicant.sector %}
-                  <span class="nas-pill">{{ row.applicant.sector }}</span>
+                  <span class="soc-pill">{{ row.applicant.sector }}</span>
                 {% else %}
-                  <span class="nas-pill">{{ row.sector|default:"—" }}</span>
+                  <span class="soc-pill">{{ row.sector|default:"—" }}</span>
                 {% endif %}
               </td>
 
               <td>
                 {% if row.applicant.gender %}
-                  <span class="nas-pill">{{ row.applicant.gender }}</span>
+                  <span class="soc-pill">{{ row.applicant.gender }}</span>
                 {% else %}
-                  <span class="nas-pill">{{ row.gender|default:"—" }}</span>
+                  <span class="soc-pill">{{ row.gender|default:"—" }}</span>
                 {% endif %}
               </td>
 
-              <td class="nas-muted">{{ row.app.submitted_at|date:"Y-m-d H:i"|default:"—" }}</td>
+              <td class="soc-foot-note">{{ row.app.submitted_at|date:"Y-m-d H:i"|default:"—" }}</td>
 
               <td>
-                <span class="nas-pill">{{ row.prefs_count|default:0 }}</span>
+                <span class="soc-pill">{{ row.prefs_count|default:0 }}</span>
               </td>
 
               <td class="col-prefs">
                 {% if row.prefs %}
-                  <div class="pref-stack">
+                  <div class="soc-pref-stack">
                     {% for pref in row.prefs %}
-                      <span class="pref-chip">
-                        <span class="pref-rank">{{ pref.rank }}</span>
-                        {{ pref.vacancy.school_name }}
-                      </span>
+                      {% if forloop.counter <= 3 %}
+                        <span class="soc-pref-chip">
+                          <span class="soc-pref-rank">{{ pref.rank }}</span>
+                          {{ pref.vacancy.school_name }}
+                        </span>
+                      {% endif %}
                     {% endfor %}
+                    {% if row.prefs|length > 3 %}
+                      <span class="soc-pref-chip more">+ {{ row.prefs|length|add:"-3" }} رغبات أخرى</span>
+                    {% endif %}
                   </div>
                 {% else %}
-                  <span class="nas-muted">لا توجد رغبات</span>
+                  <span class="soc-foot-note">لا توجد رغبات</span>
                 {% endif %}
               </td>
 
               <td>
                 {% if row.achieved_pref %}
-                  <span class="nas-pill nas-pill-ok">
+                  <span class="soc-pill ok">
                     مرشح على الرغبة {{ row.achieved_pref.rank }}
+                    {% if row.achieved_pref.vacancy and row.achieved_pref.vacancy.school_name %}
+                      — {{ row.achieved_pref.vacancy.school_name }}
+                    {% endif %}
                   </span>
                 {% else %}
-                  <span class="nas-pill nas-pill-danger">
-                    لم يرشح بعد
-                  </span>
+                  <span class="soc-pill danger">لم يرشح بعد</span>
                 {% endif %}
               </td>
             </tr>
             {% empty %}
             <tr>
               <td colspan="8">
-                <div class="empty-box">
+                <div class="soc-empty">
                   لا توجد طلبات مرسلة للمتقدمين الجدد حاليًا.<br>
-                  تأكد من أن المتقدمين الجدد دخلوا البوابة وأرسلوا طلباتهم، أو عدّل منطق الفرز إذا كنت تريد الفرز مباشرة من بيانات الرفع.
+                  تأكد من اكتمال الاستيراد وإرسال الطلبات قبل تشغيل الفرز.
                 </div>
               </td>
             </tr>
@@ -617,8 +911,85 @@
         </table>
       </div>
 
+      <div class="soc-table-foot">
+        <div class="soc-foot-note">المعاينة الحالية تركز على أعلى الرغبات والنتيجة الظاهرة فقط لتسهيل القرار قبل إعادة التشغيل.</div>
+        <div class="soc-table-head">
+          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_import' %}">العودة للاستيراد</a>
+          <button class="soc-btn soc-btn-primary" type="button" onclick="openSortingConfirm()">إعادة تشغيل الفرز</button>
+        </div>
+      </div>
     </div>
 
   </div>
 </div>
+
+<div class="soc-modal" id="sortingConfirmModal" aria-hidden="true">
+  <div class="soc-modal-card" role="dialog" aria-modal="true" aria-labelledby="sortingConfirmTitle">
+    <div class="soc-modal-head">
+      <div>
+        <h3 class="soc-modal-title" id="sortingConfirmTitle">تأكيد تشغيل الفرز</h3>
+        <div class="soc-section-sub">راجع عناصر الجاهزية الحالية قبل تنفيذ الفرز.</div>
+      </div>
+      <button class="soc-modal-close" type="button" onclick="closeSortingConfirm()">×</button>
+    </div>
+
+    <div class="soc-modal-body">
+      <ul class="soc-modal-list">
+        <li>إجمالي الطلبات الحالية: <b>{{ total_applications|default:0 }}</b></li>
+        <li>إجمالي الشواغر المفتوحة: <b>{{ total_open_vacancies|default:0 }}</b></li>
+        <li>طلبات لها ترشيح ظاهر: <b>{{ total_assigned|default:0 }}</b></li>
+        <li>طلبات بلا ترشيح ظاهر: <b>{{ total_unassigned|default:0 }}</b></li>
+      </ul>
+    </div>
+
+    <div class="soc-modal-foot">
+      <button class="soc-btn soc-btn-warn" type="button" id="confirmSortingSubmitBtn" onclick="submitSortingRun()">تأكيد التشغيل الآن</button>
+      <button class="soc-btn" type="button" onclick="closeSortingConfirm()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let lastFocusedSortingButton = null;
+
+  function openSortingConfirm(){
+    lastFocusedSortingButton = document.activeElement;
+    document.getElementById('sortingConfirmModal').classList.add('on');
+    document.getElementById('confirmSortingSubmitBtn').focus();
+  }
+
+  function closeSortingConfirm(){
+    document.getElementById('sortingConfirmModal').classList.remove('on');
+    if(lastFocusedSortingButton && typeof lastFocusedSortingButton.focus === 'function'){
+      lastFocusedSortingButton.focus();
+    }
+  }
+
+  function submitSortingRun(){
+    const form = document.getElementById('sortingRunForm');
+    const btn = document.getElementById('sortingRunBtn');
+    const confirmBtn = document.getElementById('confirmSortingSubmitBtn');
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> جاري تشغيل الفرز...';
+    }
+    if(confirmBtn){
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = 'جاري التنفيذ...';
+    }
+    form.submit();
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target.id === 'sortingConfirmModal'){
+      closeSortingConfirm();
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closeSortingConfirm();
+    }
+  });
+</script>
 {% endblock %}

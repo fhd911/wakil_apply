@@ -1,544 +1,608 @@
+
 {% extends "portal/base.html" %}
 {% block title %}إدارة المتقدمين{% endblock %}
 
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --al-bg:#f4f7f4;
+    --al-bg-2:#eef3ef;
+    --al-surface:#ffffff;
+    --al-surface-2:#fbfcfb;
+    --al-surface-3:#f7faf7;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --al-ink:#183127;
+    --al-ink-2:#31463d;
+    --al-muted:#6d7f76;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --al-green-1:#17382c;
+    --al-green-2:#214638;
+    --al-green-3:#3f6151;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --al-gold-1:#81663a;
+    --al-gold-2:#a58a58;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --al-line:#d9e1da;
+    --al-line-2:#cdd7cf;
+    --al-line-3:#e7ece8;
 
-    --ok:#215f39;
-    --warn:#8e6113;
-    --danger:#8f2f2f;
-    --info:#355c80;
+    --al-ok:#1f633b;
+    --al-ok-bg:#eef7f1;
+    --al-ok-bd:#d1e5d7;
 
-    --moe-deep:#0f5f49;
-    --moe-mid:#1f7a62;
-    --moe-soft:#2e9b81;
-    --moe-mist:#edf6f2;
-    --moe-mist-2:#f7fbf9;
-    --moe-line:#d6e6dd;
+    --al-warn:#8a6219;
+    --al-warn-bg:#fbf6ed;
+    --al-warn-bd:#e7d8b8;
 
-    --r-2xl:12px;
-    --r-xl:10px;
-    --r-lg:9px;
-    --r-md:8px;
-    --r-sm:7px;
+    --al-danger:#8c3434;
+    --al-danger-bg:#fbf5f5;
+    --al-danger-bd:#e7cbcb;
+
+    --al-info:#3a607c;
+    --al-info-bg:#f2f6fb;
+    --al-info-bd:#d7e0ec;
+
+    --al-shadow:0 1px 3px rgba(16,24,20,.04);
+    --al-shadow-soft:0 8px 18px rgba(16,24,20,.055);
+
+    --al-r-2xl:22px;
+    --al-r-xl:18px;
+    --al-r-lg:14px;
+    --al-r-md:10px;
+    --al-r-sm:8px;
   }
 
-  .v963,.v963 *{box-sizing:border-box}
+  .v963al,.v963al *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
 
-  .v963{
+  .v963al{
     direction:rtl;
-    color:var(--ink);
-    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    color:var(--al-ink);
+    background:linear-gradient(180deg,#f7f9f7 0%, #f1f5f1 54%, #ecf1ed 100%);
     padding:10px;
+    font-weight:550;
   }
 
-  .v963-page{
+  .v963al-page{
+    max-width:1540px;
+    margin:0 auto;
     display:grid;
-    grid-template-columns:minmax(0,1fr);
-    gap:12px;
-    align-items:start;
+    gap:10px;
   }
 
-  .v963-top,
-  .v963-card{
+  .v963al-shell{
+    border:1px solid #dbe3dc;
+    border-radius:24px;
+    padding:12px;
+    background:linear-gradient(180deg,#eef3ef 0%, #e8efea 100%);
+  }
+
+  .v963al-top,
+  .v963al-card,
+  .v963al-actions-bar{
     position:relative;
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:0 1px 4px rgba(17,24,20,.035);
+    border:1px solid var(--al-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
+    box-shadow:var(--al-shadow);
   }
 
-  .v963-top::before,
-  .v963-card::before{
+  .v963al-top::before,
+  .v963al-card::before,
+  .v963al-actions-bar::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    background:linear-gradient(90deg,rgba(33,70,56,.65) 0%, rgba(165,138,88,.38) 100%);
   }
 
-  .v963-top{
-    margin-bottom:14px;
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
-    background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+  .v963al-top{
+    padding:14px 16px;
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
-    align-items:start;
+    align-items:center;
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,0) 36%),
+      linear-gradient(135deg,#214739 0%, #17392f 66%, #143229 100%);
+    border-color:rgba(165,138,88,.28);
+    color:#fff;
+    box-shadow:var(--al-shadow-soft);
   }
 
-  .v963-title{
+  .v963al-top::before{
+    height:3px;
+    background:linear-gradient(90deg,rgba(199,176,125,.82) 0%, rgba(117,148,132,.72) 100%);
+  }
+
+  .v963al-title{
     margin:0;
-    font-size:20px;
-    font-weight:900;
-    color:var(--green-1);
-    letter-spacing:0;
+    font-size:22px;
+    line-height:1.15;
+    font-weight:900 !important;
+    color:#fff;
   }
 
-  .v963-sub{
+  .v963al-sub{
     margin:6px 0 0;
-    max-width:780px;
-    font-size:10.4px;
-    line-height:1.95;
-    color:var(--muted);
-    font-weight:800;
+    max-width:76ch;
+    font-size:10.7px;
+    line-height:1.9;
+    color:rgba(255,255,255,.92);
+    font-weight:800 !important;
   }
 
-  .v963-top-side{
+  .v963al-top-side{
     display:flex;
-    gap:7px;
+    gap:8px;
     align-items:center;
     flex-wrap:wrap;
     justify-content:flex-end;
   }
 
-  .v963-btn{
+  .v963al-btn,
+  .v963al-tab,
+  .v963al-menu-btn,
+  .v963al-menu-link{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:38px;
+    padding:6px 13px;
+    border-radius:10px;
+    border:1px solid var(--al-line-2);
     background:#fff;
-    color:var(--green-2);
+    color:var(--al-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:9.4px;
-    font-weight:900;
+    font-size:9.5px;
+    font-weight:900 !important;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease;
     box-shadow:none;
-    transition:.16s ease;
   }
 
-  .v963-btn:hover{
-    background:var(--paper-2);
+  .v963al-btn:hover,
+  .v963al-tab:hover,
+  .v963al-menu-btn:hover,
+  .v963al-menu-link:hover{
+    background:#f7faf8;
     border-color:#b8c6bb;
-    transform:none;
-    box-shadow:none;
+    transform:translateY(-1px);
   }
 
-  .v963-btn-primary,
-  .v963-btn-ok{
-    background:var(--green-2);
+  .v963al-btn-primary,
+  .v963al-btn-ok{
+    background:linear-gradient(180deg,#27493b 0%, #1a392e 100%);
+    border-color:#1a392e;
     color:#fff;
-    border-color:var(--green-2);
   }
 
-  .v963-btn-warn{
-    background:var(--warn);
+  .v963al-btn-primary:hover,
+  .v963al-btn-ok:hover{
+    background:linear-gradient(180deg,#2d5141 0%, #214032 100%);
+    border-color:#214032;
     color:#fff;
-    border-color:var(--warn);
   }
 
-  .v963-btn-danger{
-    background:var(--danger);
-    color:#fff;
-    border-color:var(--danger);
+  .v963al-btn-danger{
+    background:var(--al-danger-bg);
+    border-color:var(--al-danger-bd);
+    color:var(--al-danger);
   }
 
-  .v963-btn-info,
-  .v963-btn-soft,
-  .v963-btn-gold{
+  .v963al-btn-warn{
+    background:var(--al-warn-bg);
+    border-color:var(--al-warn-bd);
+    color:var(--al-warn);
+  }
+
+  .v963al-btn-soft{
     background:#fff;
-    color:var(--green-2);
-    border-color:var(--line-2);
+    border-color:var(--al-line-2);
+    color:var(--al-green-2);
   }
 
-  .v963-btn-sm{
-    min-height:30px;
-    padding:4px 11px;
-    border-radius:8px;
+  .v963al-btn-sm,
+  .v963al-menu-btn,
+  .v963al-menu-link{
+    min-height:31px;
+    padding:5px 11px;
     font-size:8.35px;
+    border-radius:8px;
   }
 
-  .v963-btn-icon{
+  .v963al-btn-icon{
     font-size:11px;
     line-height:1;
   }
 
-  .v963-sec{
-    padding:12px 13px;
+  .v963al-actions-bar{
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
   }
 
-  .v963-section-cap{
+  .v963al-actions-title{
+    color:var(--al-green-1);
+    font-size:9px;
+    font-weight:900 !important;
+  }
+
+  .v963al-actions-sub{
+    color:var(--al-muted);
+    font-size:7.7px;
+    line-height:1.7;
+    font-weight:800 !important;
+    margin-top:2px;
+  }
+
+  .v963al-actions-right,
+  .v963al-actions-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .v963al-card-head{
+    padding:11px 13px 10px;
+    border-bottom:1px solid var(--al-line);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .v963al-section-cap{
     display:inline-flex;
     align-items:center;
     gap:8px;
-    margin-bottom:10px;
-    padding:0 0 6px;
-    color:var(--moe-deep);
+    margin:0;
+    padding-bottom:5px;
+    border-bottom:1px solid var(--al-line);
+    color:var(--al-green-1);
     font-size:9.6px;
-    font-weight:900;
-    border-bottom:1px solid #dde8e1;
+    font-weight:900 !important;
   }
 
-  .v963-section-cap::before{
+  .v963al-section-cap::before{
     content:"";
-    width:10px;
-    height:10px;
+    width:8px;
+    height:8px;
     border-radius:50%;
-    background:linear-gradient(180deg,var(--moe-soft),var(--moe-mid));
-    box-shadow:0 0 0 4px rgba(46,155,129,.08);
+    background:linear-gradient(180deg,var(--al-green-3),var(--al-green-2));
+    flex:0 0 auto;
   }
 
-  .v963-filter-shell{
+  .v963al-sec{padding:12px 13px}
+  .v963al-div{border-top:1px solid var(--al-line-3)}
+
+  .v963al-filter-shell{
     display:grid;
-    gap:12px;
-    padding:11px;
-    border:1px solid var(--moe-line);
-    border-radius:10px;
-    background:var(--moe-mist-2);
+    gap:10px;
+    padding:10px;
+    border:1px solid var(--al-line);
+    border-radius:14px;
+    background:var(--al-surface-2);
   }
 
-  .v963-kind-row{
+  .v963al-kind-row{
     display:flex;
     gap:6px;
     flex-wrap:wrap;
     align-items:center;
   }
 
-  .v963-toolbar-row{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:center;
-  }
-
-  .v963-toolbar-left,
-  .v963-toolbar-right{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .v963-toolbar-right{
-    justify-content:flex-end;
-  }
-
-  .v963-tab{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+  .v963al-tab{
+    min-height:34px;
+    padding:5px 12px;
+    font-size:9px;
     background:#fff;
-    color:var(--green-2);
-    text-decoration:none;
-    cursor:pointer;
-    font-size:9.4px;
-    font-weight:900;
+    color:var(--al-green-2);
   }
 
-  .v963-tab:hover{
-    background:var(--paper-2);
-    border-color:#b8c6bb;
+  .v963al-tab.on{
+    color:#72551a;
+    border-color:rgba(165,138,88,.45);
+    background:linear-gradient(180deg,#faf5ea,#f5edde);
   }
 
-  .v963-tab.on{
-    color:#745311;
-    border-color:rgba(171,137,80,.55);
-    background:linear-gradient(180deg,#fff7e8,#fff1d0);
-  }
-
-  .v963-count{
+  .v963al-count{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-width:18px;
-    height:18px;
+    min-width:19px;
+    height:19px;
     padding:0 5px;
     border-radius:999px;
-    border:1px solid var(--line);
+    border:1px solid var(--al-line);
     background:#fff;
-    color:#62746b;
-    font-size:7.4px;
-    font-weight:900;
+    color:#62756c;
+    font-size:7.5px;
+    font-weight:900 !important;
   }
 
-  .v963-tab.on .v963-count{
-    border-color:rgba(171,137,80,.55);
-    background:#fff4d9;
-    color:#7a5712;
+  .v963al-tab.on .v963al-count{
+    border-color:rgba(165,138,88,.45);
+    background:#fcf6ea;
+    color:#72551a;
   }
 
-  .v963-input,
-  .v963-select{
-    min-height:39px;
-    height:39px;
-    padding:6px 10px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+  .v963al-toolbar-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    align-items:center;
+  }
+
+  .v963al-toolbar-left,
+  .v963al-toolbar-right{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .v963al-toolbar-right{justify-content:flex-end}
+
+  .v963al-input,
+  .v963al-select{
+    min-height:40px;
+    height:40px;
+    padding:6px 11px;
+    border-radius:9px;
+    border:1px solid var(--al-line-2);
     background:#fff;
-    color:var(--ink);
-    font-size:9.5px;
+    color:var(--al-ink);
+    font-size:9.8px;
+    font-weight:700;
     outline:none;
     box-shadow:none;
   }
 
-  .v963-input:focus,
-  .v963-select:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  .v963al-input:focus,
+  .v963al-select:focus{
+    border-color:var(--al-gold-2);
+    box-shadow:0 0 0 2px rgba(165,138,88,.08);
   }
 
-  .v963-pill{
+  .v963al-pill{
     display:inline-flex;
     align-items:center;
+    justify-content:center;
     gap:6px;
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
+    min-height:29px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--al-line);
+    background:var(--al-surface-2);
+    color:var(--al-ink-2);
     font-size:9px;
-    font-weight:900;
+    font-weight:900 !important;
     white-space:nowrap;
   }
 
-  .v963-pill-ok{
-    background:#eff8f3 !important;
-    border-color:#cfe6d8 !important;
-    color:#1c6a44 !important;
+  .v963al-pill-ok{
+    background:var(--al-ok-bg) !important;
+    border-color:var(--al-ok-bd) !important;
+    color:var(--al-ok) !important;
   }
 
-  .v963-pill-danger{
-    background:#fcf6f6 !important;
-    border-color:#e7c7c7 !important;
-    color:#8f2f2f !important;
+  .v963al-pill-danger{
+    background:var(--al-danger-bg) !important;
+    border-color:var(--al-danger-bd) !important;
+    color:var(--al-danger) !important;
   }
 
-  .v963-pill-info{
-    background:#f3f7fd !important;
-    border-color:#d5e0ef !important;
-    color:#355c80 !important;
+  .v963al-pill-info{
+    background:var(--al-info-bg) !important;
+    border-color:var(--al-info-bd) !important;
+    color:var(--al-info) !important;
   }
 
-  .v963-muted{
-    color:var(--muted) !important;
-    font-size:8px;
-    font-weight:800;
+  .v963al-muted{
+    color:var(--al-muted) !important;
+    font-size:8.2px;
+    font-weight:800 !important;
   }
 
-  .v963-table-wrap{
-    overflow:auto;
+  .v963al-table-wrap{
+    overflow-x:auto;
     background:#fff;
-    border-top:1px solid var(--line);
+    border-top:1px solid var(--al-line);
   }
 
-  .v963-table{
+  .v963al-table{
     width:100%;
-    min-width:1120px;
+    min-width:1000px;
     border-collapse:collapse;
     table-layout:fixed;
   }
 
-  .v963-table th{
-    position:sticky;
-    top:0;
-    z-index:5;
+  .v963al-table th{
     padding:12px 8px;
     white-space:nowrap;
-    font-size:8.8px;
-    font-weight:900;
-    color:var(--green-1);
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    border-bottom:1px solid var(--line-2);
-    border-inline-start:1px solid #e1e7e2;
+    font-size:9.1px;
+    font-weight:900 !important;
+    color:var(--al-green-1);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf3ef 100%);
+    border-bottom:1px solid var(--al-line-2);
+    border-inline-start:1px solid #e2e8e3;
     text-align:center;
   }
 
-  .v963-table td{
+  .v963al-table td{
     padding:11px 8px;
-    font-size:9.35px;
+    font-size:9.7px;
+    font-weight:700;
     vertical-align:middle;
     background:#fff;
-    color:var(--ink);
+    color:var(--al-ink);
     border-bottom:1px solid #edf1ed;
-    border-inline-start:1px solid #f1f3f1;
+    border-inline-start:1px solid #f1f4f1;
   }
 
-  .v963-table th:first-child,
-  .v963-table td:first-child{
+  .v963al-table th:first-child,
+  .v963al-table td:first-child{
     border-inline-start:none;
   }
 
-  .v963-row:nth-child(even) td{
-    background:#fcfdfc;
-  }
-
-  .v963-row:hover td{
-    background:#f8faf8;
-  }
+  .v963al-row:nth-child(even) td{background:#fcfdfc}
+  .v963al-row:hover td{background:#f8faf8}
 
   .c-name{width:300px}
-  .c-type{width:140px}
-  .c-actions{
-    width:260px;
-    position:sticky;
-    inset-inline-start:0;
-    left:auto !important;
-    z-index:6;
-    background:#fdfefe !important;
-    box-shadow:inset 1px 0 0 #e4ece7 !important;
-  }
+  .c-type{width:145px}
+  .c-actions{width:214px}
 
-  .v963-table thead .c-actions{
-    z-index:9;
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-  }
-
-  .v963-name{
+  .v963al-name{
     display:flex;
     flex-direction:column;
     gap:4px;
     min-width:0;
   }
 
-  .v963-name-main{
+  .v963al-name-main{
     min-width:0;
-    font-size:10.7px;
-    font-weight:900;
-    color:var(--green-1);
+    font-size:11px;
+    font-weight:900 !important;
+    color:var(--al-green-1);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
     line-height:1.35;
   }
 
-  .v963-name-sub{
-    font-size:8.6px;
-    color:var(--muted);
+  .v963al-name-sub{
+    font-size:8.8px;
+    color:var(--al-muted);
     direction:ltr;
     text-align:right;
-    font-weight:900;
+    font-weight:900 !important;
   }
 
-  .v963-actions{
+  .v963al-actions{
     display:flex;
-    gap:7px;
+    gap:6px;
     align-items:center;
     justify-content:center;
-    flex-wrap:wrap;
-    flex-direction:row-reverse;
+    flex-wrap:nowrap;
+    position:relative;
   }
 
-  .c-actions .v963-btn{
-    min-height:30px !important;
-    padding:4px 11px !important;
-    border-radius:8px !important;
-    font-size:8.35px !important;
-    font-weight:900 !important;
-    box-shadow:none !important;
+  .v963al-more{
+    position:relative;
   }
 
-  .c-actions .v963-btn:hover{
-    transform:none !important;
-    box-shadow:none !important;
+  .v963al-menu{
+    position:absolute;
+    top:calc(100% + 6px);
+    inset-inline-start:0;
+    min-width:145px;
+    border:1px solid #d6ddd7;
+    border-radius:10px;
+    background:#fff;
+    box-shadow:0 10px 22px rgba(16,24,20,.09);
+    padding:5px;
+    display:none;
+    z-index:25;
   }
 
-  .c-actions .v963-btn-warn{
-    background:#fcf8ef !important;
-    border-color:#ead6ae !important;
-    color:#8e6113 !important;
+  .v963al-more.open .v963al-menu{
+    display:grid;
+    gap:5px;
   }
 
-  .c-actions .v963-btn-danger{
-    background:#fcf6f6 !important;
-    border-color:#e7c7c7 !important;
-    color:#8f2f2f !important;
+  .v963al-menu-link{
+    justify-content:flex-start;
+    width:100%;
+    background:#fff;
   }
 
-  .c-actions .v963-btn:not(.v963-btn-primary):not(.v963-btn-ok):not(.v963-btn-danger):not(.v963-btn-warn){
-    background:#ffffff !important;
-    border-color:#d8e2db !important;
-    color:var(--green-2) !important;
+  .v963al-menu-link.warn{
+    background:var(--al-warn-bg);
+    border-color:var(--al-warn-bd);
+    color:var(--al-warn);
   }
 
-  .v963-foot{
+  .v963al-menu-link.danger{
+    background:var(--al-danger-bg);
+    border-color:var(--al-danger-bd);
+    color:var(--al-danger);
+  }
+
+  .v963al-foot{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
     padding:12px 14px;
-    border-top:1px solid var(--line);
-    background:var(--paper);
+    border-top:1px solid var(--al-line);
+    background:var(--al-surface);
+    flex-wrap:wrap;
   }
 
-  @media (max-width: 920px){
-    .v963-top{
+  .v963al-foot-left,
+  .v963al-foot-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .v963al-page-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:29px;
+    padding:0 10px;
+    border-radius:999px;
+    border:1px solid var(--al-line);
+    background:#fff;
+    color:var(--al-green-1);
+    font-size:8.4px;
+    font-weight:900 !important;
+  }
+
+  @media (max-width:980px){
+    .v963al-top{
       grid-template-columns:1fr;
     }
 
-    .v963-top-side{
+    .v963al-top-side,
+    .v963al-toolbar-right{
       justify-content:flex-start;
     }
 
-    .v963-toolbar-row{
+    .v963al-toolbar-row{
       grid-template-columns:1fr;
-    }
-
-    .v963-toolbar-right{
-      justify-content:flex-start;
-    }
-
-    .v963-table{
-      min-width:980px;
-    }
-
-    .c-actions{
-      width:236px;
+      align-items:start;
     }
   }
 
-  @media (max-width: 640px){
-    .v963{
+  @media (max-width:640px){
+    .v963al{
       padding:8px;
     }
 
-    .v963-top{
-      padding:14px;
+    .v963al-shell{
+      padding:10px;
+      border-radius:22px;
     }
 
-    .v963-title{
-      font-size:18px;
+    .v963al-top{
+      padding:13px 14px;
     }
 
-    .v963-foot{
-      flex-direction:column;
+    .v963al-title{
+      font-size:19px;
+    }
+
+    .v963al-foot{
       align-items:flex-start;
     }
   }
@@ -546,232 +610,282 @@
 {% endblock %}
 
 {% block content %}
-<div class="v963">
-  <div class="v963-page">
+<div class="v963al">
+  <div class="v963al-page">
+    <div class="v963al-shell">
 
-    <div class="v963-top">
-      <div>
-        <h1 class="v963-title">إدارة المتقدمين</h1>
-        <p class="v963-sub">
-          إضافة، تعديل، تعطيل أو تفعيل المتقدمين، مع دعم التفعيل والتعطيل الجماعي، وفصل الوكلاء الرسميين عن المتقدمين الجدد.
-        </p>
-      </div>
+      <div class="v963al-top">
+        <div>
+          <h1 class="v963al-title">إدارة المتقدمين</h1>
+          <p class="v963al-sub">
+            متابعة سجلات المتقدمين وتحديثها بصورة سريعة وواضحة، مع فصل الوكلاء الرسميين عن المتقدمين الجدد ضمن قائمة تشغيلية موحدة.
+          </p>
+        </div>
 
-      <div class="v963-top-side">
-        <a class="v963-btn v963-btn-gold" href="{% url 'portal:admin_dashboard' %}">
-          <span class="v963-btn-icon">▦</span>
-          لوحة القرار
-        </a>
+        <div class="v963al-top-side">
+          <a class="v963al-btn v963al-btn-soft" href="{% url 'portal:admin_dashboard' %}">
+            <span class="v963al-btn-icon">▦</span>
+            لوحة القرار
+          </a>
 
-        <a class="v963-btn v963-btn-primary" href="{% url 'portal:admin_applicants_create' %}">
-          <span class="v963-btn-icon">＋</span>
-          إضافة متقدم
-        </a>
-
-        <a class="v963-btn v963-btn-info" href="{% url 'portal:admin_vacancies_list' %}">
-          <span class="v963-btn-icon">🧩</span>
-          إدارة الشواغر
-        </a>
-
-        <form method="post" action="{% url 'portal:admin_applicants_enable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تفعيل جميع المتقدمين؟');">
-          {% csrf_token %}
-          <button class="v963-btn v963-btn-primary" type="submit">
-            <span class="v963-btn-icon">✓</span>
-            تفعيل الجميع
-          </button>
-        </form>
-
-        <form method="post" action="{% url 'portal:admin_applicants_disable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تعطيل جميع المتقدمين؟');">
-          {% csrf_token %}
-          <button class="v963-btn v963-btn-danger" type="submit">
-            <span class="v963-btn-icon">✕</span>
-            تعطيل الجميع
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <div class="v963-card">
-      <div class="v963-sec">
-        <div class="v963-section-cap">عرض المتقدمين</div>
-
-        <form method="get" class="v963-filter-shell">
-          <div class="v963-kind-row">
-            <a
-              class="v963-tab {% if kind == 'all' or not kind %}on{% endif %}"
-              href="{% url 'portal:admin_applicants_list' %}?kind=all{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
-            >
-              الكل
-              <span class="v963-count">{{ all_count|default:total }}</span>
-            </a>
-
-            <a
-              class="v963-tab {% if kind == 'official' %}on{% endif %}"
-              href="{% url 'portal:admin_applicants_list' %}?kind=official{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
-            >
-              الوكلاء الرسميون
-              <span class="v963-count">{{ official_count|default:0 }}</span>
-            </a>
-
-            <a
-              class="v963-tab {% if kind == 'new' %}on{% endif %}"
-              href="{% url 'portal:admin_applicants_list' %}?kind=new{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
-            >
-              المتقدمون الجدد
-              <span class="v963-count">{{ new_count|default:0 }}</span>
-            </a>
-          </div>
-
-          <div class="v963-toolbar-row">
-            <div class="v963-toolbar-left">
-              <input
-                class="v963-input"
-                name="q"
-                value="{{ q }}"
-                placeholder="بحث بالاسم / السجل / القطاع / الجوال / المدرسة الحالية"
-                style="width:min(420px,100%)"
-              >
-
-              <select class="v963-select" name="status" style="width:160px">
-                <option value="" {% if not status %}selected{% endif %}>الكل</option>
-                <option value="active" {% if status == "active" %}selected{% endif %}>نشط</option>
-                <option value="inactive" {% if status == "inactive" %}selected{% endif %}>معطل</option>
-              </select>
-
-              <input type="hidden" name="kind" value="{{ kind|default:'all' }}">
-            </div>
-
-            <div class="v963-toolbar-right">
-              <button class="v963-btn v963-btn-primary" type="submit">بحث</button>
-              <a class="v963-btn" href="{% url 'portal:admin_applicants_list' %}">مسح</a>
-
-              <span class="v963-pill">الإجمالي: <b>{{ total }}</b></span>
-
-              {% if kind == "official" %}
-                <span class="v963-pill v963-pill-info">الوكلاء الرسميون فقط</span>
-              {% elif kind == "new" %}
-                <span class="v963-pill">المتقدمون الجدد فقط</span>
-              {% else %}
-                <span class="v963-pill">جميع السجلات</span>
-              {% endif %}
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <div class="v963-table-wrap">
-        <table class="v963-table">
-          <thead>
-            <tr>
-              <th class="c-name">الاسم</th>
-              <th style="width:170px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:150px">الجوال</th>
-              <th class="c-type">النوع</th>
-              <th style="width:110px">الحالة</th>
-              <th class="c-actions">إجراءات</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for a in rows %}
-            <tr class="v963-row">
-              <td class="c-name" title="{{ a.full_name }}">
-                <div class="v963-name">
-                  <div class="v963-name-main">{{ a.full_name|default:"—" }}</div>
-                  <div class="v963-name-sub">{{ a.national_id|default:"—" }}</div>
-                </div>
-              </td>
-
-              <td title="{{ a.sector }}">
-                {% if a.sector %}
-                  <span class="v963-pill">{{ a.sector }}</span>
-                {% else %}
-                  <span class="v963-muted">—</span>
-                {% endif %}
-              </td>
-
-              <td>
-                {% if a.gender %}
-                  <span class="v963-pill">{{ a.gender }}</span>
-                {% else %}
-                  <span class="v963-muted">—</span>
-                {% endif %}
-              </td>
-
-              <td class="v963-muted" style="direction:ltr; text-align:right;">
-                {{ a.mobile|default:"—" }}
-              </td>
-
-              <td>
-                {% if a.is_official_agent %}
-                  <span class="v963-pill v963-pill-info">وكيل رسمي</span>
-                {% else %}
-                  <span class="v963-pill">متقدم جديد</span>
-                {% endif %}
-              </td>
-
-              <td>
-                {% if a.is_active %}
-                  <span class="v963-pill v963-pill-ok">نشط</span>
-                {% else %}
-                  <span class="v963-pill v963-pill-danger">معطل</span>
-                {% endif %}
-              </td>
-
-              <td class="c-actions">
-                <div class="v963-actions">
-                  <a class="v963-btn v963-btn-sm" href="{% url 'portal:admin_applicants_edit' a.id %}">
-                    تعديل
-                  </a>
-
-                  <form method="post" action="{% url 'portal:admin_applicants_toggle' a.id %}" style="margin:0;">
-                    {% csrf_token %}
-                    <button class="v963-btn v963-btn-sm v963-btn-warn" type="submit">
-                      {% if a.is_active %}تعطيل{% else %}تفعيل{% endif %}
-                    </button>
-                  </form>
-
-                  <form
-                    method="post"
-                    action="{% url 'portal:admin_applicants_delete' a.id %}"
-                    style="margin:0;"
-                    onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كان لديه طلبات.');"
-                  >
-                    {% csrf_token %}
-                    <button class="v963-btn v963-btn-sm v963-btn-danger" type="submit">
-                      حذف
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="7" style="padding:16px; color:var(--muted); background:#fff; text-align:center;">
-                لا توجد بيانات.
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="v963-foot">
-        <div class="v963-muted">صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</div>
-
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          {% if rows.has_previous %}
-            <a class="v963-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.previous_page_number }}">السابق</a>
-          {% endif %}
-
-          {% if rows.has_next %}
-            <a class="v963-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.next_page_number }}">التالي</a>
-          {% endif %}
+          <a class="v963al-btn v963al-btn-primary" href="{% url 'portal:admin_applicants_create' %}">
+            <span class="v963al-btn-icon">＋</span>
+            إضافة متقدم
+          </a>
         </div>
       </div>
-    </div>
 
+      <div class="v963al-actions-bar" style="margin-top:10px;">
+        <div>
+          <div class="v963al-actions-title">الإجراءات الجماعية</div>
+          <div class="v963al-actions-sub">إجراءات عامة على السجلات دون إرباك الجزء العلوي من الصفحة.</div>
+        </div>
+
+        <div class="v963al-actions-left">
+          <a class="v963al-btn v963al-btn-soft" href="{% url 'portal:admin_vacancies_list' %}">
+            <span class="v963al-btn-icon">🧩</span>
+            إدارة الشواغر
+          </a>
+
+          <form method="post" action="{% url 'portal:admin_applicants_enable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تفعيل جميع المتقدمين؟');">
+            {% csrf_token %}
+            <button class="v963al-btn v963al-btn-primary" type="submit">
+              <span class="v963al-btn-icon">✓</span>
+              تفعيل الجميع
+            </button>
+          </form>
+
+          <form method="post" action="{% url 'portal:admin_applicants_disable_all' %}" style="margin:0;display:inline-flex;" onsubmit="return confirm('تأكيد تعطيل جميع المتقدمين؟');">
+            {% csrf_token %}
+            <button class="v963al-btn v963al-btn-danger" type="submit">
+              <span class="v963al-btn-icon">✕</span>
+              تعطيل الجميع
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="v963al-card" style="margin-top:10px;">
+        <div class="v963al-card-head">
+          <div class="v963al-section-cap">عرض المتقدمين</div>
+        </div>
+
+        <div class="v963al-sec">
+          <form method="get" class="v963al-filter-shell">
+            <div class="v963al-kind-row">
+              <a
+                class="v963al-tab {% if kind == 'all' or not kind %}on{% endif %}"
+                href="{% url 'portal:admin_applicants_list' %}?kind=all{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
+              >
+                الكل
+                <span class="v963al-count">{{ all_count|default:total }}</span>
+              </a>
+
+              <a
+                class="v963al-tab {% if kind == 'official' %}on{% endif %}"
+                href="{% url 'portal:admin_applicants_list' %}?kind=official{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
+              >
+                الوكلاء الرسميون
+                <span class="v963al-count">{{ official_count|default:0 }}</span>
+              </a>
+
+              <a
+                class="v963al-tab {% if kind == 'new' %}on{% endif %}"
+                href="{% url 'portal:admin_applicants_list' %}?kind=new{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}"
+              >
+                المتقدمون الجدد
+                <span class="v963al-count">{{ new_count|default:0 }}</span>
+              </a>
+            </div>
+
+            <div class="v963al-toolbar-row">
+              <div class="v963al-toolbar-left">
+                <input
+                  class="v963al-input"
+                  name="q"
+                  value="{{ q }}"
+                  placeholder="بحث بالاسم / السجل / القطاع / الجوال / المدرسة الحالية"
+                  style="width:min(430px,100%)"
+                >
+
+                <select class="v963al-select" name="status" style="width:165px">
+                  <option value="" {% if not status %}selected{% endif %}>جميع الحالات</option>
+                  <option value="active" {% if status == "active" %}selected{% endif %}>نشط</option>
+                  <option value="inactive" {% if status == "inactive" %}selected{% endif %}>معطل</option>
+                </select>
+
+                <input type="hidden" name="kind" value="{{ kind|default:'all' }}">
+              </div>
+
+              <div class="v963al-toolbar-right">
+                <button class="v963al-btn v963al-btn-primary" type="submit">تطبيق البحث</button>
+                <a class="v963al-btn" href="{% url 'portal:admin_applicants_list' %}">إعادة ضبط</a>
+
+                <span class="v963al-pill">الإجمالي: <b>{{ total }}</b></span>
+
+                {% if kind == "official" %}
+                  <span class="v963al-pill v963al-pill-info">الوكلاء الرسميون فقط</span>
+                {% elif kind == "new" %}
+                  <span class="v963al-pill">المتقدمون الجدد فقط</span>
+                {% else %}
+                  <span class="v963al-pill">جميع السجلات</span>
+                {% endif %}
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="v963al-table-wrap">
+          <table class="v963al-table">
+            <thead>
+              <tr>
+                <th class="c-name">الاسم</th>
+                <th style="width:170px">القطاع</th>
+                <th style="width:90px">الجنس</th>
+                <th style="width:150px">الجوال</th>
+                <th class="c-type">النوع</th>
+                <th style="width:110px">الحالة</th>
+                <th class="c-actions">الإجراءات</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for a in rows %}
+              <tr class="v963al-row">
+                <td class="c-name" title="{{ a.full_name }}">
+                  <div class="v963al-name">
+                    <div class="v963al-name-main">{{ a.full_name|default:"—" }}</div>
+                    <div class="v963al-name-sub">{{ a.national_id|default:"—" }}</div>
+                  </div>
+                </td>
+
+                <td title="{{ a.sector }}">
+                  {% if a.sector %}
+                    <span class="v963al-pill">{{ a.sector }}</span>
+                  {% else %}
+                    <span class="v963al-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if a.gender %}
+                    <span class="v963al-pill">{{ a.gender }}</span>
+                  {% else %}
+                    <span class="v963al-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="v963al-muted" style="direction:ltr; text-align:right;">
+                  {{ a.mobile|default:"—" }}
+                </td>
+
+                <td>
+                  {% if a.is_official_agent %}
+                    <span class="v963al-pill v963al-pill-info">وكيل رسمي</span>
+                  {% else %}
+                    <span class="v963al-pill">متقدم جديد</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if a.is_active %}
+                    <span class="v963al-pill v963al-pill-ok">نشط</span>
+                  {% else %}
+                    <span class="v963al-pill v963al-pill-danger">معطل</span>
+                  {% endif %}
+                </td>
+
+                <td class="c-actions">
+                  <div class="v963al-actions">
+                    <a class="v963al-btn v963al-btn-sm" href="{% url 'portal:admin_applicants_edit' a.id %}">
+                      تعديل
+                    </a>
+
+                    <div class="v963al-more" id="rowMenuWrap{{ a.id }}">
+                      <button class="v963al-menu-btn" type="button" onclick="toggleApplicantMenu('{{ a.id }}')">
+                        المزيد
+                      </button>
+
+                      <div class="v963al-menu">
+                        <form method="post" action="{% url 'portal:admin_applicants_toggle' a.id %}" style="margin:0;">
+                          {% csrf_token %}
+                          <button class="v963al-menu-link warn" type="submit">
+                            {% if a.is_active %}تعطيل المتقدم{% else %}تفعيل المتقدم{% endif %}
+                          </button>
+                        </form>
+
+                        <form
+                          method="post"
+                          action="{% url 'portal:admin_applicants_delete' a.id %}"
+                          style="margin:0;"
+                          onsubmit="return confirm('حذف نهائي؟ سيُمنع إذا كان لديه طلبات.');"
+                        >
+                          {% csrf_token %}
+                          <button class="v963al-menu-link danger" type="submit">
+                            حذف السجل
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" style="padding:18px; color:var(--al-muted); background:#fff; text-align:center;">
+                  لا توجد سجلات مطابقة لخيارات العرض الحالية.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="v963al-foot">
+          <div class="v963al-foot-left">
+            <span class="v963al-muted">
+              عرض {{ rows.start_index }}–{{ rows.end_index }} من أصل {{ rows.paginator.count }}
+            </span>
+            <span class="v963al-page-chip">
+              الصفحة {{ rows.number }} / {{ rows.paginator.num_pages }}
+            </span>
+          </div>
+
+          <div class="v963al-foot-right">
+            {% if rows.has_previous %}
+              <a class="v963al-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.previous_page_number }}">السابق</a>
+            {% endif %}
+
+            {% if rows.has_next %}
+              <a class="v963al-btn" href="?q={{ q|urlencode }}&status={{ status }}&kind={{ kind|default:'all' }}&page={{ rows.next_page_number }}">التالي</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
+
+<script>
+  function closeAllApplicantMenus(){
+    document.querySelectorAll('.v963al-more.open').forEach(el => el.classList.remove('open'));
+  }
+
+  function toggleApplicantMenu(id){
+    const wrap = document.getElementById(`rowMenuWrap${id}`);
+    if (!wrap) return;
+    const isOpen = wrap.classList.contains('open');
+    closeAllApplicantMenus();
+    wrap.classList.toggle('open', !isOpen);
+  }
+
+  document.addEventListener('click', function(e){
+    if (!e.target.closest('.v963al-more')) closeAllApplicantMenus();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeAllApplicantMenus();
+  });
+</script>
 {% endblock %}

@@ -1,71 +1,62 @@
 {% extends "portal/base.html" %}
-{% block title %}طباعة الرغبة المعتمدة{% endblock %}
+{% block title %}بيان اعتماد الرغبة النهائية{% endblock %}
 
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --doc-bg:#f3f6f3;
+    --doc-bg-2:#edf2ee;
+    --doc-paper:#ffffff;
+    --doc-paper-2:#fbfcfb;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --doc-ink:#1d2f27;
+    --doc-ink-2:#31443b;
+    --doc-muted:#6d7e76;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --doc-green-1:#173b2f;
+    --doc-green-2:#25483a;
+    --doc-green-3:#688076;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --doc-gold-1:#836632;
+    --doc-gold-2:#a8884f;
+    --doc-gold-3:#dfd0b0;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --doc-line:#d9e1da;
+    --doc-line-2:#c9d3cb;
+    --doc-line-soft:#ebf0ec;
 
-    --ok:#215f39;
-    --warn:#8e6113;
-    --danger:#8f2f2f;
-    --info:#355c80;
+    --doc-ok:#1f6339;
+    --doc-ok-bg:#eff8f2;
+    --doc-ok-bd:#d2e7d8;
 
-    --moe-deep:#0f5f49;
-    --moe-mid:#1f7a62;
-    --moe-soft:#2e9b81;
-    --moe-mist:#edf6f2;
-    --moe-mist-2:#f7fbf9;
-    --moe-line:#d6e6dd;
+    --doc-warn:#8b6221;
+    --doc-warn-bg:#fcf7ee;
+    --doc-warn-bd:#e7d7b8;
 
-    --r-2xl:12px;
-    --r-xl:10px;
-    --r-lg:9px;
-    --r-md:8px;
-    --r-sm:7px;
+    --doc-shadow:0 2px 8px rgba(16,24,20,.04);
+    --doc-shadow-paper:0 14px 36px rgba(16,24,20,.07);
   }
 
-  .v963prn, .v963prn *{
+  .v963doc, .v963doc *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .v963prn{
+  .v963doc{
     direction:rtl;
-    color:var(--ink);
-    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
-    padding:10px;
+    color:var(--doc-ink);
+    background:linear-gradient(180deg,var(--doc-bg) 0%, var(--doc-bg-2) 100%);
+    padding:12px;
   }
 
-  .v963prn-wrap{
-    width:min(100%,980px);
+  .v963doc-wrap{
+    width:min(100%, 980px);
     margin:0 auto;
     display:grid;
     gap:12px;
   }
 
-  .v963prn-actions{
+  .v963doc-toolbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -73,156 +64,235 @@
     flex-wrap:wrap;
   }
 
-  .v963prn-actions-right{
+  .v963doc-toolbar-right{
     display:flex;
+    align-items:center;
     gap:8px;
     flex-wrap:wrap;
   }
 
-  .v963prn-btn{
+  .v963doc-btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:38px;
+    padding:7px 14px;
+    border-radius:10px;
+    border:1px solid var(--doc-line-2);
     background:#fff;
-    color:var(--green-2);
+    color:var(--doc-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:9.4px;
+    font-size:10px;
     font-weight:900;
+    transition:background .15s ease,border-color .15s ease;
     box-shadow:none;
-    transition:.16s ease;
   }
 
-  .v963prn-btn:hover{
-    background:var(--paper-2);
+  .v963doc-btn:hover{
+    background:var(--doc-paper-2);
     border-color:#b8c6bb;
   }
 
-  .v963prn-btn-main{
-    background:var(--green-2);
-    border-color:var(--green-2);
+  .v963doc-btn-main{
+    background:linear-gradient(180deg,#264a3b 0%, #1c3f31 100%);
+    border-color:#1c3f31;
     color:#fff;
   }
 
-  .v963prn-paper,
-  .v963prn-notes{
+  .v963doc-paper{
     position:relative;
+    background:var(--doc-paper);
+    border:1px solid var(--doc-line);
+    border-radius:18px;
+    box-shadow:var(--doc-shadow-paper);
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:0 1px 4px rgba(17,24,20,.035);
   }
 
-  .v963prn-paper::before,
-  .v963prn-notes::before{
+  .v963doc-paper::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    height:4px;
+    background:linear-gradient(90deg,var(--doc-green-2) 0%, var(--doc-gold-2) 100%);
   }
 
-  .v963prn-head{
-    position:relative;
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
+  .v963doc-head{
+    padding:22px 24px 18px;
+    border-bottom:1px solid var(--doc-line);
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    border-bottom:1px solid var(--line);
+      radial-gradient(circle at 86% 20%, rgba(37,72,58,.05) 0 2px, transparent 2.5px) 0 0/20px 20px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
   }
 
-  .v963prn-head-grid{
+  .v963doc-head-top{
     display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
+    grid-template-columns:94px minmax(0,1fr) auto;
+    gap:16px;
     align-items:start;
   }
 
-  .v963prn-title{
-    margin:0;
+  .v963doc-mark{
+    width:94px;
+    min-height:94px;
+    border-radius:18px;
+    border:1px solid rgba(168,136,79,.28);
+    background:linear-gradient(180deg,#f9f6ee,#f5efdf);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:var(--doc-shadow);
+  }
+
+  .v963doc-mark-inner{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    border:2px solid rgba(131,102,50,.34);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--doc-gold-1);
     font-size:20px;
+    font-weight:900;
+    letter-spacing:.5px;
+  }
+
+  .v963doc-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+    color:var(--doc-green-2);
+    font-size:9px;
+    font-weight:900;
+  }
+
+  .v963doc-kicker::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(180deg,var(--doc-green-2), var(--doc-green-1));
+    flex:0 0 auto;
+  }
+
+  .v963doc-title{
+    margin:0;
+    color:var(--doc-green-1);
+    font-size:24px;
     line-height:1.2;
     font-weight:900;
-    color:var(--green-1);
     letter-spacing:0;
   }
 
-  .v963prn-sub{
-    margin:6px 0 0;
-    font-size:10.4px;
-    line-height:1.95;
-    color:var(--muted);
+  .v963doc-sub{
+    margin:8px 0 0;
+    max-width:68ch;
+    color:var(--doc-muted);
+    font-size:10.3px;
+    line-height:2;
     font-weight:800;
-    max-width:760px;
   }
 
-  .v963prn-badge{
+  .v963doc-badge-col{
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .v963doc-badge{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid #e7d7b7;
+    min-height:30px;
+    padding:4px 11px;
+    border-radius:10px;
+    border:1px solid #e6dac0;
     background:#fcf7ee;
-    color:#8a6526;
+    color:#816127;
     font-size:9px;
     font-weight:900;
     white-space:nowrap;
   }
 
-  .v963prn-body{
-    padding:12px;
+  .v963doc-summary{
+    padding:14px 24px;
+    border-bottom:1px solid var(--doc-line);
+    background:#fff;
     display:grid;
-    gap:12px;
-  }
-
-  .v963prn-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(6,minmax(0,1fr));
     gap:10px;
   }
 
-  .v963prn-card,
-  .v963prn-section{
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:#fff;
-    overflow:hidden;
+  .v963doc-summary-item{
+    border:1px solid var(--doc-line);
+    border-radius:12px;
+    padding:10px 11px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
   }
 
-  .v963prn-card{
-    padding:11px 12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-  }
-
-  .v963prn-k{
-    font-size:8.7px;
-    color:var(--muted);
-    margin-bottom:5px;
+  .v963doc-summary-k{
+    font-size:8.4px;
+    color:var(--doc-muted);
     font-weight:800;
+    margin-bottom:5px;
   }
 
-  .v963prn-v{
-    font-size:10.2px;
-    color:var(--ink);
+  .v963doc-summary-v{
+    font-size:10px;
+    line-height:1.7;
+    color:var(--doc-ink);
     font-weight:900;
-    line-height:1.8;
     word-break:break-word;
   }
 
-  .v963prn-section-head{
-    padding:11px 12px;
-    border-bottom:1px solid var(--line);
+  .v963doc-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:26px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--doc-line);
+    background:#fff;
+    color:var(--doc-ink-2);
+    font-size:8.6px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .v963doc-status.ok{
+    border-color:var(--doc-ok-bd);
+    background:var(--doc-ok-bg);
+    color:var(--doc-ok);
+  }
+
+  .v963doc-status.warn{
+    border-color:var(--doc-warn-bd);
+    background:var(--doc-warn-bg);
+    color:var(--doc-warn);
+  }
+
+  .v963doc-body{
+    padding:18px 24px 22px;
+    display:grid;
+    gap:16px;
+  }
+
+  .v963doc-section{
+    border:1px solid var(--doc-line);
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+  }
+
+  .v963doc-section-head{
+    padding:12px 14px;
+    border-bottom:1px solid var(--doc-line);
     background:linear-gradient(180deg,#ffffff,#f8fbf9);
     display:flex;
     align-items:center;
@@ -231,150 +301,205 @@
     flex-wrap:wrap;
   }
 
-  .v963prn-section-title{
+  .v963doc-section-title{
     margin:0;
-    font-size:12px;
-    color:var(--green-1);
+    color:var(--doc-green-1);
+    font-size:12.6px;
     font-weight:900;
   }
 
-  .v963prn-section-sub{
-    font-size:8.7px;
-    color:var(--muted);
+  .v963doc-section-sub{
+    color:var(--doc-muted);
+    font-size:8.6px;
     font-weight:800;
-    margin-top:3px;
   }
 
-  .v963prn-table-wrap{
-    overflow:auto;
+  .v963doc-defs{
+    padding:0;
+    margin:0;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    border-top:0;
+  }
+
+  .v963doc-def{
+    padding:12px 14px;
+    border-inline-start:1px solid var(--doc-line-soft);
+    border-bottom:1px solid var(--doc-line-soft);
+    min-width:0;
+  }
+
+  .v963doc-def:nth-child(2n+1){
+    border-inline-start:none;
+  }
+
+  .v963doc-def-k{
+    font-size:8.6px;
+    color:var(--doc-muted);
+    font-weight:800;
+    margin-bottom:5px;
+  }
+
+  .v963doc-def-v{
+    font-size:10.1px;
+    color:var(--doc-ink);
+    font-weight:900;
+    line-height:1.8;
+    word-break:break-word;
+  }
+
+  .v963doc-table-wrap{
+    overflow:hidden;
     background:#fff;
   }
 
-  .v963prn-table{
+  .v963doc-table{
     width:100%;
     border-collapse:collapse;
-    min-width:760px;
+    table-layout:fixed;
   }
 
-  .v963prn-table th{
+  .v963doc-table th{
     padding:12px 8px;
-    border-bottom:1px solid var(--line-2);
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    color:var(--green-1);
-    font-size:8.8px;
+    border-bottom:1px solid var(--doc-line-2);
+    background:linear-gradient(180deg,#f4f8f5 0%, #edf3ef 100%);
+    color:var(--doc-green-1);
+    font-size:8.9px;
     font-weight:900;
-    white-space:nowrap;
     text-align:center;
+    white-space:nowrap;
   }
 
-  .v963prn-table td{
+  .v963doc-table td{
     padding:11px 8px;
-    border-bottom:1px solid #edf1ed;
+    border-bottom:1px solid var(--doc-line-soft);
     background:#fff;
-    font-size:9.4px;
-    line-height:1.7;
+    font-size:9.6px;
+    font-weight:800;
+    color:var(--doc-ink);
+    line-height:1.8;
     vertical-align:middle;
     text-align:center;
-    font-weight:800;
-    color:var(--ink);
   }
 
-  .v963prn-table tbody tr:nth-child(even) td{
+  .v963doc-table tbody tr:nth-child(even) td{
     background:#fcfdfc;
   }
 
-  .c-rank{ width:70px; }
-  .c-school{ min-width:260px; text-align:right !important; }
-  .c-sector{ min-width:150px; }
-  .c-kind{ min-width:140px; }
-  .c-status{ min-width:130px; }
+  .v963doc-table .school{
+    text-align:right;
+    width:40%;
+  }
 
-  .v963prn-rank{
+  .v963doc-rank{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-width:30px;
-    height:28px;
+    min-width:32px;
+    height:30px;
     padding:0 10px;
-    border-radius:8px;
+    border-radius:9px;
     border:1px solid #e7d7b7;
     background:#fcf7ee;
-    color:#8a6526;
+    color:#856426;
     font-size:9px;
     font-weight:900;
   }
 
-  .v963prn-status{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:24px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:#66746c;
-    font-size:8.8px;
-    font-weight:900;
-    white-space:nowrap;
-  }
-
-  .v963prn-status.ok{
-    border-color:#cfe6d8;
-    background:#eff8f3;
-    color:#1c6a44;
-  }
-
-  .v963prn-status.warn{
-    border-color:#e7d7b7;
-    background:#fcf7ee;
-    color:#8a6526;
-  }
-
-  .v963prn-empty{
-    padding:26px;
+  .v963doc-empty{
+    padding:24px;
     text-align:center;
-    color:var(--muted);
+    color:var(--doc-muted);
     font-size:10px;
+    font-weight:800;
+    line-height:1.9;
+  }
+
+  .v963doc-note{
+    padding:14px 15px;
+    border:1px solid #e7d7b7;
+    border-radius:14px;
+    background:linear-gradient(180deg,#fffefb,#fffbf4);
+  }
+
+  .v963doc-note-k{
+    color:#7d5d22;
+    font-size:8.9px;
+    font-weight:900;
+    margin-bottom:5px;
+  }
+
+  .v963doc-note-v{
+    color:var(--doc-ink-2);
+    font-size:9.7px;
+    line-height:1.9;
     font-weight:800;
   }
 
-  .v963prn-notes{
-    padding:12px 14px;
-    background:linear-gradient(180deg,#fffefb,#fffbf5);
-    border-color:#e7d7b7;
+  .v963doc-sign{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
   }
 
-  .v963prn-foot{
-    padding:12px 18px 18px;
-    font-size:8.8px;
-    color:var(--muted);
+  .v963doc-sign-box{
+    border:1px dashed #cfd8d1;
+    border-radius:14px;
+    padding:14px;
+    min-height:98px;
+    background:#fff;
+  }
+
+  .v963doc-sign-k{
+    color:var(--doc-muted);
+    font-size:8.5px;
+    font-weight:800;
+    margin-bottom:18px;
+  }
+
+  .v963doc-sign-v{
+    color:var(--doc-green-1);
+    font-size:10.2px;
+    font-weight:900;
+  }
+
+  .v963doc-foot{
+    padding:14px 24px 22px;
+    border-top:1px solid var(--doc-line);
     text-align:center;
+    color:var(--doc-muted);
+    font-size:8.8px;
     line-height:1.9;
     font-weight:800;
   }
 
   @media (max-width:900px){
-    .v963prn-grid{
+    .v963doc-summary{
       grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .v963doc-head-top{
+      grid-template-columns:1fr;
     }
   }
 
   @media (max-width:640px){
-    .v963prn{
+    .v963doc{
       padding:6px;
     }
 
-    .v963prn-grid{
+    .v963doc-summary,
+    .v963doc-defs,
+    .v963doc-sign{
       grid-template-columns:1fr;
     }
 
-    .v963prn-head-grid{
-      grid-template-columns:1fr;
+    .v963doc-def{
+      border-inline-start:none !important;
     }
 
-    .v963prn-title{
-      font-size:18px;
+    .v963doc-title{
+      font-size:20px;
     }
   }
 
@@ -392,45 +517,46 @@
       visibility:hidden;
     }
 
-    .v963prn-paper, .v963prn-paper *{
+    .v963doc-paper, .v963doc-paper *{
       visibility:visible;
     }
 
-    .v963prn{
+    .v963doc{
       padding:0 !important;
       background:#fff !important;
     }
 
-    .v963prn-wrap{
+    .v963doc-wrap{
       width:100% !important;
       max-width:none !important;
       margin:0 !important;
       gap:0 !important;
     }
 
-    .v963prn-actions{
+    .v963doc-toolbar{
       display:none !important;
     }
 
-    .v963prn-paper{
+    .v963doc-paper{
       border:none !important;
       border-radius:0 !important;
       box-shadow:none !important;
       overflow:visible !important;
     }
 
-    .v963prn-head,
-    .v963prn-section-head,
-    .v963prn-table th,
-    .v963prn-rank,
-    .v963prn-status,
-    .v963prn-badge{
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
+    .v963doc-paper::before{
+      height:3px !important;
     }
 
-    .v963prn-btn{
-      display:none !important;
+    .v963doc-head,
+    .v963doc-summary,
+    .v963doc-section-head,
+    .v963doc-table th,
+    .v963doc-rank,
+    .v963doc-status,
+    .v963doc-badge{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
     }
 
     a{
@@ -442,132 +568,206 @@
 {% endblock %}
 
 {% block content %}
-<div class="v963prn">
-  <div class="v963prn-wrap">
+<div class="v963doc">
+  <div class="v963doc-wrap">
 
-    <div class="v963prn-actions">
-      <div class="v963prn-actions-right">
-        <button type="button" class="v963prn-btn v963prn-btn-main" onclick="window.print()">طباعة</button>
-        <button type="button" class="v963prn-btn" onclick="window.close()">إغلاق</button>
+    <div class="v963doc-toolbar">
+      <div class="v963doc-toolbar-right">
+        <button type="button" class="v963doc-btn v963doc-btn-main" onclick="window.print()">طباعة</button>
+        <button type="button" class="v963doc-btn" onclick="window.close()">إغلاق</button>
       </div>
 
-      <a href="{% url 'portal:admin_dashboard' %}" class="v963prn-btn">العودة للوحة القرار</a>
+      <a href="{% url 'portal:admin_dashboard' %}" class="v963doc-btn">العودة إلى لوحة القرار</a>
     </div>
 
-    <div class="v963prn-paper">
-      <div class="v963prn-head">
-        <div class="v963prn-head-grid">
-          <div>
-            <h1 class="v963prn-title">طباعة الرغبة المعتمدة</h1>
-            <p class="v963prn-sub">عرض رسمي للرغبة النهائية المعتمدة من قبل الإدارة، مهيأ للطباعة والاعتماد الداخلي.</p>
+    <div class="v963doc-paper">
+      <div class="v963doc-head">
+        <div class="v963doc-head-top">
+          <div class="v963doc-mark" aria-hidden="true">
+            <div class="v963doc-mark-inner">اع</div>
           </div>
 
-          <div class="v963prn-badge">
-            رقم الطلب:
-            <b style="margin-inline-start:6px;">#{{ application.id }}</b>
+          <div>
+            <div class="v963doc-kicker">مستند إداري داخلي للطباعة</div>
+            <h1 class="v963doc-title">بيان اعتماد الرغبة النهائية</h1>
+            <p class="v963doc-sub">
+              مستخرج داخلي يوضح الرغبة النهائية المعتمدة للمتقدم كما هي مسجلة في النظام وقت إنشاء هذا المستند، وهو مخصص للعرض والطباعة والأرشفة الداخلية.
+            </p>
+          </div>
+
+          <div class="v963doc-badge-col">
+            <span class="v963doc-badge">رقم الطلب: <b style="margin-inline-start:6px;">#{{ application.id }}</b></span>
+            <span class="v963doc-badge">تاريخ الإنشاء: <b style="margin-inline-start:6px;">{% now "Y-m-d H:i" %}</b></span>
           </div>
         </div>
       </div>
 
-      <div class="v963prn-body">
+      <div class="v963doc-summary">
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">اسم المرشح</div>
+          <div class="v963doc-summary-v">{{ application.applicant.full_name|default:"—" }}</div>
+        </div>
 
-        <div class="v963prn-grid">
-          <div class="v963prn-card">
-            <div class="v963prn-k">اسم المرشح</div>
-            <div class="v963prn-v">{{ application.applicant.full_name|default:"—" }}</div>
-          </div>
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">السجل المدني</div>
+          <div class="v963doc-summary-v">{{ application.applicant.national_id|default:"—" }}</div>
+        </div>
 
-          <div class="v963prn-card">
-            <div class="v963prn-k">السجل المدني</div>
-            <div class="v963prn-v">{{ application.applicant.national_id|default:"—" }}</div>
-          </div>
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">القطاع</div>
+          <div class="v963doc-summary-v">{{ application.applicant.sector|default:"—" }}</div>
+        </div>
 
-          <div class="v963prn-card">
-            <div class="v963prn-k">القطاع</div>
-            <div class="v963prn-v">{{ application.applicant.sector|default:"—" }}</div>
-          </div>
-
-          <div class="v963prn-card">
-            <div class="v963prn-k">حالة الطلب</div>
-            <div class="v963prn-v">
-              {% if application.status == "submitted" %}
-                مُرسل
-              {% elif application.status == "draft" %}
-                مسودة
-              {% else %}
-                {{ application.status|default:"—" }}
-              {% endif %}
-            </div>
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">حالة الطلب</div>
+          <div class="v963doc-summary-v">
+            {% if application.status == "submitted" %}
+              <span class="v963doc-status ok">مُرسل</span>
+            {% elif application.status == "draft" %}
+              <span class="v963doc-status warn">مسودة</span>
+            {% else %}
+              <span class="v963doc-status warn">{{ application.status|default:"—" }}</span>
+            {% endif %}
           </div>
         </div>
 
-        <div class="v963prn-section">
-          <div class="v963prn-section-head">
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">حالة الاعتماد</div>
+          <div class="v963doc-summary-v">
+            {% if selected_pref %}
+              <span class="v963doc-status ok">معتمدة نهائيًا</span>
+            {% else %}
+              <span class="v963doc-status warn">غير محددة</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="v963doc-summary-item">
+          <div class="v963doc-summary-k">وقت توليد المستند</div>
+          <div class="v963doc-summary-v">{% now "Y-m-d H:i" %}</div>
+        </div>
+      </div>
+
+      <div class="v963doc-body">
+
+        <section class="v963doc-section">
+          <div class="v963doc-section-head">
             <div>
-              <h3 class="v963prn-section-title">الرغبة المعتمدة</h3>
-              <div class="v963prn-section-sub">هذه هي الرغبة المحددة نهائيًا من قبل الإدارة.</div>
+              <h2 class="v963doc-section-title">بيانات الاعتماد</h2>
+              <div class="v963doc-section-sub">بيانات تعريفية مختصرة للطلب والمتقدم.</div>
+            </div>
+          </div>
+
+          <div class="v963doc-defs">
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">رقم الطلب</div>
+              <div class="v963doc-def-v">#{{ application.id }}</div>
             </div>
 
-            <div class="v963prn-badge">
-              الحالة:
-              <b style="margin-inline-start:6px;">
-                {% if selected_pref %}معتمدة{% else %}غير محددة{% endif %}
-              </b>
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">اسم المرشح</div>
+              <div class="v963doc-def-v">{{ application.applicant.full_name|default:"—" }}</div>
+            </div>
+
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">السجل المدني</div>
+              <div class="v963doc-def-v">{{ application.applicant.national_id|default:"—" }}</div>
+            </div>
+
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">القطاع</div>
+              <div class="v963doc-def-v">{{ application.applicant.sector|default:"—" }}</div>
+            </div>
+
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">حالة الطلب</div>
+              <div class="v963doc-def-v">
+                {% if application.status == "submitted" %}
+                  مُرسل
+                {% elif application.status == "draft" %}
+                  مسودة
+                {% else %}
+                  {{ application.status|default:"—" }}
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="v963doc-def">
+              <div class="v963doc-def-k">المرجع الداخلي</div>
+              <div class="v963doc-def-v">طلب اعتماد رغبة نهائية</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="v963doc-section">
+          <div class="v963doc-section-head">
+            <div>
+              <h2 class="v963doc-section-title">الرغبة النهائية المعتمدة</h2>
+              <div class="v963doc-section-sub">الرغبة المحددة نهائيًا من قبل الإدارة كما تظهر في النظام.</div>
+            </div>
+
+            <div>
+              {% if selected_pref %}
+                <span class="v963doc-status ok">تم الاعتماد</span>
+              {% else %}
+                <span class="v963doc-status warn">لم يحدد اعتماد نهائي</span>
+              {% endif %}
             </div>
           </div>
 
           {% if selected_pref and selected_pref.vacancy %}
-            <div class="v963prn-table-wrap">
-              <table class="v963prn-table">
+            <div class="v963doc-table-wrap">
+              <table class="v963doc-table">
                 <thead>
                   <tr>
-                    <th class="c-rank">الترتيب</th>
-                    <th class="c-school">المدرسة / الشاغر</th>
-                    <th class="c-sector">القطاع</th>
-                    <th class="c-kind">نوع الشاغر</th>
-                    <th class="c-status">الحالة</th>
+                    <th style="width:84px;">الترتيب</th>
+                    <th class="school">المدرسة / الشاغر</th>
+                    <th style="width:170px;">القطاع</th>
+                    <th style="width:150px;">نوع الشاغر</th>
+                    <th style="width:150px;">الوضع النهائي</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td class="c-rank">
-                      <span class="v963prn-rank">{{ selected_pref.rank|default:"—" }}</span>
-                    </td>
-
-                    <td class="c-school">
-                      {{ selected_pref.vacancy.school_name|default:"—" }}
-                    </td>
-
-                    <td class="c-sector">
-                      {{ selected_pref.vacancy.sector|default:"—" }}
-                    </td>
-
-                    <td class="c-kind">
-                      {{ selected_pref.vacancy.gender|default:"—" }}
-                    </td>
-
-                    <td class="c-status">
-                      <span class="v963prn-status ok">معتمدة نهائيًا</span>
-                    </td>
+                    <td><span class="v963doc-rank">{{ selected_pref.rank|default:"—" }}</span></td>
+                    <td class="school">{{ selected_pref.vacancy.school_name|default:"—" }}</td>
+                    <td>{{ selected_pref.vacancy.sector|default:"—" }}</td>
+                    <td>{{ selected_pref.vacancy.gender|default:"—" }}</td>
+                    <td><span class="v963doc-status ok">رغبة معتمدة</span></td>
                   </tr>
                 </tbody>
               </table>
             </div>
           {% else %}
-            <div class="v963prn-empty">لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب بعد.</div>
+            <div class="v963doc-empty">
+              لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب حتى لحظة إنشاء هذا المستند.
+            </div>
           {% endif %}
-        </div>
+        </section>
 
-        <div class="v963prn-notes">
-          <div class="v963prn-k">ملاحظة</div>
-          <div class="v963prn-v">
-            هذا المستند مخصص للعرض والطباعة الداخلية، ويعكس الرغبة النهائية المعتمدة وقت توليد الصفحة.
+        <div class="v963doc-note">
+          <div class="v963doc-note-k">إفادة</div>
+          <div class="v963doc-note-v">
+            يعبّر هذا المستند عن حالة الاعتماد النهائية كما كانت مسجلة في النظام لحظة توليده، ويستخدم للأغراض الإدارية الداخلية والطباعة والأرشفة.
           </div>
         </div>
+
+        <div class="v963doc-sign">
+          <div class="v963doc-sign-box">
+            <div class="v963doc-sign-k">اسم المعتمد / الجهة المختصة</div>
+            <div class="v963doc-sign-v">....................................</div>
+          </div>
+
+          <div class="v963doc-sign-box">
+            <div class="v963doc-sign-k">التوقيع / الختم</div>
+            <div class="v963doc-sign-v">....................................</div>
+          </div>
+        </div>
+
       </div>
 
-      <div class="v963prn-foot">
-        تم إنشاء هذا الكشف من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}
+      <div class="v963doc-foot">
+        تم إنشاء هذا المستند من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}
       </div>
     </div>
   </div>

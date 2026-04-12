@@ -4,240 +4,332 @@
 {% block extra_css %}
 <style>
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --af-bg:#f4f6f4;
+    --af-bg-2:#edf1ee;
+    --af-surface:#ffffff;
+    --af-surface-2:#fbfcfb;
+    --af-surface-3:#f7f9f7;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --af-ink:#183127;
+    --af-ink-2:#30463d;
+    --af-muted:#6e7d75;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --af-green-1:#16382c;
+    --af-green-2:#1d4335;
+    --af-green-3:#315646;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --af-gold-1:#8a7646;
+    --af-gold-2:#a89260;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --af-line:#d9e0da;
+    --af-line-2:#ced7d0;
+    --af-line-3:#e8ede9;
 
-    --ok:#215f39;
-    --warn:#8e6113;
-    --danger:#8f2f2f;
-    --info:#355c80;
+    --af-ok:#1f5f38;
+    --af-ok-bg:#eff7f1;
+    --af-ok-bd:#d4e5d8;
 
-    --moe-deep:#0f5f49;
-    --moe-mid:#1f7a62;
-    --moe-soft:#2e9b81;
-    --moe-mist:#edf6f2;
-    --moe-mist-2:#f7fbf9;
-    --moe-line:#d6e6dd;
+    --af-warn:#876224;
+    --af-warn-bg:#faf6ee;
+    --af-warn-bd:#e5d8bd;
 
-    --r-2xl:12px;
-    --r-xl:10px;
-    --r-lg:9px;
-    --r-md:8px;
-    --r-sm:7px;
+    --af-danger:#8c3434;
+    --af-danger-bg:#fbf5f5;
+    --af-danger-bd:#e6cccc;
+
+    --af-info:#3b5f7a;
+    --af-info-bg:#f2f6fb;
+    --af-info-bd:#d8e1ec;
+
+    --af-shadow:0 1px 2px rgba(16,24,20,.03);
+    --af-shadow-soft:0 8px 20px rgba(16,24,20,.05);
+    --af-shadow-hero:0 10px 26px rgba(16,24,20,.06);
   }
 
-  .v963af,.v963af *{box-sizing:border-box}
+  .afm, .afm *{
+    box-sizing:border-box;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+  }
 
-  .v963af{
+  .afm{
     direction:rtl;
-    color:var(--ink);
-    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    color:var(--af-ink);
+    background:linear-gradient(180deg,#f7f8f7 0%, #f2f5f2 52%, #edf1ee 100%);
     padding:10px;
   }
 
-  .v963af-page{
-    position:relative;
+  .afm-page{
+    max-width:1540px;
+    margin:0 auto;
+    display:grid;
+    gap:10px;
+    padding-bottom:94px;
   }
 
-  .v963af-top,
-  .v963af-card,
-  .v963af-field{
+  .afm-shell,
+  .afm-hero,
+  .afm-nav,
+  .afm-main-card,
+  .afm-group,
+  .afm-field,
+  .afm-side-card,
+  .afm-alert,
+  .afm-bottom-bar{
     position:relative;
+    border:1px solid var(--af-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
+    box-shadow:var(--af-shadow);
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:0 1px 4px rgba(17,24,20,.035);
   }
 
-  .v963af-top::before,
-  .v963af-card::before{
+  .afm-shell{
+    background:linear-gradient(180deg,#eef2ef 0%, #e8ede9 100%);
+    border-color:#dde4de;
+    border-radius:24px;
+    padding:12px;
+  }
+
+  .afm-hero::before,
+  .afm-main-card::before,
+  .afm-group::before,
+  .afm-side-card::before,
+  .afm-bottom-bar::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    background:linear-gradient(90deg,rgba(29,67,53,.55) 0%, rgba(168,146,96,.34) 100%);
+    opacity:.88;
   }
 
-  .v963af-top{
-    margin-bottom:14px;
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
+  .afm-hero{
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,0) 34%),
+      linear-gradient(135deg,#1f4738 0%, #173a2f 62%, #143329 100%);
+    border:1px solid rgba(168,146,96,.26);
+    box-shadow:var(--af-shadow-hero);
+    color:#fff;
+    padding:13px 15px;
+  }
+
+  .afm-hero::before{
+    height:3px;
+    background:linear-gradient(90deg,rgba(191,168,119,.78) 0%, rgba(102,134,118,.72) 100%);
+  }
+
+  .afm-hero-grid{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
-    align-items:start;
+    align-items:center;
   }
 
-  .v963af-title{
+  .afm-title{
     margin:0;
-    font-size:20px;
-    line-height:1.15;
-    font-weight:900;
-    color:var(--green-1);
-    letter-spacing:0;
+    font-size:22px;
+    line-height:1.14;
+    font-weight:900 !important;
+    color:#fff;
   }
 
-  .v963af-subtitle{
-    margin:6px 0 0;
-    max-width:760px;
-    font-size:10.4px;
-    line-height:1.95;
-    color:var(--muted);
-    font-weight:800;
+  .afm-subtitle{
+    margin:5px 0 0;
+    color:rgba(255,255,255,.9);
+    font-size:9px;
+    line-height:1.9;
+    font-weight:800 !important;
+    max-width:76ch;
   }
 
-  .v963af-header-badges{
-    margin-top:10px;
+  .afm-hero-pills,
+  .afm-hero-actions{
     display:flex;
-    gap:8px;
     flex-wrap:wrap;
+    gap:7px;
     align-items:center;
   }
 
-  .v963af-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:flex-end;
-  }
+  .afm-hero-pills{margin-top:9px}
+  .afm-hero-actions{justify-content:flex-end}
 
-  .v963af-card-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:11px 12px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-  }
-
-  .v963af-card-body{
-    padding:12px !important;
-  }
-
-  .v963af-muted{
-    color:var(--muted);
-    font-size:8.7px;
-    font-weight:800;
-    line-height:1.8;
-  }
-
-  .v963af-pill{
+  .afm-pill,
+  .afm-mini-pill{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-    font-size:9px;
-    font-weight:900;
+    min-height:29px;
+    padding:4px 11px;
+    border-radius:999px;
+    border:1px solid var(--af-line-2);
+    background:#fff;
+    color:var(--af-green-2);
+    font-size:8.1px;
+    font-weight:900 !important;
     white-space:nowrap;
   }
 
-  .v963af-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#1f7a62;
+  .afm-pill.soft{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border-color:rgba(255,255,255,.14);
   }
 
-  .v963af-btn{
+  .afm-pill .dot,
+  .afm-mini-pill .dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#94baa1;
+    flex:0 0 auto;
+  }
+
+  .afm-btn,
+  .afm-nav-link,
+  .afm-action-btn,
+  .afm-sticky-btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:38px;
+    padding:7px 14px;
+    border-radius:10px;
+    border:1px solid var(--af-line-2);
     background:#fff;
-    color:var(--green-2);
+    color:var(--af-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:9.4px;
-    font-weight:900;
+    font-size:8.9px;
+    font-weight:900 !important;
+    transition:background .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease;
     box-shadow:none;
-    transition:.16s ease;
   }
 
-  .v963af-btn:hover{
-    background:var(--paper-2);
-    border-color:#b8c6bb;
+  .afm-btn:hover,
+  .afm-nav-link:hover,
+  .afm-action-btn:hover,
+  .afm-sticky-btn:hover{
+    transform:translateY(-1px);
+    background:#f7faf8;
+    border-color:#bcc9c0;
   }
 
-  .v963af-btn-primary{
-    background:var(--green-2);
+  .afm-btn-primary,
+  .afm-sticky-btn.primary{
+    background:linear-gradient(180deg,#244638 0%, #19392d 100%);
+    border-color:#19392d;
     color:#fff;
-    border-color:var(--green-2);
   }
 
-  .v963af-btn-danger{
-    background:var(--danger);
+  .afm-btn-primary:hover,
+  .afm-sticky-btn.primary:hover{
     color:#fff;
-    border-color:var(--danger);
+    background:linear-gradient(180deg,#294c3d 0%, #1f3f32 100%);
   }
 
-  .v963af-btn-warn{
-    background:var(--warn);
-    color:#fff;
-    border-color:var(--warn);
+  .afm-nav{
+    padding:8px;
   }
 
-  .v963af-btn-info,
-  .v963af-btn-gold,
-  .v963af-btn-soft{
-    background:#fff;
-    color:var(--green-2);
-    border-color:var(--line-2);
+  .afm-nav-links{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
   }
 
-  .v963af-btn-icon{
-    font-size:11px;
-    line-height:1;
+  .afm-nav-link{
+    min-height:33px;
+    padding:6px 12px;
+    background:#fbfcfb;
+    color:var(--af-green-1);
   }
 
-  .v963af-grid{
+  .afm-nav-link.is-active{
+    background:linear-gradient(180deg,#f7f3ea,#f3ecdc);
+    border-color:rgba(168,146,96,.45);
+    color:#6d5728;
+  }
+
+  .afm-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 300px;
+    gap:10px;
+    align-items:start;
+  }
+
+  .afm-main-card-head{
+    padding:12px 14px;
+    border-bottom:1px solid var(--af-line-3);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .afm-main-card-body{padding:12px}
+
+  .afm-card-title,
+  .afm-group-title{
+    margin:0;
+    color:var(--af-green-1);
+    font-size:10px;
+    font-weight:900 !important;
+  }
+
+  .afm-card-sub,
+  .afm-muted,
+  .afm-help,
+  .afm-summary-note{
+    color:var(--af-muted);
+    font-size:7.7px;
+    line-height:1.8;
+    font-weight:800 !important;
+  }
+
+  .afm-groups{
+    display:grid;
+    gap:10px;
+  }
+
+  .afm-group-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-bottom:1px solid var(--af-line-3);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .afm-group-body{padding:12px}
+
+  .afm-fields-grid{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:10px;
   }
 
-  .v963af-field{
+  .afm-field{
     padding:10px;
     background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    border-radius:14px;
   }
 
-  .v963af-field-top{
+  .afm-field.focused{
+    border-color:rgba(168,146,96,.72);
+    box-shadow:0 0 0 2px rgba(168,146,96,.08);
+  }
+
+  .afm-field.has-error{
+    border-color:var(--af-danger-bd);
+    background:linear-gradient(180deg,#fffefe,#fcf6f6);
+  }
+
+  .afm-field-top{
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -245,273 +337,559 @@
     margin-bottom:6px;
   }
 
-  .v963af-label{
-    font-size:9.3px;
-    font-weight:900;
-    color:var(--green-1);
-    line-height:1.4;
+  .afm-label{
+    font-size:8.9px;
+    font-weight:900 !important;
+    color:var(--af-green-1);
+    line-height:1.45;
   }
 
-  .v963af-req{
+  .afm-req{
     display:inline-flex;
     align-items:center;
-    padding:2px 8px;
+    justify-content:center;
+    min-height:22px;
+    padding:0 8px;
     border-radius:999px;
     border:1px solid #e7d7b7;
     background:#fcf7ee;
-    font-size:7.8px;
-    font-weight:900;
+    font-size:7.1px;
+    font-weight:900 !important;
     color:#8a6526;
     white-space:nowrap;
   }
 
-  .v963af-req.optional{
-    opacity:.72;
+  .afm-req.optional{
+    border-color:#dde4de;
+    background:#f7faf8;
+    color:#7b8880;
   }
 
-  .v963af-help{
-    margin-top:5px;
-    font-size:8.2px;
-    color:#839188;
-    line-height:1.7;
-    font-weight:800;
-  }
-
-  .v963af-error{
-    margin-top:6px;
-    padding:7px 8px;
-    border-radius:8px;
-    border:1px solid #e7c7c7;
-    background:#fcf6f6;
-    color:#8f2f2f;
-    font-size:8.4px;
-    line-height:1.65;
-  }
-
-  .v963af-error ul{
-    margin:0;
-    padding:0 15px 0 0;
-  }
-
-  .v963af-field input:not([type="checkbox"]):not([type="radio"]),
-  .v963af-field select,
-  .v963af-field textarea{
+  .afm-field input:not([type="checkbox"]):not([type="radio"]),
+  .afm-field select,
+  .afm-field textarea{
     width:100%;
-    min-height:39px;
-    height:39px;
-    padding:7px 10px;
-    font-size:9.5px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:41px;
+    height:41px;
+    padding:8px 11px;
+    border-radius:9px;
+    border:1px solid var(--af-line-2);
     background:#fff;
-    color:var(--ink);
+    color:var(--af-ink);
+    font-size:9px;
+    font-weight:800;
     outline:none;
     box-shadow:none;
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
   }
 
-  .v963af-field textarea{
-    min-height:96px;
+  .afm-field textarea{
+    min-height:110px;
     height:auto;
     resize:vertical;
   }
 
-  .v963af-field input:focus,
-  .v963af-field select:focus,
-  .v963af-field textarea:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  .afm-field input:focus,
+  .afm-field select:focus,
+  .afm-field textarea:focus{
+    border-color:rgba(168,146,96,.72);
+    box-shadow:0 0 0 2px rgba(168,146,96,.08);
   }
 
-  .v963af-field input[type="checkbox"],
-  .v963af-field input[type="radio"]{
-    accent-color:var(--green-2);
+  .afm-field input[type="checkbox"],
+  .afm-field input[type="radio"]{
+    accent-color:var(--af-green-2);
     width:auto;
     min-height:auto;
     height:auto;
     transform:translateY(1px);
   }
 
-  .v963af-bottom-actions{
-    margin-top:12px;
-    display:flex;
+  .afm-error{
+    margin-top:7px;
+    padding:7px 8px;
+    border-radius:9px;
+    border:1px solid var(--af-danger-bd);
+    background:var(--af-danger-bg);
+    color:var(--af-danger);
+    font-size:7.8px;
+    line-height:1.7;
+    font-weight:800 !important;
+  }
+
+  .afm-error ul{
+    margin:0;
+    padding:0 16px 0 0;
+  }
+
+  .afm-help{margin-top:5px}
+
+  .afm-alert{
+    padding:10px 12px;
+    border-radius:14px;
+    border-color:var(--af-danger-bd);
+    background:linear-gradient(180deg,#fffefe,#fcf6f6);
+  }
+
+  .afm-alert-title{
+    margin:0 0 3px;
+    color:var(--af-danger);
+    font-size:8.7px;
+    font-weight:900 !important;
+  }
+
+  .afm-side-col{
+    display:grid;
     gap:10px;
+    position:sticky;
+    top:10px;
+  }
+
+  .afm-side-card-head{
+    padding:10px 12px;
+    border-bottom:1px solid var(--af-line-3);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .afm-side-card-body{padding:12px}
+
+  .afm-summary-grid{
+    display:grid;
+    gap:8px;
+  }
+
+  .afm-summary-item{
+    border:1px solid var(--af-line);
+    border-radius:12px;
+    background:var(--af-surface-2);
+    padding:9px 10px;
+  }
+
+  .afm-summary-label{
+    color:#7c8881;
+    font-size:7.3px;
+    font-weight:800 !important;
+    margin-bottom:3px;
+  }
+
+  .afm-summary-value{
+    color:var(--af-green-1);
+    font-size:8.8px;
+    line-height:1.6;
+    font-weight:900 !important;
+  }
+
+  .afm-side-actions{
+    display:grid;
+    gap:8px;
+  }
+
+  .afm-side-actions .afm-action-btn{
+    justify-content:flex-start;
+    min-height:36px;
+  }
+
+  .afm-bottom-bar{
+    position:fixed;
+    inset-inline-start:12px;
+    inset-inline-end:12px;
+    bottom:12px;
+    z-index:80;
+    border-radius:16px;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(8px);
+    box-shadow:0 12px 28px rgba(16,24,20,.08);
+    padding:10px 12px;
+  }
+
+  .afm-bottom-bar-inner{
+    max-width:1540px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
     flex-wrap:wrap;
   }
 
-  @media (max-width: 900px){
-    .v963af-top{
-      grid-template-columns:1fr;
-    }
+  .afm-bottom-info{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
 
-    .v963af-grid{
-      grid-template-columns:1fr;
-    }
+  .afm-bottom-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
 
-    .v963af-card-head{
-      flex-direction:column;
-      align-items:flex-start;
-    }
+  .afm-sticky-btn.ghost{
+    background:#fff;
+    color:var(--af-green-2);
+  }
 
-    .v963af-actions{
-      justify-content:flex-start;
-    }
+  .afm-sticky-btn.soft{
+    background:#f7faf8;
+    color:var(--af-green-1);
+  }
+
+  @media (max-width: 1100px){
+    .afm-grid{grid-template-columns:1fr}
+    .afm-side-col{position:static}
+  }
+
+  @media (max-width: 980px){
+    .afm-hero-grid{grid-template-columns:1fr}
+    .afm-hero-actions{justify-content:flex-start}
+    .afm-fields-grid{grid-template-columns:1fr}
   }
 
   @media (max-width: 640px){
-    .v963af{
-      padding:6px;
-    }
-
-    .v963af-top{
-      padding:14px;
-    }
-
-    .v963af-title{
-      font-size:18px;
-    }
-
-    .v963af-card-body{
-      padding:10px !important;
-    }
-
-    .v963af-field{
-      padding:9px;
-    }
-
-    .v963af-actions{
-      width:100%;
-    }
+    .afm{padding:6px}
+    .afm-shell{padding:10px;border-radius:22px}
+    .afm-title{font-size:19px}
+    .afm-main-card-body,.afm-group-body,.afm-side-card-body{padding:10px}
+    .afm-bottom-bar{inset-inline-start:8px;inset-inline-end:8px;bottom:8px}
+    .afm-bottom-bar-inner{align-items:flex-start}
+    .afm-bottom-actions,.afm-bottom-info{width:100%}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="v963af">
-  <div class="v963af-page">
+<div class="afm">
+  <div class="afm-page">
+    <div class="afm-shell">
 
-    <div class="v963af-top">
-      <div>
-        <h1 class="v963af-title">
-          {% if mode == "create" %}إضافة متقدم{% else %}تعديل متقدم{% endif %}
-        </h1>
-
-        <p class="v963af-subtitle">
-          إدخال وتحديث بيانات المتقدم ضمن نموذج موحّد ومتسق مع بقية صفحات الإدارة.
-        </p>
-
-        <div class="v963af-header-badges">
-          <span class="v963af-pill">
-            <span class="v963af-dot"></span>
-            نموذج بيانات المتقدم
-          </span>
-
-          {% if mode == "edit" %}
-            <span class="v963af-pill">
-              عدد الطلبات المرتبطة:
-              <b>{{ apps_count }}</b>
-            </span>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="v963af-actions">
-        <a class="v963af-btn" href="{% url 'portal:admin_applicants_list' %}">
-          <span class="v963af-btn-icon">↩</span>
-          رجوع للقائمة
-        </a>
-
-        <a class="v963af-btn v963af-btn-gold" href="{% url 'portal:admin_dashboard' %}">
-          <span class="v963af-btn-icon">▦</span>
-          لوحة القرار
-        </a>
-      </div>
-    </div>
-
-    <div class="v963af-card">
-
-      <div class="v963af-card-head">
-        <div class="v963af-muted">
-          أدخل البيانات بدقة، ويمكن تعديل الحقول لاحقًا عند الحاجة.
-        </div>
-        <span class="v963af-pill">
-          {% if mode == "create" %}وضع الإضافة{% else %}وضع التعديل{% endif %}
-        </span>
-      </div>
-
-      <form method="post" class="v963af-card-body">
-        {% csrf_token %}
-
-        <div class="v963af-grid">
-          {% for field in form %}
-            <div class="v963af-field">
-              <div class="v963af-field-top">
-                <div class="v963af-label">
-                  {% if field.name == "full_name" or field.name == "name" %}
-                    الاسم
-                  {% elif field.name == "national_id" or field.name == "nid" %}
-                    السجل المدني
-                  {% elif field.name == "sector" %}
-                    القطاع
-                  {% elif field.name == "gender" %}
-                    الجنس
-                  {% elif field.name == "mobile" or field.name == "phone" %}
-                    الجوال
-                  {% elif field.name == "current_school" %}
-                    المدرسة الحالية
-                  {% elif field.name == "school" %}
-                    المدرسة
-                  {% elif field.name == "notes" %}
-                    ملاحظات
-                  {% elif field.name == "is_active" or field.name == "active" %}
-                    الحالة
-                  {% elif field.name == "email" %}
-                    البريد الإلكتروني
-                  {% elif field.name == "job" %}
-                    الوظيفة
-                  {% elif field.name == "rank" %}
-                    المرتبة
-                  {% elif field.name == "stage" %}
-                    المرحلة
-                  {% elif field.name == "city" %}
-                    المدينة
-                  {% else %}
-                    {{ field.label }}
-                  {% endif %}
-                </div>
-
-                {% if field.field.required %}
-                  <span class="v963af-req">إلزامي</span>
-                {% else %}
-                  <span class="v963af-req optional">اختياري</span>
-                {% endif %}
-              </div>
-
-              {{ field }}
-
-              {% if field.errors %}
-                <div class="v963af-error">{{ field.errors }}</div>
+      <div class="afm-hero">
+        <div class="afm-hero-grid">
+          <div>
+            <h1 class="afm-title">{% if mode == "create" %}إضافة متقدم{% else %}تعديل متقدم{% endif %}</h1>
+            <p class="afm-subtitle">
+              {% if mode == "create" %}
+                إدخال بيانات متقدم جديد ضمن نموذج إداري موحّد وسريع، مع إبراز الحقول المطلوبة بوضوح.
+              {% else %}
+                مراجعة بيانات المتقدم وتحديثها ضمن نموذج منظم، مع إتاحة معلومات مساندة تساعد على اتخاذ القرار بسرعة.
               {% endif %}
+            </p>
 
-              {% if field.help_text %}
-                <div class="v963af-help">{{ field.help_text }}</div>
+            <div class="afm-hero-pills">
+              <span class="afm-pill soft"><span class="dot"></span>{% if mode == "create" %}وضع الإضافة{% else %}وضع التعديل{% endif %}</span>
+              <span class="afm-pill">نموذج بيانات المتقدم</span>
+              {% if mode == "edit" %}
+                <span class="afm-pill">الطلبات المرتبطة: <b>{{ apps_count }}</b></span>
               {% endif %}
             </div>
-          {% endfor %}
+          </div>
+
+          <div class="afm-hero-actions">
+            <a class="afm-btn" href="{% url 'portal:admin_applicants_list' %}">رجوع للقائمة</a>
+            <a class="afm-btn" href="{% url 'portal:admin_dashboard' %}">لوحة الإدارة</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="afm-nav" style="margin-top:10px;">
+        <div class="afm-nav-links">
+          <a class="afm-nav-link" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
+          <a class="afm-nav-link" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
+          <span class="afm-nav-link is-active">{% if mode == "create" %}إضافة متقدم{% else %}تعديل متقدم{% endif %}</span>
+        </div>
+      </div>
+
+      <div class="afm-grid" style="margin-top:10px;">
+        <div class="afm-main-card">
+          <div class="afm-main-card-head">
+            <div>
+              <h2 class="afm-card-title">بيانات المتقدم</h2>
+              <div class="afm-card-sub">
+                {% if mode == "create" %}
+                  ابدأ بالبيانات الأساسية أولًا، ثم أكمل بيانات التواصل والبيانات الوظيفية قبل الحفظ.
+                {% else %}
+                  راجع الحقول التالية وعدّل المطلوب فقط، ثم احفظ التحديثات لتنعكس مباشرة في النظام.
+                {% endif %}
+              </div>
+            </div>
+            <span class="afm-mini-pill"><span class="dot"></span>النموذج الموحد</span>
+          </div>
+
+          <form method="post" class="afm-main-card-body" id="applicantForm">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="afm-alert" id="formErrors" style="margin-bottom:10px;">
+                <div class="afm-alert-title">يوجد تنبيه يتطلب المراجعة</div>
+                <div class="afm-muted">يرجى تصحيح الحقول المشار إليها أدناه قبل تنفيذ الحفظ.</div>
+                <div class="afm-error" style="margin-top:8px;">{{ form.non_field_errors }}</div>
+              </div>
+            {% endif %}
+
+            <div class="afm-groups">
+              <section class="afm-group">
+                <div class="afm-group-head">
+                  <div>
+                    <h3 class="afm-group-title">البيانات الأساسية</h3>
+                    <div class="afm-card-sub">الاسم، الهوية، القطاع، الجنس، والمدرسة الأساسية.</div>
+                  </div>
+                  <span class="afm-mini-pill">أساسي</span>
+                </div>
+                <div class="afm-group-body">
+                  <div class="afm-fields-grid">
+                    {% for field in form %}
+                      {% if field.name == "full_name" or field.name == "name" or field.name == "national_id" or field.name == "nid" or field.name == "sector" or field.name == "gender" or field.name == "current_school" or field.name == "school" or field.name == "city" or field.name == "stage" %}
+                        <div class="afm-field{% if field.errors %} has-error{% endif %}">
+                          <div class="afm-field-top">
+                            <div class="afm-label">
+                              {% if field.name == "full_name" or field.name == "name" %}الاسم
+                              {% elif field.name == "national_id" or field.name == "nid" %}السجل المدني
+                              {% elif field.name == "sector" %}القطاع
+                              {% elif field.name == "gender" %}الجنس
+                              {% elif field.name == "current_school" %}المدرسة الحالية
+                              {% elif field.name == "school" %}المدرسة
+                              {% elif field.name == "city" %}المدينة
+                              {% elif field.name == "stage" %}المرحلة
+                              {% else %}{{ field.label }}{% endif %}
+                            </div>
+                            {% if field.field.required %}<span class="afm-req">إلزامي</span>{% else %}<span class="afm-req optional">اختياري</span>{% endif %}
+                          </div>
+                          {{ field }}
+                          {% if field.errors %}<div class="afm-error">{{ field.errors }}</div>{% endif %}
+                          {% if field.help_text %}<div class="afm-help">{{ field.help_text }}</div>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </section>
+
+              <section class="afm-group">
+                <div class="afm-group-head">
+                  <div>
+                    <h3 class="afm-group-title">بيانات التواصل</h3>
+                    <div class="afm-card-sub">وسائل الوصول الأساسية إلى المتقدم عند الحاجة.</div>
+                  </div>
+                  <span class="afm-mini-pill">تواصل</span>
+                </div>
+                <div class="afm-group-body">
+                  <div class="afm-fields-grid">
+                    {% for field in form %}
+                      {% if field.name == "mobile" or field.name == "phone" or field.name == "email" %}
+                        <div class="afm-field{% if field.errors %} has-error{% endif %}">
+                          <div class="afm-field-top">
+                            <div class="afm-label">
+                              {% if field.name == "mobile" or field.name == "phone" %}الجوال
+                              {% elif field.name == "email" %}البريد الإلكتروني
+                              {% else %}{{ field.label }}{% endif %}
+                            </div>
+                            {% if field.field.required %}<span class="afm-req">إلزامي</span>{% else %}<span class="afm-req optional">اختياري</span>{% endif %}
+                          </div>
+                          {{ field }}
+                          {% if field.errors %}<div class="afm-error">{{ field.errors }}</div>{% endif %}
+                          {% if field.help_text %}<div class="afm-help">{{ field.help_text }}</div>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </section>
+
+              <section class="afm-group">
+                <div class="afm-group-head">
+                  <div>
+                    <h3 class="afm-group-title">البيانات الوظيفية</h3>
+                    <div class="afm-card-sub">الوظيفة والمرتبة وأي بيانات مهنية مرتبطة بملف المتقدم.</div>
+                  </div>
+                  <span class="afm-mini-pill">وظيفي</span>
+                </div>
+                <div class="afm-group-body">
+                  <div class="afm-fields-grid">
+                    {% for field in form %}
+                      {% if field.name == "job" or field.name == "rank" %}
+                        <div class="afm-field{% if field.errors %} has-error{% endif %}">
+                          <div class="afm-field-top">
+                            <div class="afm-label">
+                              {% if field.name == "job" %}الوظيفة
+                              {% elif field.name == "rank" %}المرتبة
+                              {% else %}{{ field.label }}{% endif %}
+                            </div>
+                            {% if field.field.required %}<span class="afm-req">إلزامي</span>{% else %}<span class="afm-req optional">اختياري</span>{% endif %}
+                          </div>
+                          {{ field }}
+                          {% if field.errors %}<div class="afm-error">{{ field.errors }}</div>{% endif %}
+                          {% if field.help_text %}<div class="afm-help">{{ field.help_text }}</div>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </section>
+
+              <section class="afm-group">
+                <div class="afm-group-head">
+                  <div>
+                    <h3 class="afm-group-title">الحالة والملاحظات</h3>
+                    <div class="afm-card-sub">أي ملاحظات تنظيمية أو حالة مرتبطة بملف المتقدم.</div>
+                  </div>
+                  <span class="afm-mini-pill">متابعة</span>
+                </div>
+                <div class="afm-group-body">
+                  <div class="afm-fields-grid">
+                    {% for field in form %}
+                      {% if field.name == "is_active" or field.name == "active" or field.name == "notes" %}
+                        <div class="afm-field{% if field.errors %} has-error{% endif %}">
+                          <div class="afm-field-top">
+                            <div class="afm-label">
+                              {% if field.name == "is_active" or field.name == "active" %}الحالة
+                              {% elif field.name == "notes" %}ملاحظات
+                              {% else %}{{ field.label }}{% endif %}
+                            </div>
+                            {% if field.field.required %}<span class="afm-req">إلزامي</span>{% else %}<span class="afm-req optional">اختياري</span>{% endif %}
+                          </div>
+                          {{ field }}
+                          {% if field.errors %}<div class="afm-error">{{ field.errors }}</div>{% endif %}
+                          {% if field.help_text %}<div class="afm-help">{{ field.help_text }}</div>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </section>
+
+              <section class="afm-group">
+                <div class="afm-group-head">
+                  <div>
+                    <h3 class="afm-group-title">حقول إضافية</h3>
+                    <div class="afm-card-sub">أي حقول أخرى لم تُدرج ضمن المجموعات الرئيسية السابقة.</div>
+                  </div>
+                  <span class="afm-mini-pill">إضافي</span>
+                </div>
+                <div class="afm-group-body">
+                  <div class="afm-fields-grid">
+                    {% for field in form %}
+                      {% if field.name != "full_name" and field.name != "name" and field.name != "national_id" and field.name != "nid" and field.name != "sector" and field.name != "gender" and field.name != "current_school" and field.name != "school" and field.name != "city" and field.name != "stage" and field.name != "mobile" and field.name != "phone" and field.name != "email" and field.name != "job" and field.name != "rank" and field.name != "is_active" and field.name != "active" and field.name != "notes" %}
+                        <div class="afm-field{% if field.errors %} has-error{% endif %}">
+                          <div class="afm-field-top">
+                            <div class="afm-label">{{ field.label }}</div>
+                            {% if field.field.required %}<span class="afm-req">إلزامي</span>{% else %}<span class="afm-req optional">اختياري</span>{% endif %}
+                          </div>
+                          {{ field }}
+                          {% if field.errors %}<div class="afm-error">{{ field.errors }}</div>{% endif %}
+                          {% if field.help_text %}<div class="afm-help">{{ field.help_text }}</div>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </section>
+            </div>
+          </form>
         </div>
 
-        <div class="v963af-bottom-actions">
-          <button class="v963af-btn v963af-btn-primary" type="submit">
-            <span class="v963af-btn-icon">✓</span>
-            حفظ
-          </button>
+        <aside class="afm-side-col">
+          <div class="afm-side-card">
+            <div class="afm-side-card-head">
+              <h3 class="afm-card-title">ملخص الصفحة</h3>
+            </div>
+            <div class="afm-side-card-body">
+              <div class="afm-summary-grid">
+                <div class="afm-summary-item">
+                  <div class="afm-summary-label">وضع الصفحة</div>
+                  <div class="afm-summary-value">{% if mode == "create" %}إضافة متقدم جديد{% else %}تعديل بيانات المتقدم{% endif %}</div>
+                </div>
 
-          <a class="v963af-btn" href="{% url 'portal:admin_applicants_list' %}">
-            إلغاء
-          </a>
-        </div>
-      </form>
+                {% if mode == "edit" %}
+                  <div class="afm-summary-item">
+                    <div class="afm-summary-label">الطلبات المرتبطة</div>
+                    <div class="afm-summary-value">{{ apps_count }}</div>
+                  </div>
+                  <div class="afm-summary-item">
+                    <div class="afm-summary-label">هدف الصفحة</div>
+                    <div class="afm-summary-value">تحديث البيانات الحالية مع الحفاظ على اتساق الملف الإداري.</div>
+                  </div>
+                {% else %}
+                  <div class="afm-summary-item">
+                    <div class="afm-summary-label">هدف الصفحة</div>
+                    <div class="afm-summary-value">إنشاء سجل متقدم جديد بسرعة ووضوح قبل الانتقال إلى المتابعة الإدارية.</div>
+                  </div>
+                  <div class="afm-summary-item">
+                    <div class="afm-summary-label">نصيحة العمل</div>
+                    <div class="afm-summary-value">ابدأ بالاسم والسجل والقطاع، ثم أكمل بيانات التواصل قبل الحفظ.</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="afm-side-card">
+            <div class="afm-side-card-head">
+              <h3 class="afm-card-title">إجراءات سريعة</h3>
+            </div>
+            <div class="afm-side-card-body">
+              <div class="afm-side-actions">
+                <button type="submit" form="applicantForm" class="afm-action-btn afm-btn-primary">حفظ البيانات</button>
+                <a class="afm-action-btn" href="{% url 'portal:admin_applicants_list' %}">العودة إلى المتقدمين</a>
+                <a class="afm-action-btn" href="{% url 'portal:admin_dashboard' %}">الانتقال إلى لوحة الإدارة</a>
+              </div>
+              <div class="afm-summary-note" style="margin-top:8px;">
+                {% if mode == "create" %}
+                  بعد الحفظ يمكنك العودة مباشرة لإدارة المتقدمين لمراجعة السجل الجديد.
+                {% else %}
+                  بعد الحفظ ستبقى الصفحة جاهزة لمراجعة بقية بيانات المتقدم أو العودة للقائمة.
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
 
     </div>
+
+    <div class="afm-bottom-bar">
+      <div class="afm-bottom-bar-inner">
+        <div class="afm-bottom-info">
+          <span class="afm-pill"><span class="dot"></span>{% if mode == "create" %}أنت في وضع الإضافة{% else %}أنت في وضع التعديل{% endif %}</span>
+          <span class="afm-mini-pill">جميع التغييرات لا تُحفَظ إلا بعد الضغط على زر الحفظ</span>
+        </div>
+
+        <div class="afm-bottom-actions">
+          <button type="submit" form="applicantForm" class="afm-sticky-btn primary">حفظ</button>
+          <button type="submit" form="applicantForm" name="save_back" value="1" class="afm-sticky-btn soft">حفظ والعودة</button>
+          <a class="afm-sticky-btn ghost" href="{% url 'portal:admin_applicants_list' %}">إلغاء</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<script>
+  (function(){
+    const form = document.getElementById('applicantForm');
+    if (!form) return;
+
+    const focusables = Array.from(form.querySelectorAll('input, select, textarea')).filter(el => !el.disabled && el.type !== 'hidden');
+
+    form.querySelectorAll('.afm-field input, .afm-field select, .afm-field textarea').forEach(el => {
+      el.addEventListener('focus', () => el.closest('.afm-field')?.classList.add('focused'));
+      el.addEventListener('blur', () => el.closest('.afm-field')?.classList.remove('focused'));
+    });
+
+    const firstError = form.querySelector('.afm-field.has-error input, .afm-field.has-error select, .afm-field.has-error textarea');
+    const firstUsable = focusables.find(el => ['button','submit','checkbox','radio'].indexOf(el.type) === -1) || focusables[0];
+    const target = firstError || firstUsable;
+    if (target) setTimeout(() => target.focus(), 120);
+
+    form.addEventListener('keydown', function(e){
+      const el = e.target;
+      if (e.key !== 'Enter') return;
+      if (el.tagName === 'TEXTAREA' || el.type === 'submit' || el.type === 'button') return;
+      e.preventDefault();
+      const idx = focusables.indexOf(el);
+      if (idx >= 0 && idx < focusables.length - 1) focusables[idx + 1].focus();
+    });
+  })();
+</script>
 {% endblock %}

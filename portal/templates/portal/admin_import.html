@@ -61,10 +61,11 @@
     position:relative;
     max-width:1120px;
     margin:0 auto;
+    display:grid;
+    gap:12px;
   }
 
   .ui-top{
-    margin-bottom:12px;
     padding:14px 18px;
     border:1px solid rgba(205,216,206,.95);
     border-radius:20px;
@@ -97,32 +98,17 @@
       linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
   }
 
-  .ui-top > *{
-    position:relative;
-    z-index:1;
-  }
+  .ui-top > *{position:relative;z-index:1;}
 
-  .ui-title{
-    font-size:20px !important;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-    color:#fff !important;
-    margin:0;
-  }
+  .ui-title{font-size:20px !important;font-weight:800 !important;letter-spacing:-.2px;color:#fff !important;margin:0;}
+  .ui-subtitle{margin-top:4px;color:rgba(255,255,255,.82) !important;font-size:10.8px !important;line-height:1.7 !important;max-width:760px;}
 
-  .ui-subtitle{
-    margin-top:4px;
-    color:rgba(255,255,255,.82) !important;
-    font-size:10.8px !important;
-    line-height:1.7 !important;
-  }
-
-  .ui-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
+  .ui-actions,
+  .ui-actions-row,
+  .ui-toolbar,
+  .ui-card-head,
+  .ui-step-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ui-actions{justify-content:flex-end;}
 
   .ui-btn{
     min-height:30px;
@@ -142,258 +128,127 @@
     justify-content:center;
   }
 
-  .ui-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);
-  }
+  .ui-btn:hover{transform:translateY(-1px);box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);}
+  .ui-btn-primary{color:#fff !important;border-color:var(--min-green-2) !important;background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);}
+  .ui-btn-warn{color:#fff !important;border-color:#b45309 !important;background:linear-gradient(180deg,#d97706,#b45309) !important;box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);}
+  .ui-btn-icon{font-size:11px;line-height:1;}
 
-  .ui-btn-primary{
-    color:#fff !important;
-    border-color:var(--min-green-2) !important;
-    background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;
-    box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-warn{
-    color:#fff !important;
-    border-color:#b45309 !important;
-    background:linear-gradient(180deg,#d97706,#b45309) !important;
-    box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .ui-btn-icon{
-    font-size:11px;
-    line-height:1;
-  }
-
-  .ui-grid{
+  .ui-steps{
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:12px;
   }
 
-  .ui-grid-single{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:12px;
-    margin-top:12px;
-  }
-
+  .ui-step,
   .ui-card{
     border:1px solid rgba(211,221,212,.95) !important;
     border-radius:22px !important;
     background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
     box-shadow:var(--min-shadow) !important;
     overflow:hidden;
+    position:relative;
   }
 
-  .ui-card-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:10px 12px;
-    border-bottom:1px solid rgba(219,227,219,.92);
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
+  .ui-step::before,
+  .ui-card::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:1px;
+    background:linear-gradient(90deg, rgba(35,69,54,.72), rgba(200,160,74,.52));
+    opacity:.95;
   }
 
-  .ui-card-title{
-    font-size:11px;
-    font-weight:800;
-    color:var(--min-green-2);
-    margin:0;
-  }
+  .ui-step{padding:12px 12px 10px;display:grid;gap:8px;min-height:122px;}
+  .ui-step.is-done{background:linear-gradient(180deg,#ffffff,#f6fbf7) !important;}
+  .ui-step.is-ready{background:linear-gradient(180deg,#fffefb,#fffbf5) !important;}
+  .ui-step.is-pending{background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;}
 
-  .ui-card-body{
-    padding:12px !important;
+  .ui-step-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .ui-step-index{
+    width:30px;height:30px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:900;border:1px solid rgba(211,221,212,.95);background:#fff;color:var(--min-green-2);
   }
+  .ui-step.is-done .ui-step-index{background:var(--min-ok-soft);border-color:var(--min-ok-line);color:var(--min-ok);}
+  .ui-step.is-ready .ui-step-index{background:var(--min-warn-soft);border-color:var(--min-warn-line);color:var(--min-warn);}
+
+  .ui-step-state{
+    min-height:28px;padding:4px 10px;border-radius:999px;font-size:8.6px;font-weight:800;border:1px solid rgba(219,227,219,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);color:var(--min-muted);display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+  }
+  .ui-step-state.done{background:linear-gradient(180deg,#f4fff7,#ecfdf5);border-color:var(--min-ok-line);color:var(--min-ok);}
+  .ui-step-state.ready{background:linear-gradient(180deg,#fffaf0,#fff6e7);border-color:var(--min-warn-line);color:var(--min-warn);}
+  .ui-step-state.pending{background:linear-gradient(180deg,#ffffff,#f9fbf8);border-color:rgba(219,227,219,.95);color:var(--min-muted);}
+
+  .ui-step-title{font-size:10.8px;font-weight:800;color:var(--min-green-2);line-height:1.35;}
+  .ui-step-text{font-size:9.1px;color:var(--min-muted);line-height:1.75;}
+  .ui-step-note{font-size:8.6px;color:#7b8b82;line-height:1.7;}
+
+  .ui-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ui-grid-single{display:grid;grid-template-columns:1fr;gap:12px;}
+
+  .ui-card-head{justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(219,227,219,.92);background:linear-gradient(180deg,#fcfdfb,#f8fbf8);}
+  .ui-card-title{font-size:11px;font-weight:800;color:var(--min-green-2);margin:0;}
+  .ui-card-body{padding:12px !important;}
 
   .ui-pill{
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
+    min-height:30px;padding:4px 10px;border-radius:999px;font-size:9.8px;font-weight:800;color:var(--min-green-2);
+    border:1px solid rgba(219,227,219,.95);background:linear-gradient(180deg,#ffffff,#f9fbf8);box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
+    display:inline-flex;align-items:center;gap:6px;
   }
+  .ui-pill-ok{color:var(--min-ok) !important;border-color:var(--min-ok-line) !important;background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;}
+  .ui-pill-info{color:var(--min-info) !important;border-color:var(--min-info-line) !important;background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;}
+  .ui-pill-warn{color:var(--min-warn) !important;border-color:var(--min-warn-line) !important;background:linear-gradient(180deg,#fffaf0,#fff6e7) !important;}
+  .ui-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(200,160,74,.12);}
 
-  .ui-pill-ok{
-    color:var(--min-ok) !important;
-    border-color:var(--min-ok-line) !important;
-    background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;
+  .ui-alert{border:1px solid var(--min-info-line);background:var(--min-info-soft);color:#1e3a8a;padding:10px 12px;border-radius:14px;line-height:1.8;font-size:9.8px;}
+  .ui-alert.warn{border-color:var(--min-warn-line);background:var(--min-warn-soft);color:var(--min-warn);}
+  .ui-alert.ok{border-color:var(--min-ok-line);background:var(--min-ok-soft);color:var(--min-ok);}
+
+  .ui-field{border:1px solid rgba(217,226,217,.95);border-radius:16px;padding:10px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow-soft);}
+  .ui-field + .ui-field{margin-top:10px;}
+  .ui-label{display:block;margin-bottom:6px;font-size:10.6px;font-weight:800;color:var(--min-green-2);line-height:1.3;}
+  .ui-help{margin-top:4px;font-size:9px;color:#87968c;line-height:1.6;}
+  .ui-error{margin-bottom:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--min-danger-line);background:var(--min-danger-soft);color:var(--min-danger);font-size:9.4px;line-height:1.6;}
+
+  .ui-field input[type="file"], .ui-field select{
+    width:100%;min-height:42px;padding:8px 10px;font-size:10.4px;border-radius:14px;border:1px solid rgba(211,221,212,.95);
+    background:linear-gradient(180deg,#ffffff,#f9fbf8);color:var(--min-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.98);outline:none;
   }
-
-  .ui-pill-info{
-    color:var(--min-info) !important;
-    border-color:var(--min-info-line) !important;
-    background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;
-  }
-
-  .ui-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#16a34a;
-    box-shadow:0 0 0 3px rgba(200,160,74,.12);
-  }
-
-  .ui-alert{
-    border:1px solid var(--min-info-line);
-    background:var(--min-info-soft);
-    color:#1e3a8a;
-    padding:10px 12px;
-    border-radius:14px;
-    line-height:1.8;
-    font-size:9.8px;
-    margin-bottom:10px;
-  }
-
-  .ui-alert.warn{
-    border-color:var(--min-warn-line);
-    background:var(--min-warn-soft);
-    color:var(--min-warn);
-  }
-
-  .ui-field{
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:16px;
-    padding:10px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .ui-field + .ui-field{
-    margin-top:10px;
-  }
-
-  .ui-label{
-    display:block;
-    margin-bottom:6px;
-    font-size:10.6px;
-    font-weight:800;
-    color:var(--min-green-2);
-    line-height:1.3;
-  }
-
-  .ui-help{
-    margin-top:4px;
-    font-size:9px;
-    color:#87968c;
-    line-height:1.6;
-  }
-
-  .ui-error{
-    margin-bottom:10px;
-    padding:8px 10px;
-    border-radius:12px;
-    border:1px solid var(--min-danger-line);
-    background:var(--min-danger-soft);
-    color:var(--min-danger);
-    font-size:9.4px;
-    line-height:1.6;
-  }
-
-  .ui-field input[type="file"],
-  .ui-field select{
-    width:100%;
-    min-height:42px;
-    padding:8px 10px;
-    font-size:10.4px;
-    border-radius:14px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
-    color:var(--min-ink);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    outline:none;
-  }
-
   .ui-field input[type="file"]::file-selector-button{
-    margin-inline-end:10px;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    border-radius:10px;
-    padding:6px 10px;
-    font-size:9.6px;
-    font-weight:800;
-    cursor:pointer;
+    margin-inline-end:10px;border:1px solid rgba(211,221,212,.95);background:linear-gradient(180deg,#ffffff,#f8faf7);color:var(--min-green-2);
+    border-radius:10px;padding:6px 10px;font-size:9.6px;font-weight:800;cursor:pointer;
+  }
+  .ui-field input[type="file"]:focus, .ui-field select:focus{
+    border-color:rgba(169,130,53,.36);box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
   }
 
-  .ui-field input[type="file"]:focus,
-  .ui-field select:focus{
-    border-color:rgba(169,130,53,.36);
-    box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
-  }
+  .ui-actions-row{margin-top:12px;justify-content:flex-start;}
+  .ui-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px;}
+  .ui-item{border:1px solid rgba(217,226,217,.95);border-radius:16px;padding:10px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow-soft);}
+  .ui-item .nm{font-size:10.6px;font-weight:800;color:var(--min-green-1);line-height:1.4;}
+  .ui-item .sm{margin-top:4px;font-size:9.4px;color:var(--min-muted);line-height:1.8;}
+  .ui-item-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .ui-stat{min-height:28px;padding:4px 9px;border-radius:999px;border:1px solid rgba(219,227,219,.95);background:#fff;font-size:8.8px;font-weight:800;color:var(--min-green-2);display:inline-flex;align-items:center;gap:4px;}
+  .ui-stat b{font-weight:900;}
 
-  .ui-actions-row{
-    margin-top:12px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:flex-start;
+  .ui-final{
+    border:1px solid rgba(211,221,212,.95);border-radius:22px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow) !important;overflow:hidden;
   }
+  .ui-final-head{padding:10px 12px;border-bottom:1px solid rgba(219,227,219,.92);background:linear-gradient(180deg,#fcfdfb,#f8fbf8);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .ui-final-body{padding:12px !important;display:grid;gap:12px;}
 
-  .ui-summary{
-    margin-top:16px;
-    padding-top:14px;
-    border-top:1px solid rgba(219,227,219,.92);
-  }
-
-  .ui-item{
-    border:1px solid rgba(217,226,217,.95);
-    border-radius:16px;
-    padding:10px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--min-shadow-soft);
-  }
-
-  .ui-item + .ui-item{
-    margin-top:10px;
-  }
-
-  .ui-item .nm{
-    font-size:10.6px;
-    font-weight:800;
-    color:var(--min-green-1);
-    line-height:1.4;
-  }
-
-  .ui-item .sm{
-    margin-top:4px;
-    font-size:9.4px;
-    color:var(--min-muted);
-    line-height:1.8;
-  }
-
-  @media (max-width: 860px){
-    .ui-grid{
-      grid-template-columns:1fr;
-    }
+  @media (max-width: 960px){
+    .ui-steps{grid-template-columns:1fr 1fr;}
+    .ui-grid,.ui-summary-grid{grid-template-columns:1fr;}
   }
 
   @media (max-width: 640px){
-    .ui-top{
-      border-radius:18px;
-      padding:13px 14px;
-    }
-
-    .ui-title{
-      font-size:18px !important;
-    }
-
-    .ui-card-body{
-      padding:10px !important;
-    }
-
-    .ui-field{
-      padding:9px;
-    }
+    .ui-top{border-radius:18px;padding:13px 14px;}
+    .ui-title{font-size:18px !important;}
+    .ui-card-body,.ui-final-body{padding:10px !important;}
+    .ui-field{padding:9px;}
+    .ui-steps{grid-template-columns:1fr;}
   }
 </style>
 {% endblock %}
@@ -405,7 +260,7 @@
     <div class="ui-top">
       <div class="ui-title-wrap">
         <h1 class="ui-title">استيراد ملفات الإكسل</h1>
-        <p class="ui-subtitle">إدارة رفع بيانات المتقدمين الجدد والمدارس، مع تحديد وضع الاستيراد ثم الانتقال إلى الفرز بصورة واضحة ومنظمة.</p>
+        <p class="ui-subtitle">تنفيذ رفع بيانات المتقدمين الجدد والمدارس ثم التحقق من النتيجة والانتقال إلى الفرز ضمن مسار إداري واضح.</p>
       </div>
 
       <div class="ui-actions">
@@ -430,16 +285,89 @@
       <div class="ui-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
+    <div class="ui-steps">
+      <div class="ui-step {% if result and result.applicants %}is-done{% else %}is-pending{% endif %}">
+        <div class="ui-step-top">
+          <span class="ui-step-index">1</span>
+          <span class="ui-step-state {% if result and result.applicants %}done{% else %}pending{% endif %}">
+            {% if result and result.applicants %}مكتمل{% else %}يحتاج تنفيذ{% endif %}
+          </span>
+        </div>
+        <div class="ui-step-title">رفع المتقدمين الجدد</div>
+        <div class="ui-step-text">تحميل ملف المرحلة الثانية وتحديد وضع الاستيراد المناسب قبل التنفيذ.</div>
+        <div class="ui-step-note">
+          {% if result and result.applicants %}
+            آخر دفعة: {{ result.applicants.batch }}
+          {% else %}
+            لم يتم تسجيل نتيجة رفع للمتقدمين بعد.
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ui-step {% if result and result.schools %}is-done{% else %}is-pending{% endif %}">
+        <div class="ui-step-top">
+          <span class="ui-step-index">2</span>
+          <span class="ui-step-state {% if result and result.schools %}done{% else %}pending{% endif %}">
+            {% if result and result.schools %}مكتمل{% else %}يحتاج تنفيذ{% endif %}
+          </span>
+        </div>
+        <div class="ui-step-title">رفع المدارس / الشواغر</div>
+        <div class="ui-step-text">تحميل ملف الشواغر المعتمدة وتحديث المدارس أو إضافتها وفق الوضع المحدد.</div>
+        <div class="ui-step-note">
+          {% if result and result.schools %}
+            آخر دفعة: {{ result.schools.batch }}
+          {% else %}
+            لم يتم تسجيل نتيجة رفع للشواغر بعد.
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ui-step {% if result %}is-done{% else %}is-pending{% endif %}">
+        <div class="ui-step-top">
+          <span class="ui-step-index">3</span>
+          <span class="ui-step-state {% if result %}done{% else %}pending{% endif %}">
+            {% if result %}نتيجة متاحة{% else %}بانتظار النتيجة{% endif %}
+          </span>
+        </div>
+        <div class="ui-step-title">مراجعة آخر عملية</div>
+        <div class="ui-step-text">التحقق من الإضافات والتحديثات والسجلات المتخطاة قبل الانتقال إلى الفرز.</div>
+        <div class="ui-step-note">
+          {% if result %}
+            تم العثور على ملخص لآخر عملية استيراد.
+          {% else %}
+            سيظهر الملخص هنا بعد أول عملية رفع ناجحة.
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ui-step {% if result and result.applicants and result.schools %}is-ready{% else %}is-pending{% endif %}">
+        <div class="ui-step-top">
+          <span class="ui-step-index">4</span>
+          <span class="ui-step-state {% if result and result.applicants and result.schools %}ready{% else %}pending{% endif %}">
+            {% if result and result.applicants and result.schools %}جاهز للفرز{% else %}ينتظر الاكتمال{% endif %}
+          </span>
+        </div>
+        <div class="ui-step-title">بدء الفرز</div>
+        <div class="ui-step-text">الانتقال إلى شاشة الفرز بعد اكتمال رفع ملفات المتقدمين والشواغر ومراجعة النتيجة.</div>
+        <div class="ui-step-note">
+          {% if result and result.applicants and result.schools %}
+            يمكن الانتقال الآن إلى الفرز بثقة.
+          {% else %}
+            أكمل الرفع أو راجع النتائج قبل تنفيذ الفرز.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
     <div class="ui-alert warn">
       <b>تنبيه:</b>
-      رفع ملف <b>المتقدمين الجدد</b> يخص المرحلة الثانية، ويفترض بعده مراجعة البيانات ثم تنفيذ الفرز وفق الشواغر المتاحة.
+      رفع ملف <b>المتقدمين الجدد</b> يخص المرحلة الثانية، ويُفضّل بعد كل عملية مراجعة الملخص ثم الانتقال إلى خطوة الفرز عند الجاهزية.
     </div>
 
     <div class="ui-grid">
-
       <div class="ui-card">
         <div class="ui-card-head">
-          <h3 class="ui-card-title">رفع المتقدمين الجدد</h3>
+          <h3 class="ui-card-title">الخطوة الأولى: رفع المتقدمين الجدد</h3>
           <span class="ui-pill ui-pill-info">
             <span class="ui-dot"></span>
             المرحلة الثانية
@@ -457,9 +385,7 @@
             <div class="ui-field">
               <label class="ui-label" for="id_applicants_file">ملف المتقدمين الجدد</label>
               {{ form.applicants_file }}
-              <div class="ui-help">
-                ارفع ملف المتقدمين الجدد بصيغة Excel. سيتم تحديث أو إضافة السجلات حسب وضع الاستيراد الذي تختاره.
-              </div>
+              <div class="ui-help">ارفع ملف المتقدمين الجدد بصيغة Excel، وسيتم تنفيذ الإضافة أو التحديث حسب وضع الاستيراد المختار.</div>
             </div>
 
             <div class="ui-field">
@@ -469,9 +395,7 @@
                 <option value="create_only">إضافة الجديد فقط</option>
                 <option value="update_only">تحديث الموجود فقط</option>
               </select>
-              <div class="ui-help">
-                اختر الطريقة المناسبة: إضافة وتحديث معًا، أو إضافة فقط، أو تحديث فقط.
-              </div>
+              <div class="ui-help">اختر آلية التنفيذ: مزامنة كاملة، إضافة فقط، أو تحديث فقط.</div>
             </div>
 
             <div class="ui-actions-row">
@@ -486,8 +410,8 @@
 
       <div class="ui-card">
         <div class="ui-card-head">
-          <h3 class="ui-card-title">رفع المدارس / الشواغر</h3>
-          <span class="ui-pill">
+          <h3 class="ui-card-title">الخطوة الثانية: رفع المدارس / الشواغر</h3>
+          <span class="ui-pill ui-pill-warn">
             <span class="ui-dot"></span>
             الشواغر المعتمدة
           </span>
@@ -504,9 +428,7 @@
             <div class="ui-field">
               <label class="ui-label" for="id_schools_file">ملف المدارس / الشواغر</label>
               {{ form.schools_file }}
-              <div class="ui-help">
-                ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث أو إضافة المدارس بحسب وضع الاستيراد المحدد.
-              </div>
+              <div class="ui-help">ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث السجلات أو إضافتها حسب الوضع المحدد.</div>
             </div>
 
             <div class="ui-field">
@@ -516,9 +438,7 @@
                 <option value="create_only">إضافة الجديد فقط</option>
                 <option value="update_only">تحديث الموجود فقط</option>
               </select>
-              <div class="ui-help">
-                استخدم هذا الخيار إذا رغبت في تحديث المدارس الموجودة فقط أو إضافة مدارس جديدة فقط أو تنفيذ الأمرين معًا.
-              </div>
+              <div class="ui-help">استخدم هذا الخيار إذا رغبت في التحديث فقط أو الإضافة فقط أو تنفيذ الأمرين معًا.</div>
             </div>
 
             <div class="ui-actions-row">
@@ -530,63 +450,32 @@
           </form>
         </div>
       </div>
-
     </div>
 
-    <div class="ui-grid-single">
-
-      <div class="ui-card">
-        <div class="ui-card-head">
-          <h3 class="ui-card-title">فرز المتقدمين الجدد</h3>
-          <span class="ui-pill ui-pill-ok">
-            <span class="ui-dot"></span>
-            بعد اكتمال الرفع
-          </span>
-        </div>
-
-        <div class="ui-card-body">
-          <div class="ui-alert">
-            يتم تنفيذ الفرز بعد التأكد من رفع:
-            <b>ملف المتقدمين الجدد</b>
-            و
-            <b>ملف المدارس / الشواغر</b>
-            بصورة صحيحة. يوصى بمراجعة البيانات قبل بدء الفرز.
-          </div>
-
-          <div class="ui-actions-row">
-            <a class="ui-btn" href="{% url 'portal:admin_new_applicants_sorting' %}">
-              <span class="ui-btn-icon">≣</span>
-              فتح شاشة الفرز
-            </a>
-
-            <a class="ui-btn ui-btn-warn" href="{% url 'portal:admin_new_applicants_sorting' %}">
-              <span class="ui-btn-icon">⚙</span>
-              بدء الفرز
-            </a>
-          </div>
-        </div>
+    <div class="ui-card">
+      <div class="ui-card-head">
+        <h3 class="ui-card-title">الخطوة الثالثة: مراجعة آخر عملية</h3>
+        <span class="ui-pill {% if result %}ui-pill-ok{% else %}ui-pill-info{% endif %}">
+          <span class="ui-dot"></span>
+          {% if result %}نتيجة متاحة{% else %}بانتظار أول نتيجة{% endif %}
+        </span>
       </div>
 
-      {% if result %}
-      <div class="ui-card">
-        <div class="ui-card-head">
-          <h3 class="ui-card-title">ملخص آخر عملية</h3>
-          <span class="ui-pill">
-            <span class="ui-dot"></span>
-            نتائج الاستيراد
-          </span>
-        </div>
+      <div class="ui-card-body">
+        {% if result %}
+          <div class="ui-alert ok">
+            تم العثور على ملخص لآخر عملية استيراد. راجع الإضافات والتحديثات والسجلات المتخطاة قبل الانتقال إلى الفرز.
+          </div>
 
-        <div class="ui-card-body">
-          <div class="ui-summary">
+          <div class="ui-summary-grid">
             {% if result.applicants %}
               <div class="ui-item">
                 <div class="nm">المتقدمون الجدد</div>
-                <div class="sm">
-                  الدفعة رقم {{ result.applicants.batch }}
-                  — إضافة: {{ result.applicants.created }}
-                  — تحديث: {{ result.applicants.updated }}
-                  — تخطي: {{ result.applicants.skipped }}
+                <div class="sm">الدفعة رقم {{ result.applicants.batch }}</div>
+                <div class="ui-item-stats">
+                  <span class="ui-stat">إضافة <b>{{ result.applicants.created }}</b></span>
+                  <span class="ui-stat">تحديث <b>{{ result.applicants.updated }}</b></span>
+                  <span class="ui-stat">تخطي <b>{{ result.applicants.skipped }}</b></span>
                 </div>
               </div>
             {% endif %}
@@ -594,26 +483,62 @@
             {% if result.schools %}
               <div class="ui-item">
                 <div class="nm">المدارس / الشواغر</div>
-                <div class="sm">
-                  الدفعة رقم {{ result.schools.batch }}
-                  — إضافة: {{ result.schools.created }}
-                  — تحديث: {{ result.schools.updated }}
-                  — تخطي: {{ result.schools.skipped }}
+                <div class="sm">الدفعة رقم {{ result.schools.batch }}</div>
+                <div class="ui-item-stats">
+                  <span class="ui-stat">إضافة <b>{{ result.schools.created }}</b></span>
+                  <span class="ui-stat">تحديث <b>{{ result.schools.updated }}</b></span>
+                  <span class="ui-stat">تخطي <b>{{ result.schools.skipped }}</b></span>
                 </div>
               </div>
             {% endif %}
 
             {% if not result.applicants and not result.schools %}
-              <div class="ui-item">
-                <div class="nm">لا يوجد ملخص متاح</div>
-                <div class="sm">لم يتم العثور على نتائج استيراد لعرضها حاليًا.</div>
+              <div class="ui-item" style="grid-column:1/-1;">
+                <div class="nm">لا يوجد ملخص مفصل</div>
+                <div class="sm">تم العثور على نتيجة عامة، لكن لا توجد تفاصيل كافية لعرضها هنا.</div>
               </div>
             {% endif %}
           </div>
+        {% else %}
+          <div class="ui-alert">
+            لا يوجد ملخص متاح حاليًا. سيظهر هذا القسم تلقائيًا بعد أول عملية رفع ناجحة ليمنحك صورة واضحة عمّا أضيف أو حُدّث أو تم تجاوزه.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="ui-final">
+      <div class="ui-final-head">
+        <h3 class="ui-card-title">الخطوة الرابعة: بدء فرز المتقدمين الجدد</h3>
+        <span class="ui-pill {% if result and result.applicants and result.schools %}ui-pill-ok{% else %}ui-pill-warn{% endif %}">
+          <span class="ui-dot"></span>
+          {% if result and result.applicants and result.schools %}جاهز للتنفيذ{% else %}ينتظر اكتمال الرفع{% endif %}
+        </span>
+      </div>
+
+      <div class="ui-final-body">
+        {% if result and result.applicants and result.schools %}
+          <div class="ui-alert ok">
+            اكتملت بيانات المتقدمين والشواغر، ويمكن الآن الانتقال إلى شاشة الفرز والبدء في معالجة المرحلة الثانية.
+          </div>
+        {% else %}
+          <div class="ui-alert warn">
+            يوصى بعدم بدء الفرز إلا بعد رفع ملف المتقدمين وملف الشواغر ومراجعة النتيجة الأخيرة لكل منهما.
+          </div>
+        {% endif %}
+
+        <div class="ui-actions-row">
+          <a class="ui-btn" href="{% url 'portal:admin_new_applicants_sorting' %}">
+            <span class="ui-btn-icon">≣</span>
+            فتح شاشة الفرز
+          </a>
+
+          <a class="ui-btn ui-btn-warn" href="{% url 'portal:admin_new_applicants_sorting' %}">
+            <span class="ui-btn-icon">⚙</span>
+            بدء الفرز
+          </a>
         </div>
       </div>
-      {% endif %}
-
     </div>
 
   </div>

@@ -4,89 +4,93 @@
 {% block extra_css %}
 <style>
   :root{
-    --moe-bg:#f4f6f3;
-    --moe-bg-2:#edf1ed;
-    --moe-surface:#ffffff;
-    --moe-surface-2:#fbfcfa;
-    --moe-surface-3:#f6f8f5;
+    --mx-bg:#f3f6f3;
+    --mx-bg-2:#edf2ee;
+    --mx-surface:#ffffff;
+    --mx-surface-2:#fbfcfa;
+    --mx-surface-3:#f7faf7;
 
-    --moe-ink:#1d2d25;
-    --moe-ink-2:#32433a;
-    --moe-muted:#6d7d73;
+    --mx-ink:#183127;
+    --mx-ink-2:#30463d;
+    --mx-muted:#6c7e74;
 
-    --moe-green-1:#183629;
-    --moe-green-2:#274538;
-    --moe-green-3:#466055;
-    --moe-green-4:#7d8f85;
+    --mx-green-1:#13392c;
+    --mx-green-2:#1b4a38;
+    --mx-green-3:#295845;
+    --mx-green-4:#6e867c;
 
-    --moe-gold-1:#7e6331;
-    --moe-gold-2:#a5844d;
-    --moe-gold-3:#d8c69f;
+    --mx-gold-1:#866a34;
+    --mx-gold-2:#ad8a51;
+    --mx-gold-3:#dfcfaa;
 
-    --moe-line:#d7dfd8;
-    --moe-line-2:#cbd4cc;
-    --moe-line-3:#e8ede8;
+    --mx-line:#d8e1d9;
+    --mx-line-2:#cbd6cd;
+    --mx-line-3:#e8eee9;
 
-    --moe-ok:#1f5c37;
-    --moe-ok-bg:#eef7f1;
-    --moe-ok-bd:#cfe3d6;
+    --mx-ok:#1e6138;
+    --mx-ok-bg:#eef8f1;
+    --mx-ok-bd:#cee4d5;
 
-    --moe-warn:#886114;
-    --moe-warn-bg:#fbf6ec;
-    --moe-warn-bd:#e5d6b7;
+    --mx-warn:#8a6218;
+    --mx-warn-bg:#fcf7ee;
+    --mx-warn-bd:#e6d7b8;
 
-    --moe-danger:#8a3131;
-    --moe-danger-bg:#fbf5f5;
-    --moe-danger-bd:#e5c7c7;
+    --mx-danger:#8d3131;
+    --mx-danger-bg:#fcf5f5;
+    --mx-danger-bd:#e8c8c8;
 
-    --moe-info:#355c7a;
-    --moe-info-bg:#f2f6fb;
-    --moe-info-bd:#d7e1ee;
+    --mx-info:#365d7d;
+    --mx-info-bg:#f2f6fc;
+    --mx-info-bd:#d7e1ee;
 
-    --moe-shadow:0 1px 3px rgba(17,24,20,.035);
-    --moe-shadow-soft:0 8px 18px rgba(17,24,20,.05);
-    --moe-shadow-table:0 8px 18px rgba(17,24,20,.045);
+    --mx-shadow:0 1px 3px rgba(16,24,20,.035);
+    --mx-shadow-soft:0 10px 24px rgba(16,24,20,.06);
+    --mx-shadow-hero:0 14px 34px rgba(16,24,20,.09);
 
-    --moe-r-2xl:15px;
-    --moe-r-xl:12px;
-    --moe-r-lg:9px;
-    --moe-r-md:7px;
-    --moe-r-sm:6px;
+    --mx-r-2xl:22px;
+    --mx-r-xl:18px;
+    --mx-r-lg:14px;
+    --mx-r-md:10px;
+    --mx-r-sm:8px;
   }
 
-  .v963,.v963 *{
+  .v963, .v963 *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
   .v963{
     direction:rtl;
-    color:var(--moe-ink);
-    background:linear-gradient(180deg,#f7f8f6 0%, #f2f5f1 45%, #edf1ed 100%);
-    padding:8px;
+    color:var(--mx-ink);
+    background:linear-gradient(180deg,#f7f9f7 0%, #f1f5f1 48%, #edf2ee 100%);
+    padding:12px;
+    font-weight:500;
   }
 
   .v963-page{
-    max-width:1520px;
+    max-width:1540px;
     margin:0 auto;
     display:grid;
-    grid-template-columns:minmax(0,1fr);
-    gap:11px;
-    align-items:start;
+    gap:12px;
   }
 
-  .v963-main{min-width:0}
+  .v963-shell{
+    background:linear-gradient(180deg,#eef3ef 0%, #e8efea 100%);
+    border:1px solid #dbe4dc;
+    border-radius:26px;
+    padding:11px;
+  }
 
   .v963-card,
   .v963-kpi,
   .v963-info,
   .v963-modal-card,
   .v963-toast{
-    border:1px solid var(--moe-line);
-    border-radius:var(--moe-r-2xl);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--moe-shadow);
     position:relative;
+    border:1px solid var(--mx-line);
+    border-radius:var(--mx-r-2xl);
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    box-shadow:var(--mx-shadow);
     overflow:hidden;
   }
 
@@ -96,450 +100,400 @@
     position:absolute;
     inset:0 0 auto 0;
     height:1px;
-    background:linear-gradient(90deg,rgba(39,69,56,.85) 0%, rgba(165,132,77,.85) 100%);
+    background:linear-gradient(90deg,rgba(27,74,56,.82) 0%, rgba(173,138,81,.82) 100%);
     opacity:.92;
   }
 
   /* =========================
-     Header جديد
+     Compact hero + grouped toolbar
   ========================= */
-  .v963-top{
-    border:1px solid #d5ddd6;
-    border-radius:18px;
-    background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    box-shadow:0 8px 18px rgba(17,24,20,.04);
-    padding:16px 18px;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:14px;
-    align-items:center;
-    overflow:hidden;
+  .v963-hero{
     position:relative;
-    margin-bottom:12px;
+    overflow:hidden;
+    border-radius:22px;
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,0) 32%),
+      linear-gradient(135deg,#1d523f 0%, #143b2e 58%, #0f2c23 100%);
+    border:1px solid rgba(173,138,81,.38);
+    box-shadow:0 10px 22px rgba(16,24,20,.08);
+    color:#fff;
+    padding:10px 12px 11px;
   }
 
-  .v963-top::before{
+  .v963-hero::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--moe-green-2) 0%, var(--moe-gold-2) 100%);
+    height:3px;
+    background:linear-gradient(90deg,#c9a86a 0%, #8d6c35 38%, #3a6d56 100%);
+    opacity:.95;
   }
 
-  .v963-top::after{
-    display:none !important;
-  }
-
-  .v963-top-main{
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    align-items:flex-start;
-  }
-
-  .v963-title{
-    margin:0;
-    font-size:22px;
-    line-height:1.1;
-    font-weight:900 !important;
-    color:var(--moe-green-1);
-    letter-spacing:.1px;
-    padding:0;
-    text-shadow:none;
-  }
-
-  .v963-title::after{
-    display:none !important;
-  }
-
-  .v963-top-meta{
+  .v963-hero-top{
     display:flex;
     align-items:center;
-    gap:8px;
+    justify-content:space-between;
+    gap:10px;
     flex-wrap:wrap;
-    min-width:0;
+    margin-bottom:8px;
   }
 
-  .v963-top-note{
-    color:var(--moe-muted);
-    font-size:8px;
-    font-weight:800 !important;
-  }
-
-  .v963-status-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:29px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid var(--moe-line);
-    background:#fff;
-    color:var(--moe-ink-2);
-    font-size:8.2px;
-    font-weight:900 !important;
-    white-space:nowrap;
-  }
-
-  .v963-status-badge .v963-dot{
-    width:8px;
-    height:8px;
-  }
-
-  .v963-top-side{
+  .v963-hero-status{
     display:flex;
     align-items:center;
-    justify-content:flex-end;
     gap:7px;
     flex-wrap:wrap;
-    min-width:0;
-    padding:0;
-    border:none;
-    background:transparent;
-    box-shadow:none;
   }
 
-  .v963-pill,
-  .v963-tag,
-  .v963-state-badge,
-  .v963-chip,
-  .v963-count,
-  .v963-nid{
+  .v963-status-chip,
+  .v963-nav-link{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:26px;
-    padding:4px 8px;
-    border-radius:7px;
-    border:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
-    color:var(--moe-ink-2);
-    white-space:nowrap;
-    font-size:8.15px;
+    min-height:33px;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    text-decoration:none;
+    font-size:8.7px;
     font-weight:900 !important;
+    white-space:nowrap;
   }
 
-  .v963-dot{
-    width:7px;
-    height:7px;
+  .v963-status-chip .dot,
+  .v963-nav-link .dot{
+    width:8px;
+    height:8px;
     border-radius:50%;
-    background:var(--moe-green-3);
+    background:#5ab67c;
     flex:0 0 auto;
   }
 
-  .v963-dot.status-closed{background:var(--moe-danger)}
-  .v963-dot.status-open{background:var(--moe-ok)}
-  .v963-dot.status-phase{background:var(--moe-gold-2)}
+  .v963-status-chip.soft{
+    background:rgba(255,255,255,.12);
+  }
+
+  .v963-hero-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+  }
 
   .v963-btn,
   .v963-tab,
-  .v963-chip-btn,
   .v963-search-clear{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    min-height:33px;
-    padding:6px 11px;
-    border-radius:8px;
-    border:1px solid var(--moe-line-2);
+    min-height:36px;
+    padding:7px 14px;
+    border-radius:11px;
+    border:1px solid var(--mx-line-2);
     background:#fff;
-    color:var(--moe-green-2);
+    color:var(--mx-green-2);
     text-decoration:none;
     cursor:pointer;
-    font-size:8.8px;
+    font-size:9.6px;
     font-weight:900 !important;
-    transition:background .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease;
+    transition:background .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease,color .15s ease;
     box-shadow:none;
   }
 
   .v963-btn:hover,
   .v963-tab:hover,
-  .v963-chip-btn:hover,
   .v963-search-clear:hover{
     transform:translateY(-1px);
-    background:#f8faf8;
-    border-color:#bcc8be;
+    background:#f7faf7;
+    border-color:#bac8bd;
+    box-shadow:0 4px 10px rgba(16,24,20,.05);
+  }
+
+  .v963-btn:focus-visible,
+  .v963-tab:focus-visible,
+  .v963-search-clear:focus-visible,
+  .v963-nav-link:focus-visible,
+  .v963-admin-tool:focus-visible,
+  .v963-row-menu-item:focus-visible,
+  .v963-check:focus-visible,
+  .v963-input:focus-visible,
+  .v963-select:focus-visible,
+  .v963-search-input:focus-visible,
+  .v963-textarea:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(173,138,81,.14);
   }
 
   .v963-btn-primary,
   .v963-btn-ok{
-    background:linear-gradient(180deg,#2d4a3b 0%, #1f3a2d 100%);
-    border-color:#1f3a2d;
+    background:linear-gradient(180deg,#2b4b3b 0%, #1d3c2e 100%);
+    border-color:#1d3c2e;
     color:#fff;
   }
 
   .v963-btn-primary:hover,
   .v963-btn-ok:hover{
-    background:linear-gradient(180deg,#355345 0%, #244031 100%);
-    border-color:#244031;
+    background:linear-gradient(180deg,#325444 0%, #254335 100%);
+    border-color:#254335;
   }
 
   .v963-btn-danger{
-    background:var(--moe-danger-bg);
-    border-color:var(--moe-danger-bd);
-    color:var(--moe-danger);
+    background:var(--mx-danger-bg);
+    border-color:var(--mx-danger-bd);
+    color:var(--mx-danger);
   }
 
   .v963-btn-warn{
-    background:var(--moe-warn-bg);
-    border-color:var(--moe-warn-bd);
-    color:var(--moe-warn);
+    background:var(--mx-warn-bg);
+    border-color:var(--mx-warn-bd);
+    color:var(--mx-warn);
   }
 
-  .v963-btn-info,
-  .v963-btn-soft,
-  .v963-btn-gold{
+  .v963-btn-info{
     background:#fff;
-    color:var(--moe-green-2);
-    border-color:var(--moe-line-2);
+    border-color:var(--mx-line-2);
+    color:var(--mx-green-2);
   }
 
   .v963-btn-sm{
-    min-height:28px;
-    padding:4px 9px;
-    font-size:8px;
-    border-radius:7px;
-  }
-
-  .v963-top .v963-btn{
-    min-height:35px;
-    padding:6px 13px;
+    min-height:31px;
+    padding:5px 11px;
+    font-size:8.45px;
     border-radius:10px;
-    border:1px solid #cfd7d0;
-    background:#fff;
-    color:var(--moe-green-2);
-    box-shadow:none;
   }
 
-  .v963-top .v963-btn:hover{
-    background:#f7faf7;
-    border-color:#bcc8be;
+  .v963-hero-body{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:14px;
+    align-items:end;
   }
 
-  .v963-top .v963-btn-info{
-    background:#fff;
-    color:var(--moe-green-2);
+  .v963-hero-copy{
+    min-width:0;
+    display:grid;
+    gap:5px;
   }
 
-  /* =========================
-     القائمة الرسمية
-  ========================= */
-  .v963-more-wrap{
-    position:relative;
-    z-index:70;
-  }
-
-  .v963-top .v963-more-btn{
-    min-width:104px;
-    justify-content:space-between;
-    border-color:#223a2f;
-    background:linear-gradient(180deg,#2f4c3d 0%, #223a2f 100%);
-    color:#fff;
-  }
-
-  .v963-top .v963-more-btn:hover{
-    background:linear-gradient(180deg,#355344 0%, #274033 100%);
-    border-color:#223a2f;
-    color:#fff;
-  }
-
-  .v963-top .v963-caret{
-    width:16px;
-    height:16px;
-    border-radius:50%;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,.12);
-    border:1px solid rgba(255,255,255,.15);
-    color:#fff;
-    font-size:8px;
-    line-height:1;
-    transition:transform .18s ease;
-    flex:0 0 auto;
-  }
-
-  .v963-more-wrap.open .v963-caret{
-    transform:rotate(180deg);
-  }
-
-  .v963-menu{
-    position:absolute;
-    top:calc(100% + 10px);
-    inset-inline-end:0;
-    width:min(390px, calc(100vw - 34px));
-    border:1px solid #ced6cf;
-    border-radius:16px;
-    background:linear-gradient(180deg,#ffffff 0%, #fafcf9 100%);
-    box-shadow:0 18px 34px rgba(17,24,20,.11);
-    overflow:hidden;
-    opacity:0;
-    visibility:hidden;
-    transform:translateY(8px);
-    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
-    z-index:9999;
-  }
-
-  .v963-more-wrap.open .v963-menu{
-    opacity:1;
-    visibility:visible;
-    transform:translateY(0);
-  }
-
-  .v963-menu::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:3px;
-    background:linear-gradient(90deg,var(--moe-green-2) 0%, var(--moe-gold-2) 100%);
-    opacity:1;
-  }
-
-  .v963-menu-head{
-    padding:12px 13px 10px;
-    background:linear-gradient(180deg,#f7faf7 0%, #f2f6f2 100%);
-    border-bottom:1px solid #e7ece8;
-  }
-
-  .v963-menu-title{
-    margin:0;
-    font-size:9.7px;
-    color:var(--moe-green-1);
+  .v963-hero-kicker{
+    color:rgba(255,255,255,.8);
+    font-size:8.7px;
     font-weight:900 !important;
   }
 
-  .v963-menu-sub{
-    margin-top:3px;
-    color:var(--moe-muted);
-    font-size:7.25px;
-    line-height:1.7;
+  .v963-hero-title{
+    margin:0;
+    color:#fff;
+    font-size:22px;
+    line-height:1.12;
+    font-weight:900 !important;
+    letter-spacing:0;
+  }
+
+  .v963-hero-sub{
+    margin:0;
+    max-width:72ch;
+    color:rgba(255,255,255,.9);
+    font-size:9.1px;
+    line-height:1.82;
     font-weight:800 !important;
   }
 
-  .v963-menu-list{
-    padding:9px;
-    background:#fbfcfa;
+  .v963-hero-nav{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
   }
 
-  .v963-menu-group{
-    background:#fff;
-    border:1px solid #e8eeea;
-    border-radius:13px;
-    overflow:hidden;
+  .v963-nav-link.active{
+    background:linear-gradient(180deg,#fff7eb,#f7e6c5);
+    border-color:rgba(223,207,170,.85);
+    color:#6f541e;
   }
 
-  .v963-menu-group + .v963-menu-group{
-    margin-top:8px;
+  .v963-nav-link.active .dot{background:#b28d50}
+
+  .v963-nav-link:hover{
+    background:rgba(255,255,255,.14);
+    border-color:rgba(255,255,255,.24);
   }
 
-  .v963-menu-group-title{
+  .v963-admin-strip{
+    margin-top:7px;
+    display:grid;
+    gap:6px;
+    padding:8px 9px;
+    border:1px solid #dde5de;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
+    box-shadow:none;
+  }
+
+  .v963-admin-strip-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-bottom:3px;
+  }
+
+  .v963-admin-strip-title{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:var(--mx-green-1);
+    font-size:9.6px;
+    font-weight:900 !important;
+  }
+
+  .v963-admin-strip-title::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:linear-gradient(180deg,var(--mx-green-3),var(--mx-green-2));
+  }
+
+  .v963-admin-strip-sub{
+    color:var(--mx-muted);
+    font-size:7.6px;
+    font-weight:800 !important;
+  }
+
+  .v963-admin-groups{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+    align-items:start;
+  }
+
+  .v963-admin-group{
+    border:1px solid #e2e8e3;
+    border-radius:14px;
+    background:linear-gradient(180deg,#fcfdfc 0%, #f9fbf9 100%);
+    padding:7px 8px;
+    display:grid;
+    gap:6px;
+  }
+
+  .v963-admin-group-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:8px;
-    padding:9px 11px;
-    background:linear-gradient(180deg,#f7f3ea 0%, #f4efe4 100%);
-    border-bottom:1px solid #ece5d8;
-    color:#6d5728;
-    font-size:7.1px;
+    padding-bottom:5px;
+    border-bottom:1px solid #ebf0eb;
+  }
+
+  .v963-admin-group-title{
+    color:var(--mx-green-1);
+    font-size:8.9px;
     font-weight:900 !important;
   }
 
-  .v963-menu-group-title::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:linear-gradient(180deg,#b28e52,#876a35);
-    flex:0 0 auto;
-  }
-
-  .v963-menu-link{
-    display:grid;
-    grid-template-columns:56px 28px minmax(0,1fr);
+  .v963-admin-group-note{
+    display:inline-flex;
     align-items:center;
-    gap:10px;
-    padding:10px 11px;
-    text-decoration:none;
-    color:var(--moe-ink);
-    border-bottom:1px solid #f1f4f1;
-    transition:background .14s ease;
-    position:relative;
-  }
-
-  .v963-menu-link:last-child{border-bottom:none}
-
-  .v963-menu-link:hover{
-    background:#f8faf8;
-  }
-
-  .v963-menu-link.is-key{
-    background:linear-gradient(180deg,#fcfaf4 0%, #f8f3e6 100%);
-  }
-
-  .v963-menu-link.is-key::after{
-    content:"";
-    position:absolute;
-    inset-inline-start:0;
-    top:0;
-    bottom:0;
-    width:3px;
-    background:linear-gradient(180deg,#b28d50,#876935);
-  }
-
-  .v963-menu-link.is-key:hover{
-    background:linear-gradient(180deg,#faf7ee 0%, #f5efdf 100%);
-  }
-
-  .v963-menu-meta{
-    color:#7b8880;
-    font-size:7px;
+    min-height:22px;
+    padding:0 8px;
+    border-radius:999px;
+    border:1px solid #e1e7e2;
+    background:#fbfcfb;
+    color:#74817a;
+    font-size:7.4px;
     font-weight:900 !important;
     white-space:nowrap;
   }
 
-  .v963-menu-badge{
-    width:24px;
-    height:24px;
-    border-radius:7px;
+  .v963-admin-actions{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:stretch;
+    gap:7px;
+  }
+
+  .v963-admin-tool{
+    flex:1 1 132px;
+    min-height:40px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    border:1px solid #dde4de;
-    background:linear-gradient(180deg,#ffffff,#f6f8f6);
-    color:var(--moe-green-2);
-    font-size:6.6px;
+    gap:8px;
+    padding:0 14px;
+    border:1px solid #d9e1da;
+    border-radius:11px;
+    background:#fcfdfc;
+    color:var(--mx-green-1);
+    text-decoration:none;
+    white-space:nowrap;
+    font-size:8.6px;
     font-weight:900 !important;
+    transition:background .14s ease, border-color .14s ease, transform .14s ease, box-shadow .14s ease;
   }
 
-  .v963-menu-link.is-key .v963-menu-badge{
-    border-color:rgba(165,132,77,.35);
-    background:linear-gradient(180deg,#fffaf0,#f8f0de);
+  .v963-admin-tool:hover{
+    background:#f8fbf8;
+    border-color:#c6d3c8;
+    box-shadow:0 4px 10px rgba(16,24,20,.05);
+    transform:translateY(-1px);
+  }
+
+  .v963-admin-tool:active,
+  .v963-btn:active,
+  .v963-tab:active{
+    transform:translateY(0);
+  }
+
+  .v963-admin-tool-icon{
+    width:24px;
+    height:24px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #d9e2db;
+    background:linear-gradient(180deg,#ffffff,#f3f7f4);
+    color:var(--mx-green-2);
+    font-size:6.8px;
+    font-weight:900 !important;
+    flex:0 0 auto;
+  }
+
+  .v963-admin-tool.is-key{
+    border-color:rgba(173,138,81,.42);
+    background:linear-gradient(180deg,#fffaf0 0%, #f8f1e2 100%);
+    color:#6f541e;
+  }
+
+  .v963-admin-tool.is-key .v963-admin-tool-icon{
+    border-color:rgba(173,138,81,.32);
+    background:linear-gradient(180deg,#fffdf7,#f8f0de);
     color:#775a1a;
   }
 
-  .v963-menu-label{
-    min-width:0;
-    color:var(--moe-green-1);
-    font-size:8.7px;
-    font-weight:900 !important;
-    line-height:1.45;
-  }
 
-  .v963-sec{padding:10px 11px}
-  .v963-div{border-top:1px solid var(--moe-line-3)}
+  /* =========================
+     Content cards
+  ========================= */
+  .v963-sec{padding:10px 12px}
+  .v963-div{border-top:1px solid var(--mx-line-3)}
 
   .v963-section-cap{
     display:inline-flex;
     align-items:center;
-    gap:7px;
+    gap:8px;
     margin-bottom:8px;
     padding-bottom:5px;
-    border-bottom:1px solid var(--moe-line);
-    color:var(--moe-green-1);
-    font-size:9px;
+    border-bottom:1px solid var(--mx-line);
+    color:var(--mx-green-1);
+    font-size:9.8px;
     font-weight:900 !important;
   }
 
@@ -548,53 +502,58 @@
     width:8px;
     height:8px;
     border-radius:50%;
-    background:linear-gradient(180deg,var(--moe-green-3),var(--moe-green-2));
+    background:linear-gradient(180deg,var(--mx-green-3),var(--mx-green-2));
     flex:0 0 auto;
   }
 
   .v963-filter-shell,
   .v963-ops,
   .v963-group{
-    border:1px solid var(--moe-line);
-    border-radius:10px;
-    background:var(--moe-surface-2);
+    border:1px solid var(--mx-line);
+    border-radius:14px;
+    background:var(--mx-surface-2);
   }
 
   .v963-filter-shell{
     display:grid;
-    gap:9px;
-    padding:9px;
+    gap:7px;
+    padding:8px 9px;
   }
 
   .v963-grid{
     display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:1.35fr .95fr .95fr .85fr;
     gap:8px;
-    align-items:start;
+    align-items:end;
+  }
+
+  .v963-grid-filters{
+    margin-bottom:1px;
   }
 
   .v963-field{
     min-width:0;
     display:flex;
     flex-direction:column;
+    gap:5px;
   }
 
   .v963-label{
     display:block;
-    margin-bottom:5px;
-    min-height:17px;
-    font-size:8.55px;
-    color:var(--moe-green-1);
+    margin-bottom:0;
+    min-height:auto;
+    font-size:8.9px;
+    color:var(--mx-green-1);
     font-weight:900 !important;
   }
 
   .v963-help,
   .v963-note,
   .v963-modal-sub{
-    color:var(--moe-muted);
-    font-size:7.55px;
-    line-height:1.7;
-    font-weight:800 !important;
+    color:var(--mx-muted);
+    font-size:8.7px;
+    line-height:1.78;
+    font-weight:900 !important;
   }
 
   .v963-input,
@@ -602,19 +561,20 @@
   .v963-search-input,
   .v963-textarea{
     width:100%;
-    min-height:37px;
-    padding:7px 9px;
-    border-radius:7px;
-    border:1px solid var(--moe-line-2);
+    min-height:40px;
+    padding:8px 11px;
+    border-radius:11px;
+    border:1px solid var(--mx-line-2);
     background:#fff;
-    color:var(--moe-ink);
-    font-size:8.9px;
+    color:var(--mx-ink);
+    font-size:9.4px;
+    font-weight:700;
     outline:none;
     box-shadow:none;
   }
 
   .v963-textarea{
-    min-height:94px;
+    min-height:96px;
     padding:8px 9px;
     resize:vertical;
     line-height:1.85;
@@ -624,59 +584,75 @@
   .v963-select:focus,
   .v963-search-input:focus,
   .v963-textarea:focus{
-    border-color:var(--moe-gold-2);
-    box-shadow:0 0 0 2px rgba(165,132,77,.08);
+    border-color:var(--mx-gold-2);
+    box-shadow:0 0 0 2px rgba(173,138,81,.08);
   }
 
   .v963-search-eq{
     display:grid;
-    grid-template-columns:minmax(0,1fr) 37px;
+    grid-template-columns:minmax(0,1fr) 36px;
     gap:6px;
     align-items:stretch;
   }
 
   .v963-search-clear{
-    width:37px;
+    width:36px;
+    min-height:36px;
     padding:0;
-    font-size:12px;
+    font-size:11px;
   }
 
   .v963-toolbar{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:10px;
-    align-items:start;
+    gap:8px 10px;
+    align-items:center;
+    padding-top:2px;
   }
 
   .v963-toolbar-right,
   .v963-toolbar-left{
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:8px;
     flex-wrap:wrap;
   }
 
   .v963-toolbar-left{justify-content:flex-end}
 
+  .v963-filter-inline{
+    min-width:0;
+    max-width:460px;
+    display:grid;
+    gap:4px;
+  }
+
+  .v963-filter-actions{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
   .v963-group{
     display:inline-flex;
     align-items:center;
-    gap:4px;
+    gap:5px;
     flex-wrap:wrap;
-    padding:4px;
+    padding:5px;
   }
 
   .v963-group-label{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:22px;
-    padding:0 7px;
-    border-radius:6px;
-    background:var(--moe-surface-3);
-    border:1px solid var(--moe-line);
-    color:var(--moe-muted);
-    font-size:6.85px;
+    min-height:24px;
+    padding:0 8px;
+    border-radius:7px;
+    background:var(--mx-surface-3);
+    border:1px solid var(--mx-line);
+    color:var(--mx-muted);
+    font-size:8.2px;
     font-weight:900 !important;
     white-space:nowrap;
   }
@@ -684,16 +660,16 @@
   .v963-kpis{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:8px;
+    gap:9px;
   }
 
   .v963-kpi{
-    padding:10px;
-    min-height:78px;
+    padding:12px 13px;
+    min-height:84px;
     display:flex;
     flex-direction:column;
     gap:3px;
-    box-shadow:var(--moe-shadow-soft);
+    box-shadow:var(--mx-shadow-soft);
   }
 
   .v963-k1{
@@ -701,29 +677,30 @@
     align-items:center;
     justify-content:space-between;
     gap:6px;
-    font-size:8px;
-    color:var(--moe-muted);
+    font-size:8.8px;
+    color:var(--mx-muted);
     line-height:1.35;
     font-weight:900 !important;
   }
 
   .v963-k2{
-    font-size:17px;
+    font-size:19px;
     line-height:1.05;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
   }
 
   .v963-k3{
     margin-top:auto;
-    font-size:7.35px;
-    color:#829087;
+    font-size:8px;
+    color:#819087;
+    font-weight:700;
   }
 
   .v963-chip.ok{
-    border-color:var(--moe-ok-bd);
-    background:var(--moe-ok-bg);
-    color:var(--moe-ok);
+    border-color:var(--mx-ok-bd);
+    background:var(--mx-ok-bg);
+    color:var(--mx-ok);
   }
 
   .v963-ops{
@@ -750,32 +727,97 @@
     align-items:center;
   }
 
-  .v963-tab.on,
-  .v963-chip-btn.active{
+  .v963-tab.on{
     color:#775715;
-    border-color:rgba(165,132,77,.55);
-    background:linear-gradient(180deg,#fff8ee,#fff1dc);
+    border-color:rgba(173,138,81,.55);
+    background:linear-gradient(180deg,#fff8ed,#fff1d9);
   }
 
   .v963-tab.on .v963-count{
-    border-color:rgba(165,132,77,.55);
-    background:#fff4e2;
+    border-color:rgba(173,138,81,.55);
+    background:#fff4df;
     color:#775715;
   }
 
   /* =========================
-     الجدول
+     Table
   ========================= */
   .v963-table-wrap{
-    overflow:auto;
+    overflow:visible;
     background:linear-gradient(180deg,#fff 0%, #fcfdfc 100%);
-    border-top:1px solid var(--moe-line);
-    box-shadow:var(--moe-shadow-table) inset;
+    border-top:1px solid var(--mx-line);
+    box-shadow:none;
+  }
+
+  .v963-pager{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:10px 12px 11px;
+    border-top:1px solid var(--mx-line);
+    background:linear-gradient(180deg,#fcfdfc 0%, #f7faf7 100%);
+  }
+
+  .v963-pager.is-hidden{display:none}
+
+  .v963-pager-info-wrap{
+    display:grid;
+    gap:2px;
+  }
+
+  .v963-pager-info{
+    color:var(--mx-green-1);
+    font-size:8.5px;
+    font-weight:900 !important;
+  }
+
+  .v963-pager-meta{
+    color:var(--mx-muted);
+    font-size:7.9px;
+    font-weight:800 !important;
+  }
+
+  .v963-pager-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .v963-pager-page{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:60px;
+    min-height:32px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--mx-line-2);
+    background:#fff;
+    color:var(--mx-green-1);
+    font-size:8.2px;
+    font-weight:900 !important;
+  }
+
+  .v963-pager-btn{
+    min-width:36px;
+    min-height:32px;
+    padding:4px 10px;
+  }
+
+  .v963-pager-btn[disabled]{
+    opacity:.42;
+    cursor:not-allowed;
+    transform:none !important;
+    filter:saturate(.7);
+    box-shadow:none !important;
   }
 
   .v963-table{
     width:100%;
-    min-width:980px;
+    min-width:100%;
     border-collapse:separate;
     border-spacing:0;
     table-layout:fixed;
@@ -787,14 +829,14 @@
   }
 
   .v963-table th{
-    position:sticky;
-    top:0;
-    z-index:5;
+    position:static;
+    top:auto;
+    z-index:1;
     padding:11px 8px;
     white-space:nowrap;
-    font-size:8.6px;
+    font-size:9.8px;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
     background:linear-gradient(180deg,#f3f6f2 0%, #edf2ed 100%);
     border-bottom:1px solid #cfd8d0;
     border-inline-start:1px solid #dfe6df;
@@ -809,13 +851,15 @@
 
   .v963-table td{
     padding:11px 8px;
-    font-size:9px;
+    font-size:10.15px;
+    font-weight: 700;
     vertical-align:middle;
     border-bottom:1px solid #edf1ed;
     border-inline-start:1px solid #f0f3f0;
     background:#fff;
-    color:var(--moe-ink);
+    color:var(--mx-ink);
     transition:background .14s ease, box-shadow .14s ease;
+    overflow-wrap:anywhere;
   }
 
   .v963-row:nth-child(4n+1) td{background:#ffffff}
@@ -825,9 +869,17 @@
     background:#f8faf8 !important;
   }
 
+  .v963-row:hover .c-actions{
+    background:linear-gradient(180deg,#fbfcfb 0%, #f7faf7 100%) !important;
+  }
+
   .v963-row.is-selected td{
     background:#fbf7ef !important;
-    box-shadow:inset 2px 0 0 rgba(165,132,77,.28) !important;
+    box-shadow:inset 3px 0 0 rgba(173,138,81,.32) !important;
+  }
+
+  .v963-row.is-selected .c-actions{
+    background:linear-gradient(180deg,#fcfaf4 0%, #f9f4e9 100%) !important;
   }
 
   .c-sel{width:38px;text-align:center}
@@ -837,26 +889,24 @@
   .c-state{width:168px}
   .c-actions{
     width:230px;
-    position:sticky;
-    inset-inline-start:0;
+    position:static;
+    inset-inline-start:auto;
     left:auto !important;
-    z-index:6;
+    z-index:auto;
     background:linear-gradient(180deg,#ffffff 0%, #fcfdfc 100%) !important;
-    box-shadow:
-      inset 1px 0 0 #e6ece7,
-      -8px 0 14px rgba(17,24,20,.03);
+    box-shadow:none;
   }
 
   .v963-table thead .c-actions{
-    z-index:9;
+    z-index:1;
     background:linear-gradient(180deg,#f3f6f2 0%, #edf2ed 100%) !important;
-    box-shadow:inset 1px 0 0 #dfe6df;
+    box-shadow:none;
   }
 
   .v963-check{
     width:14px;
     height:14px;
-    accent-color:var(--moe-green-2);
+    accent-color:var(--mx-green-2);
     cursor:pointer;
   }
 
@@ -877,48 +927,48 @@
 
   .v963-name-main{
     min-width:0;
-    font-size:10.25px;
+    font-size:11.8px;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
   .v963-state-badge{
-    min-height:21px;
-    padding:2px 7px;
-    font-size:7.65px;
+    min-height:22px;
+    padding:2px 8px;
+    font-size:8.45px;
   }
 
   .v963-state-badge.submitted{
-    background:var(--moe-ok-bg);
-    border-color:var(--moe-ok-bd);
-    color:var(--moe-ok);
+    background:var(--mx-ok-bg);
+    border-color:var(--mx-ok-bd);
+    color:var(--mx-ok);
   }
 
   .v963-state-badge.draft{
-    background:var(--moe-warn-bg);
-    border-color:var(--moe-warn-bd);
+    background:var(--mx-warn-bg);
+    border-color:var(--mx-warn-bd);
     color:#8a6526;
   }
 
   .v963-state-badge.returned{
-    background:var(--moe-info-bg);
-    border-color:var(--moe-info-bd);
-    color:var(--moe-info);
+    background:var(--mx-info-bg);
+    border-color:var(--mx-info-bd);
+    color:var(--mx-info);
   }
 
   .v963-state-badge.approved{
-    background:var(--moe-ok-bg);
-    border-color:var(--moe-ok-bd);
-    color:var(--moe-ok);
+    background:var(--mx-ok-bg);
+    border-color:var(--mx-ok-bd);
+    color:var(--mx-ok);
   }
 
   .v963-state-badge.rejected{
-    background:var(--moe-danger-bg);
-    border-color:var(--moe-danger-bd);
-    color:var(--moe-danger);
+    background:var(--mx-danger-bg);
+    border-color:var(--mx-danger-bd);
+    color:var(--mx-danger);
   }
 
   .v963-nid-row{
@@ -931,12 +981,13 @@
   .v963-nid{
     gap:5px;
     padding:4px 8px;
-    font-size:7.95px;
+    font-size:8.95px;
+    font-weight:800 !important;
   }
 
   .v963-nid .lbl{
     color:#7c8a83;
-    font-size:6.9px;
+    font-size:7.4px;
     font-weight:900 !important;
   }
 
@@ -955,7 +1006,7 @@
   }
 
   .v963-tag.gold{
-    border-color:rgba(165,132,77,.45);
+    border-color:rgba(173,138,81,.45);
     background:#f8f4ea;
     color:#7d5d19;
   }
@@ -967,12 +1018,103 @@
   }
 
   .v963-actions{
+    position:relative;
     display:flex;
-    gap:5px;
+    gap:7px;
     align-items:center;
-    flex-wrap:wrap;
     justify-content:center;
-    flex-direction:row-reverse;
+    flex-wrap:nowrap;
+  }
+
+  .v963-actions .v963-btn-sm{
+    min-width:60px;
+  }
+
+  .v963-row-more{
+    position:relative;
+  }
+
+  .v963-row-more-btn{
+    min-width:68px;
+  }
+
+  .v963-row-more-btn .caret{
+    font-size:7.6px;
+    opacity:.9;
+    transition:transform .18s ease;
+  }
+
+  .v963-row-more.open .v963-row-more-btn{
+    background:#f7faf7;
+    border-color:#c4d0c6;
+    box-shadow:0 4px 10px rgba(16,24,20,.05);
+  }
+
+  .v963-row-more.open .v963-row-more-btn .caret{
+    transform:rotate(180deg);
+  }
+
+  .v963-row-menu{
+    position:absolute;
+    top:calc(100% + 6px);
+    inset-inline-start:0;
+    min-width:138px;
+    padding:6px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    border:1px solid #d8e2da;
+    border-radius:12px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    box-shadow:0 14px 28px rgba(16,24,20,.10);
+    z-index:80;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(6px);
+    transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+  }
+
+  .v963-row-more.open .v963-row-menu{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translateY(0);
+  }
+
+  .v963-row-menu-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:6px;
+    min-height:30px;
+    padding:6px 10px;
+    border:none;
+    border-radius:9px;
+    background:#fff;
+    color:var(--mx-green-1);
+    text-decoration:none;
+    text-align:right;
+    cursor:pointer;
+    font-size:8.8px;
+    font-weight:900 !important;
+    line-height:1.35;
+  }
+
+  .v963-row-menu-item:hover{
+    background:#f5f8f6;
+    transform:none;
+  }
+
+  .v963-row-menu-item.danger{
+    color:var(--mx-danger);
+    background:var(--mx-danger-bg);
+  }
+
+  .v963-row-menu-item.warn{
+    color:#8a6526;
+    background:var(--mx-warn-bg);
   }
 
   .v963-expand-row{display:none}
@@ -981,24 +1123,24 @@
   .v963-expand-cell{
     padding:0 !important;
     background:#fbfdfb !important;
-    border-bottom:1px solid var(--moe-line);
+    border-bottom:1px solid var(--mx-line);
   }
 
   .v963-expand-box{
     padding:10px;
-    border-top:1px dashed rgba(39,69,56,.16);
+    border-top:1px dashed rgba(27,74,56,.16);
     background:linear-gradient(180deg,#fcfefc,#fbfdfb);
   }
 
   .v963-expand-grid{
     display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
     gap:6px;
   }
 
   .v963-info{
     padding:8px;
-    border-radius:8px;
+    border-radius:10px;
   }
 
   .v963-info .t{
@@ -1010,7 +1152,7 @@
 
   .v963-info .v{
     font-size:8.55px;
-    color:var(--moe-ink);
+    color:var(--mx-ink);
     font-weight:900 !important;
     line-height:1.6;
   }
@@ -1019,12 +1161,12 @@
     display:none;
     align-items:center;
     justify-content:space-between;
-    gap:10px;
+    gap:8px;
     flex-wrap:wrap;
-    padding:8px 11px;
-    border-top:1px solid var(--moe-line);
-    border-bottom:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
+    padding:7px 10px;
+    border-top:1px solid var(--mx-line);
+    border-bottom:1px solid var(--mx-line);
+    background:var(--mx-surface-2);
   }
 
   .v963-bulkbar.on{display:flex}
@@ -1038,14 +1180,14 @@
   }
 
   .v963-bulkbar-title{
-    font-size:9.1px;
+    font-size:9.8px;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
   }
 
   .v963-bulkbar-sub{
     font-size:7.65px;
-    color:var(--moe-muted);
+    color:var(--mx-muted);
     font-weight:800 !important;
   }
 
@@ -1057,9 +1199,9 @@
     height:22px;
     padding:0 8px;
     border-radius:999px;
-    border:1px solid var(--moe-line-2);
+    border:1px solid var(--mx-line-2);
     background:#fff;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
     font-size:8.55px;
     font-weight:900 !important;
   }
@@ -1079,7 +1221,7 @@
 
   .v963-modal-card{
     width:min(100%,520px);
-    border-radius:14px;
+    border-radius:16px;
   }
 
   .v963-modal-head,
@@ -1089,12 +1231,12 @@
     align-items:center;
     justify-content:space-between;
     gap:8px;
-    border-bottom:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
+    border-bottom:1px solid var(--mx-line);
+    background:var(--mx-surface-2);
   }
 
   .v963-modal-foot{
-    border-top:1px solid var(--moe-line);
+    border-top:1px solid var(--mx-line);
     border-bottom:none;
     justify-content:flex-start;
     flex-wrap:wrap;
@@ -1106,7 +1248,7 @@
     margin:0;
     font-size:9.8px;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
   }
 
   .v963-toast{
@@ -1117,101 +1259,339 @@
     min-width:220px;
     max-width:310px;
     padding:10px 12px;
-    border-radius:11px;
-    display:none;
+    border-radius:12px;
+    display:block;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(8px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    border-top:3px solid #c9d7cd;
+    box-shadow:0 16px 28px rgba(16,24,20,.10);
   }
 
-  .v963-toast.on{display:block}
+  .v963-toast.on{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+  }
+
+  .v963-toast.is-success{border-top-color:#88b397}
+  .v963-toast.is-warn{border-top-color:#c7aa6d}
+  .v963-toast.is-error{border-top-color:#cf8f8f}
 
   .v963-toast .t{
     font-size:8.8px;
     font-weight:900 !important;
-    color:var(--moe-green-1);
+    color:var(--mx-green-1);
     margin-bottom:2px;
   }
 
   .v963-toast .s{
-    color:var(--moe-muted);
+    color:var(--mx-muted);
     font-size:7.75px;
   }
 
+  
+
+  /* =========================
+     Refinement pass — KPI + table actions
+  ========================= */
+  .v963-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:21px;
+    padding:0 9px;
+    border-radius:999px;
+    border:1px solid #d7e0d8;
+    background:#f7faf7;
+    color:#6f7f76;
+    font-size:7px;
+    font-weight:900 !important;
+    white-space:nowrap;
+  }
+
+  .v963-kpis{
+    gap:12px;
+  }
+
+  .v963-kpi{
+    min-height:78px;
+    padding:13px 14px 12px;
+    gap:5px;
+    box-shadow:0 5px 14px rgba(16,24,20,.04);
+  }
+
+  .v963-k1{
+    font-size:7.9px;
+    color:#63756c;
+  }
+
+  .v963-k2{
+    font-size:21px;
+  }
+
+  .v963-k3{
+    font-size:7.1px;
+    color:#839188;
+  }
+
+  .v963-ops{
+    padding:10px 12px;
+  }
+
+  .v963-tabs{
+    gap:5px;
+  }
+
+  .v963-tab{
+    min-height:34px;
+    padding:6px 12px;
+    border-radius:10px;
+    font-size:8.35px;
+  }
+
+  .v963-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:19px;
+    height:19px;
+    padding:0 5px;
+    border-radius:999px;
+    background:#f3f6f3;
+    border:1px solid #d8e0d9;
+    color:#5f7268;
+    font-size:7px;
+    font-weight:900 !important;
+  }
+
+  .v963-table th{
+    padding:12px 8px;
+    font-size:9px;
+  }
+
+  .v963-table td{
+    padding:12px 9px;
+  }
+
+  .c-actions{
+    width:210px;
+  }
+
+  .v963-name-main{
+    font-size:10px;
+  }
+
+  .v963-help{
+    font-size:7.2px;
+    color:#7a8881;
+  }
+
+  .v963-state-badge{
+    min-height:20px;
+    padding:2px 7px;
+    font-size:7.2px;
+  }
+
+  .v963-flow{
+    gap:5px;
+  }
+
+  .v963-tag{
+    min-height:21px;
+    padding:2px 8px;
+    border-radius:999px;
+    border:1px solid #dbe3dc;
+    background:#f7faf7;
+    color:#63756b;
+    font-size:7.55px;
+    font-weight:900 !important;
+    display:inline-flex;
+    align-items:center;
+  }
+
+  .v963-actions .v963-btn{
+    border-radius:10px;
+  }
+
+  .v963-actions .v963-btn:not(.v963-btn-ok):not(.v963-btn-danger):not(.v963-btn-warn){
+    background:#fff;
+  }
+
+  .v963-expand-box{
+    padding:12px 13px;
+  }
+
   @media (max-width:1100px){
+    .v963-admin-groups,
     .v963-kpis,
     .v963-expand-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
   }
 
-  @media (max-width:920px){
-    .v963-top{
+  @media (max-width:980px){
+    .v963-hero-body{
       grid-template-columns:1fr;
       align-items:start;
-      padding:14px 15px;
     }
 
-    .v963-top-side{
+    .v963-hero-actions,
+    .v963-hero-nav{
       justify-content:flex-start;
     }
 
-    .v963-title{
-      font-size:19px;
+    .v963-admin-groups,
+    .v963-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
-    .v963-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .v963-toolbar{grid-template-columns:1fr}
-    .v963-toolbar-left{justify-content:flex-start}
-    .v963-table{min-width:900px}
+    .v963-admin-tool{
+      flex:1 1 calc(50% - 8px);
+    }
+
+    .v963-toolbar{
+      grid-template-columns:1fr;
+    }
+
+    .v963-toolbar-left{
+      justify-content:flex-start;
+    }
+
+    .v963-table{
+      min-width:100%;
+    }
+
     .c-name{width:300px}
     .c-flow{width:190px}
     .c-state{width:170px}
-    .c-actions{width:236px}
-
-    .v963-menu{
-      inset-inline-end:auto;
-      inset-inline-start:0;
-    }
+    .c-actions{width:210px}
   }
 
   @media (max-width:640px){
     .v963{
-      padding:7px;
+      padding:8px;
     }
 
-    .v963-page{
-      gap:8px;
+    .v963-shell{
+      padding:10px;
+      border-radius:22px;
     }
 
+    .v963-admin-groups,
     .v963-kpis,
     .v963-grid,
     .v963-expand-grid{
       grid-template-columns:1fr;
     }
 
-    .v963-table{min-width:780px}
-    .v963-search-eq{grid-template-columns:minmax(0,1fr) 34px}
-    .v963-search-clear{width:34px;min-height:34px}
-    .v963-bulkbar{align-items:flex-start}
+    .v963-admin-tool{
+      flex:1 1 100%;
+    }
+
+    .v963-table{
+      min-width:100%;
+    }
+
+    .v963-search-eq{
+      grid-template-columns:minmax(0,1fr) 34px;
+    }
+
+    .v963-search-clear{
+      width:34px;
+      min-height:34px;
+    }
+
+    .v963-bulkbar{
+      align-items:flex-start;
+    }
+
     .v963-bulkbar-left,
-    .v963-bulkbar-right{width:100%}
-    .v963-title{font-size:18px}
-
-    .v963-menu{
-      width:min(100vw - 24px, 390px);
+    .v963-bulkbar-right{
+      width:100%;
     }
 
-    .v963-menu-link{
-      grid-template-columns:52px 24px minmax(0,1fr);
-      gap:8px;
-      padding:10px 12px;
+    .v963-hero-title{
+      font-size:16px;
     }
 
-    .v963-menu-badge{
-      width:24px;
-      height:24px;
-      border-radius:7px;
-      font-size:6.3px;
+    .v963-hero-sub{
+      font-size:7.7px;
     }
   }
+
+  /* =========================
+     Final refinement — quieter KPI cards
+  ========================= */
+  .v963-kpis{
+    gap:10px;
+    align-items:stretch;
+  }
+
+  .v963-kpi{
+    min-height:70px;
+    padding:10px 12px 9px;
+    gap:4px;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+    box-shadow:0 2px 8px rgba(16,24,20,.035);
+  }
+
+  .v963-kpi::before{
+    height:2px;
+    opacity:.84;
+  }
+
+  .v963-k1{
+    min-height:18px;
+    gap:8px;
+    font-size:7.55px;
+    line-height:1.3;
+    color:#66786f;
+  }
+
+  .v963-k2{
+    font-size:18px;
+    line-height:1;
+    letter-spacing:.1px;
+    color:#183127;
+  }
+
+  .v963-k3{
+    margin-top:0;
+    font-size:6.95px;
+    line-height:1.45;
+    color:#8a978f;
+  }
+
+  .v963-chip{
+    min-height:18px;
+    padding:0 7px;
+    border-radius:999px;
+    font-size:6.65px;
+    border-color:#dbe3dc;
+    background:#f8faf8;
+    color:#6f7f76;
+  }
+
+  .v963-chip.ok{
+    border-color:#d7e7dc;
+    background:#f1f8f3;
+    color:#2b6b42;
+  }
+
+  @media (max-width:640px){
+    .v963-kpi{
+      min-height:64px;
+      padding:10px 11px 8px;
+    }
+
+    .v963-k2{
+      font-size:17px;
+    }
+  }
+
 </style>
 {% endblock %}
 
@@ -1219,137 +1599,142 @@
 <div class="v963">
   <div class="v963-page">
 
-    <div class="v963-main">
-      <div class="v963-top">
-        <div class="v963-top-main">
-          <h1 class="v963-title">لوحة القرارات الإدارية التعليمية</h1>
+    <div class="v963-shell">
+      <div class="v963-hero">
+        <div class="v963-hero-top">
+          <div class="v963-hero-status">
+            <span class="v963-status-chip soft">
+              <span class="dot"></span>
+              بوابة الإدارة التعليمية
+            </span>
 
-          <div class="v963-top-meta">
             {% if portal_window %}
-              <span class="v963-status-badge">
+              <span class="v963-status-chip">
                 {% if not portal_window.is_enabled or portal_window.phase == "closed" %}
-                  <span class="v963-dot status-closed"></span>
-                  الحالة: <b>مغلق</b>
+                  <span class="dot" style="background:#b14545;"></span>
+                  البوابة مغلقة
                 {% elif portal_window.phase == "official_only" %}
-                  <span class="v963-dot status-phase"></span>
-                  الحالة: <b>الوكلاء الرسميون</b>
+                  <span class="dot" style="background:#b9944c;"></span>
+                  متاح للوكلاء الرسميين
                 {% elif portal_window.phase == "new_only" %}
-                  <span class="v963-dot status-open"></span>
-                  الحالة: <b>المتقدمون الجدد</b>
+                  <span class="dot" style="background:#2e8a54;"></span>
+                  متاح للمتقدمين الجدد
                 {% elif portal_window.phase == "all" %}
-                  <span class="v963-dot status-open"></span>
-                  الحالة: <b>الجميع</b>
+                  <span class="dot" style="background:#2e8a54;"></span>
+                  التقديم متاح للجميع
                 {% endif %}
               </span>
             {% endif %}
+          </div>
 
-            <span class="v963-top-note">لوحة متابعة واعتماد الطلبات</span>
+          <div class="v963-hero-actions">
+            <a class="v963-btn v963-btn-primary" href="{% url 'portal:admin_import' %}">الاستيراد</a>
+            <a class="v963-btn" href="{% url 'portal:admin_portal_window' %}">فتح / إغلاق البوابة</a>
           </div>
         </div>
 
-        <div class="v963-top-side">
-          <a class="v963-btn" href="{% url 'portal:admin_applicants_list' %}">
-            إدارة المتقدمين
-          </a>
+        <div class="v963-hero-body">
+          <div class="v963-hero-copy">
+            <div class="v963-hero-kicker">لوحة إدارة الطلبات والقرارات التعليمية</div>
+            <h1 class="v963-hero-title">لوحة القرارات الإدارية التعليمية</h1>
+            <p class="v963-hero-sub">إدارة الطلبات واعتمادها بواجهة مضغوطة وواضحة تركّز على التنقل السريع والأدوات الأساسية فقط.</p>
+          </div>
 
-          <a class="v963-btn" href="{% url 'portal:admin_vacancies_list' %}">
-            إدارة الشواغر
-          </a>
+          <div class="v963-hero-nav">
+            <a class="v963-nav-link active" href="{% url 'portal:admin_dashboard' %}"><span class="dot"></span>لوحة القرارات</a>
+            <a class="v963-nav-link" href="{% url 'portal:admin_applicants_list' %}"><span class="dot"></span>إدارة المتقدمين</a>
+            <a class="v963-nav-link" href="{% url 'portal:admin_vacancies_list' %}"><span class="dot"></span>إدارة الشواغر</a>
+          </div>
+        </div>
+      </div><!-- hero -->
 
-          <a class="v963-btn v963-btn-info" href="{% url 'portal:admin_portal_window' %}">
-            فتح / إغلاق البوابة
-          </a>
+      <div class="v963-admin-strip">
+        <div class="v963-admin-strip-head">
+          <div class="v963-admin-strip-title">شريط الأدوات الإداري</div>
+          <div class="v963-admin-strip-sub">أوامر مباشرة مرتبة بحسب النوع الإداري.</div>
+        </div>
 
-          <div class="v963-more-wrap" id="moreWrap">
-            <button class="v963-btn v963-more-btn" type="button" id="moreMenuBtn" aria-expanded="false" aria-controls="moreMenu" onclick="toggleMoreMenu()">
-              <span>المزيد</span>
-              <span class="v963-caret">▾</span>
-            </button>
+        <div class="v963-admin-groups">
+          <div class="v963-admin-group">
+            <div class="v963-admin-group-head">
+              <div class="v963-admin-group-title">التصدير</div>
+              <div class="v963-admin-group-note">ملفات</div>
+            </div>
 
-            <div class="v963-menu" id="moreMenu">
-              <div class="v963-menu-head">
-                <div class="v963-menu-title">القائمة الإدارية</div>
-                <div class="v963-menu-sub">التقارير والإجراءات المرتبطة بلوحة القرارات</div>
-              </div>
+            <div class="v963-admin-actions">
+              <a class="v963-admin-tool" href="{{ url_general_excel }}" title="تصدير السجلات الحالية إلى Excel">
+                <span class="v963-admin-tool-icon">XL</span>
+                <span>Excel عام</span>
+              </a>
 
-              <div class="v963-menu-list">
-                <div class="v963-menu-group">
-                  <div class="v963-menu-group-title">التقارير العامة</div>
+              <a class="v963-admin-tool" href="{{ url_candidates_excel }}" title="تصدير قائمة المرشحين النهائية إلى Excel">
+                <span class="v963-admin-tool-icon">XL</span>
+                <span>Excel المرشحين</span>
+              </a>
 
-                  <a class="v963-menu-link" href="{{ url_general_excel }}">
-                    <span class="v963-menu-meta">تصدير</span>
-                    <span class="v963-menu-badge">XL</span>
-                    <span class="v963-menu-label">Excel عام</span>
-                  </a>
+              <a class="v963-admin-tool" href="{{ url_candidates_csv }}" title="تنزيل نسخة CSV للمرشحين">
+                <span class="v963-admin-tool-icon">CSV</span>
+                <span>CSV المرشحين</span>
+              </a>
+            </div>
+          </div>
 
-                  <a class="v963-menu-link" href="{{ url_general_print }}">
-                    <span class="v963-menu-meta">طباعة</span>
-                    <span class="v963-menu-badge">PDF</span>
-                    <span class="v963-menu-label">تقرير طباعة</span>
-                  </a>
+          <div class="v963-admin-group">
+            <div class="v963-admin-group-head">
+              <div class="v963-admin-group-title">الطباعة والتقارير</div>
+              <div class="v963-admin-group-note">طباعة</div>
+            </div>
 
-                  <a class="v963-menu-link is-key" href="{% url 'portal:admin_final_approvals' %}{% if current_query %}?{{ current_query }}{% endif %}">
-                    <span class="v963-menu-meta">اعتمادات</span>
-                    <span class="v963-menu-badge">نهائي</span>
-                    <span class="v963-menu-label">الطلبات المعتمدة</span>
-                  </a>
+            <div class="v963-admin-actions">
+              <a class="v963-admin-tool" href="{{ url_general_print }}" title="فتح التقرير العام للطباعة">
+                <span class="v963-admin-tool-icon">PDF</span>
+                <span>طباعة عامة</span>
+              </a>
 
-                  <a class="v963-menu-link" href="{{ url_school_demand_report }}">
-                    <span class="v963-menu-meta">تحليل</span>
-                    <span class="v963-menu-badge">عرض</span>
-                    <span class="v963-menu-label">فرز/إقبال المدارس</span>
-                  </a>
-                </div>
+              <a class="v963-admin-tool" href="{{ url_candidates_print }}" title="فتح كشف المرشحين للطباعة">
+                <span class="v963-admin-tool-icon">PDF</span>
+                <span>طباعة المرشحين</span>
+              </a>
 
-                <div class="v963-menu-group">
-                  <div class="v963-menu-group-title">تقارير المرشحين</div>
+              <a class="v963-admin-tool" href="{{ url_candidates_report }}" title="عرض تقرير المرشحين">
+                <span class="v963-admin-tool-icon">REP</span>
+                <span>تقرير المرشحين</span>
+              </a>
+            </div>
+          </div>
 
-                  <a class="v963-menu-link" href="{{ url_candidates_csv }}">
-                    <span class="v963-menu-meta">مرشحين</span>
-                    <span class="v963-menu-badge">CSV</span>
-                    <span class="v963-menu-label">CSV المرشحين</span>
-                  </a>
+          <div class="v963-admin-group">
+            <div class="v963-admin-group-head">
+              <div class="v963-admin-group-title">المتابعة والمراجعة</div>
+              <div class="v963-admin-group-note">مراجعة</div>
+            </div>
 
-                  <a class="v963-menu-link" href="{{ url_candidates_excel }}">
-                    <span class="v963-menu-meta">مرشحين</span>
-                    <span class="v963-menu-badge">XL</span>
-                    <span class="v963-menu-label">Excel المرشحين</span>
-                  </a>
+            <div class="v963-admin-actions">
+              <a class="v963-admin-tool is-key" href="{% url 'portal:admin_final_approvals' %}{% if current_query %}?{{ current_query }}{% endif %}" title="عرض السجلات المعتمدة">
+                <span class="v963-admin-tool-icon">OK</span>
+                <span>الطلبات المعتمدة</span>
+              </a>
 
-                  <a class="v963-menu-link" href="{{ url_candidates_print }}">
-                    <span class="v963-menu-meta">مرشحين</span>
-                    <span class="v963-menu-badge">PDF</span>
-                    <span class="v963-menu-label">طباعة المرشحين</span>
-                  </a>
+              <a class="v963-admin-tool" href="{{ url_school_demand_report }}" title="عرض تحليل الإقبال على المدارس">
+                <span class="v963-admin-tool-icon">ANL</span>
+                <span>فرز وإقبال المدارس</span>
+              </a>
 
-                  <a class="v963-menu-link is-key" href="{{ url_candidates_report }}">
-                    <span class="v963-menu-meta">مرشحين</span>
-                    <span class="v963-menu-badge">تقرير</span>
-                    <span class="v963-menu-label">تقرير المرشحين</span>
-                  </a>
-                </div>
-
-                <div class="v963-menu-group">
-                  <div class="v963-menu-group-title">الأدوات الإدارية</div>
-
-                  <a class="v963-menu-link" href="{% url 'portal:admin_portal_window' %}">
-                    <span class="v963-menu-meta">إعدادات</span>
-                    <span class="v963-menu-badge">ضبط</span>
-                    <span class="v963-menu-label">لوحة أوامر</span>
-                  </a>
-                </div>
-              </div>
+              <a class="v963-admin-tool" href="{% url 'portal:admin_portal_window' %}" title="التحكم في نافذة التقديم والإعدادات">
+                <span class="v963-admin-tool-icon">CFG</span>
+                <span>لوحة الأوامر</span>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="v963-card">
+      <div class="v963-card" style="margin-top:8px;">
         <div class="v963-sec">
           <div class="v963-section-cap">الفلاتر والبحث</div>
 
           <form method="get" id="filtersForm" class="v963-filter-shell">
-            <div class="v963-grid">
+            <div class="v963-grid v963-grid-filters">
               <div class="v963-field">
                 <label class="v963-label">بحث عام</label>
                 <input class="v963-input" type="text" name="q" value="{{ f_q|default:'' }}" placeholder="اسم المتقدم / السجل / القطاع / المدرسة">
@@ -1391,18 +1776,20 @@
 
             <div class="v963-toolbar">
               <div class="v963-toolbar-right">
-                <div class="v963-group">
-                  <span class="v963-group-label">بحث محلي</span>
+                <div class="v963-filter-inline">
+                  <label class="v963-label" for="qLocal">بحث محلي داخل السجل</label>
                   <div class="v963-search-eq">
-                    <input id="qLocal" class="v963-search-input" type="text" placeholder="بحث داخل النتائج الحالية..." oninput="applyLocalSearch()">
+                    <input id="qLocal" class="v963-search-input" type="text" placeholder="بحث سريع داخل النتائج الحالية..." oninput="applyLocalSearch()">
                     <button class="v963-search-clear" type="button" onclick="clearLocalSearch()">×</button>
                   </div>
                 </div>
               </div>
 
               <div class="v963-toolbar-left">
-                <button class="v963-btn v963-btn-primary" type="submit">تطبيق الفلاتر</button>
-                <a class="v963-btn" href="{% url 'portal:admin_dashboard' %}">إعادة ضبط</a>
+                <div class="v963-filter-actions">
+                  <button class="v963-btn v963-btn-primary" type="submit">تطبيق الفلاتر</button>
+                  <a class="v963-btn" href="{% url 'portal:admin_dashboard' %}">إعادة ضبط</a>
+                </div>
               </div>
             </div>
           </form>
@@ -1412,9 +1799,9 @@
           <div class="v963-section-cap">المؤشرات العامة</div>
           <div class="v963-kpis">
             <div class="v963-kpi">
-              <div class="v963-k1">إجمالي الطلبات <span class="v963-chip">ضمن النطاق الحالي</span></div>
+              <div class="v963-k1">إجمالي الطلبات <span class="v963-chip">النطاق الحالي</span></div>
               <div class="v963-k2">{{ total_apps|default:"0" }}</div>
-              <div class="v963-k3">إجمالي السجلات الحالية</div>
+              <div class="v963-k3">السجلات الحالية</div>
             </div>
 
             <div class="v963-kpi">
@@ -1426,13 +1813,13 @@
             <div class="v963-kpi">
               <div class="v963-k1">المسودات <span class="v963-chip">مسودة</span></div>
               <div class="v963-k2">{{ count_draft|default:"0" }}</div>
-              <div class="v963-k3">تحتاج استكمال</div>
+              <div class="v963-k3">بانتظار الاستكمال</div>
             </div>
 
             <div class="v963-kpi">
-              <div class="v963-k1">المرشحون النهائيون <span class="v963-chip ok">أولوية اعتماد</span></div>
+              <div class="v963-k1">المرشحون النهائيون <span class="v963-chip ok">اعتماد</span></div>
               <div class="v963-k2">{{ nominated_count|default:"0" }}</div>
-              <div class="v963-k3">لديهم رغبة متحققة</div>
+              <div class="v963-k3">رغبة متحققة</div>
             </div>
           </div>
         </div>
@@ -1466,7 +1853,7 @@
             </div>
 
             <div class="v963-ops-left">
-              <span class="v963-note">يمكن عرض التفاصيل السريعة لكل طلب من داخل الجدول.</span>
+              <span class="v963-note">الصف يعرض ملخصًا تنفيذيًا، وتظهر التفاصيل الإضافية من خلال «المزيد».</span>
             </div>
           </div>
 
@@ -1492,6 +1879,7 @@
                   data-status="{{ r.status|default:'' }}"
                   data-nominated="{% if ap %}1{% else %}0{% endif %}"
                   data-mode-visible="1"
+                  data-local-visible="1"
                   data-search="{{ r.applicant.full_name }} {{ r.applicant.national_id }} {{ r.applicant.sector }} {{ r.applicant.gender }} {{ r.first_pref_text|default:'' }} {{ r.achieved_text|default:'' }}"
                 >
                   <td class="c-sel">
@@ -1525,14 +1913,7 @@
                           <span class="lbl">السجل</span>
                           <span class="val">{{ r.applicant.national_id }}</span>
                         </span>
-                        {% if r.prefs_count %}
-                          <span class="v963-tag">الرغبات {{ r.prefs_count }}</span>
-                        {% endif %}
                       </div>
-
-                      {% if r.first_pref_text %}
-                        <div class="v963-help">الرغبة الأولى: {{ r.first_pref_text }}</div>
-                      {% endif %}
                     </div>
                   </td>
 
@@ -1560,11 +1941,21 @@
 
                   <td class="c-actions">
                     <div class="v963-actions">
-                      <button class="v963-btn v963-btn-sm" type="button" onclick="toggleExpand('{{ r.id }}')">تفاصيل</button>
-                      <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_app_detail' r.id %}?back={{ current_path|urlencode }}">فتح</a>
                       <button class="v963-btn v963-btn-sm v963-btn-ok" type="button" onclick="quickRowAction('{{ r.id }}','approve')">اعتماد</button>
-                      <button class="v963-btn v963-btn-sm v963-btn-danger" type="button" onclick="askRowAction('{{ r.id }}','reject')">رفض</button>
-                      <button class="v963-btn v963-btn-sm v963-btn-warn" type="button" onclick="askRowAction('{{ r.id }}','unlock')">إرجاع</button>
+                      <a class="v963-btn v963-btn-sm v963-btn-info" href="{% url 'portal:admin_app_detail' r.id %}?back={{ current_path|urlencode }}">فتح</a>
+
+                      <div class="v963-row-more" data-row-more>
+                        <button class="v963-btn v963-btn-sm v963-row-more-btn" type="button" aria-expanded="false" onclick="toggleRowMenu(event, '{{ r.id }}')">
+                          <span>المزيد</span>
+                          <span class="caret">▾</span>
+                        </button>
+
+                        <div class="v963-row-menu" id="rowMenu-{{ r.id }}">
+                          <button class="v963-row-menu-item" type="button" onclick="toggleExpand('{{ r.id }}'); closeAllRowMenus();">تفاصيل</button>
+                          <button class="v963-row-menu-item warn" type="button" onclick="askRowAction('{{ r.id }}','unlock'); closeAllRowMenus();">إرجاع</button>
+                          <button class="v963-row-menu-item danger" type="button" onclick="askRowAction('{{ r.id }}','reject'); closeAllRowMenus();">رفض</button>
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -1589,6 +1980,14 @@
                           <div class="t">حالة الترشيح</div>
                           <div class="v">{% if ap %}ترشيح متحقق (الرغبة {{ ap.rank }}){% else %}لا توجد رغبة متحققة حاليًا{% endif %}</div>
                         </div>
+                        <div class="v963-info">
+                          <div class="t">عدد الرغبات</div>
+                          <div class="v">{{ r.prefs_count|default:"0" }}</div>
+                        </div>
+                        <div class="v963-info">
+                          <div class="t">الرغبة الأولى</div>
+                          <div class="v">{{ r.first_pref_text|default:"—" }}</div>
+                        </div>
                       </div>
 
                       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
@@ -1603,15 +2002,28 @@
                 {% endwith %}
                 {% empty %}
                 <tr>
-                  <td colspan="6" style="padding:16px;text-align:center;color:var(--moe-muted);">لا توجد بيانات.</td>
+                  <td colspan="6" style="padding:16px;text-align:center;color:var(--mx-muted);">لا توجد بيانات.</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+
+          <div class="v963-pager" id="tablePager">
+            <div class="v963-pager-info-wrap">
+              <div class="v963-pager-info" id="pagerInfo">عرض 0–0 من أصل 0 طلب</div>
+              <div class="v963-pager-meta" id="pagerMeta">الصفحة 1 من 1</div>
+            </div>
+            <div class="v963-pager-actions">
+              <button class="v963-btn v963-btn-sm v963-pager-btn" type="button" id="pagerPrevBtn" onclick="goToTablePage(-1)">السابق</button>
+              <span class="v963-pager-page" id="pagerCurrentBadge">1 / 1</span>
+              <button class="v963-btn v963-btn-sm v963-pager-btn" type="button" id="pagerNextBtn" onclick="goToTablePage(1)">التالي</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </div><!-- card -->
+
+    </div><!-- shell -->
 
     <div class="v963-modal" id="noteModal" aria-hidden="true">
       <div class="v963-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -1646,15 +2058,22 @@
 <script>
   const csrftoken = document.cookie.split('; ').find(v => v.startsWith('csrftoken='))?.split('=')[1] || '';
   const selectedIds = new Set();
+  const ROWS_PER_PAGE = 10;
+  let currentTablePage = 1;
   let modalAction = null;
   let modalTargetId = null;
 
-  function showToast(title, text){
+  let toastTimer = null;
+  function showToast(title, text, kind = 'success'){
     const box = document.getElementById('toastBox');
     document.getElementById('toastTitle').textContent = title;
     document.getElementById('toastText').textContent = text;
-    box.classList.add('on');
-    setTimeout(() => box.classList.remove('on'), 2400);
+    box.classList.remove('is-success', 'is-warn', 'is-error');
+    box.classList.add('on', `is-${kind}`);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      box.classList.remove('on', 'is-success', 'is-warn', 'is-error');
+    }, 2600);
   }
 
   function toggleMoreMenu(forceState = null){
@@ -1674,23 +2093,77 @@
     applyLocalSearch();
   }
 
-  function applyLocalSearch(){
+  function applyLocalSearch(resetPage = true){
     const needle = ((document.getElementById('qLocal')?.value) || '').trim().toLowerCase();
 
     document.querySelectorAll('#tbody .v963-row').forEach(row => {
-      const modeVisible = row.dataset.modeVisible !== '0';
       const text = (row.dataset.search || '').toLowerCase();
       const localVisible = !needle || text.includes(needle);
-      const visible = modeVisible && localVisible;
+      row.dataset.localVisible = localVisible ? '1' : '0';
+    });
 
-      row.style.display = visible ? '' : 'none';
+    if (resetPage) currentTablePage = 1;
+    renderTablePage();
+  }
+
+  function renderTablePage(){
+    const rows = [...document.querySelectorAll('#tbody .v963-row')];
+    const visibleRows = rows.filter(row => row.dataset.modeVisible !== '0' && row.dataset.localVisible !== '0');
+    const totalRows = visibleRows.length;
+    const totalPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE));
+    currentTablePage = Math.min(Math.max(1, currentTablePage), totalPages);
+
+    const startIndex = totalRows === 0 ? 0 : (currentTablePage - 1) * ROWS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ROWS_PER_PAGE, totalRows);
+    const pageRows = new Set(visibleRows.slice(startIndex, endIndex));
+
+    rows.forEach(row => {
+      const isVisible = pageRows.has(row);
+      row.style.display = isVisible ? '' : 'none';
 
       const exp = document.querySelector(`[data-expand-row-for="${row.dataset.rowId}"]`);
       if (exp){
-        exp.classList.remove('on');
-        exp.style.display = visible ? '' : 'none';
+        if (!isVisible){
+          exp.classList.remove('on');
+          exp.style.display = 'none';
+        } else {
+          exp.style.display = '';
+        }
       }
     });
+
+    const pager = document.getElementById('tablePager');
+    const pagerInfo = document.getElementById('pagerInfo');
+    const pagerMeta = document.getElementById('pagerMeta');
+    const pagerCurrentBadge = document.getElementById('pagerCurrentBadge');
+    const prevBtn = document.getElementById('pagerPrevBtn');
+    const nextBtn = document.getElementById('pagerNextBtn');
+
+    if (pager) pager.classList.toggle('is-hidden', totalRows === 0);
+    if (pagerInfo){
+      pagerInfo.textContent = totalRows
+        ? `عرض ${startIndex + 1}–${endIndex} من أصل ${totalRows} طلبًا`
+        : 'لا توجد طلبات مطابقة للفلاتر الحالية.';
+    }
+    if (pagerMeta){
+      pagerMeta.textContent = totalRows
+        ? `الصفحة ${currentTablePage} من ${totalPages}`
+        : 'الصفحة 0 من 0';
+    }
+    if (pagerCurrentBadge){
+      pagerCurrentBadge.textContent = totalRows
+        ? `${currentTablePage} / ${totalPages}`
+        : '0 / 0';
+    }
+    if (prevBtn) prevBtn.disabled = currentTablePage <= 1 || totalRows === 0;
+    if (nextBtn) nextBtn.disabled = currentTablePage >= totalPages || totalRows === 0;
+  }
+
+  function goToTablePage(step){
+    currentTablePage += step;
+    renderTablePage();
+    const card = document.querySelector('.v963-table-wrap');
+    if (card) card.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
   function filterRows(mode, btn){
@@ -1707,13 +2180,33 @@
       row.dataset.modeVisible = visible ? '1' : '0';
     });
 
-    applyLocalSearch();
+    currentTablePage = 1;
+    applyLocalSearch(false);
   }
 
   function toggleExpand(id){
     const row = document.querySelector(`[data-expand-row-for="${id}"]`);
     if (!row) return;
     row.classList.toggle('on');
+  }
+
+  function closeAllRowMenus(){
+    document.querySelectorAll('[data-row-more]').forEach(wrap => {
+      wrap.classList.remove('open');
+      const btn = wrap.querySelector('.v963-row-more-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function toggleRowMenu(event, id){
+    event.stopPropagation();
+    const wrap = event.currentTarget.closest('[data-row-more]');
+    if (!wrap) return;
+
+    const isOpen = wrap.classList.contains('open');
+    closeAllRowMenus();
+    wrap.classList.toggle('open', !isOpen);
+    event.currentTarget.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
   }
 
   function syncSelectedPanel(){
@@ -1761,6 +2254,18 @@
     if (wrap && !wrap.contains(e.target)){
       toggleMoreMenu(false);
     }
+
+    if (!e.target.closest('[data-row-more]')){
+      closeAllRowMenus();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    closeAllRowMenus();
+    toggleMoreMenu(false);
+    const modal = document.getElementById('noteModal');
+    if (modal && modal.classList.contains('on')) closeNoteModal();
   });
 
   async function postAction(url, bodyObj){
@@ -1788,10 +2293,10 @@
         : `/admin/app/${id}/unlock/`;
 
       await postAction(url, {note: ''});
-      showToast('تم', 'اكتملت العملية بنجاح.');
+      showToast('تم التنفيذ', 'اكتملت العملية بنجاح.', 'success');
       window.location.reload();
     }catch(err){
-      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.');
+      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.', 'error');
     }
   }
 
@@ -1813,12 +2318,14 @@
 
     if (note) note.value = '';
     modal.classList.add('on');
+    setTimeout(() => note?.focus(), 30);
   }
 
   function closeNoteModal(){
     document.getElementById('noteModal')?.classList.remove('on');
     modalTargetId = null;
     modalAction = null;
+    document.querySelector('.v963-row-more.open .v963-row-more-btn')?.focus();
   }
 
   async function confirmModalAction(){
@@ -1827,7 +2334,7 @@
     const note = (document.getElementById('modalNote')?.value || '').trim();
 
     if (!note){
-      showToast('تنبيه', 'فضلاً أدخل الملاحظة أولًا.');
+      showToast('تنبيه', 'فضلاً أدخل الملاحظة أولًا.', 'warn');
       return;
     }
 
@@ -1838,10 +2345,10 @@
 
       await postAction(url, {note});
       closeNoteModal();
-      showToast('تم', 'اكتملت العملية بنجاح.');
+      showToast('تم التنفيذ', 'اكتملت العملية بنجاح.', 'success');
       window.location.reload();
     }catch(err){
-      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.');
+      showToast('تعذر التنفيذ', err.message || 'حدث خطأ.', 'error');
     }
   }
 
@@ -1849,6 +2356,7 @@
     if (e.key === 'Escape'){
       closeNoteModal();
       toggleMoreMenu(false);
+      closeAllRowMenus();
     }
   });
 
