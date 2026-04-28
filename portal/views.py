@@ -208,16 +208,15 @@ def _is_final_submission_locked(app: Application | None) -> bool:
 
 def _build_preferences_context(*, applicant: Applicant, app: Application, win: PortalWindow, schools, selected_prefs, selected_ids, error: str = "") -> dict:
     available_count = schools.count()
-    min_required = 5 if available_count >= 5 else available_count
+
+    # ضابط الاختيار مفتوح:
+    # لا يوجد حد أدنى للرغبات، ولا إلزام باختيار جميع الشواغر.
+    min_required = 0
 
     if available_count == 0:
-        selection_hint = "لا توجد شواغر متاحة حاليًا في قطاعك."
-    elif available_count >= 5:
-        selection_hint = "الحد الأدنى لاختيار الرغبات هو 5 رغبات، ويمكنك اختيار أكثر من ذلك حسب الشواغر المتاحة."
-    elif available_count == 1:
-        selection_hint = "يوجد شاغر واحد فقط متاح في قطاعك، ويكفي اختيار هذه الرغبة لإكمال التقديم."
+        selection_hint = "لا توجد شواغر متاحة حاليًا في قطاعك، ويمكنك إرسال الطلب دون رغبات."
     else:
-        selection_hint = f"عدد الشواغر المتاحة في قطاعك هو {available_count} فقط، لذا يجب اختيار جميع الشواغر المتاحة."
+        selection_hint = "اختيار الرغبات مفتوح دون حد أدنى إلزامي، ويمكنك اختيار رغبة واحدة أو أكثر حسب رغبتك."
 
     ctx = {
         "a": applicant,
@@ -600,13 +599,15 @@ def login_view(request):
 
         request.session[SESSION_KEY] = applicant.national_id
 
-        existing_app = (
-            Application.objects
-            .only("id", "locked", "status")
-            .filter(applicant=applicant)
-            .first()
+        # ضابط إثبات الدخول:
+        # بمجرد نجاح دخول المرشح يتم إنشاء طلب Draft له إن لم يكن موجودًا،
+        # وبذلك يظهر إداريًا ضمن من دخلوا البوابة حتى لو خرج قبل اختيار الرغبات.
+        app, _created = Application.objects.get_or_create(
+            applicant=applicant,
+            defaults={"status": "draft"},
         )
-        if _is_final_submission_locked(existing_app):
+
+        if _is_final_submission_locked(app):
             return redirect("portal:done")
 
         return redirect("portal:confirm")
@@ -752,17 +753,9 @@ def submit_view(request):
 
     ids = request.POST.getlist("vacancy_ids")
 
-    selected_prefs = list(
-        ApplicationPreference.objects
-        .filter(application=app)
-        .select_related("vacancy")
-        .order_by("rank", "id")
-    )
-    selected_ids = [p.vacancy_id for p in selected_prefs]
     schools = _eligible_schools_for(a)
     allowed_ids = set(schools.values_list("id", flat=True))
     available_count = len(allowed_ids)
-    min_required = 5 if available_count >= 5 else available_count
 
     clean_ids: list[int] = []
     for x in ids:
@@ -770,16 +763,26 @@ def submit_view(request):
             vid = int(x)
         except Exception:
             continue
+
         if vid in allowed_ids and vid not in clean_ids:
             clean_ids.append(vid)
 
-    if available_count > 0 and len(clean_ids) < min_required:
-        if available_count >= 5:
-            msg = "الحد الأدنى لاختيار الرغبات هو 5 مدارس."
-        elif available_count == 1:
-            msg = "يوجد شاغر واحد فقط متاح في قطاعك، ويجب اختياره لإكمال التقديم."
-        else:
-            msg = f"عدد الشواغر المتاحة في قطاعك هو {available_count} فقط، لذا يجب اختيار جميع الشواغر المتاحة."
+    # ضابط الإرسال بدون رغبات:
+    # الرغبات غير إلزامية، لكن إذا كانت هناك شواغر متاحة ولم يختر المرشح أي رغبة،
+    # فلا يتم الإرسال النهائي إلا بعد إقرار صريح منه بأنه اطلع ويرغب بالإرسال دون رغبات.
+    no_preferences_confirmed = (
+        (request.POST.get("confirm_no_preferences") or "").strip().lower()
+        in {"1", "true", "on", "yes", "y"}
+    )
+
+    if available_count > 0 and not clean_ids and not no_preferences_confirmed:
+        selected_prefs = list(
+            ApplicationPreference.objects
+            .filter(application=app)
+            .select_related("vacancy")
+            .order_by("rank", "id")
+        )
+        selected_ids = [p.vacancy_id for p in selected_prefs]
 
         ctx = _build_preferences_context(
             applicant=a,
@@ -788,7 +791,14 @@ def submit_view(request):
             schools=schools,
             selected_prefs=selected_prefs,
             selected_ids=selected_ids,
-            error=msg,
+            error=(
+                "لم تقم باختيار أي رغبة. إذا كنت ترغب في إرسال الطلب دون رغبات، "
+                "فضلاً فعّل إقرار الإرسال دون رغبات ثم اضغط إرسال الطلب مرة أخرى."
+            ),
+        )
+        ctx["require_no_preferences_confirm"] = True
+        ctx["no_preferences_confirm_text"] = (
+            "أقرّ بأنني اطلعت على الشواغر المتاحة، وأؤكد إرسال طلبي دون اختيار رغبات."
         )
         return render(request, "portal/preferences.html", ctx)
 
@@ -1639,6 +1649,25 @@ def admin_dashboard_view(request):
     count_draft = qs.filter(status="draft").count()
     nominated_count = qs.filter(achieved_pref__isnull=False).count()
 
+    # مؤشرات ضابط الدخول والإرسال:
+    # - دخل ولم يؤكد: تم إنشاء Application عند تسجيل الدخول، لكن لم يضغط تأكيد البيانات.
+    # - أكد ولم يرسل: أكد بياناته وبقي الطلب Draft.
+    # - مرسل بلا رغبات: ضغط إرسال الطلب بدون اختيار أي رغبة.
+    # - مرسل برغبات: ضغط إرسال الطلب ومعه رغبة واحدة فأكثر.
+    count_entered_not_confirmed = qs.filter(confirmed_at__isnull=True).count()
+    count_confirmed_not_submitted = qs.filter(
+        confirmed_at__isnull=False,
+        status="draft",
+    ).count()
+    count_submitted_without_prefs = qs.filter(
+        status="submitted",
+        prefs__isnull=True,
+    ).distinct().count()
+    count_submitted_with_prefs = qs.filter(
+        status="submitted",
+        prefs__isnull=False,
+    ).distinct().count()
+
     sectors = list(
         Applicant.objects
         .exclude(sector__isnull=True)
@@ -1663,6 +1692,10 @@ def admin_dashboard_view(request):
         "count_submitted": count_submitted,
         "count_draft": count_draft,
         "nominated_count": nominated_count,
+        "count_entered_not_confirmed": count_entered_not_confirmed,
+        "count_confirmed_not_submitted": count_confirmed_not_submitted,
+        "count_submitted_without_prefs": count_submitted_without_prefs,
+        "count_submitted_with_prefs": count_submitted_with_prefs,
         "f_q": q,
         "f_status": status,
         "f_sector": sector,

@@ -633,6 +633,30 @@
     font-weight:900 !important;
   }
 
+
+  .prf .ack{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--prf-warn-bd);
+    background:var(--prf-warn-bg);
+    color:#7c2d12;
+    font-size:8.9px;
+    line-height:1.9;
+    font-weight:900 !important;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  .prf .ack input{
+    margin-top:6px;
+    width:15px;
+    height:15px;
+    accent-color:var(--prf-green-2);
+    flex:0 0 auto;
+  }
+
   .prf .expired-inline{
     display:none;
     margin-top:10px;
@@ -952,7 +976,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if(submitBtn){
-      submitBtn.disabled = portalExpired || availableCount === 0;
+      submitBtn.disabled = portalExpired;
     }
   }
 
@@ -1218,25 +1242,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if(availableCount === 0){
-      await showAlert("لا توجد شواغر متاحة حاليًا في قطاعك، ولا يمكن إرسال الطلب في هذه الصفحة.", "لا توجد شواغر متاحة");
-      return;
-    }
-
     syncHiddenInputs();
+
+    // تنظيف إقرار الإرسال دون رغبات قبل تحديد الحالة النهائية
+    form.querySelectorAll("input[name='confirm_no_preferences'][data-auto-confirm]").forEach(el => el.remove());
 
     const selectedCount = selectedItems().length;
 
-    if(selectedCount < minRequired){
-      let msg = "";
-      if(availableCount >= 5){
-        msg = "الحد الأدنى لاختيار الرغبات هو 5 رغبات، يرجى استكمال العدد المطلوب قبل الإرسال.";
-      } else if(availableCount === 1){
-        msg = "يوجد شاغر واحد فقط متاح في قطاعك، ويجب اختياره لإكمال التقديم.";
-      } else {
-        msg = `عدد الشواغر المتاحة في قطاعك هو ${availableCount} فقط، لذا يجب اختيار جميع الشواغر المتاحة قبل الإرسال.`;
-      }
-      await showAlert(msg, "عدد الرغبات غير مكتمل");
+    if(selectedCount === 0){
+      const noPrefsMessage = availableCount > 0
+        ? "لم تقم باختيار أي رغبة. بالمتابعة سيتم تسجيل طلبك على أنه تم الدخول والاطلاع، مع إرسال الطلب دون رغبات مختارة. هل تؤكد ذلك؟"
+        : "لا توجد شواغر متاحة حاليًا في قطاعك. بالمتابعة سيتم تسجيل دخولك وإرسال طلبك دون رغبات مختارة. هل تؤكد ذلك؟";
+
+      const agreedNoPrefs = await showConfirm(
+        noPrefsMessage,
+        "تأكيد الإرسال دون رغبات"
+      );
+
+      if(!agreedNoPrefs) return;
+
+      const ack = document.createElement("input");
+      ack.type = "hidden";
+      ack.name = "confirm_no_preferences";
+      ack.value = "1";
+      ack.setAttribute("data-auto-confirm", "1");
+      form.appendChild(ack);
+
+      form.submit();
       return;
     }
 
@@ -1348,14 +1380,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <div>
           <h1>ترتيب الرغبات</h1>
           <p class="sub">
-            يرجى اختيار الرغبات المتاحة وترتيبها حسب الأولوية، تمهيدًا لاعتماد الطلب وإرساله نهائيًا.
+            اختيار الرغبات متاح دون إلزام، ويمكنك إرسال الطلب برغبات مختارة أو تأكيد الدخول والإرسال دون رغبات.
           </p>
         </div>
 
         {% if available_count > 0 %}
-        <div class="pill"><span class="dot"></span>الحد الأدنى المطلوب: {{ min_required }}</div>
+        <div class="pill"><span class="dot"></span>الاختيار متاح دون إلزام</div>
         {% else %}
-        <div class="pill"><span class="dot"></span>لا توجد شواغر متاحة حاليًا</div>
+        <div class="pill"><span class="dot"></span>تأكيد الدخول متاح دون رغبات</div>
         {% endif %}
       </div>
 
@@ -1433,14 +1465,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div class="empty-box" data-selected-empty {% if selected_prefs %}style="display:none"{% endif %}>
                 {% if available_count > 0 %}
-                لم يتم اختيار أي رغبة بعد. اختر من قائمة <b>الشواغر المتاحة</b> لاستكمال العدد المطلوب.
+                لم يتم اختيار أي رغبة بعد. يمكنك اختيار رغبة أو أكثر، أو إرسال الطلب دون رغبات بعد تأكيد الإقرار.
                 {% else %}
                 لا توجد رغبات متاحة للاختيار حاليًا.
                 {% endif %}
               </div>
 
               <div class="note">
-                بعد الإضافة يمكنك إعادة ترتيب الرغبات أو حذف أي رغبة قبل الإرسال النهائي.
+                بعد الإضافة يمكنك إعادة ترتيب الرغبات أو حذف أي رغبة قبل الإرسال النهائي. وفي حال عدم اختيار رغبات سيطلب منك النظام تأكيد الإرسال دون رغبات.
               </div>
             </div>
           </div>
@@ -1518,6 +1550,13 @@ document.addEventListener("DOMContentLoaded", () => {
                   {{ selection_hint }}
                 </div>
 
+                {% if require_no_preferences_confirm %}
+                <label class="ack">
+                  <input type="checkbox" name="confirm_no_preferences" value="1" required>
+                  <span>{{ no_preferences_confirm_text }}</span>
+                </label>
+                {% endif %}
+
                 <div class="expired-inline" data-expired-inline>
                   انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
                 </div>
@@ -1528,7 +1567,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   {% if available_count > 0 %}
                   <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
                   {% else %}
-                  <button class="btn primary is-disabled" data-submit type="button" style="flex:1" disabled>لا توجد شواغر متاحة</button>
+                  <button class="btn primary" data-submit type="submit" style="flex:1">تأكيد الدخول دون رغبات</button>
                   {% endif %}
                 </div>
               </form>
@@ -1537,7 +1576,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           {% if not schools and not selected_prefs %}
           <div class="alert warn" style="margin-top:12px">
-            لا توجد شواغر متاحة حاليًا لك. يمكنك الانتظار حتى يتم تحديث البيانات أو الرجوع للصفحة السابقة.
+            لا توجد شواغر متاحة حاليًا لك. يمكنك تأكيد الدخول وإرسال الطلب دون رغبات، أو الرجوع للصفحة السابقة.
           </div>
           {% endif %}
         </div>
@@ -1551,7 +1590,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="prf-modal" data-modal>
   <div class="prf-dialog" role="dialog" aria-modal="true" aria-labelledby="prfDialogTitle">
     <div class="prf-dialog-head">
-      <h3 class="prf-dialog-title" id="prfDialogTitle" data-modal-title>تأكيد نهائي</h3>
+      <h3 class="prf-dialog-title" id="prfDialogTitle" data-modal-title>تأكيد الإرسال</h3>
     </div>
     <div class="prf-dialog-body">
       <p class="prf-dialog-text" data-modal-text>...</p>
