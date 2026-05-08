@@ -256,6 +256,75 @@ class Application(TimeStampedModel):
     submitted_at = models.DateTimeField(null=True, blank=True)
     locked = models.BooleanField(default=False)
 
+
+    # =====================================================
+    # Submission acknowledgements / إثباتات الإرسال
+    # =====================================================
+    PREFERENCES_ACK_TEXT_V1 = (
+        "أقرّ بأن اختياري وترتيبي للرغبات لا يعني استحقاق التوجيه عليها أو تحققها، "
+        "ولا يترتب عليه أي التزام بتوجيهي إلى أي منها في حال وجود مرشحين أعلى درجة "
+        "أو أحق في المفاضلة، وأن التوجيه النهائي يكون وفق المصلحة التعليمية واحتياج "
+        "الإدارة والضوابط المعتمدة ونتائج المفاضلة، وفي حدود الرغبات المحددة."
+    )
+
+    NO_PREFERENCES_ACK_TEXT_V1 = (
+        "أقرّ بأنني اطلعت على الشواغر المتاحة خلال فترة التقديم، وأرغب في إرسال طلبي "
+        "دون اختيار أي رغبة، وأتحمل ما يترتب على ذلك من عدم دخولي في الترشيح على "
+        "الشواغر المتاحة."
+    )
+
+    SUBMISSION_POLICY_VERSION_V1 = "v1"
+
+    preferences_acknowledged = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name="أقر بسياسة الرغبات",
+    )
+    preferences_ack_text = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="نص إقرار سياسة الرغبات",
+    )
+    preferences_ack_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="وقت إقرار سياسة الرغبات",
+    )
+
+    no_preferences_acknowledged = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name="أقر بالإرسال دون رغبات",
+    )
+    no_preferences_ack_text = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="نص إقرار الإرسال دون رغبات",
+    )
+    no_preferences_ack_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="وقت إقرار الإرسال دون رغبات",
+    )
+
+    submitted_prefs_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name="عدد الرغبات وقت الإرسال",
+    )
+
+    submission_policy_version = models.CharField(
+        max_length=50,
+        blank=True,
+        default=SUBMISSION_POLICY_VERSION_V1,
+        verbose_name="إصدار سياسة الإقرار",
+    )
+
+    submission_snapshot = models.JSONField(
+        blank=True,
+        default=dict,
+        verbose_name="لقطة الإرسال",
+    )
+
     admin_decision = models.CharField(
         max_length=20,
         choices=ADMIN_DECISION,
@@ -296,6 +365,8 @@ class Application(TimeStampedModel):
             models.Index(fields=["achieved_at"]),
             models.Index(fields=["admin_decided_at"]),
             models.Index(fields=["admin_decision", "achieved_at"]),
+            models.Index(fields=["preferences_acknowledged"]),
+            models.Index(fields=["no_preferences_acknowledged"]),
         ]
         constraints = [
             models.CheckConstraint(
@@ -306,6 +377,68 @@ class Application(TimeStampedModel):
 
     def __str__(self) -> str:
         return f"طلب {self.id} - {self.applicant.national_id}"
+
+
+
+    @property
+    def submitted_with_preferences(self) -> bool:
+        return self.status == "submitted" and int(self.submitted_prefs_count or 0) > 0
+
+    @property
+    def submitted_without_preferences(self) -> bool:
+        return self.status == "submitted" and int(self.submitted_prefs_count or 0) == 0
+
+    def build_submission_snapshot(self) -> dict:
+        """
+        يبني لقطة إثبات لحظة الإرسال.
+        يستدعى من submit_view بعد حفظ ApplicationPreference وقبل app.save النهائي.
+        """
+        prefs = []
+        try:
+            qs = self.prefs.select_related("vacancy").order_by("rank", "id")
+            for pref in qs:
+                vacancy = getattr(pref, "vacancy", None)
+                prefs.append({
+                    "rank": pref.rank,
+                    "vacancy_id": getattr(vacancy, "id", None),
+                    "school_name": getattr(vacancy, "school_name", "") if vacancy else "",
+                    "ministry_no": getattr(vacancy, "ministry_no", "") if vacancy else "",
+                    "stage": getattr(vacancy, "stage", "") if vacancy else "",
+                    "sector": getattr(vacancy, "sector", "") if vacancy else "",
+                    "gender": getattr(vacancy, "gender", "") if vacancy else "",
+                })
+        except Exception:
+            prefs = []
+
+        applicant = getattr(self, "applicant", None)
+        submitted_at = self.submitted_at or timezone.now()
+
+        return {
+            "application_id": self.id,
+            "status": self.status,
+            "locked": bool(self.locked),
+            "submitted_at": timezone.localtime(submitted_at).isoformat() if submitted_at else "",
+            "submitted_prefs_count": len(prefs),
+            "submitted_without_preferences": len(prefs) == 0,
+            "submission_policy_version": self.submission_policy_version or self.SUBMISSION_POLICY_VERSION_V1,
+            "preferences_acknowledged": bool(self.preferences_acknowledged),
+            "preferences_ack_text": self.preferences_ack_text or "",
+            "preferences_ack_at": timezone.localtime(self.preferences_ack_at).isoformat() if self.preferences_ack_at else "",
+            "no_preferences_acknowledged": bool(self.no_preferences_acknowledged),
+            "no_preferences_ack_text": self.no_preferences_ack_text or "",
+            "no_preferences_ack_at": timezone.localtime(self.no_preferences_ack_at).isoformat() if self.no_preferences_ack_at else "",
+            "applicant": {
+                "id": getattr(applicant, "id", None),
+                "full_name": getattr(applicant, "full_name", "") if applicant else "",
+                "national_id": getattr(applicant, "national_id", "") if applicant else "",
+                "mobile": getattr(applicant, "mobile", "") if applicant else "",
+                "sector": getattr(applicant, "sector", "") if applicant else "",
+                "gender": getattr(applicant, "gender", "") if applicant else "",
+                "current_job": getattr(applicant, "current_job", "") if applicant else "",
+                "current_school": getattr(applicant, "current_school", "") if applicant else "",
+            },
+            "preferences": prefs,
+        }
 
     def save(self, *args, **kwargs):
         if self.achieved_pref_id and not self.achieved_at:

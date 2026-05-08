@@ -3,472 +3,879 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Vacancies Pressure Report — Matching Applicants Pages Style
+     - نفس نمط صفحة إدارة المتقدمين والصفحات السابقة
+     - هيدر مختصر، لوحة موحدة، فلاتر عملية، جدول إداري نظيف
+     - بدون تعديل views.py
+  ========================================================= */
+
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
+    --ap-bg:#f5f7f5;
+    --ap-surface:#ffffff;
+    --ap-surface-2:#fbfcfb;
+    --ap-surface-3:#f7faf7;
 
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --ap-ink:#203229;
+    --ap-ink-2:#34483e;
+    --ap-muted:#74837b;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --ap-green-1:#183c2f;
+    --ap-green-2:#245141;
+    --ap-green-3:#527466;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --ap-gold-1:#806735;
+    --ap-gold-2:#a98a51;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --ap-line:#dbe3dc;
+    --ap-line-2:#ccd7cf;
+    --ap-line-soft:#edf1ee;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --ap-ok:#256542;
+    --ap-ok-bg:#eff8f3;
+    --ap-ok-bd:#d1e7d9;
 
-    --ok:#215f39;
-    --ok-bg:#eff8f3;
-    --ok-bd:#cfe6d8;
+    --ap-info:#3d637c;
+    --ap-info-bg:#f3f7fb;
+    --ap-info-bd:#d7e2ec;
 
-    --warn:#8e6113;
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
+    --ap-warn:#87611f;
+    --ap-warn-bg:#fcf7ee;
+    --ap-warn-bd:#e6d7b9;
 
-    --danger:#8f2f2f;
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
+    --ap-danger:#8c3434;
+    --ap-danger-bg:#fbf5f5;
+    --ap-danger-bd:#e7cccc;
 
-    --moe-mid:#1f7a62;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
-    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+    --ap-shadow:0 1px 3px rgba(16,24,20,.035);
+    --ap-shadow-soft:0 8px 18px rgba(16,24,20,.045);
   }
 
-  .vpr, .vpr *{
+  .apl,
+  .apl *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .vpr{
+  .apl{
     direction:rtl;
-    color:var(--ink);
+    color:var(--ap-ink);
+    background:linear-gradient(180deg,#fbfcfb 0%, #f6f8f6 52%, #f0f4f1 100%);
+    padding:12px 10px;
   }
 
-  .vpr-page{
+  .apl-page{
+    max-width:1480px;
+    margin:0 auto;
     display:grid;
-    gap:12px;
+    gap:10px;
   }
 
-  .vpr-top,
-  .vpr-card{
+  .apl-hero,
+  .apl-panel{
     position:relative;
+    border:1px solid #d8e2dc;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:0 4px 14px rgba(18,32,24,.04);
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:var(--shadow);
   }
 
-  .vpr-top::before,
-  .vpr-card::before{
+  .apl-hero::before,
+  .apl-panel::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    height:2px;
+    background:linear-gradient(90deg,#1f4d3a,#b18a49);
+    opacity:.85;
   }
 
-  .vpr-top{
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
-    background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-  }
-
-  .vpr-top-row{
+  .apl-hero-main{
+    padding:12px 14px;
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:start;
-  }
-
-  .vpr-title{
-    margin:0;
-    font-size:20px;
-    line-height:1.2;
-    font-weight:900 !important;
-    color:var(--green-1);
-    letter-spacing:0;
-  }
-
-  .vpr-subtitle{
-    margin:6px 0 0;
-    color:var(--muted);
-    font-size:10.4px;
-    line-height:1.9;
-    font-weight:800 !important;
-    max-width:860px;
-  }
-
-  .vpr-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
     align-items:center;
+    gap:12px;
+  }
+
+  .apl-hero-text{
+    min-width:0;
+  }
+
+  .apl-title{
+    font-size:22px;
+    font-weight:700 !important;
+    color:#1f3f32;
+    margin:0;
+    line-height:1.35;
+  }
+
+  .apl-sub{
+    font-size:10.8px;
+    line-height:1.8;
+    color:#718079;
+    margin:3px 0 0;
+    font-weight:400 !important;
+    max-width:90ch;
+  }
+
+  .apl-hero-toolbar,
+  .apl-actions,
+  .apl-tool-actions,
+  .apl-tabs,
+  .apl-filter-row,
+  .apl-filter-actions,
+  .apl-row-actions,
+  .apl-foot-side,
+  .apl-pressure-actions{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .apl-hero-toolbar,
+  .apl-actions{
     justify-content:flex-end;
   }
 
-  .vpr-kpis{
-    margin-top:12px;
+  .apl-toolbar-separator{
+    width:1px;
+    height:26px;
+    background:#dce4df;
+  }
+
+  .apl-record-tools{
     display:flex;
-    gap:8px;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
     flex-wrap:wrap;
   }
 
-  .vpr-pill{
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-    font-size:9px;
-    font-weight:900 !important;
+  .apl-record-label{
     display:inline-flex;
     align-items:center;
     gap:6px;
+    min-height:30px;
+    padding:0 7px;
+    color:#74837b;
+    font-size:8.8px;
+    font-weight:500 !important;
     white-space:nowrap;
   }
 
-  .vpr-pill.gold{
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-    color:#8a6526;
+  .apl-record-label::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#1f4d3a;
+    opacity:.9;
   }
 
-  .vpr-btn{
-    min-height:35px;
-    padding:6px 12px;
-    border-radius:8px;
-    font-size:9.4px;
-    font-weight:900 !important;
-    border:1px solid var(--line-2);
-    background:#fff;
-    color:var(--green-2);
-    text-decoration:none;
+  .apl-btn,
+  .apl-tab{
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    cursor:pointer;
     justify-content:center;
+    gap:6px;
+    min-height:34px;
+    padding:6px 12px;
+    border-radius:10px;
+    border:1px solid var(--ap-line-2);
+    background:#fff;
+    color:var(--ap-green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:9.6px;
+    font-weight:600 !important;
+    line-height:1;
+    white-space:nowrap;
     box-shadow:none;
-    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+    transition:background .12s ease,border-color .12s ease,transform .12s ease;
   }
 
-  .vpr-btn:hover{
+  .apl-btn:hover,
+  .apl-tab:hover{
+    background:#f8fbf9;
+    border-color:#b9c7bd;
     transform:translateY(-1px);
-    background:var(--paper-2);
-    border-color:#b8c6bb;
   }
 
-  .vpr-btn:active{
-    transform:translateY(0);
+  .apl-btn-primary{
+    background:#1f4d3a;
+    border-color:#1f4d3a;
+    color:#fff;
   }
 
-  .vpr-btn-primary{
-    color:#fff !important;
-    border-color:var(--green-2) !important;
-    background:var(--green-2) !important;
+  .apl-btn-primary:hover{
+    background:#183c2f;
+    border-color:#183c2f;
+    color:#fff;
   }
 
-  .vpr-card{
-    overflow:hidden;
+  .apl-btn-gold{
+    background:var(--ap-warn-bg);
+    border-color:var(--ap-warn-bd);
+    color:#806021;
   }
 
-  .vpr-toolbar{
-    padding:10px 12px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-  }
-
-  .vpr-toolbar-row{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:10px;
-    align-items:end;
-  }
-
-  .vpr-toolbar-left,
-  .vpr-toolbar-right{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:end;
-  }
-
-  .vpr-input,
-  .vpr-select{
-    min-height:39px;
-    height:39px;
-    padding:7px 10px;
-    font-size:9.5px;
+  .apl-btn-sm{
+    min-height:31px;
+    padding:5px 10px;
+    font-size:8.8px;
     border-radius:8px;
-    border:1px solid var(--line-2);
+  }
+
+  .apl-list-head{
+    padding:11px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    border-bottom:1px solid #e5ebe6;
     background:#fff;
-    color:var(--ink);
+  }
+
+  .apl-section-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0;
+    color:#1f3f32;
+    font-size:11.4px;
+    line-height:1.5;
+    font-weight:700 !important;
+  }
+
+  .apl-section-title::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#1f4d3a;
+    flex:0 0 auto;
+  }
+
+  .apl-section-sub{
+    margin-top:2px;
+    color:#74837b;
+    font-size:8.5px;
+    line-height:1.7;
+    font-weight:400 !important;
+  }
+
+  .apl-chip,
+  .apl-pill,
+  .apl-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    min-height:29px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid #d6e4dc;
+    background:#f4faf6;
+    color:#1f4d3a;
+    font-size:9px;
+    font-weight:500 !important;
+    white-space:nowrap;
+  }
+
+  .apl-chip b,
+  .apl-pill b{
+    font-weight:700 !important;
+  }
+
+  .apl-tabs{
+    padding:10px 14px 6px;
+    justify-content:flex-start;
+  }
+
+  .apl-tab{
+    min-height:34px;
+    padding:6px 11px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid #d7e1db;
+    color:#32483e;
+  }
+
+  .apl-tab.on{
+    background:#eef8f2;
+    border-color:#cde5d7;
+    color:#1f4d3a;
+  }
+
+  .apl-count{
+    min-width:24px;
+    height:24px;
+    padding:0 7px;
+    border-radius:999px;
+    background:#fff;
+    border-color:#cde5d7;
+    color:#1f4d3a;
+    font-size:9px;
+    font-weight:700 !important;
+  }
+
+  .apl-pill-ok{
+    background:#edf8f2;
+    border-color:#cde5d7;
+    color:#1f4d3a;
+  }
+
+  .apl-pill-danger{
+    background:#fff7f7;
+    border-color:#e8cccc;
+    color:#9c3e3e;
+  }
+
+  .apl-pill-info{
+    background:#f5f8fa;
+    border-color:#d8e4e9;
+    color:#4f7282;
+  }
+
+  .apl-pill-gold{
+    background:#fffaf0;
+    border-color:#ead9b6;
+    color:#806021;
+  }
+
+  .apl-filter{
+    padding:6px 14px 12px;
+  }
+
+  .apl-filter-box{
+    border:1px solid #d8e2dc;
+    border-radius:14px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    padding:11px;
+    display:grid;
+    gap:10px;
+  }
+
+  .apl-filter-main{
+    display:grid;
+    grid-template-columns:minmax(260px,1.4fr) repeat(5,minmax(120px,.7fr));
+    gap:9px;
+    flex:1;
+    min-width:100%;
+  }
+
+  .apl-field{
+    display:grid;
+    gap:5px;
+    min-width:0;
+  }
+
+  .apl-label{
+    color:#2d4439;
+    font-size:9px;
+    font-weight:600 !important;
+  }
+
+  .apl-input,
+  .apl-select{
+    width:100%;
+    min-height:38px;
+    border:1px solid #cfdad3;
+    border-radius:10px;
+    background:#fff;
+    color:var(--ap-ink);
+    padding:6px 10px;
+    font-size:10px;
+    font-weight:400 !important;
     outline:none;
-    box-shadow:none;
   }
 
-  .vpr-input:focus,
-  .vpr-select:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  .apl-input:focus,
+  .apl-select:focus{
+    border-color:#2f6b53;
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
   }
 
-  .vpr-table-wrap{
-    overflow:auto;
+  .apl-table-wrap{
+    overflow-x:auto;
+    overflow-y:visible;
     background:#fff;
-    border-top:1px solid var(--line);
+    border-top:1px solid #d9e3dd;
   }
 
-  table.vpr-table{
+  .apl-table{
     width:100%;
     min-width:1280px;
     border-collapse:collapse;
     table-layout:fixed;
   }
 
-  table.vpr-table thead th{
-    position:sticky;
-    top:0;
-    z-index:4;
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-    color:var(--green-1);
-    font-size:8.8px;
-    font-weight:900;
-    padding:12px 8px;
-    border-bottom:1px solid var(--line-2) !important;
+  .apl-table th{
+    padding:11px 8px;
+    color:#20392f;
+    background:linear-gradient(180deg,#f0f5f2,#e8f0eb);
+    border-bottom:1px solid #cddbd3;
+    border-inline-start:1px solid #e2e8e3;
+    text-align:center;
     white-space:nowrap;
-    text-align:right;
-  }
-
-  table.vpr-table tbody td{
-    padding:10px 8px;
     font-size:9.3px;
-    vertical-align:middle;
-    border-bottom:1px solid #edf1ed !important;
-    background:#ffffff;
-    color:var(--ink);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    font-weight:700 !important;
   }
 
-  table.vpr-table tbody tr:nth-child(even) td{
+  .apl-table td{
+    padding:10px 8px;
+    border-bottom:1px solid #eef2ef;
+    border-inline-start:1px solid #f1f4f1;
+    background:#fff;
+    color:#253a31;
+    vertical-align:middle;
+    font-size:9.8px;
+    font-weight:400 !important;
+    text-align:center;
+  }
+
+  .apl-table th:first-child,
+  .apl-table td:first-child{
+    border-inline-start:none;
+  }
+
+  .apl-row:nth-child(even) td{
     background:#fcfdfc;
   }
 
-  table.vpr-table tbody tr:hover td{
-    background:#f8faf8;
+  .apl-row:hover td{
+    background:#f5faf7;
   }
 
-  .vpr-muted{
-    color:var(--muted);
-    font-weight:800;
+  .apl-row:hover td:first-child{
+    box-shadow:inset -3px 0 0 #2f6b53;
   }
 
-  .vpr-badge{
+  .apl-c-index{width:58px}
+  .apl-c-school{width:330px;text-align:right !important}
+  .apl-c-ministry{width:125px}
+  .apl-c-sector{width:180px}
+  .apl-c-gender{width:90px}
+  .apl-c-stage{width:125px}
+  .apl-c-need{width:90px}
+  .apl-c-num{width:115px}
+  .apl-c-status{width:95px}
+
+  .apl-school-block{
+    display:grid;
+    gap:3px;
+    min-width:0;
+  }
+
+  .apl-school-name{
+    color:#163c2f;
+    font-size:10.8px;
+    line-height:1.45;
+    font-weight:600 !important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .apl-school-meta{
+    color:#74837b;
+    font-size:8.4px;
+    line-height:1.6;
+    font-weight:400 !important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .apl-num-card{
+    display:inline-flex;
+    min-width:58px;
+    min-height:34px;
+    padding:5px 10px;
+    border-radius:12px;
+    border:1px solid #d7e1db;
+    background:#fff;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    line-height:1.2;
+  }
+
+  .apl-num-card b{
+    color:#1f4d3a;
+    font-size:10px;
+    font-weight:700 !important;
+  }
+
+  .apl-num-card span{
+    color:#74837b;
+    font-size:7.7px;
+    font-weight:400 !important;
+  }
+
+  .apl-num-card.gold{
+    border-color:#ead9b6;
+    background:#fffaf0;
+  }
+
+  .apl-num-card.gold b{
+    color:#806021;
+  }
+
+  .apl-num-card.ok{
+    border-color:#cde5d7;
+    background:#edf8f2;
+  }
+
+  .apl-muted{
+    color:#74837b;
+    font-size:8.8px;
+    font-weight:400 !important;
+  }
+
+  .apl-empty{
+    padding:18px;
+    color:#74837b;
+    background:#fff;
+    text-align:center;
+    font-size:9.2px;
+    font-weight:400 !important;
+  }
+
+  .apl-foot{
+    padding:10px 14px;
+    border-top:1px solid var(--ap-line);
+    background:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .apl-page-chip{
     display:inline-flex;
     align-items:center;
-    min-height:24px;
-    padding:3px 9px;
+    justify-content:center;
+    min-height:29px;
+    padding:0 10px;
     border-radius:999px;
-    font-size:8.5px;
-    font-weight:900;
-    white-space:nowrap;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
+    border:1px solid var(--ap-line);
+    background:#fff;
+    color:var(--ap-green-1);
+    font-size:8.3px;
+    font-weight:500 !important;
   }
 
-  .vpr-badge.ok{
-    border-color:var(--ok-bd);
-    background:var(--ok-bg);
-    color:var(--ok);
+  @media (max-width:1100px){
+    .apl-filter-main{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
   }
 
-  .vpr-badge.danger{
-    border-color:var(--danger-bd);
-    background:var(--danger-bg);
-    color:var(--danger);
-  }
-
-  .vpr-empty{
-    padding:18px 14px;
-    text-align:center;
-    color:var(--muted);
-    font-size:9px;
-    font-weight:800;
-  }
-
-  @media (max-width: 900px){
-    .vpr-toolbar-row{
+  @media (max-width:980px){
+    .apl-hero-main{
       grid-template-columns:1fr;
     }
 
-    table.vpr-table{
-      min-width:1200px;
-    }
-  }
-
-  @media (max-width: 640px){
-    .vpr-top-row{
-      grid-template-columns:1fr;
-    }
-
-    .vpr-actions{
+    .apl-hero-toolbar,
+    .apl-actions,
+    .apl-record-tools{
       justify-content:flex-start;
     }
 
-    .vpr-title{
+    .apl-toolbar-separator{
+      display:none;
+    }
+  }
+
+  @media (max-width:640px){
+    .apl{
+      padding:8px;
+    }
+
+    .apl-title{
       font-size:18px;
+    }
+
+    .apl-filter-main{
+      grid-template-columns:1fr;
+    }
+
+    .apl-list-head,
+    .apl-filter,
+    .apl-foot{
+      padding-inline:12px;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="vpr">
-  <div class="vpr-page">
+<div class="apl">
+  <div class="apl-page">
 
-    <div class="vpr-top">
-      <div class="vpr-top-row">
+    <section class="apl-hero">
+      <div class="apl-hero-main">
+        <div class="apl-hero-text">
+          <h1 class="apl-title">تقرير ضغط المدارس</h1>
+          <p class="apl-sub">
+            عرض مؤشرات الإقبال على المدارس والترشيحات النهائية بنفس النمط الإداري الموحد للصفحات السابقة.
+          </p>
+        </div>
+
+        <div class="apl-hero-toolbar">
+          <div class="apl-actions">
+            <a class="apl-btn" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
+            <a class="apl-btn" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
+          </div>
+
+          <div class="apl-toolbar-separator"></div>
+
+          <div class="apl-record-tools">
+            <span class="apl-record-label">إجراءات التقرير</span>
+
+            <a
+              class="apl-btn apl-btn-primary"
+              href="{% url 'portal:admin_vacancies_pressure_print' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}"
+            >
+              طباعة
+            </a>
+
+            <a
+              class="apl-btn"
+              href="{% url 'portal:admin_vacancies_pressure_csv' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}"
+            >
+              CSV
+            </a>
+
+            <a
+              class="apl-btn apl-btn-gold"
+              href="{% url 'portal:admin_vacancies_pressure_excel' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}"
+            >
+              Excel
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="apl-panel">
+      <div class="apl-list-head">
         <div>
-          <h1 class="vpr-title">تقرير ضغط/إقبال المدارس + الترشيحات</h1>
-          <div class="vpr-subtitle">
-            يعرض عدد الراغبين على كل مدرسة (إجمالي + رغبة أولى) وعدد الترشيحات النهائية.
-          </div>
-
-          <div class="vpr-kpis">
-            <span class="vpr-pill gold">المدارس: <b>{{ total_schools }}</b></span>
-            <span class="vpr-pill">إجمالي الراغبين: <b>{{ sum_total }}</b></span>
-            <span class="vpr-pill">إجمالي رغبة أولى: <b>{{ sum_rank1 }}</b></span>
-            <span class="vpr-pill">إجمالي الترشيحات: <b>{{ sum_achieved }}</b></span>
-          </div>
+          <h2 class="apl-section-title">سجل ضغط المدارس</h2>
+          <div class="apl-section-sub">قراءة مختصرة لمستوى الإقبال والترشيحات حسب الفلاتر الحالية.</div>
         </div>
-
-        <div class="vpr-actions">
-          <a class="vpr-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
-          <a class="vpr-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
-
-          <a class="vpr-btn vpr-btn-primary"
-             href="{% url 'portal:admin_vacancies_pressure_print' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-            🖨️ طباعة
-          </a>
-
-          <a class="vpr-btn"
-             href="{% url 'portal:admin_vacancies_pressure_csv' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-            ⬇ CSV
-          </a>
-
-          <a class="vpr-btn"
-             href="{% url 'portal:admin_vacancies_pressure_excel' %}?q={{ f.q|urlencode }}&sector={{ f.sector|urlencode }}&gender={{ f.gender|urlencode }}&open={{ f.open|urlencode }}&sort={{ f.sort|urlencode }}&top={{ f.top }}">
-            ⬇ Excel
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="vpr-card">
-      <div class="vpr-toolbar">
-        <form method="get" class="vpr-toolbar-row">
-          <div class="vpr-toolbar-left">
-            <input class="vpr-input" name="q" value="{{ f.q }}" placeholder="بحث: مدرسة / رقم الوزارة / القطاع / المدير"
-                   style="width:min(360px,100%)">
-
-            <input class="vpr-input" name="sector" value="{{ f.sector }}" placeholder="فلتر قطاع" style="width:170px">
-            <input class="vpr-input" name="gender" value="{{ f.gender }}" placeholder="فلتر جنس" style="width:140px">
-
-            <select class="vpr-select" name="open" style="width:150px">
-              <option value="" {% if not f.open %}selected{% endif %}>الكل</option>
-              <option value="open" {% if f.open == "open" %}selected{% endif %}>مفتوح</option>
-              <option value="closed" {% if f.open == "closed" %}selected{% endif %}>مغلق</option>
-            </select>
-
-            <select class="vpr-select" name="sort" style="width:170px">
-              <option value="rank1" {% if f.sort == "rank1" %}selected{% endif %}>فرز: رغبة أولى</option>
-              <option value="total" {% if f.sort == "total" %}selected{% endif %}>فرز: إجمالي الراغبين</option>
-              <option value="achieved" {% if f.sort == "achieved" %}selected{% endif %}>فرز: الترشيحات</option>
-              <option value="need" {% if f.sort == "need" %}selected{% endif %}>فرز: الاحتياج</option>
-            </select>
-
-            <input class="vpr-input" name="top" value="{{ f.top }}" placeholder="TOP (0=الكل)" style="width:140px">
-          </div>
-
-          <div class="vpr-toolbar-right">
-            <button class="vpr-btn vpr-btn-primary" type="submit">بحث</button>
-            <a class="vpr-btn" href="{% url 'portal:admin_vacancies_pressure' %}">مسح</a>
-            <span class="vpr-pill">النتائج: <b>{{ rows|length }}</b></span>
-          </div>
-        </form>
+        <span class="apl-chip">النتائج: <b>{{ rows|length }}</b></span>
       </div>
 
-      <div class="vpr-table-wrap">
-        <table class="vpr-table">
+      <div class="apl-tabs">
+        <span class="apl-tab on">
+          المدارس
+          <span class="apl-count">{{ total_schools }}</span>
+        </span>
+
+        <span class="apl-tab">
+          إجمالي الراغبين
+          <span class="apl-count">{{ sum_total }}</span>
+        </span>
+
+        <span class="apl-tab">
+          رغبة أولى
+          <span class="apl-count">{{ sum_rank1 }}</span>
+        </span>
+
+        <span class="apl-tab">
+          الترشيحات
+          <span class="apl-count">{{ sum_achieved }}</span>
+        </span>
+      </div>
+
+      <form method="get">
+        <div class="apl-filter">
+          <div class="apl-filter-box">
+            <div class="apl-filter-main">
+              <div class="apl-field">
+                <label class="apl-label">بحث عام</label>
+                <input
+                  class="apl-input"
+                  name="q"
+                  value="{{ f.q }}"
+                  placeholder="بحث: مدرسة / رقم الوزارة / القطاع / المدير"
+                >
+              </div>
+
+              <div class="apl-field">
+                <label class="apl-label">القطاع</label>
+                <input class="apl-input" name="sector" value="{{ f.sector }}" placeholder="كل القطاعات">
+              </div>
+
+              <div class="apl-field">
+                <label class="apl-label">الجنس</label>
+                <input class="apl-input" name="gender" value="{{ f.gender }}" placeholder="كل الأنواع">
+              </div>
+
+              <div class="apl-field">
+                <label class="apl-label">الحالة</label>
+                <select class="apl-select" name="open">
+                  <option value="" {% if not f.open %}selected{% endif %}>كل الحالات</option>
+                  <option value="open" {% if f.open == "open" %}selected{% endif %}>مفتوح</option>
+                  <option value="closed" {% if f.open == "closed" %}selected{% endif %}>مغلق</option>
+                </select>
+              </div>
+
+              <div class="apl-field">
+                <label class="apl-label">الفرز</label>
+                <select class="apl-select" name="sort">
+                  <option value="rank1" {% if f.sort == "rank1" %}selected{% endif %}>رغبة أولى</option>
+                  <option value="total" {% if f.sort == "total" %}selected{% endif %}>إجمالي الراغبين</option>
+                  <option value="achieved" {% if f.sort == "achieved" %}selected{% endif %}>الترشيحات</option>
+                  <option value="need" {% if f.sort == "need" %}selected{% endif %}>الاحتياج</option>
+                </select>
+              </div>
+
+              <div class="apl-field">
+                <label class="apl-label">عدد النتائج</label>
+                <input class="apl-input" name="top" value="{{ f.top }}" placeholder="0 = الكل">
+              </div>
+            </div>
+
+            <div class="apl-filter-row">
+              <div class="apl-filter-actions">
+                <button class="apl-btn apl-btn-primary" type="submit">تطبيق الفلاتر</button>
+                <a class="apl-btn" href="{% url 'portal:admin_vacancies_pressure' %}">إعادة ضبط</a>
+
+                {% if f.open == "open" %}
+                  <span class="apl-pill apl-pill-ok">المفتوحة فقط</span>
+                {% elif f.open == "closed" %}
+                  <span class="apl-pill apl-pill-danger">المغلقة فقط</span>
+                {% else %}
+                  <span class="apl-pill">كل السجلات</span>
+                {% endif %}
+              </div>
+
+              <div class="apl-filter-actions">
+                {% if f.sector %}<span class="apl-pill apl-pill-info">القطاع: {{ f.sector }}</span>{% endif %}
+                {% if f.gender %}<span class="apl-pill apl-pill-info">الجنس: {{ f.gender }}</span>{% endif %}
+                {% if f.top %}<span class="apl-pill apl-pill-gold">TOP: {{ f.top }}</span>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="apl-table-wrap">
+        <table class="apl-table">
           <thead>
             <tr>
-              <th style="width:60px">#</th>
-              <th style="width:340px">المدرسة</th>
-              <th style="width:130px">رقم الوزارة</th>
-              <th style="width:190px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:120px">المرحلة</th>
-              <th style="width:95px">الاحتياج</th>
-              <th style="width:110px">الراغبون</th>
-              <th style="width:110px">رغبة أولى</th>
-              <th style="width:130px">ترشيحات نهائية</th>
-              <th style="width:90px">الحالة</th>
+              <th class="apl-c-index">#</th>
+              <th class="apl-c-school">المدرسة</th>
+              <th class="apl-c-ministry">رقم الوزارة</th>
+              <th class="apl-c-sector">القطاع</th>
+              <th class="apl-c-gender">الجنس</th>
+              <th class="apl-c-stage">المرحلة</th>
+              <th class="apl-c-need">الاحتياج</th>
+              <th class="apl-c-num">الراغبون</th>
+              <th class="apl-c-num">رغبة أولى</th>
+              <th class="apl-c-num">ترشيحات</th>
+              <th class="apl-c-status">الحالة</th>
             </tr>
           </thead>
+
           <tbody>
             {% for v in rows %}
-              <tr>
-                <td class="vpr-muted">{{ forloop.counter }}</td>
-                <td title="{{ v.school_name }}">{{ v.school_name }}</td>
-                <td class="vpr-muted">{{ v.ministry_no|default:"—" }}</td>
-                <td class="vpr-muted">{{ v.sector|default:"—" }}</td>
-                <td class="vpr-muted">{{ v.gender|default:"—" }}</td>
-                <td class="vpr-muted">{{ v.stage|default:"—" }}</td>
-                <td>{{ v.deputy_need|default:"0" }}</td>
-                <td>{{ v.interested_total|default:0 }}</td>
-                <td>{{ v.interested_rank1|default:0 }}</td>
-                <td>{{ v.achieved_total|default:0 }}</td>
+              <tr class="apl-row">
+                <td class="apl-muted">{{ forloop.counter }}</td>
+
+                <td class="apl-c-school" title="{{ v.school_name }}">
+                  <div class="apl-school-block">
+                    <div class="apl-school-name">{{ v.school_name|default:"—" }}</div>
+                    <div class="apl-school-meta">{{ v.manager_name|default:"-" }}</div>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="apl-muted">{{ v.ministry_no|default:"—" }}</span>
+                </td>
+
+                <td title="{{ v.sector|default:'-' }}">
+                  {% if v.sector %}
+                    <span class="apl-pill">{{ v.sector }}</span>
+                  {% else %}
+                    <span class="apl-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if v.gender %}
+                    <span class="apl-pill">{{ v.gender }}</span>
+                  {% else %}
+                    <span class="apl-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <span class="apl-muted">{{ v.stage|default:"—" }}</span>
+                </td>
+
+                <td>
+                  <span class="apl-pill">{{ v.deputy_need|default:"0" }}</span>
+                </td>
+
+                <td>
+                  <span class="apl-num-card">
+                    <b>{{ v.interested_total|default:0 }}</b>
+                    <span>الراغبون</span>
+                  </span>
+                </td>
+
+                <td>
+                  <span class="apl-num-card gold">
+                    <b>{{ v.interested_rank1|default:0 }}</b>
+                    <span>أولى</span>
+                  </span>
+                </td>
+
+                <td>
+                  <span class="apl-num-card ok">
+                    <b>{{ v.achieved_total|default:0 }}</b>
+                    <span>نهائي</span>
+                  </span>
+                </td>
+
                 <td>
                   {% if v.is_open %}
-                    <span class="vpr-badge ok">مفتوح</span>
+                    <span class="apl-pill apl-pill-ok">مفتوح</span>
                   {% else %}
-                    <span class="vpr-badge danger">مغلق</span>
+                    <span class="apl-pill apl-pill-danger">مغلق</span>
                   {% endif %}
                 </td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="11" class="vpr-empty">لا توجد بيانات.</td>
+                <td colspan="11" class="apl-empty">لا توجد بيانات مطابقة للفلاتر الحالية.</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
-    </div>
+      <div class="apl-foot">
+        <div class="apl-foot-side">
+          <span class="apl-muted">إجمالي السجلات المعروضة: {{ rows|length }}</span>
+          <span class="apl-page-chip">تقرير ضغط المدارس</span>
+        </div>
+
+        <div class="apl-foot-side">
+          <a class="apl-btn" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
+          <a class="apl-btn" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
+        </div>
+      </div>
+    </section>
 
   </div>
 </div>

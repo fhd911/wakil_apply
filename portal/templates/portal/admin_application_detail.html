@@ -4,635 +4,487 @@
 {% block extra_css %}
 <style>
   :root{
-    --mx-bg:#f4f6f4;
-    --mx-bg-2:#eef2ef;
-    --mx-surface:#ffffff;
-    --mx-surface-2:#fbfcfb;
-    --mx-surface-3:#f7f9f7;
+    --adm-bg:#f6f8f6;--adm-card:#fff;--adm-card2:#fbfcfb;--adm-line:#d9e2dc;--adm-line2:#cbd8d0;
+    --adm-ink:#20372d;--adm-ink2:#40574d;--adm-muted:#718178;--adm-green:#174c3b;--adm-green2:#2b5b48;
+    --adm-green-soft:#edf7f1;--adm-gold:#8a6526;--adm-gold-soft:#fcf7ee;--adm-blue:#365f83;--adm-blue-soft:#f2f7fd;
+    --adm-red:#8c3434;--adm-red-soft:#fbf5f5;--adm-shadow:0 2px 8px rgba(18,30,24,.045);
+  }
+  .adm-detail,.adm-detail *{box-sizing:border-box;font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif!important}
+  .adm-detail{direction:rtl;background:linear-gradient(180deg,#fbfcfb,#f1f5f2);padding:10px;color:var(--adm-ink);min-height:calc(100vh - 48px)}
+  .adm-page{max-width:1500px;margin:0 auto;display:grid;gap:10px}
+  .adm-top,.adm-card,.adm-proof,.adm-pref,.adm-alert{position:relative;overflow:hidden;border:1px solid var(--adm-line);border-radius:18px;background:linear-gradient(180deg,#fff,#fbfcfb);box-shadow:var(--adm-shadow)}
+  .adm-top:before,.adm-card:before,.adm-proof:before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--adm-green),rgba(169,130,53,.72))}
+  .adm-top{padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border-inline-start:4px solid var(--adm-green)}
+  .adm-title{margin:0;color:var(--adm-green);font-size:20px;line-height:1.35;font-weight:700}
+  .adm-sub{margin:4px 0 0;color:var(--adm-muted);font-size:10.2px;line-height:1.8;font-weight:400;max-width:86ch}
+  .adm-actions,.adm-row,.adm-tabs,.adm-submit-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.adm-actions{justify-content:flex-end}
+  .adm-btn,.adm-pill,.adm-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:31px;padding:6px 11px;border-radius:10px;border:1px solid var(--adm-line2);background:#fff;color:var(--adm-green);text-decoration:none;cursor:pointer;font-size:9.5px;font-weight:500;line-height:1;white-space:nowrap;transition:.15s}
+  .adm-btn:hover,.adm-tab:hover{transform:translateY(-1px);background:#f7faf8}.adm-btn.primary{background:var(--adm-green);border-color:var(--adm-green);color:#fff}.adm-btn.gold{background:var(--adm-gold-soft);border-color:#e4d2ae;color:var(--adm-gold)}.adm-btn.red{background:var(--adm-red-soft);border-color:#e8caca;color:var(--adm-red)}.adm-btn.blue{background:var(--adm-blue-soft);border-color:#d4e2ef;color:var(--adm-blue)}
+  .adm-pill{min-height:27px;border-radius:999px;font-size:8.8px;background:#fff;color:var(--adm-ink2)}.adm-pill.green{background:var(--adm-green-soft);border-color:#cfe4d6;color:var(--adm-green)}.adm-pill.gold{background:var(--adm-gold-soft);border-color:#e4d2ae;color:var(--adm-gold)}.adm-pill.blue{background:var(--adm-blue-soft);border-color:#d4e2ef;color:var(--adm-blue)}.adm-pill.red{background:var(--adm-red-soft);border-color:#e8caca;color:var(--adm-red)}
+  .adm-path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.adm-kpi{border:1px solid var(--adm-line);border-radius:14px;background:#fff;padding:10px;display:grid;gap:5px;min-height:74px}.adm-kpi label{font-size:8.7px;color:var(--adm-muted);font-weight:500}.adm-kpi b{font-size:11.2px;color:var(--adm-ink);line-height:1.55;font-weight:600}.adm-kpi.green{background:var(--adm-green-soft)}.adm-kpi.gold{background:var(--adm-gold-soft)}.adm-kpi.blue{background:var(--adm-blue-soft)}.adm-kpi.red{background:var(--adm-red-soft)}
+  .adm-grid{display:grid;grid-template-columns:minmax(0,1.48fr) 390px;gap:12px;align-items:start}.adm-stack,.adm-side{display:grid;gap:12px}.adm-side{position:sticky;top:12px}
+  .adm-head{padding:11px 13px;border-bottom:1px solid #edf1ed;background:linear-gradient(180deg,#fff,#f8fbf9);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .adm-h2{margin:0;display:flex;align-items:center;gap:8px;color:var(--adm-green);font-size:12.5px;font-weight:600}.adm-h2:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--adm-green2)}
+  .adm-body{padding:12px}.adm-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.adm-field{border:1px solid #e5ece7;border-radius:13px;background:#fff;padding:10px;display:grid;gap:5px;min-width:0}.adm-field.full{grid-column:1/-1}.adm-field label{font-size:8.6px;color:var(--adm-muted);font-weight:500}.adm-val{font-size:10px;color:var(--adm-ink2);line-height:1.75;font-weight:500;word-break:break-word}
+  .adm-note{margin-top:10px;border:1px dashed var(--adm-line2);border-radius:12px;background:#fbfcfb;padding:10px;color:var(--adm-ink2);font-size:9.2px;line-height:1.9;font-weight:400}.adm-note b{color:var(--adm-green);font-weight:600}.adm-muted{font-size:8.8px;color:var(--adm-muted);line-height:1.8;font-weight:400}
+  .adm-pref-list,.adm-proof-list{display:grid;gap:8px}.adm-pref{padding:10px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.adm-pref.achieved{border-color:#cfe4d6;background:#f3faf6}.adm-rank{min-width:34px;height:32px;border-radius:10px;border:1px solid #e4d2ae;background:var(--adm-gold-soft);color:var(--adm-gold);display:grid;place-items:center;font-size:9px;font-weight:600}.adm-pref-name{font-size:10.2px;font-weight:600;color:var(--adm-green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.adm-pref-sub{font-size:8.7px;color:var(--adm-muted);line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .adm-empty{border:1px dashed var(--adm-line2);border-radius:13px;background:#fbfcfb;padding:16px;text-align:center;color:var(--adm-muted);font-size:9.5px;line-height:1.9}
+  .adm-proof{padding:10px;display:grid;gap:7px}.adm-proof-title{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.adm-proof-title b{font-size:10px;color:var(--adm-green);font-weight:600}.adm-proof-text{border:1px dashed #d8e1dc;background:#fff;border-radius:11px;padding:9px;font-size:9px;line-height:1.9;color:var(--adm-ink2);font-weight:400}.adm-proof-meta{font-size:8.3px;color:var(--adm-muted)}
+  .adm-select,.adm-input,.adm-textarea{width:100%;min-height:36px;border:1px solid var(--adm-line2);border-radius:11px;background:#fff;color:var(--adm-ink);padding:8px 10px;font-size:9.3px;font-weight:400;outline:none}.adm-textarea{min-height:92px;resize:vertical;line-height:1.8}.adm-select:focus,.adm-input:focus,.adm-textarea:focus{border-color:#9fb9a8;box-shadow:0 0 0 3px rgba(33,96,70,.08)}
+  .adm-tabs{margin-top:9px}.adm-tab.is-active{background:var(--adm-green-soft);border-color:#cfe4d6;color:var(--adm-green);font-weight:600}.adm-panel{display:none;border:1px solid var(--adm-line);border-radius:14px;background:#fff;padding:10px;margin-top:9px}.adm-panel.is-active{display:block}.adm-panel[data-panel="return"]{background:linear-gradient(180deg,#fff,#fffdf8)}.adm-panel[data-panel="reject"]{background:linear-gradient(180deg,#fff,#fffbfb)}
+  .adm-side-actions{display:grid;gap:8px;margin-top:10px}
+  @media(max-width:1120px){.adm-grid{grid-template-columns:1fr}.adm-side{position:static}.adm-path{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:700px){.adm-detail{padding:7px}.adm-top{grid-template-columns:1fr}.adm-actions{justify-content:flex-start}.adm-fields,.adm-path{grid-template-columns:1fr}.adm-field.full{grid-column:auto}.adm-pref{grid-template-columns:auto 1fr}}
 
-    --mx-ink:#183127;
-    --mx-ink-2:#31483d;
-    --mx-muted:#6d7d75;
 
-    --mx-green-1:#16382c;
-    --mx-green-2:#1d4335;
-    --mx-green-3:#315646;
+  /* =========================================================
+     Readability Font Upscale — تكبير خط صفحة التفاصيل
+     - تكبير واضح دون تغيير الهوية أو البنية
+     - تحسين قراءة الحقول، الشارات، بطاقات المسار، والإقرارات
+  ========================================================= */
+  .adm-title{font-size:24px !important;line-height:1.35 !important;}
+  .adm-sub{font-size:12.4px !important;line-height:1.9 !important;}
 
-    --mx-gold-1:#8a7646;
-    --mx-gold-2:#a89260;
-
-    --mx-line:#d9e0da;
-    --mx-line-2:#ced7d0;
-    --mx-line-3:#e8ede9;
-
-    --mx-ok:#1f5f38;
-    --mx-ok-bg:#eff7f1;
-    --mx-ok-bd:#d4e5d8;
-
-    --mx-warn:#876224;
-    --mx-warn-bg:#faf6ee;
-    --mx-warn-bd:#e5d8bd;
-
-    --mx-danger:#8c3434;
-    --mx-danger-bg:#fbf5f5;
-    --mx-danger-bd:#e6cccc;
-
-    --mx-info:#3b5f7a;
-    --mx-info-bg:#f2f6fb;
-    --mx-info-bd:#d8e1ec;
-
-    --mx-shadow:0 1px 2px rgba(16,24,20,.03);
-    --mx-shadow-soft:0 8px 20px rgba(16,24,20,.05);
-
-    --mx-r-2xl:22px;
-    --mx-r-xl:18px;
-    --mx-r-lg:14px;
-    --mx-r-md:10px;
-    --mx-r-sm:8px;
+  .adm-btn,
+  .adm-tab{
+    min-height:35px !important;
+    padding:7px 13px !important;
+    font-size:11.2px !important;
+    line-height:1.15 !important;
   }
 
-  .v963r,.v963r *{box-sizing:border-box;font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important}
-
-  .v963r{
-    direction:rtl;
-    color:var(--mx-ink);
-    background:linear-gradient(180deg,#f7f8f7 0%, #f2f5f2 52%, #edf1ee 100%);
-    padding:10px;
+  .adm-pill{
+    min-height:30px !important;
+    padding:5px 12px !important;
+    font-size:10.7px !important;
+    line-height:1.25 !important;
   }
 
-  .v963r-page{
-    max-width:1540px;
-    margin:0 auto;
-    display:grid;
-    gap:10px;
+  .adm-h2{
+    font-size:15px !important;
+    line-height:1.55 !important;
   }
 
-  .v963r-top,
-  .v963r-summary,
-  .v963r-card,
-  .v963r-side-card,
-  .v963r-note,
-  .v963r-pref,
-  .v963r-decision-panel{
-    position:relative;
-    overflow:hidden;
-    border:1px solid var(--mx-line);
-    border-radius:18px;
-    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-    box-shadow:var(--mx-shadow);
+  .adm-head{
+    padding:13px 15px !important;
   }
 
-  .v963r-top::before,
-  .v963r-summary::before,
-  .v963r-card::before,
-  .v963r-side-card::before,
-  .v963r-note::before,
-  .v963r-decision-panel::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,rgba(29,67,53,.55) 0%, rgba(168,146,96,.34) 100%);
-    opacity:.9;
+  .adm-body{
+    padding:14px !important;
   }
 
-  .v963r-top{
-    padding:14px 16px;
-    border-radius:20px;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:center;
-    background:
-      linear-gradient(135deg,rgba(255,255,255,.02),rgba(255,255,255,0) 34%),
-      linear-gradient(135deg,#1f4738 0%, #173a2f 62%, #143329 100%);
-    color:#fff;
-    border-color:rgba(168,146,96,.24);
-    box-shadow:0 8px 22px rgba(16,24,20,.055);
+  .adm-field{
+    padding:12px !important;
+    gap:6px !important;
   }
 
-  .v963r-top::before{
-    height:3px;
-    background:linear-gradient(90deg,rgba(191,168,119,.78) 0%, rgba(102,134,118,.72) 100%);
+  .adm-field label,
+  .adm-kpi label{
+    font-size:10.5px !important;
+    line-height:1.7 !important;
   }
 
-  .v963r-title{margin:0;font-size:21px;line-height:1.14;font-weight:900;color:#fff}
-  .v963r-sub{margin:6px 0 0;max-width:78ch;color:rgba(255,255,255,.9);font-size:9.1px;line-height:1.9;font-weight:800}
-
-  .v963r-top-actions,
-  .v963r-mini-actions,
-  .v963r-summary-grid,
-  .v963r-row,
-  .v963r-tabs,
-  .v963r-side-actions{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    flex-wrap:wrap;
+  .adm-val{
+    font-size:12.2px !important;
+    line-height:1.85 !important;
   }
 
-  .v963r-mini-actions{margin-top:10px}
-  .v963r-top-actions{justify-content:flex-end}
-
-  .v963r-btn,
-  .v963r-tab{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:36px;
-    padding:6px 13px;
-    border-radius:10px;
-    border:1px solid var(--mx-line-2);
-    background:#fff;
-    color:var(--mx-green-2);
-    text-decoration:none;
-    cursor:pointer;
-    font-size:8.7px;
-    font-weight:900;
-    transition:background .16s ease,border-color .16s ease,transform .16s ease;
-    box-shadow:none;
+  .adm-kpi{
+    min-height:84px !important;
+    padding:12px !important;
   }
 
-  .v963r-btn:hover,
-  .v963r-tab:hover{
-    background:#f7faf8;
-    border-color:#bcc9c0;
-    transform:translateY(-1px);
+  .adm-kpi b{
+    font-size:13.2px !important;
+    line-height:1.75 !important;
   }
 
-  .v963r-btn-primary{background:linear-gradient(180deg,#244638 0%, #19392d 100%);border-color:#19392d;color:#fff}
-  .v963r-btn-primary:hover{background:linear-gradient(180deg,#294c3d 0%, #1f3f32 100%);border-color:#1f3f32;color:#fff}
-  .v963r-btn-danger{background:var(--mx-danger-bg);border-color:var(--mx-danger-bd);color:var(--mx-danger)}
-  .v963r-btn-warn{background:var(--mx-warn-bg);border-color:var(--mx-warn-bd);color:var(--mx-warn)}
-  .v963r-btn-soft{background:#fff;border-color:var(--mx-line-2);color:var(--mx-green-2)}
-  .v963r-btn-sm{min-height:31px;padding:5px 10px;font-size:8.1px;border-radius:9px}
-
-  .v963r-pill,
-  .v963r-chip{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid var(--mx-line-2);
-    background:#fff;
-    color:var(--mx-ink-2);
-    font-size:8px;
-    font-weight:900;
-    white-space:nowrap;
+  .adm-note{
+    font-size:11.2px !important;
+    line-height:2 !important;
+    padding:12px !important;
   }
 
-  .v963r-pill.ok{background:var(--mx-ok-bg);border-color:var(--mx-ok-bd);color:var(--mx-ok)}
-  .v963r-pill.warn{background:var(--mx-warn-bg);border-color:var(--mx-warn-bd);color:var(--mx-warn)}
-  .v963r-pill.danger{background:var(--mx-danger-bg);border-color:var(--mx-danger-bd);color:var(--mx-danger)}
-  .v963r-pill.info{background:var(--mx-info-bg);border-color:var(--mx-info-bd);color:var(--mx-info)}
-
-  .v963r-summary{padding:10px 12px}
-  .v963r-summary-grid{gap:8px}
-  .v963r-summary-card{
-    flex:1 1 180px;
-    min-width:0;
-    padding:8px 10px;
-    border:1px solid var(--mx-line);
-    border-radius:12px;
-    background:var(--mx-surface-2);
-  }
-  .v963r-summary-label{font-size:7.4px;color:var(--mx-muted);font-weight:800;margin-bottom:3px}
-  .v963r-summary-value{font-size:9.2px;color:var(--mx-green-1);font-weight:900;line-height:1.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-  .v963r-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1.55fr) 380px;
-    gap:12px;
-    align-items:start;
+  .adm-note b{
+    font-size:11.5px !important;
   }
 
-  .v963r-side{position:sticky;top:12px}
-
-  .v963r-card-head,
-  .v963r-side-head{
-    padding:11px 12px;
-    border-bottom:1px solid var(--mx-line-3);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  .adm-muted{
+    font-size:10.6px !important;
+    line-height:1.9 !important;
   }
 
-  .v963r-head-title{margin:0;font-size:11.6px;font-weight:900;color:var(--mx-green-1)}
-  .v963r-body{padding:12px}
-
-  .v963r-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .v963r-field{min-width:0;display:flex;flex-direction:column}
-  .v963r-label{display:block;margin-bottom:5px;min-height:17px;font-size:8.4px;color:var(--mx-green-1);font-weight:900}
-
-  .v963r-input,
-  .v963r-select,
-  .v963r-textarea,
-  .v963r-value{
-    width:100%;
-    min-height:40px;
-    padding:7px 10px;
-    border-radius:10px;
-    border:1px solid var(--mx-line-2);
-    background:#fff;
-    color:var(--mx-ink);
-    font-size:8.9px;
-    font-weight:700;
-    outline:none;
-    box-shadow:none;
+  .adm-pref{
+    padding:12px !important;
   }
 
-  .v963r-select:focus,
-  .v963r-input:focus,
-  .v963r-textarea:focus{
-    border-color:rgba(168,146,96,.62);
-    box-shadow:0 0 0 2px rgba(168,146,96,.07);
+  .adm-rank{
+    min-width:38px !important;
+    height:36px !important;
+    font-size:11px !important;
   }
 
-  .v963r-value{background:#fbfcfb}
-  .v963r-textarea{min-height:98px;padding:9px 10px;resize:vertical;line-height:1.85}
-
-  .v963r-note{
-    margin-top:10px;
-    padding:11px 12px;
-    border-radius:12px;
-    background:var(--mx-surface-2);
-    font-size:8.9px;
-    line-height:1.85;
-    color:var(--mx-ink-2);
+  .adm-pref-name{
+    font-size:12.4px !important;
+    line-height:1.65 !important;
   }
 
-  .v963r-note b{display:block;margin-bottom:3px;color:var(--mx-green-1);font-size:8.4px;font-weight:900}
-  .v963r-muted{color:var(--mx-muted);font-size:7.7px;font-weight:800;line-height:1.8}
-  .v963r-hint{color:var(--mx-muted);font-size:7.7px;line-height:1.8;font-weight:800}
-
-  .v963r-prefs{display:grid;gap:9px}
-  .v963r-pref{padding:10px 11px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:14px}
-  .v963r-pref:hover{background:#fcfdfc}
-  .v963r-pref.achieved{border-color:#cfe6d8;background:#f4faf6}
-  .v963r-pref-left{display:flex;align-items:center;gap:10px;min-width:0}
-  .v963r-rank{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--mx-green-2);background:#eff7f2;border:1px solid #cfe2d5;flex:0 0 auto}
-  .v963r-pref-meta{min-width:0}
-  .v963r-pref-name{font-size:9.8px;font-weight:900;color:var(--mx-green-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .v963r-pref-sub{margin-top:3px;color:var(--mx-muted);font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-  .v963r-decision-summary{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:9px;
-    margin-bottom:10px;
+  .adm-pref-sub{
+    font-size:10.8px !important;
+    line-height:1.85 !important;
   }
 
-  .v963r-kv{
-    padding:9px 10px;
-    border:1px solid var(--mx-line);
-    border-radius:12px;
-    background:var(--mx-surface-2);
-  }
-  .v963r-kv-label{font-size:7.3px;color:var(--mx-muted);font-weight:800;margin-bottom:3px}
-  .v963r-kv-value{font-size:8.7px;color:var(--mx-green-1);font-weight:900;line-height:1.55}
-
-  .v963r-decision-box{margin-top:10px;padding-top:10px;border-top:1px solid var(--mx-line-3)}
-  .v963r-tabs{gap:6px}
-  .v963r-tab{min-height:32px;padding:5px 10px;font-size:8.1px;background:#fff}
-  .v963r-tab.is-active{background:linear-gradient(180deg,#f8f4eb,#f3ecdc);border-color:rgba(168,146,96,.45);color:#6d5728}
-  .v963r-decision-panel{display:none;padding:10px 11px;margin-top:10px;border-radius:14px;background:#fff}
-  .v963r-decision-panel.is-active{display:block}
-  .v963r-decision-panel[data-panel="approve"]{border-color:#d5e7da;background:linear-gradient(180deg,#ffffff,#fbfdfb)}
-  .v963r-decision-panel[data-panel="return"]{border-color:#eadcc3;background:linear-gradient(180deg,#ffffff,#fdfbf8)}
-  .v963r-decision-panel[data-panel="reject"]{border-color:#ead1d1;background:linear-gradient(180deg,#ffffff,#fdfbfb)}
-
-  .v963r-submit-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-  .v963r-side-actions{margin-top:12px;padding-top:12px;border-top:1px solid var(--mx-line-3)}
-
-  @media (max-width:1080px){
-    .v963r-grid{grid-template-columns:1fr}
-    .v963r-side{position:static}
+  .adm-empty{
+    font-size:11.2px !important;
+    line-height:2 !important;
   }
 
-  @media (max-width:820px){
-    .v963r-top{grid-template-columns:1fr}
-    .v963r-top-actions{justify-content:flex-start}
-    .v963r-fields,
-    .v963r-decision-summary{grid-template-columns:1fr}
+  .adm-proof{
+    padding:12px !important;
   }
 
-  @media (max-width:640px){
-    .v963r{padding:7px}
-    .v963r-title{font-size:18px}
-    .v963r-pref{flex-direction:column;align-items:flex-start}
+  .adm-proof-title b{
+    font-size:12.1px !important;
+    line-height:1.7 !important;
   }
+
+  .adm-proof-text{
+    font-size:11.1px !important;
+    line-height:2 !important;
+    padding:11px !important;
+  }
+
+  .adm-proof-meta{
+    font-size:10.2px !important;
+    line-height:1.8 !important;
+  }
+
+  .adm-select,
+  .adm-input,
+  .adm-textarea{
+    min-height:40px !important;
+    font-size:11.3px !important;
+    line-height:1.75 !important;
+  }
+
+  .adm-textarea{
+    min-height:104px !important;
+  }
+
+  @media(max-width:700px){
+    .adm-title{font-size:21px !important;}
+    .adm-sub{font-size:11.5px !important;}
+    .adm-btn,.adm-tab{font-size:10.8px !important;}
+    .adm-pill{font-size:10.3px !important;}
+  }
+
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="v963r">
-  <div class="v963r-page">
+<div class="adm-detail">
+  <div class="adm-page">
 
-    <div class="v963r-top">
+    <section class="adm-top">
       <div>
-        <h1 class="v963r-title">مراجعة الطلب رقم #{{ app.id }}</h1>
-        <p class="v963r-sub">قراءة بيانات المتقدم والرغبات واتخاذ القرار الإداري من مساحة واحدة واضحة ومختصرة.</p>
-
-        <div class="v963r-mini-actions">
-          <a class="v963r-btn v963r-btn-soft" href="{{ back_url|default:'' }}">
-            <span>↩</span>
-            رجوع
-          </a>
-
-          <button class="v963r-btn v963r-btn-soft" type="button" onclick="copyTextValue('{{ app.id|escapejs }}')">
-            <span>⧉</span>
-            نسخ رقم الطلب
-          </button>
+        <h1 class="adm-title">تفاصيل الطلب رقم #{{ app.id }}</h1>
+        <p class="adm-sub">مرجع إداري يوضح مسار الطلب، معنى القرار، الرغبات المسجلة، وإثباتات الإقرار المحفوظة وقت الإرسال.</p>
+        <div class="adm-row" style="margin-top:8px;">
+          <span class="adm-pill {% if app.status == 'submitted' and prefs %}green{% elif app.status == 'submitted' %}gold{% else %}{{ path_info.css|default:'gold' }}{% endif %}">
+            {% if app.status == 'submitted' and prefs %}
+              مسار المفاضلة
+            {% elif app.status == 'submitted' %}
+              مستلم دون رغبات
+            {% else %}
+              {{ path_info.label|default:'مسار الطلب' }}
+            {% endif %}
+          </span>
+          <span class="adm-pill {% if app.admin_decision == 'approved' %}green{% elif app.admin_decision == 'rejected' %}red{% elif app.admin_decision == 'returned' %}blue{% else %}gold{% endif %}">
+            {% if app.admin_decision == 'approved' and app.status == 'submitted' and not prefs %}
+              موثق الاستلام
+            {% elif app.admin_decision == 'approved' %}
+              معتمد
+            {% elif app.admin_decision == 'rejected' %}
+              مرفوض
+            {% elif app.admin_decision == 'returned' %}
+              معاد للتعديل
+            {% elif app.status == 'submitted' and not prefs %}
+              بانتظار توثيق
+            {% else %}
+              بانتظار قرار
+            {% endif %}
+          </span>
+          {% if app.locked %}<span class="adm-pill green">مقفل للتعديل</span>{% endif %}
         </div>
       </div>
-
-      <div class="v963r-top-actions">
-        <button class="v963r-btn v963r-btn-soft" type="button" onclick="copyTextValue('{{ a.national_id|default:''|escapejs }}')">
-          <span>⧉</span>
-          نسخ الهوية
-        </button>
-
-        <a class="v963r-btn v963r-btn-primary" href="{{ back_url|default:'' }}">
-          <span>▦</span>
-          العودة إلى القائمة
-        </a>
+      <div class="adm-actions">
+        <a class="adm-btn" href="{{ back_url|default:'' }}">رجوع</a>
+        <button class="adm-btn" type="button" onclick="copyTextValue('{{ app.id|escapejs }}')">نسخ رقم الطلب</button>
+        <button class="adm-btn" type="button" onclick="copyTextValue('{{ a.national_id|default:''|escapejs }}')">نسخ الهوية</button>
+        <a class="adm-btn gold" href="{% url 'portal:admin_application_print' app.id %}" target="_blank" rel="noopener">طباعة</a>
+        <a class="adm-btn primary" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
       </div>
-    </div>
+    </section>
 
-    <div class="v963r-summary">
-      <div class="v963r-summary-grid">
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">المتقدم</div>
-          <div class="v963r-summary-value">{{ a.full_name|default:'-' }}</div>
-        </div>
+    <section class="adm-card">
+      <div class="adm-head">
+        <h2 class="adm-h2">مسار الطلب الإداري</h2>
+        <span class="adm-pill {% if app.status == 'submitted' and prefs %}green{% elif app.status == 'submitted' %}gold{% else %}{{ path_info.css|default:'gold' }}{% endif %}">
+          {% if app.status == 'submitted' and prefs %}مرسل برغبات{% elif app.status == 'submitted' %}مرسل دون رغبات{% else %}{{ path_info.status_label|default:app.status }}{% endif %}
+        </span>
+      </div>
+      <div class="adm-body">
+        <div class="adm-path">
+          <div class="adm-kpi {% if app.status == 'submitted' and prefs %}green{% elif app.status == 'submitted' %}gold{% else %}{{ path_info.css|default:'gold' }}{% endif %}">
+            <label>مسار الطلب</label>
+            <b>
+              {% if app.status == 'submitted' and prefs %}
+                مسار المفاضلة
+              {% elif app.status == 'submitted' %}
+                مستلم دون رغبات
+              {% elif app.status == 'draft' and app.confirmed_at %}
+                غير مكتمل — أكد ولم يرسل
+              {% elif app.status == 'draft' %}
+                غير مكتمل — دخل ولم يؤكد
+              {% else %}
+                {{ path_info.label|default:app.status|default:'غير محدد' }}
+              {% endif %}
+            </b>
+          </div>
 
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">السجل المدني</div>
-          <div class="v963r-summary-value">{{ a.national_id|default:'-' }}</div>
-        </div>
+          <div class="adm-kpi">
+            <label>يدخل مفاضلة الرغبات؟</label>
+            <b>
+              {% if app.status == 'submitted' and prefs %}
+                نعم — يدخل مفاضلة الرغبات
+              {% elif app.status == 'submitted' %}
+                لا — لا يدخل مفاضلة الرغبات
+              {% else %}
+                لا — قبل الإرسال النهائي
+              {% endif %}
+            </b>
+          </div>
 
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">القطاع / الجنس</div>
-          <div class="v963r-summary-value">{{ a.sector|default:'-' }} — {{ a.gender|default:'-' }}</div>
-        </div>
+          <div class="adm-kpi blue">
+            <label>قابل للمعالجة الإدارية؟</label>
+            <b>
+              {% if app.status == 'submitted' and prefs %}
+                نعم — يعالج ضمن مسار المفاضلة
+              {% elif app.status == 'submitted' %}
+                نعم — قابل للمعالجة الإدارية
+              {% else %}
+                لا — غير مكتمل كطلب مرسل
+              {% endif %}
+            </b>
+          </div>
 
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">حالة الطلب</div>
-          <div class="v963r-row">
-            {% if app.status == "submitted" %}
-              <span class="v963r-pill ok">مُرسل</span>
-            {% elif app.status == "draft" %}
-              <span class="v963r-pill">مسودة</span>
-            {% elif app.status %}
-              <span class="v963r-pill warn">{{ app.status }}</span>
-            {% else %}
-              <span class="v963r-pill warn">-</span>
-            {% endif %}
+          <div class="adm-kpi gold">
+            <label>المطالبة بشاغر محدد</label>
+            <b>
+              {% if app.status == 'submitted' and prefs %}
+                لا — لا يترتب على تسجيل الرغبات حق مكتسب
+              {% elif app.status == 'submitted' %}
+                لا — لا توجد مطالبة بشاغر محدد
+              {% else %}
+                لا — لا توجد مطالبة
+              {% endif %}
+            </b>
           </div>
         </div>
 
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">قرار الإدارة</div>
-          <div class="v963r-row">
-            {% if app.admin_decision == "approved" %}
-              <span class="v963r-pill ok">معتمد</span>
-            {% elif app.admin_decision == "rejected" %}
-              <span class="v963r-pill danger">مرفوض</span>
-            {% elif app.admin_decision == "returned" %}
-              <span class="v963r-pill warn">مُعاد للتعديل</span>
-            {% elif app.admin_decision %}
-              <span class="v963r-pill">{{ app.admin_decision }}</span>
-            {% else %}
-              <span class="v963r-pill">-</span>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="v963r-summary-card">
-          <div class="v963r-summary-label">الرغبة المتحققة</div>
-          <div class="v963r-summary-value">
-            {% if app.achieved_pref %}
-              رغبة #{{ app.achieved_pref.rank|default:'-' }} — {{ app.achieved_pref.vacancy.school_name|default:'-' }}
-            {% else %}
-              لم تُحدد بعد
-            {% endif %}
-          </div>
+        <div class="adm-note"><b>الأثر الإداري:</b>
+          {% if app.status == 'submitted' and prefs %}
+            يخضع الطلب للضوابط ونتائج المفاضلة واحتياج الإدارة، ولا يعني تسجيل الرغبات تحقق التوجيه عليها أو أولوية على من هو أعلى درجة أو أحق في المفاضلة.
+          {% elif app.status == 'submitted' %}
+            لا يدخل الطلب في مفاضلة الرغبات، ولا يترتب عليه مطالبة بشاغر محدد، مع احتفاظ الإدارة بحق المعالجة وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة.
+          {% else %}
+            لا يدخل الطلب في المفاضلة قبل اكتمال خطوات التقديم والإرسال النهائي.
+          {% endif %}
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="v963r-grid">
-      <div>
-
-        <section class="v963r-card">
-          <div class="v963r-card-head">
-            <h2 class="v963r-head-title">بيانات الطلب</h2>
-            <span class="v963r-pill info">طلب #{{ app.id }}</span>
-          </div>
-
-          <div class="v963r-body">
-            <div class="v963r-fields">
-              <div class="v963r-field">
-                <label class="v963r-label">السجل المدني</label>
-                <input class="v963r-value" value="{{ a.national_id|default:'-' }}" readonly>
-              </div>
-
-              <div class="v963r-field">
-                <label class="v963r-label">الاسم</label>
-                <input class="v963r-value" value="{{ a.full_name|default:'-' }}" readonly>
-              </div>
-
-              <div class="v963r-field">
-                <label class="v963r-label">القطاع</label>
-                <input class="v963r-value" value="{{ a.sector|default:'-' }}" readonly>
-              </div>
-
-              <div class="v963r-field">
-                <label class="v963r-label">الجنس</label>
-                <input class="v963r-value" value="{{ a.gender|default:'-' }}" readonly>
-              </div>
-
-              <div class="v963r-field">
-                <label class="v963r-label">حالة الطلب</label>
-                <input class="v963r-value" value="{% if app.status == 'submitted' %}مُرسل{% elif app.status == 'draft' %}مسودة{% else %}{{ app.status|default:'-' }}{% endif %}" readonly>
-              </div>
-
-              <div class="v963r-field">
-                <label class="v963r-label">تاريخ الإرسال</label>
-                <input class="v963r-value" value="{{ app.submitted_at|date:'Y-m-d H:i'|default:'-' }}" readonly>
-              </div>
-            </div>
-
-            <div class="v963r-note">
-              <b>الخيار البديل / الإقرار</b>
-              <div>{{ app.get_fallback_choice_display|default:app.fallback_choice|default:"-" }}</div>
-              <div class="v963r-muted">خيار المتقدم في حال عدم توفر فرصة ضمن رغباته.</div>
+    <div class="adm-grid">
+      <main class="adm-stack">
+        <section class="adm-card">
+          <div class="adm-head"><h2 class="adm-h2">بيانات الطلب والمتقدم</h2><span class="adm-pill">طلب #{{ app.id }}</span></div>
+          <div class="adm-body">
+            <div class="adm-fields">
+              <div class="adm-field full"><label>اسم المتقدم</label><div class="adm-val">{{ a.full_name|default:'—' }}</div></div>
+              <div class="adm-field"><label>السجل المدني</label><div class="adm-val">{{ a.national_id|default:'—' }}</div></div>
+              <div class="adm-field"><label>الجوال</label><div class="adm-val">{{ a.mobile|default:'—' }}</div></div>
+              <div class="adm-field"><label>القطاع</label><div class="adm-val">{{ a.sector|default:'—' }}</div></div>
+              <div class="adm-field"><label>الجنس</label><div class="adm-val">{{ a.gender|default:'—' }}</div></div>
+              <div class="adm-field"><label>حالة النظام</label><div class="adm-val">{{ app.status|default:'—' }}</div></div>
+              <div class="adm-field"><label>تاريخ تأكيد البيانات</label><div class="adm-val">{{ app.confirmed_at|date:'Y-m-d H:i'|default:'—' }}</div></div>
+              <div class="adm-field"><label>تاريخ الإرسال</label><div class="adm-val">{{ app.submitted_at|date:'Y-m-d H:i'|default:'—' }}</div></div>
+              <div class="adm-field full"><label>المدرسة الحالية / العمل الحالي</label><div class="adm-val">{{ a.current_school|default:'—' }} — {{ a.current_job|default:'—' }}</div></div>
             </div>
           </div>
         </section>
 
-        <section class="v963r-card" style="margin-top:12px;">
-          <div class="v963r-card-head">
-            <h2 class="v963r-head-title">الرغبات المرتبة</h2>
-            <span class="v963r-pill">عدد الرغبات: {{ prefs|length }}</span>
-          </div>
-
-          <div class="v963r-body">
+        <section class="adm-card">
+          <div class="adm-head"><h2 class="adm-h2">الرغبات المسجلة في الطلب</h2><span class="adm-pill">العدد: {{ prefs|length }}</span></div>
+          <div class="adm-body">
             {% if prefs %}
-              <div class="v963r-prefs">
+              <div class="adm-pref-list">
                 {% for p in prefs %}
-                  <div class="v963r-pref {% if app.achieved_pref_id == p.id %}achieved{% endif %}">
-                    <div class="v963r-pref-left">
-                      <div class="v963r-rank">{{ p.rank|default:forloop.counter }}</div>
-
-                      <div class="v963r-pref-meta">
-                        <div class="v963r-pref-name">{{ p.vacancy.school_name|default:"-" }}</div>
-                        <div class="v963r-pref-sub">{{ p.vacancy.stage|default:"-" }} — {{ p.vacancy.sector|default:"-" }}</div>
-                      </div>
+                  <div class="adm-pref {% if app.achieved_pref_id == p.id %}achieved{% endif %}">
+                    <div class="adm-rank">{{ p.rank|default:forloop.counter }}</div>
+                    <div style="min-width:0;">
+                      <div class="adm-pref-name">{{ p.vacancy.school_name|default:'—' }}</div>
+                      <div class="adm-pref-sub">{{ p.vacancy.stage|default:'—' }} — {{ p.vacancy.sector|default:'—' }}{% if p.vacancy.ministry_no %} — {{ p.vacancy.ministry_no }}{% endif %}</div>
                     </div>
-
-                    {% if app.achieved_pref_id == p.id %}
-                      <span class="v963r-pill ok">الرغبة المتحققة</span>
-                    {% else %}
-                      <span class="v963r-pill">رغبة #{{ p.rank|default:forloop.counter }}</span>
-                    {% endif %}
+                    {% if app.achieved_pref_id == p.id %}<span class="adm-pill green">الرغبة المتحققة</span>{% else %}<span class="adm-pill">رغبة #{{ p.rank|default:forloop.counter }}</span>{% endif %}
                   </div>
                 {% endfor %}
               </div>
             {% else %}
-              <div class="v963r-note">
-                <b>تنبيه</b>
-                <div class="v963r-muted">لم يتم اختيار رغبات لهذا الطلب.</div>
-              </div>
+              <div class="adm-empty">لم يتم تسجيل رغبات في هذا الطلب. {{ path_info.brief|default:'لا يدخل مفاضلة الرغبات قبل تسجيل رغبات وإرسال الطلب.' }}</div>
             {% endif %}
           </div>
         </section>
 
-      </div>
-
-      <aside class="v963r-side">
-        <section class="v963r-side-card">
-          <div class="v963r-side-head">
-            <h2 class="v963r-head-title">بطاقة القرار الإداري</h2>
-            <span class="v963r-pill info">مراجعة</span>
+        <section class="adm-card">
+          <div class="adm-head">
+            <h2 class="adm-h2">إثباتات الإرسال والإقرارات</h2>
+            <span class="adm-pill gold">إصدار السياسة: {{ proof.policy_version|default:'v1' }}</span>
           </div>
-
-          <div class="v963r-body">
-            <div class="v963r-decision-summary">
-              <div class="v963r-kv">
-                <div class="v963r-kv-label">القرار الحالي</div>
-                <div class="v963r-kv-value">
-                  {% if app.admin_decision == 'approved' %}
-                    معتمد
-                  {% elif app.admin_decision == 'rejected' %}
-                    مرفوض
-                  {% elif app.admin_decision == 'returned' %}
-                    مُعاد للتعديل
-                  {% else %}
-                    {{ app.admin_decision|default:'-' }}
-                  {% endif %}
+          <div class="adm-body">
+            <div class="adm-fields" style="margin-bottom:9px;">
+              <div class="adm-field"><label>وقت الإرسال المحفوظ</label><div class="adm-val">{{ proof.submitted_at|default:'—' }}</div></div>
+              <div class="adm-field"><label>عدد الرغبات وقت الإرسال</label><div class="adm-val">{% if proof.submitted_prefs_count is not None %}{{ proof.submitted_prefs_count }}{% else %}{{ prefs|length }}{% endif %}</div></div>
+            </div>
+            <div class="adm-proof-list">
+              {% for item in proof.ack_items %}
+                <div class="adm-proof">
+                  <div class="adm-proof-title">
+                    <b>{{ item.title }}</b>
+                    <span class="adm-pill green">{{ item.status }}{% if item.at %} — {{ item.at }}{% endif %}</span>
+                  </div>
+                  <div class="adm-proof-text">{{ item.text }}</div>
                 </div>
-              </div>
-
-              <div class="v963r-kv">
-                <div class="v963r-kv-label">تاريخ القرار</div>
-                <div class="v963r-kv-value">{{ app.admin_decided_at|date:'Y-m-d H:i'|default:'-' }}</div>
-              </div>
+              {% empty %}
+                <div class="adm-empty">لا توجد إقرارات محفوظة لهذا الطلب، وقد يكون الطلب سابقًا لتفعيل حفظ الإقرارات.</div>
+              {% endfor %}
             </div>
+          </div>
+        </section>
+      </main>
 
-            <div class="v963r-field">
-              <label class="v963r-label">ملاحظة القرار الحالية</label>
-              <textarea class="v963r-textarea" readonly>{{ app.admin_note|default:'' }}</textarea>
-            </div>
-
-            <div class="v963r-decision-box">
-              <div class="v963r-field">
-                <label class="v963r-label">الرغبة المتحققة</label>
-                <div class="v963r-hint" style="margin-bottom:8px;">اختر الرغبة التي تحققت للمتقدم، أو اتركها بدون تحديد.</div>
-
-                <form method="post" action="{% url 'portal:admin_set_achieved' app.id %}?back={{ back_url|urlencode }}">
-                  {% csrf_token %}
-                  <select class="v963r-select" name="achieved_pref_id">
-                    <option value="">— بدون تحديد —</option>
-                    {% for p in prefs %}
-                      <option value="{{ p.id }}" {% if app.achieved_pref_id == p.id %}selected{% endif %}>
-                        رغبة #{{ p.rank|default:forloop.counter }} — {{ p.vacancy.school_name|default:"-" }} ({{ p.vacancy.stage|default:"-" }})
-                      </option>
-                    {% endfor %}
-                  </select>
-
-                  <div class="v963r-submit-row">
-                    <button class="v963r-btn v963r-btn-primary" type="submit">حفظ التحديد</button>
-                  </div>
-                </form>
-
-                {% if app.achieved_pref %}
-                  <div class="v963r-note">
-                    <b>الحالة الحالية</b>
-                    <div>تم تحديد: رغبة #{{ app.achieved_pref.rank|default:"-" }} — {{ app.achieved_pref.vacancy.school_name|default:"-" }}</div>
-                    <div class="v963r-muted">وقت التحديد: {{ app.achieved_at|date:"Y-m-d H:i"|default:"-" }}</div>
-                  </div>
+      <aside class="adm-side">
+        <section class="adm-card">
+          <div class="adm-head"><h2 class="adm-h2">بطاقة القرار الإداري</h2><span class="adm-pill {% if app.admin_decision == 'approved' %}green{% elif app.admin_decision == 'rejected' %}red{% elif app.admin_decision == 'returned' %}blue{% else %}gold{% endif %}">
+            {% if app.admin_decision == 'approved' and app.status == 'submitted' and not prefs %}
+              موثق الاستلام
+            {% elif app.admin_decision == 'approved' %}
+              معتمد
+            {% elif app.admin_decision == 'rejected' %}
+              مرفوض
+            {% elif app.admin_decision == 'returned' %}
+              معاد للتعديل
+            {% elif app.status == 'submitted' and not prefs %}
+              بانتظار توثيق
+            {% else %}
+              بانتظار قرار
+            {% endif %}
+          </span></div>
+          <div class="adm-body">
+            <div class="adm-fields">
+              <div class="adm-field full"><label>معنى القرار</label><div class="adm-val">
+                {% if app.admin_decision == 'approved' and app.status == 'submitted' and not prefs %}
+                  تم توثيق استلام الطلب دون رغبات، ولا يدخل في مفاضلة الرغبات.
+                {% elif app.admin_decision == 'approved' %}
+                  قرار اعتماد ضمن مسار المفاضلة، ولا يعني تحقق الرغبة إلا بعد تحديد الرغبة المتحققة.
+                {% elif app.admin_decision == 'rejected' %}
+                  تم رفض الطلب وفق الملاحظة الإدارية المسجلة.
+                {% elif app.admin_decision == 'returned' %}
+                  أعيد الطلب للتعديل وفق الملاحظة الإدارية المسجلة.
+                {% elif app.status == 'submitted' and not prefs %}
+                  طلب مرسل دون رغبات وينتظر توثيق الاستلام إداريًا.
+                {% else %}
+                  طلب ينتظر اتخاذ القرار الإداري.
                 {% endif %}
-              </div>
+              </div></div>
+              <div class="adm-field"><label>تاريخ القرار</label><div class="adm-val">{% if app.admin_decision %}{{ app.admin_decided_at|date:'Y-m-d H:i'|default:'—' }}{% else %}—{% endif %}</div></div>
+              <div class="adm-field"><label>صاحب القرار</label><div class="adm-val">{% if app.admin_decision %}{{ app.admin_decided_by|default:'—' }}{% else %}—{% endif %}</div></div>
+              <div class="adm-field full"><label>ملاحظة القرار الحالية</label><div class="adm-val">{% if app.admin_decision %}{{ app.admin_note|default:'—' }}{% else %}—{% endif %}</div></div>
             </div>
 
-            <div class="v963r-decision-box">
-              <div class="v963r-row" style="justify-content:space-between; align-items:flex-start;">
-                <div>
-                  <div class="v963r-head-title" style="font-size:10.4px;">إجراء القرار</div>
-                  <div class="v963r-hint" style="margin-top:4px;">اختر نوع الإجراء ثم دوّن الملاحظة المطلوبة قبل التنفيذ.</div>
-                </div>
-                <span class="v963r-pill">إجراء واحد</span>
-              </div>
+            <div class="adm-note">
+              <b>{% if app.status == 'submitted' and not prefs %}مسار توثيق دون رغبات{% else %}مسار المفاضلة{% endif %}</b>
+              {% if app.status == 'submitted' and not prefs %}
+                عند التوثيق لا يُعد ذلك ترشيحًا على شاغر محدد، وإنما توثيق استلام طلب دون رغبات.
+              {% else %}
+                الاعتماد هنا يعني اعتماد الطلب في مسار المفاضلة، ولا يعني تحقق الرغبة إلا بعد تحديد الرغبة المتحققة.
+              {% endif %}
+            </div>
+          </div>
+        </section>
 
-              <div class="v963r-tabs" role="tablist" style="margin-top:10px;">
-                <button class="v963r-tab is-active" type="button" data-tab="approve" onclick="switchDecisionTab('approve')">اعتماد</button>
-                <button class="v963r-tab" type="button" data-tab="return" onclick="switchDecisionTab('return')">إرجاع للتعديل</button>
-                <button class="v963r-tab" type="button" data-tab="reject" onclick="switchDecisionTab('reject')">رفض</button>
-              </div>
+        <section class="adm-card">
+          <div class="adm-head"><h2 class="adm-h2">تحديد الرغبة المتحققة</h2></div>
+          <div class="adm-body">
+            {% if app.status == 'submitted' and not prefs %}
+              <div class="adm-empty">هذا الطلب مرسل دون رغبات، لذلك لا توجد رغبة متحققة يمكن تحديدها.</div>
+            {% else %}
+              <form method="post" action="{% url 'portal:admin_set_achieved' app.id %}?back={{ back_url|urlencode }}">
+                {% csrf_token %}
+                <select class="adm-select" name="achieved_pref_id">
+                  <option value="">— بدون تحديد —</option>
+                  {% for p in prefs %}
+                    <option value="{{ p.id }}" {% if app.achieved_pref_id == p.id %}selected{% endif %}>رغبة #{{ p.rank|default:forloop.counter }} — {{ p.vacancy.school_name|default:'—' }} ({{ p.vacancy.stage|default:'—' }})</option>
+                  {% endfor %}
+                </select>
+                <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn primary" type="submit">حفظ التحديد</button></div>
+              </form>
+            {% endif %}
+            {% if app.achieved_pref %}
+              <div class="adm-note"><b>الرغبة الحالية:</b> رغبة #{{ app.achieved_pref.rank|default:'—' }} — {{ app.achieved_pref.vacancy.school_name|default:'—' }}<br><span class="adm-muted">وقت التحديد: {{ app.achieved_at|date:'Y-m-d H:i'|default:'—' }}</span></div>
+            {% endif %}
+          </div>
+        </section>
 
-              <div class="v963r-decision-panel is-active" data-panel="approve">
-                <div class="v963r-hint">يمكن إضافة سبب مختصر للاعتماد عند الحاجة.</div>
-                <form method="post" action="{% url 'portal:admin_approve' app.id %}?back={{ back_url|urlencode }}">
-                  {% csrf_token %}
-                  <input class="v963r-input" name="note" placeholder="سبب الاعتماد (اختياري)">
-                  <div class="v963r-submit-row">
-                    <button class="v963r-btn v963r-btn-primary" type="submit">اعتماد الطلب</button>
-                  </div>
-                </form>
-              </div>
-
-              <div class="v963r-decision-panel" data-panel="return">
-                <div class="v963r-hint">سيُفتح التعديل للمتقدم مع توثيق سبب الإرجاع بشكل مختصر وواضح.</div>
-                <form method="post" action="{% url 'portal:admin_unlock' app.id %}?back={{ back_url|urlencode }}">
-                  {% csrf_token %}
-                  <input class="v963r-input" name="note" placeholder="سبب الإرجاع للتعديل (إجباري)" required>
-                  <div class="v963r-submit-row">
-                    <button class="v963r-btn v963r-btn-warn" type="submit">إرجاع للتعديل</button>
-                  </div>
-                </form>
-              </div>
-
-              <div class="v963r-decision-panel" data-panel="reject">
-                <div class="v963r-hint">يلزم تدوين سبب واضح ومختصر عند رفض الطلب.</div>
-                <form method="post" action="{% url 'portal:admin_reject' app.id %}?back={{ back_url|urlencode }}">
-                  {% csrf_token %}
-                  <input class="v963r-input" name="note" placeholder="سبب الرفض (إجباري)" required>
-                  <div class="v963r-submit-row">
-                    <button class="v963r-btn v963r-btn-danger" type="submit">رفض الطلب</button>
-                  </div>
-                </form>
-              </div>
+        <section class="adm-card">
+          <div class="adm-head"><h2 class="adm-h2">إجراء القرار</h2><span class="adm-pill">إجراء واحد</span></div>
+          <div class="adm-body">
+            <div class="adm-tabs" role="tablist">
+              <button class="adm-tab is-active" type="button" data-tab="approve" onclick="switchDecisionTab('approve')">{% if app.status == 'submitted' and not prefs %}توثيق الاستلام{% else %}اعتماد{% endif %}</button>
+              <button class="adm-tab" type="button" data-tab="return" onclick="switchDecisionTab('return')">إرجاع للتعديل</button>
+              <button class="adm-tab" type="button" data-tab="reject" onclick="switchDecisionTab('reject')">رفض</button>
             </div>
 
-            <div class="v963r-side-actions">
-              <a class="v963r-btn v963r-btn-soft" href="{{ back_url|default:'' }}">رجوع للقائمة</a>
+            <div class="adm-panel is-active" data-panel="approve">
+              <div class="adm-muted" style="margin-bottom:8px;">
+                {% if app.status == 'submitted' and not prefs %}سيتم توثيق استلام الطلب دون رغبات دون اعتباره ترشيحًا على شاغر محدد.{% else %}يمكن إضافة سبب مختصر للاعتماد عند الحاجة.{% endif %}
+              </div>
+              <form method="post" action="{% url 'portal:admin_approve' app.id %}?back={{ back_url|urlencode }}">
+                {% csrf_token %}
+                <input class="adm-input" name="note" placeholder="ملاحظة القرار (اختياري)">
+                <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn primary" type="submit">{% if app.status == 'submitted' and not prefs %}توثيق الاستلام{% else %}اعتماد الطلب{% endif %}</button></div>
+              </form>
+            </div>
+
+            <div class="adm-panel" data-panel="return">
+              <div class="adm-muted" style="margin-bottom:8px;">سيُفتح التعديل للمتقدم مع توثيق سبب الإرجاع.</div>
+              <form method="post" action="{% url 'portal:admin_unlock' app.id %}?back={{ back_url|urlencode }}">
+                {% csrf_token %}
+                <input class="adm-input" name="note" placeholder="سبب الإرجاع للتعديل (إجباري)" required>
+                <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn gold" type="submit">إرجاع للتعديل</button></div>
+              </form>
+            </div>
+
+            <div class="adm-panel" data-panel="reject">
+              <div class="adm-muted" style="margin-bottom:8px;">يلزم تدوين سبب واضح ومختصر عند رفض الطلب.</div>
+              <form method="post" action="{% url 'portal:admin_reject' app.id %}?back={{ back_url|urlencode }}">
+                {% csrf_token %}
+                <input class="adm-input" name="note" placeholder="سبب الرفض (إجباري)" required>
+                <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn red" type="submit">رفض الطلب</button></div>
+              </form>
+            </div>
+
+            <div class="adm-side-actions">
+              <a class="adm-btn" href="{{ back_url|default:'' }}">رجوع للقائمة</a>
             </div>
           </div>
         </section>
@@ -644,29 +496,15 @@
 <script>
 function copyTextValue(txt){
   try{
-    const val = String(txt || "").trim();
+    const val = String(txt || '').trim();
     if(!val) return;
-
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(val);
-    }else{
-      const t = document.createElement("textarea");
-      t.value = val;
-      document.body.appendChild(t);
-      t.select();
-      document.execCommand("copy");
-      document.body.removeChild(t);
-    }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(val); }
+    else{ const t=document.createElement('textarea'); t.value=val; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); }
   }catch(e){}
 }
-
 function switchDecisionTab(name){
-  document.querySelectorAll('.v963r-tab').forEach(btn => {
-    btn.classList.toggle('is-active', btn.dataset.tab === name);
-  });
-  document.querySelectorAll('.v963r-decision-panel').forEach(panel => {
-    panel.classList.toggle('is-active', panel.dataset.panel === name);
-  });
+  document.querySelectorAll('.adm-tab').forEach(btn => btn.classList.toggle('is-active', btn.dataset.tab === name));
+  document.querySelectorAll('.adm-panel').forEach(panel => panel.classList.toggle('is-active', panel.dataset.panel === name));
 }
 </script>
 {% endblock %}

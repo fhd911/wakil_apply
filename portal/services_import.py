@@ -71,6 +71,8 @@ def _cell(row, idx, default=""):
 # - sync        = إضافة الجديد + تحديث الموجود
 # - create_only = إضافة الجديد فقط
 # - update_only = تحديث الموجود فقط
+# ملاحظة تشغيلية: عند تحديث شاغر موجود لا نعيد فتحه تلقائيًا.
+# الشاغر الجديد فقط يبدأ مفتوحًا، أما الشاغر المغلق فيبقى مغلقًا حتى يُفتح يدويًا.
 # =========================
 def import_applicants_xlsx(path: str, mode: str = "sync") -> Tuple[ImportBatch, ImportResult]:
     mode = _norm_import_mode(mode)
@@ -183,7 +185,7 @@ def import_schools_xlsx(path: str, mode: str = "sync") -> Tuple[ImportBatch, Imp
             res.skipped += 1
             continue
 
-        _, was_created = SchoolVacancy.objects.update_or_create(
+        obj, was_created = SchoolVacancy.objects.update_or_create(
             ministry_no=key,
             defaults=dict(
                 ministry_no=key,
@@ -204,14 +206,19 @@ def import_schools_xlsx(path: str, mode: str = "sync") -> Tuple[ImportBatch, Imp
                 deputy_staff=deputy_staff,
                 deputy_existing=deputy_existing,
                 deputy_need=deputy_need,
-                is_open=True,
+                # لا نضع is_open هنا؛ حتى لا يفتح الاستيراد شاغرًا أُغلق بسبب ترشيح سابق.
                 batch=batch,
             ),
         )
 
         if was_created:
+            # الشاغر الجديد يبدأ مفتوحًا بشكل طبيعي.
+            if not obj.is_open:
+                obj.is_open = True
+                obj.save(update_fields=["is_open"])
             res.created += 1
         else:
+            # الشاغر الموجود يحافظ على حالته الحالية: مفتوح أو مغلق.
             res.updated += 1
 
     return batch, res

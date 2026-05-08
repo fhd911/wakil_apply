@@ -1,774 +1,139 @@
 {% extends "portal/base.html" %}
-{% block title %}بيان اعتماد الرغبة النهائية{% endblock %}
+{% block title %}{% if selected_pref %}بيان اعتماد الرغبة النهائية{% elif application.is_no_preferences_path %}بيان توثيق استلام طلب دون رغبات{% else %}بيان حالة طلب قيد المعالجة{% endif %}{% endblock %}
 
 {% block extra_css %}
 <style>
-  :root{
-    --doc-bg:#f3f6f3;
-    --doc-bg-2:#edf2ee;
-    --doc-paper:#ffffff;
-    --doc-paper-2:#fbfcfb;
-
-    --doc-ink:#1d2f27;
-    --doc-ink-2:#31443b;
-    --doc-muted:#6d7e76;
-
-    --doc-green-1:#173b2f;
-    --doc-green-2:#25483a;
-    --doc-green-3:#688076;
-
-    --doc-gold-1:#836632;
-    --doc-gold-2:#a8884f;
-    --doc-gold-3:#dfd0b0;
-
-    --doc-line:#d9e1da;
-    --doc-line-2:#c9d3cb;
-    --doc-line-soft:#ebf0ec;
-
-    --doc-ok:#1f6339;
-    --doc-ok-bg:#eff8f2;
-    --doc-ok-bd:#d2e7d8;
-
-    --doc-warn:#8b6221;
-    --doc-warn-bg:#fcf7ee;
-    --doc-warn-bd:#e7d7b8;
-
-    --doc-shadow:0 2px 8px rgba(16,24,20,.04);
-    --doc-shadow-paper:0 14px 36px rgba(16,24,20,.07);
-  }
-
-  .v963doc, .v963doc *{
-    box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
-  }
-
-  .v963doc{
-    direction:rtl;
-    color:var(--doc-ink);
-    background:linear-gradient(180deg,var(--doc-bg) 0%, var(--doc-bg-2) 100%);
-    padding:12px;
-  }
-
-  .v963doc-wrap{
-    width:min(100%, 980px);
-    margin:0 auto;
-    display:grid;
-    gap:12px;
-  }
-
-  .v963doc-toolbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .v963doc-toolbar-right{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-
-  .v963doc-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:38px;
-    padding:7px 14px;
-    border-radius:10px;
-    border:1px solid var(--doc-line-2);
-    background:#fff;
-    color:var(--doc-green-2);
-    text-decoration:none;
-    cursor:pointer;
-    font-size:10px;
-    font-weight:900;
-    transition:background .15s ease,border-color .15s ease;
-    box-shadow:none;
-  }
-
-  .v963doc-btn:hover{
-    background:var(--doc-paper-2);
-    border-color:#b8c6bb;
-  }
-
-  .v963doc-btn-main{
-    background:linear-gradient(180deg,#264a3b 0%, #1c3f31 100%);
-    border-color:#1c3f31;
-    color:#fff;
-  }
-
-  .v963doc-paper{
-    position:relative;
-    background:var(--doc-paper);
-    border:1px solid var(--doc-line);
-    border-radius:18px;
-    box-shadow:var(--doc-shadow-paper);
-    overflow:hidden;
-  }
-
-  .v963doc-paper::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg,var(--doc-green-2) 0%, var(--doc-gold-2) 100%);
-  }
-
-  .v963doc-head{
-    padding:22px 24px 18px;
-    border-bottom:1px solid var(--doc-line);
-    background:
-      radial-gradient(circle at 86% 20%, rgba(37,72,58,.05) 0 2px, transparent 2.5px) 0 0/20px 20px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-  }
-
-  .v963doc-head-top{
-    display:grid;
-    grid-template-columns:94px minmax(0,1fr) auto;
-    gap:16px;
-    align-items:start;
-  }
-
-  .v963doc-mark{
-    width:94px;
-    min-height:94px;
-    border-radius:18px;
-    border:1px solid rgba(168,136,79,.28);
-    background:linear-gradient(180deg,#f9f6ee,#f5efdf);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:var(--doc-shadow);
-  }
-
-  .v963doc-mark-inner{
-    width:56px;
-    height:56px;
-    border-radius:50%;
-    border:2px solid rgba(131,102,50,.34);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--doc-gold-1);
-    font-size:20px;
-    font-weight:900;
-    letter-spacing:.5px;
-  }
-
-  .v963doc-kicker{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:8px;
-    color:var(--doc-green-2);
-    font-size:9px;
-    font-weight:900;
-  }
-
-  .v963doc-kicker::before{
-    content:"";
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:linear-gradient(180deg,var(--doc-green-2), var(--doc-green-1));
-    flex:0 0 auto;
-  }
-
-  .v963doc-title{
-    margin:0;
-    color:var(--doc-green-1);
-    font-size:24px;
-    line-height:1.2;
-    font-weight:900;
-    letter-spacing:0;
-  }
-
-  .v963doc-sub{
-    margin:8px 0 0;
-    max-width:68ch;
-    color:var(--doc-muted);
-    font-size:10.3px;
-    line-height:2;
-    font-weight:800;
-  }
-
-  .v963doc-badge-col{
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-end;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-
-  .v963doc-badge{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:30px;
-    padding:4px 11px;
-    border-radius:10px;
-    border:1px solid #e6dac0;
-    background:#fcf7ee;
-    color:#816127;
-    font-size:9px;
-    font-weight:900;
-    white-space:nowrap;
-  }
-
-  .v963doc-summary{
-    padding:14px 24px;
-    border-bottom:1px solid var(--doc-line);
-    background:#fff;
-    display:grid;
-    grid-template-columns:repeat(6,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .v963doc-summary-item{
-    border:1px solid var(--doc-line);
-    border-radius:12px;
-    padding:10px 11px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfb);
-  }
-
-  .v963doc-summary-k{
-    font-size:8.4px;
-    color:var(--doc-muted);
-    font-weight:800;
-    margin-bottom:5px;
-  }
-
-  .v963doc-summary-v{
-    font-size:10px;
-    line-height:1.7;
-    color:var(--doc-ink);
-    font-weight:900;
-    word-break:break-word;
-  }
-
-  .v963doc-status{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:26px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid var(--doc-line);
-    background:#fff;
-    color:var(--doc-ink-2);
-    font-size:8.6px;
-    font-weight:900;
-    white-space:nowrap;
-  }
-
-  .v963doc-status.ok{
-    border-color:var(--doc-ok-bd);
-    background:var(--doc-ok-bg);
-    color:var(--doc-ok);
-  }
-
-  .v963doc-status.warn{
-    border-color:var(--doc-warn-bd);
-    background:var(--doc-warn-bg);
-    color:var(--doc-warn);
-  }
-
-  .v963doc-body{
-    padding:18px 24px 22px;
-    display:grid;
-    gap:16px;
-  }
-
-  .v963doc-section{
-    border:1px solid var(--doc-line);
-    border-radius:14px;
-    overflow:hidden;
-    background:#fff;
-  }
-
-  .v963doc-section-head{
-    padding:12px 14px;
-    border-bottom:1px solid var(--doc-line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .v963doc-section-title{
-    margin:0;
-    color:var(--doc-green-1);
-    font-size:12.6px;
-    font-weight:900;
-  }
-
-  .v963doc-section-sub{
-    color:var(--doc-muted);
-    font-size:8.6px;
-    font-weight:800;
-  }
-
-  .v963doc-defs{
-    padding:0;
-    margin:0;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    border-top:0;
-  }
-
-  .v963doc-def{
-    padding:12px 14px;
-    border-inline-start:1px solid var(--doc-line-soft);
-    border-bottom:1px solid var(--doc-line-soft);
-    min-width:0;
-  }
-
-  .v963doc-def:nth-child(2n+1){
-    border-inline-start:none;
-  }
-
-  .v963doc-def-k{
-    font-size:8.6px;
-    color:var(--doc-muted);
-    font-weight:800;
-    margin-bottom:5px;
-  }
-
-  .v963doc-def-v{
-    font-size:10.1px;
-    color:var(--doc-ink);
-    font-weight:900;
-    line-height:1.8;
-    word-break:break-word;
-  }
-
-  .v963doc-table-wrap{
-    overflow:hidden;
-    background:#fff;
-  }
-
-  .v963doc-table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-  }
-
-  .v963doc-table th{
-    padding:12px 8px;
-    border-bottom:1px solid var(--doc-line-2);
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf3ef 100%);
-    color:var(--doc-green-1);
-    font-size:8.9px;
-    font-weight:900;
-    text-align:center;
-    white-space:nowrap;
-  }
-
-  .v963doc-table td{
-    padding:11px 8px;
-    border-bottom:1px solid var(--doc-line-soft);
-    background:#fff;
-    font-size:9.6px;
-    font-weight:800;
-    color:var(--doc-ink);
-    line-height:1.8;
-    vertical-align:middle;
-    text-align:center;
-  }
-
-  .v963doc-table tbody tr:nth-child(even) td{
-    background:#fcfdfc;
-  }
-
-  .v963doc-table .school{
-    text-align:right;
-    width:40%;
-  }
-
-  .v963doc-rank{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:32px;
-    height:30px;
-    padding:0 10px;
-    border-radius:9px;
-    border:1px solid #e7d7b7;
-    background:#fcf7ee;
-    color:#856426;
-    font-size:9px;
-    font-weight:900;
-  }
-
-  .v963doc-empty{
-    padding:24px;
-    text-align:center;
-    color:var(--doc-muted);
-    font-size:10px;
-    font-weight:800;
-    line-height:1.9;
-  }
-
-  .v963doc-note{
-    padding:14px 15px;
-    border:1px solid #e7d7b7;
-    border-radius:14px;
-    background:linear-gradient(180deg,#fffefb,#fffbf4);
-  }
-
-  .v963doc-note-k{
-    color:#7d5d22;
-    font-size:8.9px;
-    font-weight:900;
-    margin-bottom:5px;
-  }
-
-  .v963doc-note-v{
-    color:var(--doc-ink-2);
-    font-size:9.7px;
-    line-height:1.9;
-    font-weight:800;
-  }
-
-  .v963doc-sign{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:14px;
-  }
-
-  .v963doc-sign-box{
-    border:1px dashed #cfd8d1;
-    border-radius:14px;
-    padding:14px;
-    min-height:98px;
-    background:#fff;
-  }
-
-  .v963doc-sign-k{
-    color:var(--doc-muted);
-    font-size:8.5px;
-    font-weight:800;
-    margin-bottom:18px;
-  }
-
-  .v963doc-sign-v{
-    color:var(--doc-green-1);
-    font-size:10.2px;
-    font-weight:900;
-  }
-
-  .v963doc-foot{
-    padding:14px 24px 22px;
-    border-top:1px solid var(--doc-line);
-    text-align:center;
-    color:var(--doc-muted);
-    font-size:8.8px;
-    line-height:1.9;
-    font-weight:800;
-  }
-
-  @media (max-width:900px){
-    .v963doc-summary{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    .v963doc-head-top{
-      grid-template-columns:1fr;
-    }
-  }
-
-  @media (max-width:640px){
-    .v963doc{
-      padding:6px;
-    }
-
-    .v963doc-summary,
-    .v963doc-defs,
-    .v963doc-sign{
-      grid-template-columns:1fr;
-    }
-
-    .v963doc-def{
-      border-inline-start:none !important;
-    }
-
-    .v963doc-title{
-      font-size:20px;
-    }
-  }
-
-  @media print{
-    @page{
-      size:A4;
-      margin:12mm;
-    }
-
-    html, body{
-      background:#fff !important;
-    }
-
-    body *{
-      visibility:hidden;
-    }
-
-    .v963doc-paper, .v963doc-paper *{
-      visibility:visible;
-    }
-
-    .v963doc{
-      padding:0 !important;
-      background:#fff !important;
-    }
-
-    .v963doc-wrap{
-      width:100% !important;
-      max-width:none !important;
-      margin:0 !important;
-      gap:0 !important;
-    }
-
-    .v963doc-toolbar{
-      display:none !important;
-    }
-
-    .v963doc-paper{
-      border:none !important;
-      border-radius:0 !important;
-      box-shadow:none !important;
-      overflow:visible !important;
-    }
-
-    .v963doc-paper::before{
-      height:3px !important;
-    }
-
-    .v963doc-head,
-    .v963doc-summary,
-    .v963doc-section-head,
-    .v963doc-table th,
-    .v963doc-rank,
-    .v963doc-status,
-    .v963doc-badge{
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
-    }
-
-    a{
-      text-decoration:none !important;
-      color:inherit !important;
-    }
-  }
+  :root{--doc-bg:#f4f7f5;--doc-paper:#fff;--doc-line:#d9e2dc;--doc-line2:#cbd8d0;--doc-ink:#1d3329;--doc-muted:#6f8178;--doc-green:#174c3b;--doc-gold:#8a6526;--doc-gold-bg:#fcf7ee;--doc-green-bg:#edf7f1;--doc-blue:#365f83;--doc-blue-bg:#f2f7fd;--doc-red:#8c3434;--doc-red-bg:#fbf5f5;--doc-shadow:0 12px 32px rgba(18,30,24,.07)}
+  .docp,.docp *{box-sizing:border-box;font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif!important}
+  .docp{direction:rtl;background:linear-gradient(180deg,#f6f8f6,#eef3ef);padding:12px;color:var(--doc-ink)}
+  .doc-wrap{width:min(100%,980px);margin:0 auto;display:grid;gap:12px}.doc-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.doc-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .doc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 13px;border-radius:10px;border:1px solid var(--doc-line2);background:#fff;color:var(--doc-green);font-size:10px;font-weight:500;text-decoration:none;cursor:pointer}.doc-btn.primary{background:var(--doc-green);border-color:var(--doc-green);color:#fff}
+  .doc-paper{position:relative;background:var(--doc-paper);border:1px solid var(--doc-line);border-radius:18px;box-shadow:var(--doc-shadow);overflow:hidden}.doc-paper:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--doc-green),rgba(169,130,53,.75))}
+  .doc-head{padding:22px 24px 18px;border-bottom:1px solid var(--doc-line);background:linear-gradient(180deg,#fff,#fbfcfb)}.doc-head-grid{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:16px;align-items:start}.doc-mark{width:88px;height:88px;border:1px solid #e4d2ae;border-radius:18px;background:var(--doc-gold-bg);display:grid;place-items:center;color:var(--doc-gold);font-weight:700;font-size:20px}.doc-kicker{font-size:9px;color:var(--doc-green);font-weight:600;margin-bottom:7px}.doc-title{margin:0;color:var(--doc-green);font-size:23px;line-height:1.25;font-weight:700}.doc-sub{margin:7px 0 0;color:var(--doc-muted);font-size:10.3px;line-height:1.9;font-weight:400;max-width:70ch}.doc-badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.doc-badge,.doc-status{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:4px 10px;border-radius:999px;border:1px solid var(--doc-line2);background:#fff;color:var(--doc-ink);font-size:8.8px;font-weight:500;white-space:nowrap}.doc-status.green{background:var(--doc-green-bg);border-color:#cfe4d6;color:var(--doc-green)}.doc-status.gold{background:var(--doc-gold-bg);border-color:#e4d2ae;color:var(--doc-gold)}.doc-status.blue{background:var(--doc-blue-bg);border-color:#d4e2ef;color:var(--doc-blue)}.doc-status.red{background:var(--doc-red-bg);border-color:#e8caca;color:var(--doc-red)}
+  .doc-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px 24px;border-bottom:1px solid var(--doc-line);background:#fff}.doc-item{border:1px solid var(--doc-line);border-radius:12px;padding:10px;background:linear-gradient(180deg,#fff,#fbfcfb)}.doc-k{font-size:8.4px;color:var(--doc-muted);font-weight:400;margin-bottom:5px}.doc-v{font-size:10px;color:var(--doc-ink);font-weight:500;line-height:1.7;word-break:break-word}
+  .doc-body{padding:18px 24px 22px;display:grid;gap:14px}.doc-section{border:1px solid var(--doc-line);border-radius:14px;background:#fff;overflow:hidden}.doc-section-head{padding:12px 14px;border-bottom:1px solid var(--doc-line);background:linear-gradient(180deg,#fff,#f8fbf9);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.doc-h2{margin:0;color:var(--doc-green);font-size:12.6px;font-weight:600}.doc-small{color:var(--doc-muted);font-size:8.7px;line-height:1.8}.doc-defs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.doc-def{padding:11px 13px;border-bottom:1px solid #edf1ed;border-inline-start:1px solid #edf1ed}.doc-def:nth-child(2n+1){border-inline-start:0}.doc-def-k{font-size:8.4px;color:var(--doc-muted);font-weight:400;margin-bottom:5px}.doc-def-v{font-size:10px;color:var(--doc-ink);font-weight:500;line-height:1.75}
+  .doc-table{width:100%;border-collapse:collapse;table-layout:fixed}.doc-table th{padding:11px 8px;border-bottom:1px solid var(--doc-line2);background:#f2f6f4;color:var(--doc-green);font-size:8.8px;font-weight:600;text-align:center}.doc-table td{padding:10px 8px;border-bottom:1px solid #edf1ed;background:#fff;color:var(--doc-ink);font-size:9.5px;line-height:1.75;text-align:center}.doc-table .school{text-align:right;width:40%}.doc-rank{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:30px;border-radius:9px;border:1px solid #e4d2ae;background:var(--doc-gold-bg);color:var(--doc-gold);font-size:9px;font-weight:600}
+  .doc-note{border:1px solid #e4d2ae;border-radius:14px;background:linear-gradient(180deg,#fffefb,#fffbf4);padding:13px 14px}.doc-note-k{color:var(--doc-gold);font-size:8.8px;font-weight:600;margin-bottom:5px}.doc-note-v{color:var(--doc-ink);font-size:9.5px;line-height:1.9;font-weight:400}.doc-empty{padding:22px;text-align:center;color:var(--doc-muted);font-size:9.7px;line-height:1.9}
+  .doc-ack{display:grid;gap:8px;padding:12px 14px}.doc-ack-box{border:1px dashed var(--doc-line2);border-radius:12px;background:#fbfcfb;padding:10px}.doc-ack-title{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}.doc-ack-title b{color:var(--doc-green);font-size:9.6px}.doc-ack-text{font-size:9px;line-height:1.9;color:var(--doc-ink)}
+  .doc-sign{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.doc-sign-box{border:1px dashed var(--doc-line2);border-radius:14px;padding:14px;min-height:96px;background:#fff}.doc-sign-k{font-size:8.5px;color:var(--doc-muted);margin-bottom:18px}.doc-sign-v{font-size:10px;color:var(--doc-green);font-weight:600}.doc-foot{padding:13px 24px 20px;border-top:1px solid var(--doc-line);text-align:center;color:var(--doc-muted);font-size:8.6px;line-height:1.8}
+  @media(max-width:900px){.doc-head-grid{grid-template-columns:1fr}.doc-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.doc-badges{justify-content:flex-start}}
+  @media(max-width:640px){.docp{padding:6px}.doc-summary,.doc-defs,.doc-sign{grid-template-columns:1fr}.doc-def{border-inline-start:0!important}.doc-title{font-size:20px}}
+  @media print{ @page{size:A4;margin:12mm} html,body{background:#fff!important} body *{visibility:hidden}.doc-paper,.doc-paper *{visibility:visible}.docp{padding:0!important;background:#fff!important}.doc-wrap{width:100%!important;max-width:none!important;margin:0!important}.doc-toolbar{display:none!important}.doc-paper{border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}.doc-head,.doc-summary,.doc-section-head,.doc-table th,.doc-status,.doc-badge,.doc-rank{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="v963doc">
-  <div class="v963doc-wrap">
-
-    <div class="v963doc-toolbar">
-      <div class="v963doc-toolbar-right">
-        <button type="button" class="v963doc-btn v963doc-btn-main" onclick="window.print()">طباعة</button>
-        <button type="button" class="v963doc-btn" onclick="window.close()">إغلاق</button>
-      </div>
-
-      <a href="{% url 'portal:admin_dashboard' %}" class="v963doc-btn">العودة إلى لوحة القرار</a>
+<div class="docp">
+  <div class="doc-wrap">
+    <div class="doc-toolbar">
+      <div class="doc-actions"><button type="button" class="doc-btn primary" onclick="window.print()">طباعة</button><button type="button" class="doc-btn" onclick="window.close()">إغلاق</button></div>
+      <a href="{% url 'portal:admin_dashboard' %}" class="doc-btn">العودة إلى لوحة القرار</a>
     </div>
 
-    <div class="v963doc-paper">
-      <div class="v963doc-head">
-        <div class="v963doc-head-top">
-          <div class="v963doc-mark" aria-hidden="true">
-            <div class="v963doc-mark-inner">اع</div>
-          </div>
-
+    <div class="doc-paper">
+      <div class="doc-head">
+        <div class="doc-head-grid">
+          <div class="doc-mark">{% if selected_pref %}اع{% elif application.is_no_preferences_path %}تو{% else %}قيد{% endif %}</div>
           <div>
-            <div class="v963doc-kicker">مستند إداري داخلي للطباعة</div>
-            <h1 class="v963doc-title">بيان اعتماد الرغبة النهائية</h1>
-            <p class="v963doc-sub">
-              مستخرج داخلي يوضح الرغبة النهائية المعتمدة للمتقدم كما هي مسجلة في النظام وقت إنشاء هذا المستند، وهو مخصص للعرض والطباعة والأرشفة الداخلية.
+            <div class="doc-kicker">مستند إداري داخلي للطباعة والأرشفة</div>
+            <h1 class="doc-title">
+              {% if selected_pref %}
+                بيان اعتماد الرغبة النهائية
+              {% elif application.is_no_preferences_path %}
+                بيان توثيق استلام طلب دون رغبات
+              {% else %}
+                بيان حالة طلب قيد المعالجة
+              {% endif %}
+            </h1>
+            <p class="doc-sub">
+              {% if selected_pref %}
+                مستخرج يوضح الرغبة المتحققة المعتمدة كما هي مسجلة في النظام وقت توليد المستند.
+              {% elif application.is_no_preferences_path %}
+                مستخرج يثبت استلام طلب مرسل دون رغبات، ولا يعني دخول الطلب في مفاضلة الرغبات أو المطالبة بشاغر محدد.
+              {% else %}
+                مستخرج يوضح حالة الطلب ومساره الإداري كما هو مسجل في النظام لحظة توليد المستند.
+              {% endif %}
             </p>
           </div>
-
-          <div class="v963doc-badge-col">
-            <span class="v963doc-badge">رقم الطلب: <b style="margin-inline-start:6px;">#{{ application.id }}</b></span>
-            <span class="v963doc-badge">تاريخ الإنشاء: <b style="margin-inline-start:6px;">{% now "Y-m-d H:i" %}</b></span>
+          <div class="doc-badges">
+            <span class="doc-badge">رقم الطلب: <b style="margin-inline-start:5px;">#{{ application.id }}</b></span>
+            <span class="doc-badge">تاريخ الإنشاء: <b style="margin-inline-start:5px;">{% now "Y-m-d H:i" %}</b></span>
           </div>
         </div>
       </div>
 
-      <div class="v963doc-summary">
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">اسم المرشح</div>
-          <div class="v963doc-summary-v">{{ application.applicant.full_name|default:"—" }}</div>
-        </div>
-
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">السجل المدني</div>
-          <div class="v963doc-summary-v">{{ application.applicant.national_id|default:"—" }}</div>
-        </div>
-
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">القطاع</div>
-          <div class="v963doc-summary-v">{{ application.applicant.sector|default:"—" }}</div>
-        </div>
-
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">حالة الطلب</div>
-          <div class="v963doc-summary-v">
-            {% if application.status == "submitted" %}
-              <span class="v963doc-status ok">مُرسل</span>
-            {% elif application.status == "draft" %}
-              <span class="v963doc-status warn">مسودة</span>
-            {% else %}
-              <span class="v963doc-status warn">{{ application.status|default:"—" }}</span>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">حالة الاعتماد</div>
-          <div class="v963doc-summary-v">
-            {% if selected_pref %}
-              <span class="v963doc-status ok">معتمدة نهائيًا</span>
-            {% else %}
-              <span class="v963doc-status warn">غير محددة</span>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="v963doc-summary-item">
-          <div class="v963doc-summary-k">وقت توليد المستند</div>
-          <div class="v963doc-summary-v">{% now "Y-m-d H:i" %}</div>
-        </div>
+      <div class="doc-summary">
+        <div class="doc-item"><div class="doc-k">اسم المرشح</div><div class="doc-v">{{ application.applicant.full_name|default:'—' }}</div></div>
+        <div class="doc-item"><div class="doc-k">السجل المدني</div><div class="doc-v">{{ application.applicant.national_id|default:'—' }}</div></div>
+        <div class="doc-item"><div class="doc-k">القطاع / الجنس</div><div class="doc-v">{{ application.applicant.sector|default:'—' }} — {{ application.applicant.gender|default:'—' }}</div></div>
+        <div class="doc-item"><div class="doc-k">مسار الطلب</div><div class="doc-v"><span class="doc-status {{ path_info.css|default:'gold' }}">{{ path_info.label|default:'—' }}</span></div></div>
+        <div class="doc-item"><div class="doc-k">قرار الإدارة</div><div class="doc-v"><span class="doc-status {{ decision_info.css|default:'gold' }}">{{ decision_info.label|default:'بانتظار قرار' }}</span></div></div>
+        <div class="doc-item"><div class="doc-k">وقت توليد المستند</div><div class="doc-v">{% now "Y-m-d H:i" %}</div></div>
       </div>
 
-      <div class="v963doc-body">
-
-        <section class="v963doc-section">
-          <div class="v963doc-section-head">
-            <div>
-              <h2 class="v963doc-section-title">بيانات الاعتماد</h2>
-              <div class="v963doc-section-sub">بيانات تعريفية مختصرة للطلب والمتقدم.</div>
-            </div>
-          </div>
-
-          <div class="v963doc-defs">
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">رقم الطلب</div>
-              <div class="v963doc-def-v">#{{ application.id }}</div>
-            </div>
-
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">اسم المرشح</div>
-              <div class="v963doc-def-v">{{ application.applicant.full_name|default:"—" }}</div>
-            </div>
-
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">السجل المدني</div>
-              <div class="v963doc-def-v">{{ application.applicant.national_id|default:"—" }}</div>
-            </div>
-
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">القطاع</div>
-              <div class="v963doc-def-v">{{ application.applicant.sector|default:"—" }}</div>
-            </div>
-
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">حالة الطلب</div>
-              <div class="v963doc-def-v">
-                {% if application.status == "submitted" %}
-                  مُرسل
-                {% elif application.status == "draft" %}
-                  مسودة
-                {% else %}
-                  {{ application.status|default:"—" }}
-                {% endif %}
-              </div>
-            </div>
-
-            <div class="v963doc-def">
-              <div class="v963doc-def-k">المرجع الداخلي</div>
-              <div class="v963doc-def-v">طلب اعتماد رغبة نهائية</div>
-            </div>
+      <div class="doc-body">
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">بيانات المسار الإداري</h2><div class="doc-small">المعنى الإداري للطلب والقرار.</div></div></div>
+          <div class="doc-defs">
+            <div class="doc-def"><div class="doc-def-k">رقم الطلب</div><div class="doc-def-v">#{{ application.id }}</div></div>
+            <div class="doc-def"><div class="doc-def-k">حالة الطلب</div><div class="doc-def-v">{{ path_info.status_label|default:application.status }}</div></div>
+            <div class="doc-def"><div class="doc-def-k">يدخل مفاضلة الرغبات؟</div><div class="doc-def-v">{{ path_info.competition_value|default:'—' }} — {{ path_info.competition_label|default:'غير محدد' }}</div></div>
+            <div class="doc-def"><div class="doc-def-k">قابل للمعالجة الإدارية؟</div><div class="doc-def-v">{{ path_info.admin_processing_value|default:'—' }} — {{ path_info.admin_processing_label|default:'غير محدد' }}</div></div>
+            <div class="doc-def"><div class="doc-def-k">المطالبة بشاغر محدد</div><div class="doc-def-v">{{ path_info.claim_value|default:'—' }} — {{ path_info.claim_label|default:'غير محدد' }}</div></div>
+            <div class="doc-def"><div class="doc-def-k">تاريخ الإرسال</div><div class="doc-def-v">{{ application.submitted_at|date:'Y-m-d H:i'|default:'—' }}</div></div>
           </div>
         </section>
 
-        <section class="v963doc-section">
-          <div class="v963doc-section-head">
-            <div>
-              <h2 class="v963doc-section-title">الرغبة النهائية المعتمدة</h2>
-              <div class="v963doc-section-sub">الرغبة المحددة نهائيًا من قبل الإدارة كما تظهر في النظام.</div>
-            </div>
+        {% if selected_pref and selected_pref.vacancy %}
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">الرغبة النهائية المعتمدة</h2><div class="doc-small">الرغبة المحددة نهائيًا من قبل الإدارة.</div></div><span class="doc-status green">تم الاعتماد</span></div>
+          <table class="doc-table">
+            <thead><tr><th style="width:84px;">الترتيب</th><th class="school">المدرسة / الشاغر</th><th style="width:170px;">القطاع</th><th style="width:150px;">المرحلة</th><th style="width:150px;">الوضع النهائي</th></tr></thead>
+            <tbody><tr><td><span class="doc-rank">{{ selected_pref.rank|default:'—' }}</span></td><td class="school">{{ selected_pref.vacancy.school_name|default:'—' }}</td><td>{{ selected_pref.vacancy.sector|default:'—' }}</td><td>{{ selected_pref.vacancy.stage|default:'—' }}</td><td><span class="doc-status green">رغبة متحققة</span></td></tr></tbody>
+          </table>
+        </section>
+        {% elif application.is_no_preferences_path %}
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">توثيق الاستلام دون رغبات</h2><div class="doc-small">لا توجد رغبات مسجلة في الطلب.</div></div><span class="doc-status gold">دون رغبات</span></div>
+          <div class="doc-empty">تم توثيق استلام الطلب دون رغبات، ولا يدخل في مفاضلة الرغبات، ولا يترتب عليه مطالبة بشاغر محدد، مع احتفاظ الإدارة بحق المعالجة وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة.</div>
+        </section>
+        {% else %}
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">حالة الرغبة النهائية</h2><div class="doc-small">لم تحدد رغبة نهائية حتى لحظة إنشاء المستند.</div></div><span class="doc-status gold">قيد المعالجة</span></div>
+          <div class="doc-empty">لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب حتى لحظة إنشاء هذا المستند.</div>
+        </section>
+        {% endif %}
 
-            <div>
-              {% if selected_pref %}
-                <span class="v963doc-status ok">تم الاعتماد</span>
-              {% else %}
-                <span class="v963doc-status warn">لم يحدد اعتماد نهائي</span>
-              {% endif %}
-            </div>
-          </div>
-
-          {% if selected_pref and selected_pref.vacancy %}
-            <div class="v963doc-table-wrap">
-              <table class="v963doc-table">
-                <thead>
-                  <tr>
-                    <th style="width:84px;">الترتيب</th>
-                    <th class="school">المدرسة / الشاغر</th>
-                    <th style="width:170px;">القطاع</th>
-                    <th style="width:150px;">نوع الشاغر</th>
-                    <th style="width:150px;">الوضع النهائي</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="v963doc-rank">{{ selected_pref.rank|default:"—" }}</span></td>
-                    <td class="school">{{ selected_pref.vacancy.school_name|default:"—" }}</td>
-                    <td>{{ selected_pref.vacancy.sector|default:"—" }}</td>
-                    <td>{{ selected_pref.vacancy.gender|default:"—" }}</td>
-                    <td><span class="v963doc-status ok">رغبة معتمدة</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          {% else %}
-            <div class="v963doc-empty">
-              لم يتم تحديد رغبة نهائية من قبل الإدارة لهذا الطلب حتى لحظة إنشاء هذا المستند.
-            </div>
-          {% endif %}
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">الرغبات المسجلة</h2><div class="doc-small">تعرض الرغبات كما هي في الطلب إن وجدت.</div></div><span class="doc-status">العدد: {{ prefs|length }}</span></div>
+          {% if prefs %}
+          <table class="doc-table">
+            <thead><tr><th style="width:84px;">الترتيب</th><th class="school">المدرسة / الشاغر</th><th style="width:170px;">القطاع</th><th style="width:150px;">المرحلة</th><th style="width:150px;">الحالة</th></tr></thead>
+            <tbody>
+              {% for p in prefs %}
+              <tr><td><span class="doc-rank">{{ p.rank|default:forloop.counter }}</span></td><td class="school">{{ p.vacancy.school_name|default:'—' }}</td><td>{{ p.vacancy.sector|default:'—' }}</td><td>{{ p.vacancy.stage|default:'—' }}</td><td>{% if application.achieved_pref_id == p.id %}<span class="doc-status green">متحققة</span>{% else %}<span class="doc-status">مسجلة</span>{% endif %}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}<div class="doc-empty">لم يتم تسجيل رغبات في هذا الطلب.</div>{% endif %}
         </section>
 
-        <div class="v963doc-note">
-          <div class="v963doc-note-k">إفادة</div>
-          <div class="v963doc-note-v">
-            يعبّر هذا المستند عن حالة الاعتماد النهائية كما كانت مسجلة في النظام لحظة توليده، ويستخدم للأغراض الإدارية الداخلية والطباعة والأرشفة.
+        <section class="doc-section">
+          <div class="doc-section-head"><div><h2 class="doc-h2">إثباتات الإرسال والإقرارات</h2><div class="doc-small">النصوص المحفوظة وقت الإرسال.</div></div><span class="doc-status gold">إصدار: {{ proof.policy_version|default:'v1' }}</span></div>
+          <div class="doc-ack">
+            {% for item in proof.ack_items %}
+              <div class="doc-ack-box"><div class="doc-ack-title"><b>{{ item.title }}</b><span class="doc-status green">{{ item.status }}{% if item.at %} — {{ item.at }}{% endif %}</span></div><div class="doc-ack-text">{{ item.text }}</div></div>
+            {% empty %}
+              <div class="doc-empty">لا توجد إقرارات محفوظة لهذا الطلب.</div>
+            {% endfor %}
           </div>
-        </div>
+        </section>
 
-        <div class="v963doc-sign">
-          <div class="v963doc-sign-box">
-            <div class="v963doc-sign-k">اسم المعتمد / الجهة المختصة</div>
-            <div class="v963doc-sign-v">....................................</div>
-          </div>
+        <div class="doc-note"><div class="doc-note-k">إفادة</div><div class="doc-note-v">{{ path_info.long_note|default:'يعبّر هذا المستند عن حالة الطلب كما كانت مسجلة في النظام لحظة توليده، ويستخدم للأغراض الإدارية الداخلية والطباعة والأرشفة.' }}</div></div>
 
-          <div class="v963doc-sign-box">
-            <div class="v963doc-sign-k">التوقيع / الختم</div>
-            <div class="v963doc-sign-v">....................................</div>
-          </div>
-        </div>
-
+        <div class="doc-sign"><div class="doc-sign-box"><div class="doc-sign-k">اسم المعتمد / الجهة المختصة</div><div class="doc-sign-v">....................................</div></div><div class="doc-sign-box"><div class="doc-sign-k">التوقيع / الختم</div><div class="doc-sign-v">....................................</div></div></div>
       </div>
-
-      <div class="v963doc-foot">
-        تم إنشاء هذا المستند من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}
-      </div>
+      <div class="doc-foot">تم إنشاء هذا المستند من النظام الإداري الداخلي — {% now "Y-m-d H:i" %}</div>
     </div>
   </div>
 </div>

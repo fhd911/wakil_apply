@@ -3,426 +3,502 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Non Applicants Report — Administrative Evidence View
+     - يعرض التصنيف الإجرائي وسبب عدم دخول المفاضلة
+     - متوافق مع حقول views.py:
+       progress_code / progress_label / progress_note / prefs_count / application_obj
+  ========================================================= */
+
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
+    --na-bg:#f5f7f5;
+    --na-surface:#ffffff;
+    --na-surface-2:#fbfcfb;
+    --na-surface-3:#f7faf8;
 
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --na-ink:#162f25;
+    --na-ink-2:#31483d;
+    --na-muted:#6f7f76;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --na-green-1:#173c2f;
+    --na-green-2:#1f4d3a;
+    --na-green-3:#2e6b53;
+    --na-green-soft:#edf7f2;
+    --na-green-line:#cfe4d8;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --na-gold:#9b7734;
+    --na-gold-2:#b49256;
+    --na-gold-soft:#fbf6ea;
+    --na-gold-line:#e6d5b4;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --na-blue:#496d7f;
+    --na-blue-soft:#f1f6fa;
+    --na-blue-line:#d5e2e9;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --na-danger:#8f2f2f;
+    --na-danger-bg:#fcf5f5;
+    --na-danger-bd:#e8caca;
 
-    --ok:#215f39;
-    --warn:#8e6113;
-    --danger:#8f2f2f;
-    --info:#355c80;
+    --na-line:#d8e2dc;
+    --na-line-2:#cbd8d0;
+    --na-line-soft:#eaf0ec;
 
-    --ok-bg:#eff8f3;
-    --ok-bd:#cfe6d8;
-
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
-
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
-
-    --info-bg:#f3f7fd;
-    --info-bd:#d5e0ef;
-
-    --moe-deep:#0f5f49;
-    --moe-mid:#1f7a62;
-    --moe-soft:#2e9b81;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
-    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+    --na-shadow:0 4px 14px rgba(18,32,24,.045);
+    --na-shadow-soft:0 10px 26px rgba(18,32,24,.055);
   }
 
-  .una,.una *{
+  .nonA,
+  .nonA *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .una{
+  .nonA{
     direction:rtl;
-    color:var(--ink);
+    color:var(--na-ink);
+    background:
+      radial-gradient(circle at 94% 6%, rgba(31,77,58,.045) 0 128px, transparent 136px),
+      radial-gradient(circle at 5% 10%, rgba(180,146,86,.055) 0 118px, transparent 128px),
+      linear-gradient(180deg,#fbfcfb 0%, #f6f8f6 52%, #eef3ef 100%);
+    padding:12px 10px 22px;
+    min-height:calc(100vh - 54px);
   }
 
-  .una-page{
+  .nonA-page{
+    width:min(100%,1460px);
+    margin:0 auto;
     display:grid;
     gap:12px;
   }
 
-  .una-top,
-  .una-card,
-  .una-kpi{
+  .nonA-shell,
+  .nonA-hero,
+  .nonA-card,
+  .nonA-kpi{
     position:relative;
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--paper);
-    box-shadow:var(--shadow);
+    border:1px solid var(--na-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--na-shadow);
   }
 
-  .una-top::before,
-  .una-card::before,
-  .una-kpi::before{
+  .nonA-shell{
+    border-radius:22px;
+    box-shadow:var(--na-shadow-soft);
+  }
+
+  .nonA-shell::before,
+  .nonA-hero::before,
+  .nonA-card::before,
+  .nonA-kpi::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    height:2px;
+    background:linear-gradient(90deg,var(--na-green-2),var(--na-gold-2));
+    opacity:.85;
   }
 
-  .una-top{
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
+  .nonA-hero{
+    border-radius:22px 22px 0 0;
+    border:0;
+    border-bottom:1px solid var(--na-line-soft);
+    box-shadow:none;
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      radial-gradient(circle at 8% 18%, rgba(180,146,86,.05) 0 2px, transparent 2.6px) 0 0/25px 25px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
   }
 
-  .una-top-main{
+  .nonA-hero-main{
+    padding:16px 20px 15px;
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:start;
-  }
-
-  .una-title{
-    margin:0;
-    font-size:20px;
-    line-height:1.2;
-    font-weight:900 !important;
-    color:var(--green-1);
-    letter-spacing:0;
-  }
-
-  .una-subtitle{
-    margin:6px 0 0;
-    max-width:900px;
-    color:var(--muted);
-    font-size:10.4px;
-    line-height:1.95;
-    font-weight:800 !important;
-  }
-
-  .una-meta{
-    margin-top:10px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
+    gap:14px;
     align-items:center;
   }
 
-  .una-chip{
+  .nonA-kicker,
+  .nonA-pill,
+  .nonA-tag,
+  .nonA-chip{
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-    font-size:9px;
-    font-weight:900 !important;
+    justify-content:center;
+    gap:7px;
+    min-height:29px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid var(--na-line);
+    background:#fff;
+    color:var(--na-ink-2);
+    font-size:8.8px;
+    line-height:1;
+    font-weight:700 !important;
     white-space:nowrap;
   }
 
-  .una-dot{
+  .nonA-kicker{
+    border-color:var(--na-green-line);
+    background:var(--na-green-soft);
+    color:var(--na-green-2);
+    margin-bottom:8px;
+  }
+
+  .nonA-kicker::before,
+  .nonA-section-title::before,
+  .nonA-status-main::before{
+    content:"";
     width:8px;
     height:8px;
-    border-radius:999px;
-    background:var(--moe-mid);
+    border-radius:50%;
+    background:var(--na-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.08);
     flex:0 0 auto;
   }
 
-  .una-actions{
+  .nonA-title{
+    margin:0;
+    color:var(--na-green-1);
+    font-size:25px;
+    line-height:1.25;
+    font-weight:800 !important;
+    letter-spacing:0;
+  }
+
+  .nonA-subtitle{
+    margin:4px 0 0;
+    color:var(--na-muted);
+    font-size:10.6px;
+    line-height:1.85;
+    font-weight:500 !important;
+    max-width:96ch;
+  }
+
+  .nonA-actions,
+  .nonA-tools,
+  .nonA-pager{
     display:flex;
-    flex-wrap:wrap;
-    gap:8px;
     align-items:center;
     justify-content:flex-end;
-  }
-
-  .una-kpis{
-    margin-top:12px;
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .una-kpi{
-    padding:11px 12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-  }
-
-  .una-kpi-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
     gap:8px;
+    flex-wrap:wrap;
   }
 
-  .una-kpi-label{
-    font-size:8.7px;
-    font-weight:900 !important;
-    color:var(--muted);
-  }
-
-  .una-kpi-icon{
-    width:24px;
-    height:24px;
-    border-radius:8px;
-    display:grid;
-    place-items:center;
-    font-size:10px;
-    font-weight:900;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--green-2);
-  }
-
-  .una-kpi-value{
-    margin-top:8px;
-    font-size:17px;
-    line-height:1;
-    font-weight:900 !important;
-    color:var(--green-1);
-  }
-
-  .una-kpi-note{
-    margin-top:5px;
-    font-size:8.4px;
-    line-height:1.7;
-    color:var(--muted);
-    font-weight:800 !important;
-  }
-
-  .una-btn{
+  .nonA-btn{
     appearance:none;
-    border:1px solid var(--line-2);
-    background:#fff;
-    color:var(--green-2);
-    border-radius:8px;
-    padding:6px 12px;
-    font-size:9.4px;
-    font-weight:900 !important;
-    line-height:1;
-    text-decoration:none;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
+    min-height:38px;
+    padding:8px 14px;
+    border-radius:12px;
+    border:1px solid var(--na-line-2);
+    background:#fff;
+    color:var(--na-green-2);
+    text-decoration:none;
     cursor:pointer;
-    white-space:nowrap;
-    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+    font-size:9.5px;
+    line-height:1;
+    font-weight:700 !important;
     box-shadow:none;
-    min-height:35px;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease,opacity .14s ease;
   }
 
-  .una-btn:hover{
+  .nonA-btn:hover{
     transform:translateY(-1px);
+    background:#f8fbf9;
     border-color:#b8c6bb;
-    background:var(--paper-2);
   }
 
-  .una-btn:active{
-    transform:translateY(0);
-  }
-
-  .una-btn-primary{
-    border-color:var(--green-2);
-    background:var(--green-2);
+  .nonA-btn.primary{
+    background:var(--na-green-2);
+    border-color:var(--na-green-2);
     color:#fff;
   }
 
-  .una-btn-export{
-    color:#8a6526;
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
+  .nonA-btn.gold{
+    border-color:var(--na-gold-line);
+    background:var(--na-gold-soft);
+    color:#76551f;
   }
 
-  .una-card{
-    overflow:hidden;
+  .nonA-btn.danger{
+    border-color:var(--na-danger-bd);
+    background:var(--na-danger-bg);
+    color:var(--na-danger);
   }
 
-  .una-toolbar{
-    padding:12px 13px;
-    border-bottom:1px solid var(--line);
+  .nonA-btn[disabled],
+  .nonA-btn.disabled{
+    opacity:.55;
+    pointer-events:none;
+    transform:none !important;
+  }
+
+  .nonA-status-strip{
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    border-top:1px solid var(--na-line-soft);
     background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
-  .una-toolbar-row{
+  .nonA-status-main{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    color:var(--na-green-1);
+    font-size:9.4px;
+    font-weight:700 !important;
+  }
+
+  .nonA-chip.ok,
+  .nonA-tag.ok,
+  .nonA-pill.ok{
+    border-color:var(--na-green-line);
+    background:var(--na-green-soft);
+    color:var(--na-green-2);
+  }
+
+  .nonA-chip.warn,
+  .nonA-tag.warn,
+  .nonA-pill.warn{
+    border-color:var(--na-gold-line);
+    background:var(--na-gold-soft);
+    color:#76551f;
+  }
+
+  .nonA-chip.info,
+  .nonA-tag.info,
+  .nonA-pill.info{
+    border-color:var(--na-blue-line);
+    background:var(--na-blue-soft);
+    color:var(--na-blue);
+  }
+
+  .nonA-chip.danger,
+  .nonA-tag.danger,
+  .nonA-pill.danger{
+    border-color:var(--na-danger-bd);
+    background:var(--na-danger-bg);
+    color:var(--na-danger);
+  }
+
+  .nonA-content{
+    padding:12px;
+    display:grid;
+    gap:12px;
+  }
+
+  .nonA-kpis{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .nonA-kpi{
+    padding:12px;
+    border-radius:16px;
+  }
+
+  .nonA-kpi-label{
+    color:var(--na-muted);
+    font-size:8.4px;
+    font-weight:700 !important;
+    margin-bottom:7px;
+  }
+
+  .nonA-kpi-value{
+    color:var(--na-green-1);
+    font-size:24px;
+    line-height:1;
+    font-weight:800 !important;
+    letter-spacing:-.35px;
+  }
+
+  .nonA-kpi.ok .nonA-kpi-value{color:var(--na-green-2);}
+  .nonA-kpi.warn .nonA-kpi-value{color:#76551f;}
+  .nonA-kpi.danger .nonA-kpi-value{color:var(--na-danger);}
+  .nonA-kpi.info .nonA-kpi-value{color:var(--na-blue);}
+
+  .nonA-admin-grid{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
-    align-items:end;
-  }
-
-  .una-toolbar-left{
-    display:flex;
-    flex-wrap:wrap;
-    gap:9px;
-    align-items:end;
-    min-width:0;
-  }
-
-  .una-toolbar-right{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
+    gap:10px;
     align-items:center;
-    justify-content:flex-end;
+    padding:12px 14px;
   }
 
-  .una-field{
+  .nonA-admin-note{
+    color:var(--na-muted);
+    font-size:9px;
+    line-height:1.8;
+    font-weight:500 !important;
+  }
+
+  .nonA-card-head{
+    padding:12px 14px;
+    border-bottom:1px solid var(--na-line-soft);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
     display:flex;
-    flex-direction:column;
-    gap:5px;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
   }
 
-  .una-field-label{
-    font-size:8.6px;
-    font-weight:900 !important;
-    color:var(--muted);
-    padding-inline:4px;
+  .nonA-section-title{
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--na-green-1);
+    font-size:12.6px;
+    line-height:1.5;
+    font-weight:800 !important;
   }
 
-  .una-input,
-  .una-select{
+  .nonA-section-sub{
+    margin-top:2px;
+    color:var(--na-muted);
+    font-size:8.8px;
+    line-height:1.75;
+    font-weight:500 !important;
+  }
+
+  .nonA-card-body{
+    padding:12px;
+  }
+
+  .nonA-filters{
+    display:grid;
+    grid-template-columns:minmax(260px,1fr) minmax(235px,.55fr) auto;
+    gap:10px;
+    align-items:end;
+  }
+
+  .nonA-field{
+    display:grid;
+    gap:6px;
+  }
+
+  .nonA-label{
+    color:var(--na-green-1);
+    font-size:8.8px;
+    line-height:1.5;
+    font-weight:700 !important;
+  }
+
+  .nonA-input,
+  .nonA-select{
+    width:100%;
     min-height:39px;
-    height:39px;
     padding:7px 10px;
-    font-size:9.5px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    border-radius:11px;
+    border:1px solid var(--na-line-2);
     background:#fff;
-    color:var(--ink);
+    color:var(--na-ink);
+    font-size:9.5px;
     outline:none;
     box-shadow:none;
   }
 
-  .una-input::placeholder{
-    color:#97a69e;
+  .nonA-input:focus,
+  .nonA-select:focus{
+    border-color:var(--na-green-2);
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
   }
 
-  .una-input:focus,
-  .una-select:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
-  }
-
-  .una-summary{
+  .nonA-summary{
     display:flex;
     flex-wrap:wrap;
     gap:8px;
     align-items:center;
     padding:10px 13px;
-    border-bottom:1px solid var(--line-3);
+    border-top:1px solid var(--na-line-soft);
     background:linear-gradient(180deg,#fcfdfb,#fafcf9);
   }
 
-  .una-pill{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-    font-size:9px;
-    font-weight:900 !important;
-    white-space:nowrap;
+  .nonA-table-card{
+    overflow:hidden;
   }
 
-  .una-pill-total{
-    color:var(--green-2);
-    border-color:#d8e3da;
-    background:#f6faf6;
-  }
-
-  .una-pill-search{
-    color:#365246;
-    border-color:#dbe6de;
-    background:#fafcfb;
-  }
-
-  .una-pill-filter{
-    color:#8a6526;
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-  }
-
-  .una-table-wrap{
-    overflow:auto;
+  .nonA-table-wrap{
+    overflow-x:hidden;
+    overflow-y:visible;
     background:#fff;
   }
 
-  table.una-table{
+  .nonA-table{
     width:100%;
-    min-width:1120px;
+    min-width:0;
     border-collapse:collapse;
     table-layout:fixed;
   }
 
-  table.una-table thead th{
+  .nonA-table thead th{
     position:sticky;
     top:0;
     z-index:4;
-    padding:12px 8px;
+    padding:11px 8px;
     white-space:nowrap;
-    font-size:8.8px;
-    font-weight:900;
-    color:var(--green-1);
+    font-size:8.7px;
+    font-weight:800 !important;
+    color:var(--na-green-1);
     background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-    border-bottom:1px solid var(--line-2) !important;
+    border-bottom:1px solid var(--na-line-2) !important;
     text-align:right;
   }
 
-  table.una-table tbody td{
-    padding:11px 8px;
-    font-size:9.35px;
+  .nonA-table tbody td{
+    padding:10px 8px;
+    font-size:9.05px;
     vertical-align:middle;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color:var(--ink);
+    color:var(--na-ink);
     background:#fff;
     border-bottom:1px solid #edf1ed !important;
+    font-weight:600 !important;
   }
 
-  table.una-table tbody tr:nth-child(even) td{
+  .nonA-table tbody tr:nth-child(even) td{
     background:#fcfdfc;
   }
 
-  table.una-table tbody tr:hover td{
+  .nonA-table tbody tr:hover td{
     background:#f8faf8;
   }
 
-  .una-row-no{
+  .nonA-table th:nth-child(1),
+  .nonA-table td:nth-child(1){width:54px;text-align:center;}
+
+  .nonA-table th:nth-child(2),
+  .nonA-table td:nth-child(2){width:23%;}
+
+  .nonA-table th:nth-child(3),
+  .nonA-table td:nth-child(3){width:12%;}
+
+  .nonA-table th:nth-child(4),
+  .nonA-table td:nth-child(4){width:14%;}
+
+  .nonA-table th:nth-child(5),
+  .nonA-table td:nth-child(5){width:19%;}
+
+  .nonA-table th:nth-child(6),
+  .nonA-table td:nth-child(6){width:13%;}
+
+  .nonA-table th:nth-child(7),
+  .nonA-table td:nth-child(7){width:25%;}
+
+  .nonA-row-no{
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -432,29 +508,32 @@
     border-radius:8px;
     background:#f6faf6;
     border:1px solid #dce7de;
-    color:var(--green-3);
+    color:var(--na-green-3);
     font-size:8.8px;
-    font-weight:900 !important;
+    font-weight:800 !important;
   }
 
-  .una-name{
+  .nonA-name{
     display:block;
-    font-weight:900 !important;
-    color:var(--green-1);
-    font-size:10.4px;
+    color:var(--na-green-1);
+    font-size:10.2px;
+    line-height:1.45;
+    font-weight:800 !important;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
-  .una-sub{
+  .nonA-sub{
     display:flex;
     align-items:center;
     gap:6px;
     margin-top:4px;
     min-width:0;
+    overflow:hidden;
   }
 
-  .una-status{
+  .nonA-status,
+  .nonA-progress-badge{
     display:inline-flex;
     align-items:center;
     gap:5px;
@@ -462,45 +541,98 @@
     padding:2px 8px;
     border-radius:999px;
     font-size:8.3px;
-    font-weight:900 !important;
+    line-height:1.2;
+    font-weight:800 !important;
     border:1px solid transparent;
+    max-width:100%;
   }
 
-  .una-status-yes{
-    color:var(--ok);
-    background:var(--ok-bg);
-    border-color:var(--ok-bd);
+  .nonA-status.yes{
+    color:var(--na-green-2);
+    background:var(--na-green-soft);
+    border-color:var(--na-green-line);
   }
 
-  .una-status-no{
-    color:var(--danger);
-    background:var(--danger-bg);
-    border-color:var(--danger-bd);
+  .nonA-status.no{
+    color:var(--na-danger);
+    background:var(--na-danger-bg);
+    border-color:var(--na-danger-bd);
   }
 
-  .una-sub-note{
-    font-size:8.3px;
-    color:var(--muted);
+  .nonA-progress-badge span{
     overflow:hidden;
     text-overflow:ellipsis;
-    font-weight:800 !important;
   }
 
-  .una-cell-soft{
-    color:var(--muted);
+  .nonA-progress-badge.state-none{
+    color:var(--na-danger);
+    background:var(--na-danger-bg);
+    border-color:var(--na-danger-bd);
   }
 
-  .una-cell-strong{
-    font-weight:900 !important;
-    color:var(--ink-2);
+  .nonA-progress-badge.state-entered_not_confirmed,
+  .nonA-progress-badge.state-confirmed_not_submitted,
+  .nonA-progress-badge.state-locked_entered_not_confirmed,
+  .nonA-progress-badge.state-locked_confirmed_not_submitted{
+    color:#76551f;
+    background:var(--na-gold-soft);
+    border-color:var(--na-gold-line);
   }
 
-  .una-empty{
+  .nonA-progress-badge.state-submitted_without_prefs{
+    color:var(--na-blue);
+    background:var(--na-blue-soft);
+    border-color:var(--na-blue-line);
+  }
+
+  .nonA-progress-badge.state-submitted_with_prefs{
+    color:var(--na-green-2);
+    background:var(--na-green-soft);
+    border-color:var(--na-green-line);
+  }
+
+  .nonA-sub-note{
+    color:var(--na-muted);
+    font-size:8.3px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:500 !important;
+  }
+
+  .nonA-muted{
+    color:var(--na-muted);
+    font-size:8.8px;
+    font-weight:500 !important;
+  }
+
+  .nonA-strong{
+    color:var(--na-ink-2);
+    font-weight:700 !important;
+  }
+
+  .nonA-note{
+    color:var(--na-muted);
+    font-size:8.8px;
+    line-height:1.65;
+    font-weight:500 !important;
+  }
+
+  .nonA-last-step{
+    display:grid;
+    gap:3px;
+  }
+
+  .nonA-last-step b{
+    color:var(--na-ink-2);
+    font-size:9px;
+  }
+
+  .nonA-empty{
     padding:26px 18px !important;
     background:#fff !important;
   }
 
-  .una-empty-box{
+  .nonA-empty-box{
     display:grid;
     place-items:center;
     gap:8px;
@@ -508,303 +640,458 @@
     padding:14px 12px;
   }
 
-  .una-empty-icon{
+  .nonA-empty-icon{
     width:52px;
     height:52px;
     border-radius:16px;
     display:grid;
     place-items:center;
     font-size:20px;
-    color:var(--gold-1);
-    border:1px solid #eedcb4;
-    background:#fff4df;
-    box-shadow:var(--shadow-soft);
+    color:#76551f;
+    border:1px solid var(--na-gold-line);
+    background:var(--na-gold-soft);
+    box-shadow:var(--na-shadow);
   }
 
-  .una-empty-title{
+  .nonA-empty-title{
+    color:var(--na-green-2);
     font-size:12px;
-    font-weight:900 !important;
-    color:var(--green-2);
-  }
-
-  .una-empty-sub{
-    max-width:500px;
-    font-size:8.8px;
-    line-height:1.8;
-    color:var(--muted);
     font-weight:800 !important;
   }
 
-  .una-foot{
+  .nonA-empty-sub{
+    max-width:500px;
+    color:var(--na-muted);
+    font-size:8.8px;
+    line-height:1.8;
+    font-weight:500 !important;
+  }
+
+  .nonA-foot{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
     padding:12px 13px;
-    border-top:1px solid var(--line);
+    border-top:1px solid var(--na-line);
     background:linear-gradient(180deg,#ffffff,#f8fbf9);
     flex-wrap:wrap;
   }
 
-  .una-pager{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .una-page-chip{
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
+  .nonA-page-chip{
+    min-height:29px;
+    padding:5px 10px;
+    border-radius:999px;
     font-size:8.8px;
-    font-weight:900 !important;
-    color:var(--green-2);
-    border:1px solid #dce5dd;
-    background:#f8faf7;
+    font-weight:700 !important;
+    color:var(--na-green-2);
+    border:1px solid var(--na-green-line);
+    background:var(--na-green-soft);
     display:inline-flex;
     align-items:center;
     gap:6px;
   }
 
-  @media (max-width:980px){
-    .una-top-main{
-      grid-template-columns:1fr;
+  @media (max-width:1200px){
+    .nonA-kpis{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
-    .una-kpis{
+    .nonA-filters,
+    .nonA-admin-grid{
       grid-template-columns:1fr;
     }
+  }
 
-    .una-toolbar-row{
-      grid-template-columns:1fr;
+  @media (max-width:1100px){
+    .nonA-table-wrap{
+      overflow-x:auto;
     }
 
-    .una-toolbar-right{
+    .nonA-table{
+      min-width:1120px;
+    }
+  }
+
+  @media (max-width:760px){
+    .nonA{
+      padding:8px;
+    }
+
+    .nonA-hero-main{
+      grid-template-columns:1fr;
+      padding:15px 14px;
+    }
+
+    .nonA-actions{
       justify-content:flex-start;
     }
 
-    .una-foot{
-      flex-direction:column;
-      align-items:flex-start;
+    .nonA-title{
+      font-size:21px;
     }
 
-    table.una-table{
-      min-width:1020px;
+    .nonA-content,
+    .nonA-card-body{
+      padding:10px;
+    }
+
+    .nonA-kpis{
+      grid-template-columns:1fr;
+    }
+
+    .nonA-tools,
+    .nonA-pager{
+      width:100%;
+      align-items:stretch;
+      flex-direction:column;
+    }
+
+    .nonA-tools .nonA-btn,
+    .nonA-pager .nonA-btn{
+      width:100%;
+    }
+
+    .nonA-foot{
+      align-items:stretch;
+      flex-direction:column;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="una">
-  <div class="una-page">
+<div class="nonA">
+  <div class="nonA-page">
+    <section class="nonA-shell">
 
-    <div class="una-top">
-      <div class="una-top-main">
-        <div>
-          <h1 class="una-title">تقرير غير المتقدمين</h1>
-          <p class="una-subtitle">
-            لوحة متابعة إدارية مركزة لرصد المرشحين الذين لم يتقدموا أو لم يُكملوا إرسال الطلب، مع أدوات دقيقة للبحث والتصفية والتصدير لدعم المعالجة السريعة.
-          </p>
+      <div class="nonA-hero">
+        <div class="nonA-hero-main">
+          <div>
+            <span class="nonA-kicker">متابعة إدارية</span>
+            <h1 class="nonA-title">تقرير غير المتقدمين</h1>
+            <p class="nonA-subtitle">
+              لوحة متابعة تحفظ حق الإدارة بتوثيق آخر خطوة وصل إليها المرشح: لم يدخل، دخل ولم يؤكد، أكد ولم يرسل، أرسل بلا رغبات، أو أُقفل طلبه إداريًا بعد انتهاء الفترة.
+            </p>
+          </div>
 
-          <div class="una-meta">
-            <span class="una-chip"><span class="una-dot"></span>متابعة إدارية</span>
-            <span class="una-chip">تصفية مرنة</span>
-            <span class="una-chip">تصدير مباشر</span>
+          <div class="nonA-actions">
+            <a class="nonA-btn primary" href="{% url 'portal:admin_dashboard' %}">لوحة القرار</a>
+            <a class="nonA-btn" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
+            <a class="nonA-btn" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
           </div>
         </div>
 
-        <div class="una-actions">
-          <a class="una-btn una-btn-primary" href="{% url 'portal:admin_dashboard' %}">
-            <span>▦</span> الرجوع إلى لوحة القرار
-          </a>
-
-          <a class="una-btn" href="{% url 'portal:admin_applicants_list' %}">
-            <span>👤</span> إدارة المتقدمين
-          </a>
-
-          <a class="una-btn" href="{% url 'portal:admin_vacancies_list' %}">
-            <span>🏫</span> إدارة الشواغر
-          </a>
+        <div class="nonA-status-strip">
+          <div class="nonA-status-main">
+            إجمالي نتائج التقرير: {{ total }}
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="nonA-chip info">تصنيف إجرائي</span>
+            <span class="nonA-chip warn">إثبات آخر خطوة</span>
+            <span class="nonA-chip ok">تصدير مباشر</span>
+          </div>
         </div>
       </div>
 
-      <div class="una-kpis">
-        <div class="una-kpi">
-          <div class="una-kpi-head">
-            <div class="una-kpi-label">النشطون</div>
-            <div class="una-kpi-icon">●</div>
+      <div class="nonA-content">
+
+        <div class="nonA-kpis">
+          <div class="nonA-kpi">
+            <div class="nonA-kpi-label">النشطون</div>
+            <div class="nonA-kpi-value">{{ kpi.active }}</div>
           </div>
-          <div class="una-kpi-value">{{ kpi.active }}</div>
-          <div class="una-kpi-note">إجمالي المرشحين النشطين</div>
+
+          <div class="nonA-kpi ok">
+            <div class="nonA-kpi-label">تم الإرسال</div>
+            <div class="nonA-kpi-value">{{ kpi.submitted }}</div>
+          </div>
+
+          <div class="nonA-kpi danger">
+            <div class="nonA-kpi-label">غير مرسلين</div>
+            <div class="nonA-kpi-value">{{ kpi.not_submitted }}</div>
+          </div>
+
+          <div class="nonA-kpi warn">
+            <div class="nonA-kpi-label">مقفل إداريًا</div>
+            <div class="nonA-kpi-value">{{ kpi.locked_incomplete|default:0 }}</div>
+          </div>
+
+          <div class="nonA-kpi danger">
+            <div class="nonA-kpi-label">لم يدخل البوابة</div>
+            <div class="nonA-kpi-value">{{ kpi.none|default:0 }}</div>
+          </div>
+
+          <div class="nonA-kpi warn">
+            <div class="nonA-kpi-label">دخل ولم يؤكد</div>
+            <div class="nonA-kpi-value">{{ kpi.entered_not_confirmed|default:0 }}</div>
+          </div>
+
+          <div class="nonA-kpi warn">
+            <div class="nonA-kpi-label">أكد ولم يرسل</div>
+            <div class="nonA-kpi-value">{{ kpi.confirmed_not_submitted|default:0 }}</div>
+          </div>
+
+          <div class="nonA-kpi info">
+            <div class="nonA-kpi-label">مرسل بلا رغبات</div>
+            <div class="nonA-kpi-value">{{ kpi.submitted_without_prefs|default:0 }}</div>
+          </div>
         </div>
 
-        <div class="una-kpi">
-          <div class="una-kpi-head">
-            <div class="una-kpi-label">تم الإرسال</div>
-            <div class="una-kpi-icon">✓</div>
-          </div>
-          <div class="una-kpi-value">{{ kpi.submitted }}</div>
-          <div class="una-kpi-note">الطلبات المكتملة بنجاح</div>
-        </div>
-
-        <div class="una-kpi">
-          <div class="una-kpi-head">
-            <div class="una-kpi-label">غير مرسلين</div>
-            <div class="una-kpi-icon">!</div>
-          </div>
-          <div class="una-kpi-value">{{ kpi.not_submitted }}</div>
-          <div class="una-kpi-note">الفئة التي تتطلب متابعة</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="una-card">
-
-      <div class="una-toolbar">
-        <form method="get" class="una-toolbar-row">
-          <div class="una-toolbar-left">
-            <div class="una-field">
-              <label class="una-field-label">البحث</label>
-              <input
-                class="una-input"
-                name="q"
-                value="{{ q }}"
-                placeholder="الاسم / السجل / القطاع / الجوال / المدرسة الحالية"
-                style="width:min(395px,100%)"
-              >
+        <div class="nonA-card">
+          <div class="nonA-card-head">
+            <div>
+              <h2 class="nonA-section-title">تثبيت الإجراء بعد الإغلاق</h2>
+              <div class="nonA-section-sub">يقفل الطلبات غير المكتملة فقط، دون تحويلها إلى طلبات مرسلة ودون إنشاء رغبات وهمية.</div>
             </div>
-
-            <div class="una-field">
-              <label class="una-field-label">وضع التقرير</label>
-              <select class="una-select" name="mode" style="width:240px">
-                <option value="not_submitted" {% if mode == "not_submitted" %}selected{% endif %}>
-                  لا يوجد طلب أو لم يُرسل
-                </option>
-                <option value="none" {% if mode == "none" %}selected{% endif %}>
-                  لا يوجد له طلب نهائيًا
-                </option>
-                <option value="started" {% if mode == "started" %}selected{% endif %}>
-                  بدأ ولم يُرسل
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="una-toolbar-right">
-            <button class="una-btn una-btn-primary" type="submit">بحث</button>
-
-            <a class="una-btn" href="{% url 'portal:admin_non_applicants' %}">
-              مسح
-            </a>
-
-            <a class="una-btn una-btn-export" href="{% url 'portal:admin_non_applicants_csv' %}?q={{ q|urlencode }}&mode={{ mode|urlencode }}">
-              ⬇︎ تصدير CSV
-            </a>
-          </div>
-        </form>
-      </div>
-
-      <div class="una-summary">
-        <span class="una-pill una-pill-total">الإجمالي: <b>{{ total }}</b></span>
-
-        {% if q %}
-          <span class="una-pill una-pill-search">عبارة البحث: <b>{{ q }}</b></span>
-        {% endif %}
-
-        <span class="una-pill una-pill-filter">
-          الوضع:
-          <b>
-            {% if mode == "none" %}
-              لا يوجد له طلب نهائيًا
-            {% elif mode == "started" %}
-              بدأ ولم يُرسل
+            {% if portal_open_now %}
+              <span class="nonA-tag warn">البوابة مفتوحة</span>
             {% else %}
-              لا يوجد طلب أو لم يُرسل
+              <span class="nonA-tag ok">البوابة مغلقة</span>
             {% endif %}
-          </b>
-        </span>
-      </div>
+          </div>
 
-      <div class="una-table-wrap">
-        <table class="una-table">
-          <thead>
-            <tr>
-              <th style="width:80px">#</th>
-              <th style="width:305px">المتقدم</th>
-              <th style="width:150px">السجل</th>
-              <th style="width:145px">الجوال</th>
-              <th style="width:200px">القطاع</th>
-              <th style="width:95px">الجنس</th>
-              <th style="width:290px">المدرسة الحالية</th>
-            </tr>
-          </thead>
+          <div class="nonA-admin-grid">
+            <div class="nonA-admin-note">
+              بعد انتهاء فترة التقديم، استخدم هذا الإجراء لتثبيت حالة من دخل ولم يكمل أو أكد ولم يرسل، مع بقاء التصنيف واضحًا في التقرير والتصدير.
+            </div>
 
-          <tbody>
-            {% for r in rows %}
-              <tr>
-                <td>
-                  <span class="una-row-no">{{ forloop.counter0|add:rows.start_index }}</span>
-                </td>
-
-                <td title="{{ r.full_name }}">
-                  <span class="una-name">{{ r.full_name|default:"—" }}</span>
-                  <span class="una-sub">
-                    {% if r.is_active %}
-                      <span class="una-status una-status-yes">● نشط</span>
-                    {% else %}
-                      <span class="una-status una-status-no">● غير نشط</span>
-                    {% endif %}
-                    <span class="una-sub-note">سجل مرشح قابل للمتابعة</span>
-                  </span>
-                </td>
-
-                <td class="una-cell-soft">{{ r.national_id|default:"—" }}</td>
-                <td class="una-cell-strong">{{ r.mobile|default:"—" }}</td>
-                <td title="{{ r.sector }}">{{ r.sector|default:"—" }}</td>
-                <td>{{ r.gender|default:"—" }}</td>
-                <td title="{{ r.current_school }}">{{ r.current_school|default:"—" }}</td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="7" class="una-empty">
-                  <div class="una-empty-box">
-                    <div class="una-empty-icon">⌕</div>
-                    <div class="una-empty-title">لا توجد نتائج مطابقة</div>
-                    <div class="una-empty-sub">
-                      لم يتم العثور على بيانات ضمن وضع التقرير الحالي أو عبارة البحث المدخلة. يمكن تعديل الفلاتر أو إعادة ضبط البحث لعرض نتائج أخرى.
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="una-foot">
-        <div class="una-page-chip">
-          الصفحة <b>{{ rows.number }}</b> من <b>{{ rows.paginator.num_pages }}</b>
+            {% if portal_open_now %}
+              <button class="nonA-btn danger" type="button" disabled>أغلق البوابة أولًا</button>
+            {% else %}
+              <form method="post" action="{% url 'portal:admin_lock_incomplete_applications' %}" onsubmit="return confirm('سيتم إقفال الطلبات غير المكتملة إداريًا دون تحويلها إلى مرسلة. هل تريد المتابعة؟');">
+                {% csrf_token %}
+                <button class="nonA-btn danger" type="submit">تثبيت إقفال غير المكتملين</button>
+              </form>
+            {% endif %}
+          </div>
         </div>
 
-        <div class="una-pager">
-          {% if rows.has_previous %}
-            <a class="una-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">
-              السابق
-            </a>
-          {% endif %}
+        <div class="nonA-card">
+          <div class="nonA-card-head">
+            <div>
+              <h2 class="nonA-section-title">مرشحات البحث والتصدير</h2>
+              <div class="nonA-section-sub">ابحث أو غيّر وضع التقرير ثم صدّر النتائج عند الحاجة.</div>
+            </div>
+            <span class="nonA-tag info">بحث وتصدير</span>
+          </div>
 
-          {% if rows.has_next %}
-            <a class="una-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">
-              التالي
-            </a>
-          {% endif %}
+          <div class="nonA-card-body">
+            <form method="get" class="nonA-filters">
+              <div class="nonA-field">
+                <label class="nonA-label">البحث</label>
+                <input
+                  class="nonA-input"
+                  name="q"
+                  value="{{ q }}"
+                  placeholder="الاسم / السجل / القطاع / الجوال / المدرسة الحالية"
+                >
+              </div>
+
+              <div class="nonA-field">
+                <label class="nonA-label">وضع التقرير</label>
+                <select class="nonA-select" name="mode">
+                  <option value="not_submitted" {% if mode == "not_submitted" %}selected{% endif %}>غير مكتمل / لم يرسل</option>
+                  <option value="none" {% if mode == "none" %}selected{% endif %}>لم يدخل البوابة</option>
+                  <option value="entered_not_confirmed" {% if mode == "entered_not_confirmed" %}selected{% endif %}>دخل ولم يؤكد البيانات</option>
+                  <option value="confirmed_not_submitted" {% if mode == "confirmed_not_submitted" %}selected{% endif %}>أكد ولم يرسل الطلب</option>
+                  <option value="submitted_without_prefs" {% if mode == "submitted_without_prefs" %}selected{% endif %}>مرسل بلا رغبات</option>
+                  <option value="submitted_with_prefs" {% if mode == "submitted_with_prefs" %}selected{% endif %}>مرسل برغبات</option>
+                  <option value="locked_incomplete" {% if mode == "locked_incomplete" %}selected{% endif %}>مقفل إداريًا</option>
+                </select>
+              </div>
+
+              <div class="nonA-tools">
+                <button class="nonA-btn primary" type="submit">بحث</button>
+                <a class="nonA-btn" href="{% url 'portal:admin_non_applicants' %}">مسح</a>
+                <a class="nonA-btn gold" href="{{ url_non_applicants_csv|default:'#' }}">
+                  تصدير CSV
+                </a>
+              </div>
+            </form>
+          </div>
+
+          <div class="nonA-summary">
+            <span class="nonA-pill ok">الإجمالي: <b>{{ total }}</b></span>
+
+            {% if q %}
+              <span class="nonA-pill info">عبارة البحث: <b>{{ q }}</b></span>
+            {% endif %}
+
+            <span class="nonA-pill warn">
+              الوضع:
+              <b>
+                {% if mode == "none" %}
+                  لم يدخل البوابة
+                {% elif mode == "entered_not_confirmed" %}
+                  دخل ولم يؤكد البيانات
+                {% elif mode == "confirmed_not_submitted" %}
+                  أكد ولم يرسل الطلب
+                {% elif mode == "submitted_without_prefs" %}
+                  مرسل بلا رغبات
+                {% elif mode == "submitted_with_prefs" %}
+                  مرسل برغبات
+                {% elif mode == "locked_incomplete" %}
+                  مقفل إداريًا
+                {% else %}
+                  غير مكتمل / لم يرسل
+                {% endif %}
+              </b>
+            </span>
+          </div>
         </div>
+
+        <div class="nonA-card nonA-table-card">
+          <div class="nonA-card-head">
+            <div>
+              <h2 class="nonA-section-title">قائمة المتابعة الإدارية</h2>
+              <div class="nonA-section-sub">يعرض الجدول حالة الإجراء وآخر خطوة مثبتة والملاحظة الإدارية الداعمة للقرار.</div>
+            </div>
+            <span class="nonA-tag">الصفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</span>
+          </div>
+
+          <div class="nonA-table-wrap">
+            <table class="nonA-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>المرشح</th>
+                  <th>السجل</th>
+                  <th>القطاع / الجنس</th>
+                  <th>حالة الإجراء</th>
+                  <th>آخر خطوة</th>
+                  <th>ملاحظة إدارية</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for r in rows %}
+                  <tr>
+                    <td>
+                      <span class="nonA-row-no">{{ forloop.counter0|add:rows.start_index }}</span>
+                    </td>
+
+                    <td title="{{ r.full_name }}">
+                      <span class="nonA-name">{{ r.full_name|default:"—" }}</span>
+                      <span class="nonA-sub">
+                        {% if r.is_active %}
+                          <span class="nonA-status yes">● نشط</span>
+                        {% else %}
+                          <span class="nonA-status no">● غير نشط</span>
+                        {% endif %}
+                        <span class="nonA-sub-note">{{ r.current_school|default:"لا توجد مدرسة حالية" }}</span>
+                      </span>
+                      <span class="nonA-sub">
+                        <span class="nonA-sub-note">جوال: {{ r.mobile|default:"—" }}</span>
+                      </span>
+                    </td>
+
+                    <td class="nonA-muted">{{ r.national_id|default:"—" }}</td>
+
+                    <td>
+                      <span class="nonA-strong">{{ r.sector|default:"—" }}</span>
+                      <span class="nonA-sub">
+                        <span class="nonA-sub-note">{{ r.gender|default:"—" }}</span>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="nonA-progress-badge state-{{ r.progress_code|default:'none' }}" title="{{ r.progress_label|default:'لم يدخل البوابة' }}">
+                        <span>
+                          {% if r.progress_label %}
+                            {{ r.progress_label }}
+                          {% elif r.application_obj.status == "submitted" %}
+                            مرسل
+                          {% else %}
+                            لم يدخل البوابة
+                          {% endif %}
+                        </span>
+                      </span>
+                      <span class="nonA-sub">
+                        <span class="nonA-sub-note">عدد الرغبات: {{ r.prefs_count|default:0 }}</span>
+                      </span>
+                    </td>
+
+                    <td>
+                      <div class="nonA-last-step">
+                        <b>
+                          {% if r.progress_code == "none" %}
+                            لا توجد خطوة
+                          {% elif r.progress_code == "entered_not_confirmed" or r.progress_code == "locked_entered_not_confirmed" %}
+                            تسجيل الدخول
+                          {% elif r.progress_code == "confirmed_not_submitted" or r.progress_code == "locked_confirmed_not_submitted" %}
+                            تأكيد البيانات
+                          {% elif r.progress_code == "submitted_without_prefs" or r.progress_code == "submitted_with_prefs" %}
+                            الإرسال النهائي
+                          {% else %}
+                            متابعة الطلب
+                          {% endif %}
+                        </b>
+
+                        <span class="nonA-muted">
+                          {% if r.application_obj.submitted_at %}
+                            {{ r.application_obj.submitted_at|date:"Y-m-d H:i" }}
+                          {% elif r.application_obj.confirmed_at %}
+                            {{ r.application_obj.confirmed_at|date:"Y-m-d H:i" }}
+                          {% elif r.application_obj.created_at %}
+                            {{ r.application_obj.created_at|date:"Y-m-d H:i" }}
+                          {% else %}
+                            —
+                          {% endif %}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td title="{{ r.progress_note }}">
+                      <div class="nonA-note">
+                        {% if r.progress_note %}
+                          {{ r.progress_note }}
+                        {% else %}
+                          لم يباشر إجراءات التقديم رغم إتاحة البوابة خلال الفترة المحددة.
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="7" class="nonA-empty">
+                      <div class="nonA-empty-box">
+                        <div class="nonA-empty-icon">⌕</div>
+                        <div class="nonA-empty-title">لا توجد نتائج مطابقة</div>
+                        <div class="nonA-empty-sub">
+                          لم يتم العثور على بيانات ضمن وضع التقرير الحالي أو عبارة البحث المدخلة. يمكن تعديل الفلاتر أو إعادة ضبط البحث لعرض نتائج أخرى.
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="nonA-foot">
+            <div class="nonA-page-chip">
+              الصفحة <b>{{ rows.number }}</b> من <b>{{ rows.paginator.num_pages }}</b>
+            </div>
+
+            <div class="nonA-pager">
+              {% if rows.has_previous %}
+                <a class="nonA-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.previous_page_number }}">
+                  السابق
+                </a>
+              {% endif %}
+
+              {% if rows.has_next %}
+                <a class="nonA-btn" href="?q={{ q|urlencode }}&mode={{ mode|urlencode }}&page={{ rows.next_page_number }}">
+                  التالي
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
       </div>
-
-    </div>
-
+    </section>
   </div>
 </div>
 {% endblock %}

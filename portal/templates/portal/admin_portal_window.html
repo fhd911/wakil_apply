@@ -4,911 +4,611 @@
 {% block extra_css %}
 <style>
   :root{
-    --moe-bg:#f4f6f3;
-    --moe-surface:#ffffff;
-    --moe-surface-2:#fafbf9;
-    --moe-surface-3:#f7f9f6;
-
-    --moe-ink:#203229;
-    --moe-ink-2:#42544b;
-    --moe-muted:#73827a;
-
-    --moe-green-1:#1f4b3b;
-    --moe-green-2:#2b5e4b;
-    --moe-green-3:#557567;
-
-    --moe-gold-1:#8b7447;
-    --moe-gold-2:#b29862;
-    --moe-gold-3:#d7ccaf;
-
-    --moe-line:#dde4dd;
-    --moe-line-2:#d2dbd3;
-    --moe-line-soft:#edf1ed;
-
-    --moe-ok:#2f6c4b;
-    --moe-ok-bg:#f2f8f4;
-    --moe-ok-bd:#d9e8de;
-
-    --moe-warn:#8a6d32;
-    --moe-warn-bg:#fbf8f1;
-    --moe-warn-bd:#e9ddc3;
-
-    --moe-danger:#8c4a4a;
-    --moe-danger-bg:#fbf6f6;
-    --moe-danger-bd:#e7d4d4;
-
-    --moe-info:#53697e;
-    --moe-info-bg:#f4f7fb;
-    --moe-info-bd:#dee6ef;
-
-    --moe-shadow:0 1px 3px rgba(18,30,24,.028);
-    --moe-shadow-soft:0 6px 16px rgba(18,30,24,.032);
-
-    --moe-radius:14px;
-    --moe-radius-lg:18px;
+    --pw-bg:#f6f8f6;
+    --pw-card:#ffffff;
+    --pw-card-2:#fbfcfb;
+    --pw-ink:#203128;
+    --pw-ink-2:#34483d;
+    --pw-muted:#75847c;
+    --pw-green:#1f4b3b;
+    --pw-green-2:#2f6b54;
+    --pw-gold:#a98235;
+    --pw-gold-2:#dcc896;
+    --pw-line:#dbe4dd;
+    --pw-line-2:#cbd7ce;
+    --pw-ok:#236b43;
+    --pw-ok-bg:#f1f8f4;
+    --pw-ok-bd:#d4e8dc;
+    --pw-warn:#8a611f;
+    --pw-warn-bg:#fff9ee;
+    --pw-warn-bd:#ead6aa;
+    --pw-danger:#8f3838;
+    --pw-danger-bg:#fff6f6;
+    --pw-danger-bd:#eacaca;
+    --pw-info:#3f637f;
+    --pw-info-bg:#f4f8fc;
+    --pw-info-bd:#dbe7f2;
+    --pw-radius:16px;
   }
 
-  .moe-window,.moe-window *{
+  .pw, .pw *{
     box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-family:"Cairo", "Tajawal", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif !important;
   }
 
-  .moe-window{
+  .pw{
     direction:rtl;
-    color:var(--moe-ink);
+    color:var(--pw-ink);
   }
 
-  .moe-window-page{
-    max-width:1100px;
+  .pw-page{
+    max-width:1220px;
     margin:0 auto;
     display:grid;
     gap:12px;
   }
 
-  .moe-window-hero,
-  .moe-window-card,
-  .moe-window-mini{
-    position:relative;
-    background:var(--moe-surface);
-    border:1px solid var(--moe-line);
-    border-radius:var(--moe-radius-lg);
-    box-shadow:var(--moe-shadow);
+  .pw-card,
+  .pw-hero{
+    background:linear-gradient(180deg,var(--pw-card),var(--pw-card-2));
+    border:1px solid var(--pw-line);
+    border-radius:var(--pw-radius);
+    box-shadow:0 1px 4px rgba(17,24,20,.035);
     overflow:hidden;
   }
 
-  .moe-window-hero::before,
-  .moe-window-card::before,
-  .moe-window-mini::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--moe-green-2),var(--moe-gold-2));
-    opacity:.95;
+  .pw-hero{
+    border-inline-start:4px solid var(--pw-green);
   }
 
-  .moe-window-hero{
-    padding:0;
-    border-inline-start:3px solid var(--moe-green-2);
-    background:
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-  }
-
-  .moe-window-hero-head{
-    padding:14px 18px 12px;
+  .pw-hero-body{
+    padding:14px 18px;
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
+    gap:14px;
     align-items:start;
-    background:
-      radial-gradient(circle at 86% 26%, rgba(85,117,103,.055) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    border-bottom:1px solid var(--moe-line-soft);
   }
 
-  .moe-window-kicker{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid #dfd4bc;
-    background:#fcfaf5;
-    color:var(--moe-gold-1);
-    font-size:8.6px;
-    font-weight:900 !important;
-    margin-bottom:8px;
+  .pw-kicker{
+    font-size:9px;
+    color:var(--pw-muted);
+    font-weight:500;
+    margin-bottom:3px;
   }
 
-  .moe-window-kicker-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--moe-green-2);
-    flex:0 0 auto;
-  }
-
-  .moe-window-title{
+  .pw-title{
     margin:0;
-    font-size:21px;
-    line-height:1.25;
-    font-weight:900 !important;
-    color:var(--moe-green-1);
-    letter-spacing:0;
+    color:var(--pw-green);
+    font-size:22px;
+    line-height:1.35;
+    font-weight:700;
   }
 
-  .moe-window-subtitle{
-    margin:6px 0 0;
-    color:var(--moe-muted);
-    font-size:10.2px;
-    line-height:1.95;
-    max-width:78ch;
-    font-weight:700 !important;
+  .pw-subtitle{
+    margin:5px 0 0;
+    color:var(--pw-muted);
+    font-size:10.5px;
+    line-height:1.9;
+    font-weight:400;
   }
 
-  .moe-window-actions{
+  .pw-actions,
+  .pw-row{
     display:flex;
     gap:8px;
+    align-items:center;
     flex-wrap:wrap;
-    justify-content:flex-end;
   }
 
-  .moe-window-btn{
+  .pw-actions{justify-content:flex-end;}
+
+  .pw-btn{
     appearance:none;
-    border:1px solid var(--moe-line-2);
+    border:1px solid var(--pw-line-2);
     background:#fff;
-    color:var(--moe-green-2);
+    color:var(--pw-green);
     border-radius:10px;
-    min-height:35px;
+    min-height:34px;
     padding:7px 12px;
-    font-size:9px;
-    font-weight:800 !important;
-    line-height:1;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:7px;
     text-decoration:none;
+    font-size:9.4px;
+    font-weight:600;
+    line-height:1;
     cursor:pointer;
     white-space:nowrap;
     transition:.12s ease;
-    box-shadow:none;
   }
 
-  .moe-window-btn:hover{
+  .pw-btn:hover{
+    background:#f9fbf9;
+    border-color:#b8c6bb;
     transform:translateY(-1px);
-    background:var(--moe-surface-2);
-    border-color:#c7d0c8;
   }
 
-  .moe-window-btn-primary{
+  .pw-btn.primary{
+    background:var(--pw-green);
+    border-color:var(--pw-green);
     color:#fff;
-    background:var(--moe-green-2);
-    border-color:var(--moe-green-2);
   }
 
-  .moe-window-btn-primary:hover{
-    background:var(--moe-green-1);
-    border-color:var(--moe-green-1);
+  .pw-btn.gold{
+    background:#fffaf0;
+    border-color:var(--pw-gold-2);
+    color:#7b5c21;
   }
 
-  .moe-window-btn-soft{
-    color:var(--moe-gold-1);
-    border-color:#ddd1b7;
+  .pw-btn.danger{
+    background:var(--pw-danger-bg);
+    border-color:var(--pw-danger-bd);
+    color:var(--pw-danger);
   }
 
-  .moe-window-status{
-    padding:10px 18px 12px;
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-    background:var(--moe-surface);
+  .pw-btn.sm{
+    min-height:30px;
+    padding:6px 10px;
+    font-size:8.8px;
+    border-radius:9px;
   }
 
-  .moe-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:999px;
-    border:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
-    color:var(--moe-ink-2);
-    font-size:8.5px;
-    font-weight:800 !important;
-  }
-
-  .moe-badge-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--moe-green-2);
-    flex:0 0 auto;
-  }
-
-  .moe-badge.ok{
-    background:var(--moe-ok-bg);
-    border-color:var(--moe-ok-bd);
-    color:var(--moe-ok);
-  }
-  .moe-badge.ok .moe-badge-dot{ background:var(--moe-ok); }
-
-  .moe-badge.warn{
-    background:var(--moe-warn-bg);
-    border-color:var(--moe-warn-bd);
-    color:var(--moe-warn);
-  }
-  .moe-badge.warn .moe-badge-dot{ background:var(--moe-warn); }
-
-  .moe-badge.info{
-    background:var(--moe-info-bg);
-    border-color:var(--moe-info-bd);
-    color:var(--moe-info);
-  }
-  .moe-badge.info .moe-badge-dot{ background:var(--moe-info); }
-
-  .moe-badge.danger{
-    background:var(--moe-danger-bg);
-    border-color:var(--moe-danger-bd);
-    color:var(--moe-danger);
-  }
-  .moe-badge.danger .moe-badge-dot{ background:var(--moe-danger); }
-
-  .moe-window-top-grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .moe-window-mini{
-    padding:12px 14px;
-  }
-
-  .moe-window-mini-label{
-    color:var(--moe-muted);
-    font-size:8.3px;
-    font-weight:700 !important;
-    margin-bottom:5px;
-  }
-
-  .moe-window-mini-value{
-    color:var(--moe-green-1);
-    font-size:14px;
-    line-height:1.45;
-    font-weight:900 !important;
-  }
-
-  .moe-window-mini-note{
-    margin-top:4px;
-    color:var(--moe-muted);
-    font-size:7.9px;
-    line-height:1.8;
-    font-weight:700 !important;
-  }
-
-  .moe-window-card-head{
-    padding:11px 14px;
+  .pw-status-strip{
+    padding:10px 14px;
+    border-top:1px solid #eef2ef;
+    background:#fff;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
     flex-wrap:wrap;
-    border-bottom:1px solid var(--moe-line-soft);
-    background:linear-gradient(180deg,#ffffff,#fafcf9);
   }
 
-  .moe-window-card-title{
-    font-size:9.6px;
-    color:var(--moe-green-1);
-    font-weight:900 !important;
-  }
-
-  .moe-window-card-subtitle{
-    margin-top:2px;
-    font-size:8.1px;
-    color:var(--moe-muted);
-    font-weight:700 !important;
-  }
-
-  .moe-window-card-body{
-    padding:14px;
-  }
-
-  .moe-window-switch{
+  .pw-status-list{
     display:flex;
-    align-items:flex-start;
-    gap:10px;
-    padding:11px 12px;
-    border:1px solid var(--moe-line);
-    border-radius:13px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    gap:7px;
+    flex-wrap:wrap;
+    align-items:center;
   }
 
-  .moe-window-switch input{
+  .pw-chip{
+    min-height:28px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid var(--pw-line);
+    background:#fff;
+    color:var(--pw-ink-2);
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-size:8.8px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+
+  .pw-chip b{font-weight:700;color:var(--pw-green);}
+  .pw-dot{width:7px;height:7px;border-radius:99px;background:var(--pw-green-2);display:inline-block;}
+  .pw-chip.ok{background:var(--pw-ok-bg);border-color:var(--pw-ok-bd);color:var(--pw-ok);}
+  .pw-chip.warn{background:var(--pw-warn-bg);border-color:var(--pw-warn-bd);color:var(--pw-warn);}
+  .pw-chip.danger{background:var(--pw-danger-bg);border-color:var(--pw-danger-bd);color:var(--pw-danger);}
+  .pw-chip.info{background:var(--pw-info-bg);border-color:var(--pw-info-bd);color:var(--pw-info);}
+
+  .pw-card-head{
+    padding:11px 14px;
+    border-bottom:1px solid #edf1ed;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    background:linear-gradient(180deg,#fff,#fafcfa);
+  }
+
+  .pw-card-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0;
+    font-size:12px;
+    font-weight:700;
+    color:var(--pw-green);
+  }
+
+  .pw-card-title::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:99px;
+    background:var(--pw-green);
+  }
+
+  .pw-card-subtitle{
+    margin:3px 0 0;
+    color:var(--pw-muted);
+    font-size:9px;
+    line-height:1.7;
+    font-weight:400;
+  }
+
+  .pw-card-body{padding:14px;}
+
+  .pw-switch{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    border:1px solid var(--pw-line);
+    background:#fff;
+    border-radius:13px;
+    padding:10px 12px;
+  }
+
+  .pw-switch input{
     width:18px;
     height:18px;
-    accent-color:#2b5e4b;
-    cursor:pointer;
-    flex:0 0 auto;
+    accent-color:var(--pw-green);
     margin-top:2px;
   }
 
-  .moe-window-switch-title{
-    font-size:9.5px;
-    color:var(--moe-green-1);
-    font-weight:900 !important;
+  .pw-switch-title{font-size:10px;color:var(--pw-green);font-weight:700;}
+  .pw-switch-note{margin-top:3px;color:var(--pw-muted);font-size:8.7px;line-height:1.7;font-weight:400;}
+
+  .pw-section-title{
+    margin:14px 0 8px;
+    color:var(--pw-green);
+    font-size:10.5px;
+    font-weight:700;
   }
 
-  .moe-window-switch-note{
-    margin-top:4px;
-    color:var(--moe-muted);
-    font-size:8px;
-    line-height:1.8;
-    font-weight:700 !important;
+  .pw-section-note{
+    color:var(--pw-muted);
+    font-size:8.8px;
+    line-height:1.7;
+    margin:-4px 0 9px;
+    font-weight:400;
   }
 
-  .moe-window-section{
-    display:grid;
-    gap:8px;
-  }
-
-  .moe-window-section-title{
-    color:var(--moe-green-1);
-    font-size:9.5px;
-    font-weight:900 !important;
-  }
-
-  .moe-window-section-note{
-    color:var(--moe-muted);
-    font-size:8px;
-    line-height:1.8;
-    font-weight:700 !important;
-  }
-
-  .moe-window-phases{
+  .pw-phases{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
     gap:9px;
   }
 
-  .moe-window-phase{
-    position:relative;
-    display:block;
-    cursor:pointer;
-  }
+  .pw-phase{cursor:pointer;display:block;}
+  .pw-phase input{display:none;}
 
-  .moe-window-phase input{
-    display:none;
-  }
-
-  .moe-window-phase-box{
-    height:100%;
-    padding:11px;
-    border:1px solid var(--moe-line);
-    border-radius:14px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+  .pw-phase-box{
+    min-height:98px;
+    border:1px solid var(--pw-line);
+    background:#fff;
+    border-radius:13px;
+    padding:10px;
     transition:.12s ease;
   }
 
-  .moe-window-phase:hover .moe-window-phase-box{
-    transform:translateY(-1px);
-    border-color:#cad3cb;
+  .pw-phase:hover .pw-phase-box{border-color:#c3cec7;background:#fbfcfb;}
+  .pw-phase.active .pw-phase-box{
+    border-color:#d2b878;
+    background:#fffdf8;
+    box-shadow:0 0 0 1px rgba(169,130,53,.12);
   }
 
-  .moe-window-phase.active .moe-window-phase-box{
-    border-color:#ccb07a;
-    box-shadow:0 0 0 1px rgba(178,152,98,.13);
-    background:linear-gradient(180deg,#fffdfa,#fcf9f3);
-  }
-
-  .moe-window-phase-top{
+  .pw-phase-top{
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:space-between;
     gap:8px;
-    margin-bottom:7px;
+    margin-bottom:6px;
   }
 
-  .moe-window-phase-name{
-    color:var(--moe-green-1);
-    font-size:9.4px;
-    font-weight:900 !important;
-    line-height:1.5;
-  }
+  .pw-phase-name{font-size:10px;color:var(--pw-green);font-weight:700;line-height:1.5;}
+  .pw-phase-desc{font-size:8.4px;color:var(--pw-muted);line-height:1.75;font-weight:400;}
 
-  .moe-window-phase-mark{
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    border:2px solid var(--moe-line-2);
-    flex:0 0 auto;
+  .pw-mark{
+    width:17px;
+    height:17px;
+    border-radius:99px;
+    border:2px solid #cbd7ce;
     position:relative;
+    flex:0 0 auto;
   }
 
-  .moe-window-phase.active .moe-window-phase-mark{
-    border-color:var(--moe-gold-2);
-  }
-
-  .moe-window-phase.active .moe-window-phase-mark::after{
+  .pw-phase.active .pw-mark{border-color:var(--pw-gold);}
+  .pw-phase.active .pw-mark::after{
     content:"";
     position:absolute;
     inset:3px;
-    border-radius:50%;
-    background:var(--moe-gold-2);
+    border-radius:99px;
+    background:var(--pw-gold);
   }
 
-  .moe-window-phase-desc{
-    color:var(--moe-muted);
-    font-size:7.9px;
-    line-height:1.8;
-    font-weight:700 !important;
-  }
-
-  .moe-window-preview{
-    padding:11px;
-    border:1px dashed var(--moe-line-2);
-    border-radius:13px;
-    background:linear-gradient(180deg,#fff,#fbfcfa);
-    display:grid;
-    gap:7px;
-  }
-
-  .moe-window-preview-title{
-    color:var(--moe-green-1);
-    font-size:8.8px;
-    font-weight:900 !important;
-  }
-
-  .moe-window-preview-box{
-    padding:10px 11px;
-    border-radius:10px;
-    font-size:8.6px;
-    line-height:1.9;
-    font-weight:700 !important;
-  }
-
-  .moe-window-preview-box.closed{
-    background:var(--moe-danger-bg);
-    border:1px solid var(--moe-danger-bd);
-    color:var(--moe-danger);
-  }
-
-  .moe-window-preview-box.official{
-    background:var(--moe-warn-bg);
-    border:1px solid var(--moe-warn-bd);
-    color:var(--moe-warn);
-  }
-
-  .moe-window-preview-box.new{
-    background:var(--moe-info-bg);
-    border:1px solid var(--moe-info-bd);
-    color:var(--moe-info);
-  }
-
-  .moe-window-preview-box.all{
-    background:var(--moe-ok-bg);
-    border:1px solid var(--moe-ok-bd);
-    color:var(--moe-ok);
-  }
-
-  .moe-window-grid{
+  .pw-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
-  .moe-window-field{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
+  .pw-field{display:grid;gap:6px;}
+  .pw-field.full{grid-column:1/-1;}
+  .pw-label{font-size:9.3px;color:var(--pw-green);font-weight:700;}
+  .pw-hint{font-size:8.2px;color:var(--pw-muted);line-height:1.7;font-weight:400;}
 
-  .moe-window-field-full{
-    grid-column:1 / -1;
-  }
-
-  .moe-window-label{
-    color:var(--moe-green-1);
-    font-size:8.7px;
-    font-weight:900 !important;
-    line-height:1.6;
-  }
-
-  .moe-window-hint{
-    color:var(--moe-muted);
-    font-size:7.9px;
-    line-height:1.8;
-    font-weight:700 !important;
-  }
-
-  .moe-window-input,
-  .moe-window-textarea{
+  .pw-input,
+  .pw-textarea{
     width:100%;
-    min-height:38px;
-    padding:8px 10px;
-    border:1px solid var(--moe-line-2);
+    border:1px solid var(--pw-line-2);
     border-radius:9px;
     background:#fff;
-    color:var(--moe-ink);
-    font-size:8.9px;
+    min-height:38px;
+    padding:8px 10px;
+    color:var(--pw-ink);
+    font-size:9.5px;
+    font-weight:400;
     outline:none;
-    box-shadow:none;
   }
 
-  .moe-window-textarea{
-    min-height:82px;
-    resize:vertical;
-    line-height:1.85;
-  }
+  .pw-textarea{min-height:78px;resize:vertical;line-height:1.8;}
+  .pw-input:focus,.pw-textarea:focus{border-color:var(--pw-gold);box-shadow:0 0 0 2px rgba(169,130,53,.08);}
 
-  .moe-window-input:focus,
-  .moe-window-textarea:focus{
-    border-color:var(--moe-gold-2);
-    box-shadow:0 0 0 2px rgba(178,152,98,.065);
-  }
-
-  .moe-window-message-box{
-    padding:11px;
-    border:1px solid var(--moe-line);
+  .pw-preview{
+    border:1px dashed var(--pw-line-2);
+    background:#fff;
     border-radius:13px;
-    background:var(--moe-surface-2);
+    padding:10px;
+    margin-top:10px;
   }
 
-  .moe-window-footer{
+  .pw-preview-title{font-size:9px;font-weight:700;color:var(--pw-green);margin-bottom:7px;}
+  .pw-preview-box{padding:10px;border-radius:10px;font-size:9px;line-height:1.8;font-weight:400;}
+  .pw-preview-box.closed{background:var(--pw-danger-bg);border:1px solid var(--pw-danger-bd);color:var(--pw-danger);}
+  .pw-preview-box.official{background:var(--pw-warn-bg);border:1px solid var(--pw-warn-bd);color:var(--pw-warn);}
+  .pw-preview-box.new{background:var(--pw-info-bg);border:1px solid var(--pw-info-bd);color:var(--pw-info);}
+  .pw-preview-box.all{background:var(--pw-ok-bg);border:1px solid var(--pw-ok-bd);color:var(--pw-ok);}
+
+  .pw-accordion{
+    border:1px solid var(--pw-line);
+    border-radius:13px;
+    overflow:hidden;
+    background:#fff;
+    margin-top:12px;
+  }
+
+  .pw-accordion-toggle{
+    width:100%;
+    min-height:42px;
+    border:0;
+    background:linear-gradient(180deg,#fff,#fafcfa);
+    color:var(--pw-green);
+    padding:10px 12px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    padding-top:12px;
+    gap:10px;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:700;
   }
 
-  .moe-window-footer-note{
-    color:var(--moe-muted);
-    font-size:8.1px;
-    line-height:1.9;
-    font-weight:700 !important;
+  .pw-accordion-body{
+    display:none;
+    padding:12px;
+    border-top:1px solid #edf1ed;
   }
 
-  .moe-window-footer-actions{
+  .pw-accordion.open .pw-accordion-body{display:block;}
+  .pw-chevron{font-size:12px;color:var(--pw-muted);}
+
+  .pw-footer{
+    position:sticky;
+    bottom:0;
+    z-index:20;
     display:flex;
-    gap:8px;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
     flex-wrap:wrap;
+    margin-top:12px;
+    padding:10px 12px;
+    border:1px solid var(--pw-line);
+    border-radius:14px;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(10px);
+    box-shadow:0 -4px 18px rgba(17,24,20,.04);
   }
 
-  .is-hidden{
-    display:none !important;
+  .pw-footer-note{
+    color:var(--pw-muted);
+    font-size:8.8px;
+    line-height:1.8;
+    font-weight:400;
   }
 
-  @media (max-width:1080px){
-    .moe-window-phases{
-      grid-template-columns:1fr 1fr;
-    }
+  .is-hidden{display:none !important;}
 
-    .moe-window-top-grid{
-      grid-template-columns:1fr;
-    }
+  @media(max-width:1000px){
+    .pw-hero-body{grid-template-columns:1fr;}
+    .pw-actions{justify-content:flex-start;}
+    .pw-phases{grid-template-columns:1fr 1fr;}
   }
-
-  @media (max-width:900px){
-    .moe-window-hero-head{
-      grid-template-columns:1fr;
-    }
-
-    .moe-window-actions{
-      justify-content:flex-start;
-    }
-
-    .moe-window-grid{
-      grid-template-columns:1fr;
-    }
-
-    .moe-window-field-full{
-      grid-column:auto;
-    }
-  }
-
-  @media (max-width:640px){
-    .moe-window-phases{
-      grid-template-columns:1fr;
-    }
-
-    .moe-window-title{
-      font-size:18px;
-    }
-
-    .moe-window-hero-head,
-    .moe-window-card-body,
-    .moe-window-mini{
-      padding:12px;
-    }
+  @media(max-width:720px){
+    .pw-title{font-size:18px;}
+    .pw-grid,.pw-phases{grid-template-columns:1fr;}
+    .pw-footer{position:static;}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="moe-window">
-  <div class="moe-window-page">
+<div class="pw">
+  <div class="pw-page">
 
-    <div class="moe-window-hero">
-      <div class="moe-window-hero-head">
+    <section class="pw-hero">
+      <div class="pw-hero-body">
         <div>
-          <span class="moe-window-kicker">
-            <span class="moe-window-kicker-dot"></span>
-            إعدادات مركزية
-          </span>
-          <h1 class="moe-window-title">إعدادات نافذة التقديم</h1>
-          <p class="moe-window-subtitle">
-            تحكم مباشر في فتح وإغلاق التقديم، وتحديد الفئة المسموح لها بالدخول، مع معاينة فورية للحالة والرسائل الظاهرة للمستخدمين.
-          </p>
+          <div class="pw-kicker">بوابة التقديم على شواغر وكيل</div>
+          <h1 class="pw-title">إعدادات نافذة التقديم</h1>
+          <p class="pw-subtitle">التحكم في فتح وإغلاق البوابة، وتحديد الفئة المسموح لها بالدخول، وضبط الرسائل والفترة الزمنية من شاشة واحدة.</p>
         </div>
-
-        <div class="moe-window-actions">
-          <a class="moe-window-btn" href="{% url 'portal:admin_dashboard' %}">▦ لوحة القرار</a>
-          <a class="moe-window-btn" href="{% url 'portal:admin_vacancies_list' %}">🏫 إدارة الشواغر</a>
-          <a class="moe-window-btn" href="{% url 'portal:admin_applicants_list' %}">👤 إدارة المتقدمين</a>
+        <div class="pw-actions">
+          <a class="pw-btn" href="{% url 'portal:admin_dashboard' %}">لوحة الإدارة</a>
+          <a class="pw-btn" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
+          <a class="pw-btn" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
         </div>
       </div>
-
-      <div class="moe-window-status">
-        {% if not win.is_enabled or win.phase == "closed" %}
-          <span class="moe-badge danger">
-            <span class="moe-badge-dot"></span>
-            الحالة الحالية: مغلق
-          </span>
-        {% elif win.phase == "official_only" %}
-          <span class="moe-badge warn">
-            <span class="moe-badge-dot"></span>
-            الحالة الحالية: الوكلاء الرسميون فقط
-          </span>
-        {% elif win.phase == "new_only" %}
-          <span class="moe-badge info">
-            <span class="moe-badge-dot"></span>
-            الحالة الحالية: المتقدمون الجدد فقط
-          </span>
-        {% elif win.phase == "all" %}
-          <span class="moe-badge ok">
-            <span class="moe-badge-dot"></span>
-            الحالة الحالية: الجميع
-          </span>
-        {% endif %}
-
-        <span class="moe-badge">
-          <span class="moe-badge-dot"></span>
-          آخر تحديث: <b>{{ win.updated_at|date:"Y-m-d H:i" }}</b>
-        </span>
-      </div>
-    </div>
-
-    <div class="moe-window-top-grid">
-      <div class="moe-window-mini">
-        <div class="moe-window-mini-label">التفعيل العام</div>
-        <div class="moe-window-mini-value">
-          {% if win.is_enabled %}مفعّل{% else %}متوقف{% endif %}
+      <div class="pw-status-strip">
+        <div class="pw-status-list">
+          {% if not win.is_enabled or win.phase == "closed" %}
+            <span class="pw-chip danger"><span class="pw-dot"></span>الحالة الحالية: <b>مغلق</b></span>
+          {% elif win.phase == "official_only" %}
+            <span class="pw-chip warn"><span class="pw-dot"></span>الحالة الحالية: <b>الوكلاء الرسميون فقط</b></span>
+          {% elif win.phase == "new_only" %}
+            <span class="pw-chip info"><span class="pw-dot"></span>الحالة الحالية: <b>المتقدمون الجدد فقط</b></span>
+          {% elif win.phase == "all" %}
+            <span class="pw-chip ok"><span class="pw-dot"></span>الحالة الحالية: <b>الجميع</b></span>
+          {% endif %}
+          <span class="pw-chip"><span class="pw-dot"></span>التفعيل العام: <b>{% if win.is_enabled %}مفعّل{% else %}متوقف{% endif %}</b></span>
+          <span class="pw-chip">البداية: <b>{% if win.opens_at %}{{ win.opens_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}</b></span>
+          <span class="pw-chip">النهاية: <b>{% if win.closes_at %}{{ win.closes_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}</b></span>
         </div>
-        <div class="moe-window-mini-note">عند إيقاف النظام تُغلق البوابة بالكامل مهما كانت المرحلة.</div>
+        <span class="pw-chip">آخر تحديث: <b>{{ win.updated_at|date:"Y-m-d H:i" }}</b></span>
       </div>
+    </section>
 
-      <div class="moe-window-mini">
-        <div class="moe-window-mini-label">بداية التقديم</div>
-        <div class="moe-window-mini-value">
-          {% if win.opens_at %}{{ win.opens_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}
-        </div>
-        <div class="moe-window-mini-note">يمكن تركها فارغة إذا كان التحكم يدويًا فقط.</div>
-      </div>
-
-      <div class="moe-window-mini">
-        <div class="moe-window-mini-label">نهاية التقديم</div>
-        <div class="moe-window-mini-value">
-          {% if win.closes_at %}{{ win.closes_at|date:"Y-m-d H:i" }}{% else %}غير محددة{% endif %}
-        </div>
-        <div class="moe-window-mini-note">يمكن تركها فارغة إذا لم يكن هناك إغلاق تلقائي.</div>
-      </div>
-    </div>
-
-    <div class="moe-window-card">
-      <div class="moe-window-card-head">
+    <section class="pw-card">
+      <div class="pw-card-head">
         <div>
-          <div class="moe-window-card-title">ضبط المرحلة والفترة الزمنية</div>
-          <div class="moe-window-card-subtitle">اختر حالة البوابة الحالية ورسائل الظهور لكل فئة</div>
+          <h2 class="pw-card-title">ضبط مرحلة التقديم والفترة الزمنية</h2>
+          <p class="pw-card-subtitle">اختر المرحلة الحالية، وحدد الفترة الزمنية والرسائل الظاهرة للمستخدمين.</p>
         </div>
-
-        <span class="moe-badge">
-          <span class="moe-badge-dot"></span>
-          إعداد مباشر
-        </span>
+        <span class="pw-chip"><span class="pw-dot"></span>إعداد مباشر</span>
       </div>
 
-      <form method="post" class="moe-window-card-body" id="portalWindowForm">
+      <form method="post" class="pw-card-body" id="portalWindowForm">
         {% csrf_token %}
 
-        <div class="moe-window-switch">
+        <label class="pw-switch">
           <input type="checkbox" id="is_enabled" name="is_enabled" value="1" {% if win.is_enabled %}checked{% endif %}>
-          <div>
-            <div class="moe-window-switch-title">تفعيل النظام</div>
-            <div class="moe-window-switch-note">
-              عند إلغاء هذا الخيار تصبح البوابة مغلقة بالكامل ولا يُسمح بالدخول أو الإرسال مهما كانت المرحلة المحددة.
+          <span>
+            <span class="pw-switch-title">تفعيل النظام</span>
+            <span class="pw-switch-note">عند إلغاء التفعيل تُغلق البوابة بالكامل، ولا يسمح بالدخول أو الإرسال مهما كانت المرحلة المحددة.</span>
+          </span>
+        </label>
+
+        <div class="pw-section-title">مرحلة التقديم</div>
+        <div class="pw-section-note">اختر الفئة المسموح لها بالدخول. يمكن استخدام الأزرار السريعة أسفل الصفحة لتغيير المرحلة بسرعة.</div>
+
+        <div class="pw-phases" id="phaseCards">
+          <label class="pw-phase {% if win.phase == 'closed' or not win.phase %}active{% endif %}" data-phase="closed">
+            <input type="radio" name="phase" value="closed" {% if win.phase == "closed" or not win.phase %}checked{% endif %}>
+            <div class="pw-phase-box">
+              <div class="pw-phase-top"><div class="pw-phase-name">مغلق</div><div class="pw-mark"></div></div>
+              <div class="pw-phase-desc">يمنع الدخول على الجميع، وتظهر رسالة الإغلاق العامة.</div>
+            </div>
+          </label>
+
+          <label class="pw-phase {% if win.phase == 'official_only' %}active{% endif %}" data-phase="official_only">
+            <input type="radio" name="phase" value="official_only" {% if win.phase == "official_only" %}checked{% endif %}>
+            <div class="pw-phase-box">
+              <div class="pw-phase-top"><div class="pw-phase-name">الوكلاء الرسميون فقط</div><div class="pw-mark"></div></div>
+              <div class="pw-phase-desc">يسمح فقط للوكلاء الرسميين بالدخول خلال هذه المرحلة.</div>
+            </div>
+          </label>
+
+          <label class="pw-phase {% if win.phase == 'new_only' %}active{% endif %}" data-phase="new_only">
+            <input type="radio" name="phase" value="new_only" {% if win.phase == "new_only" %}checked{% endif %}>
+            <div class="pw-phase-box">
+              <div class="pw-phase-top"><div class="pw-phase-name">المتقدمون الجدد فقط</div><div class="pw-mark"></div></div>
+              <div class="pw-phase-desc">يسمح فقط للمتقدمين الجدد، ويُمنع غيرهم برسالة المرحلة.</div>
+            </div>
+          </label>
+
+          <label class="pw-phase {% if win.phase == 'all' %}active{% endif %}" data-phase="all">
+            <input type="radio" name="phase" value="all" {% if win.phase == "all" %}checked{% endif %}>
+            <div class="pw-phase-box">
+              <div class="pw-phase-top"><div class="pw-phase-name">الجميع</div><div class="pw-mark"></div></div>
+              <div class="pw-phase-desc">يفتح البوابة للوكلاء الرسميين والمتقدمين الجدد.</div>
+            </div>
+          </label>
+        </div>
+
+        <div class="pw-preview">
+          <div class="pw-preview-title">معاينة الرسالة الظاهرة للمستخدم</div>
+          <div id="phasePreview" class="pw-preview-box">—</div>
+        </div>
+
+        <div class="pw-section-title">الفترة الزمنية</div>
+        <div class="pw-grid">
+          <div class="pw-field">
+            <label class="pw-label">بداية التقديم</label>
+            <input class="pw-input" type="datetime-local" name="opens_at" value="{% if win.opens_at %}{{ win.opens_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+            <div class="pw-hint">اختياري — يبدأ السماح بالدخول تلقائيًا من هذا الوقت.</div>
+          </div>
+
+          <div class="pw-field">
+            <label class="pw-label">نهاية التقديم</label>
+            <input class="pw-input" type="datetime-local" name="closes_at" value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+            <div class="pw-hint">اختياري — يتم الإغلاق تلقائيًا بعد هذا الوقت.</div>
+          </div>
+        </div>
+
+        <div class="pw-accordion" id="messagesAccordion">
+          <button class="pw-accordion-toggle" type="button" id="messagesToggle">
+            <span>رسائل الظهور للمستخدمين</span>
+            <span class="pw-chevron">إظهار</span>
+          </button>
+          <div class="pw-accordion-body">
+            <div class="pw-grid">
+              <div class="pw-field full">
+                <label class="pw-label">رسالة الإغلاق العامة</label>
+                <input class="pw-input" type="text" name="closed_message" id="closed_message" value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}" placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان.">
+                <div class="pw-hint">تظهر عند الإغلاق الكامل أو عند تعطيل النظام.</div>
+              </div>
+
+              <div class="pw-field" id="officialBox">
+                <label class="pw-label">رسالة مرحلة الوكلاء الرسميين</label>
+                <textarea class="pw-textarea" name="official_only_message" id="official_only_message" placeholder="مثال: التقديم متاح حالياً للوكلاء الرسميين فقط.">{{ win.official_only_message|default:'التقديم متاح حالياً للوكلاء الرسميين فقط.' }}</textarea>
+                <div class="pw-hint">تظهر لغير الوكلاء عند تفعيل هذه المرحلة.</div>
+              </div>
+
+              <div class="pw-field" id="newBox">
+                <label class="pw-label">رسالة مرحلة المتقدمين الجدد</label>
+                <textarea class="pw-textarea" name="new_only_message" id="new_only_message" placeholder="مثال: التقديم متاح حالياً للمتقدمين الجدد فقط.">{{ win.new_only_message|default:'التقديم متاح حالياً للمتقدمين الجدد فقط.' }}</textarea>
+                <div class="pw-hint">تظهر للوكلاء الرسميين عند تفعيل هذه المرحلة.</div>
+              </div>
+
+              <div class="pw-field full" id="allBox">
+                <label class="pw-label">رسالة مرحلة الجميع</label>
+                <textarea class="pw-textarea" name="all_message" id="all_message" placeholder="مثال: التقديم متاح حالياً للجميع.">{{ win.all_message|default:'التقديم متاح حالياً للجميع.' }}</textarea>
+                <div class="pw-hint">رسالة تعريفية عامة عند فتح التقديم لجميع الفئات.</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div style="height:12px;"></div>
-
-        <div class="moe-window-section">
-          <div class="moe-window-section-title">اختر مرحلة التقديم</div>
-          <div class="moe-window-section-note">
-            يفضّل استخدام مرحلة "الجميع" عندما ترغب في فتح البوابة للوكلاء الرسميين والمتقدمين الجدد في الوقت نفسه.
-          </div>
-
-          <div class="moe-window-phases" id="phaseCards">
-
-            <label class="moe-window-phase {% if win.phase == 'closed' or not win.phase %}active{% endif %}" data-phase="closed">
-              <input type="radio" name="phase" value="closed" {% if win.phase == "closed" or not win.phase %}checked{% endif %}>
-              <div class="moe-window-phase-box">
-                <div class="moe-window-phase-top">
-                  <div class="moe-window-phase-name">مغلق</div>
-                  <div class="moe-window-phase-mark"></div>
-                </div>
-                <div class="moe-window-phase-desc">
-                  يمنع الدخول على الجميع، وتظهر رسالة الإغلاق العامة.
-                </div>
-              </div>
-            </label>
-
-            <label class="moe-window-phase {% if win.phase == 'official_only' %}active{% endif %}" data-phase="official_only">
-              <input type="radio" name="phase" value="official_only" {% if win.phase == "official_only" %}checked{% endif %}>
-              <div class="moe-window-phase-box">
-                <div class="moe-window-phase-top">
-                  <div class="moe-window-phase-name">الوكلاء الرسميون فقط</div>
-                  <div class="moe-window-phase-mark"></div>
-                </div>
-                <div class="moe-window-phase-desc">
-                  يسمح فقط للوكلاء الرسميين بالدخول، ويُمنع غيرهم برسالة المرحلة.
-                </div>
-              </div>
-            </label>
-
-            <label class="moe-window-phase {% if win.phase == 'new_only' %}active{% endif %}" data-phase="new_only">
-              <input type="radio" name="phase" value="new_only" {% if win.phase == "new_only" %}checked{% endif %}>
-              <div class="moe-window-phase-box">
-                <div class="moe-window-phase-top">
-                  <div class="moe-window-phase-name">المتقدمون الجدد فقط</div>
-                  <div class="moe-window-phase-mark"></div>
-                </div>
-                <div class="moe-window-phase-desc">
-                  يسمح فقط للمتقدمين الجدد، ويُمنع الوكلاء الرسميون خلال هذه المرحلة.
-                </div>
-              </div>
-            </label>
-
-            <label class="moe-window-phase {% if win.phase == 'all' %}active{% endif %}" data-phase="all">
-              <input type="radio" name="phase" value="all" {% if win.phase == "all" %}checked{% endif %}>
-              <div class="moe-window-phase-box">
-                <div class="moe-window-phase-top">
-                  <div class="moe-window-phase-name">الجميع</div>
-                  <div class="moe-window-phase-mark"></div>
-                </div>
-                <div class="moe-window-phase-desc">
-                  يفتح البوابة لجميع الفئات: الوكلاء الرسميون والمتقدمون الجدد.
-                </div>
-              </div>
-            </label>
-
-          </div>
-
-          <div class="moe-window-preview">
-            <div class="moe-window-preview-title">معاينة فورية للحالة المختارة</div>
-            <div id="phasePreview" class="moe-window-preview-box">—</div>
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="moe-window-grid">
-          <div class="moe-window-field">
-            <label class="moe-window-label">بداية التقديم</label>
-            <input
-              class="moe-window-input"
-              type="datetime-local"
-              name="opens_at"
-              value="{% if win.opens_at %}{{ win.opens_at|date:'Y-m-d\\TH:i' }}{% endif %}"
-            >
-            <div class="moe-window-hint">اختياري — يبدأ السماح بالدخول تلقائيًا من هذا الوقت.</div>
-          </div>
-
-          <div class="moe-window-field">
-            <label class="moe-window-label">نهاية التقديم</label>
-            <input
-              class="moe-window-input"
-              type="datetime-local"
-              name="closes_at"
-              value="{% if win.closes_at %}{{ win.closes_at|date:'Y-m-d\\TH:i' }}{% endif %}"
-            >
-            <div class="moe-window-hint">اختياري — يتم الإغلاق تلقائيًا بعد هذا الوقت.</div>
-          </div>
-
-          <div class="moe-window-field moe-window-field-full">
-            <div class="moe-window-message-box">
-              <label class="moe-window-label">رسالة الإغلاق العامة</label>
-              <input
-                class="moe-window-input"
-                type="text"
-                name="closed_message"
-                id="closed_message"
-                value="{{ win.closed_message|default:'التقديم مغلق حالياً.' }}"
-                placeholder="مثال: نحيطكم علمًا بانتهاء فترة التقديم لهذا الإعلان."
-              >
-              <div class="moe-window-hint">تظهر عند الإغلاق الكامل أو عند تعطيل النظام.</div>
-            </div>
-          </div>
-
-          <div class="moe-window-field" id="officialBox">
-            <div class="moe-window-message-box">
-              <label class="moe-window-label">رسالة مرحلة الوكلاء الرسميين</label>
-              <textarea
-                class="moe-window-textarea"
-                name="official_only_message"
-                id="official_only_message"
-                placeholder="مثال: التقديم متاح حالياً للوكلاء الرسميين فقط."
-              >{{ win.official_only_message|default:'التقديم متاح حالياً للوكلاء الرسميين فقط.' }}</textarea>
-              <div class="moe-window-hint">تظهر لغير الوكلاء عند تفعيل هذه المرحلة.</div>
-            </div>
-          </div>
-
-          <div class="moe-window-field" id="newBox">
-            <div class="moe-window-message-box">
-              <label class="moe-window-label">رسالة مرحلة المتقدمين الجدد</label>
-              <textarea
-                class="moe-window-textarea"
-                name="new_only_message"
-                id="new_only_message"
-                placeholder="مثال: التقديم متاح حالياً للمتقدمين الجدد فقط."
-              >{{ win.new_only_message|default:'التقديم متاح حالياً للمتقدمين الجدد فقط.' }}</textarea>
-              <div class="moe-window-hint">تظهر للوكلاء الرسميين عند تفعيل هذه المرحلة.</div>
-            </div>
-          </div>
-
-          <div class="moe-window-field moe-window-field-full" id="allBox">
-            <div class="moe-window-message-box">
-              <label class="moe-window-label">رسالة مرحلة الجميع</label>
-              <textarea
-                class="moe-window-textarea"
-                name="all_message"
-                id="all_message"
-                placeholder="مثال: التقديم متاح حالياً للجميع."
-              >{{ win.all_message|default:'التقديم متاح حالياً للجميع.' }}</textarea>
-              <div class="moe-window-hint">رسالة تعريفية عامة عند فتح التقديم لجميع الفئات.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="moe-window-footer">
-          <div class="moe-window-footer-note">
+        <div class="pw-footer">
+          <div class="pw-footer-note">
             {% if win.opens_at %}من: {{ win.opens_at|date:"Y-m-d H:i" }}{% else %}من: غير محدد{% endif %}
             |
             {% if win.closes_at %}إلى: {{ win.closes_at|date:"Y-m-d H:i" }}{% else %}إلى: غير محدد{% endif %}
           </div>
 
-          <div class="moe-window-footer-actions">
-            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="closed">إغلاق سريع</button>
-            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="official_only">الوكلاء فقط</button>
-            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="new_only">الجدد فقط</button>
-            <button type="button" class="moe-window-btn moe-window-btn-soft" data-quick-phase="all">فتح للجميع</button>
-            <button class="moe-window-btn moe-window-btn-primary" type="submit">💾 حفظ الإعدادات</button>
+          <div class="pw-row">
+            <button type="button" class="pw-btn danger sm" data-quick-phase="closed">إغلاق سريع</button>
+            <button type="button" class="pw-btn gold sm" data-quick-phase="official_only">الوكلاء فقط</button>
+            <button type="button" class="pw-btn gold sm" data-quick-phase="new_only">الجدد فقط</button>
+            <button type="button" class="pw-btn sm" data-quick-phase="all">فتح للجميع</button>
+            <button class="pw-btn primary" type="submit">حفظ الإعدادات</button>
           </div>
         </div>
       </form>
-    </div>
+    </section>
 
   </div>
 </div>
 
 <script>
 (function(){
-  const phaseCards = Array.from(document.querySelectorAll('.moe-window-phase'));
+  const phaseCards = Array.from(document.querySelectorAll('.pw-phase'));
   const radios = Array.from(document.querySelectorAll('input[name="phase"]'));
   const preview = document.getElementById('phasePreview');
 
@@ -920,26 +620,15 @@
   const officialInput = document.getElementById('official_only_message');
   const newInput = document.getElementById('new_only_message');
   const allInput = document.getElementById('all_message');
-
   const quickButtons = Array.from(document.querySelectorAll('[data-quick-phase]'));
+  const accordion = document.getElementById('messagesAccordion');
+  const toggle = document.getElementById('messagesToggle');
 
   const previewMap = {
-    closed: {
-      cls: 'closed',
-      text: () => closedInput.value.trim() || 'التقديم مغلق حالياً.'
-    },
-    official_only: {
-      cls: 'official',
-      text: () => officialInput.value.trim() || 'التقديم متاح حالياً للوكلاء الرسميين فقط.'
-    },
-    new_only: {
-      cls: 'new',
-      text: () => newInput.value.trim() || 'التقديم متاح حالياً للمتقدمين الجدد فقط.'
-    },
-    all: {
-      cls: 'all',
-      text: () => allInput.value.trim() || 'التقديم متاح حالياً للجميع.'
-    }
+    closed: {cls:'closed', text:() => closedInput.value.trim() || 'التقديم مغلق حالياً.'},
+    official_only: {cls:'official', text:() => officialInput.value.trim() || 'التقديم متاح حالياً للوكلاء الرسميين فقط.'},
+    new_only: {cls:'new', text:() => newInput.value.trim() || 'التقديم متاح حالياً للمتقدمين الجدد فقط.'},
+    all: {cls:'all', text:() => allInput.value.trim() || 'التقديم متاح حالياً للجميع.'}
   };
 
   function getCurrentPhase(){
@@ -949,9 +638,7 @@
 
   function refreshCards(){
     const phase = getCurrentPhase();
-    phaseCards.forEach(card => {
-      card.classList.toggle('active', card.dataset.phase === phase);
-    });
+    phaseCards.forEach(card => card.classList.toggle('active', card.dataset.phase === phase));
   }
 
   function refreshMessageBoxes(){
@@ -964,7 +651,7 @@
   function refreshPreview(){
     const phase = getCurrentPhase();
     const item = previewMap[phase] || previewMap.closed;
-    preview.className = 'moe-window-preview-box ' + item.cls;
+    preview.className = 'pw-preview-box ' + item.cls;
     preview.textContent = item.text();
   }
 
@@ -978,25 +665,25 @@
     }
   }
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      refreshCards();
-      refreshMessageBoxes();
-      refreshPreview();
-    });
-  });
+  radios.forEach(radio => radio.addEventListener('change', () => {
+    refreshCards();
+    refreshMessageBoxes();
+    refreshPreview();
+  }));
 
   [closedInput, officialInput, newInput, allInput].forEach(el => {
-    if(el){
-      el.addEventListener('input', refreshPreview);
-    }
+    if(el){ el.addEventListener('input', refreshPreview); }
   });
 
-  quickButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      setPhase(btn.dataset.quickPhase);
+  quickButtons.forEach(btn => btn.addEventListener('click', () => setPhase(btn.dataset.quickPhase)));
+
+  if(toggle && accordion){
+    toggle.addEventListener('click', () => {
+      const open = accordion.classList.toggle('open');
+      const chev = toggle.querySelector('.pw-chevron');
+      if(chev){ chev.textContent = open ? 'إخفاء' : 'إظهار'; }
     });
-  });
+  }
 
   refreshCards();
   refreshMessageBoxes();

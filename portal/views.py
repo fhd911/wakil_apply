@@ -46,6 +46,41 @@ from .services_import import import_applicants_xlsx, import_schools_xlsx
 
 SESSION_KEY = "applicant_nid"
 
+# =========================================================
+# Submission Policy / نصوص الإقرارات المعتمدة
+# =========================================================
+SUBMISSION_POLICY_VERSION = "v1"
+
+PREFERENCES_ACK_TEXT = (
+    "أقرّ بأن اختياري وترتيبي للرغبات لا يعني استحقاق التوجيه عليها أو تحققها، "
+    "ولا يترتب عليه أي التزام بتوجيهي إلى أي منها في حال وجود مرشحين أعلى درجة "
+    "أو أحق في المفاضلة، وأن التوجيه النهائي يكون وفق المصلحة التعليمية واحتياج الإدارة "
+    "والضوابط المعتمدة ونتائج المفاضلة، وفي حدود الرغبات المحددة."
+)
+
+NO_PREFERENCES_ACK_TEXT = (
+    "أقرّ بأنني اطلعت على الشواغر المتاحة خلال فترة التقديم، وأرغب في إرسال طلبي "
+    "دون اختيار أي رغبة، وأعلم أن الطلب في هذه الحالة يُعد مستلمًا دون رغبات، "
+    "ولا يدخل في مفاضلة الرغبات، ولا يترتب عليه أي مطالبة بشاغر محدد، "
+    "مع احتفاظ الإدارة بحق معالجة الطلب وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة."
+)
+
+NO_PREFERENCES_POLICY_MEANING = (
+    "مستلم دون رغبات؛ لا يدخل في مفاضلة الرغبات، ولا يترتب عليه مطالبة بشاغر محدد، "
+    "مع احتفاظ الإدارة بحق معالجة الطلب وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة."
+)
+
+NO_PREFERENCES_ADMIN_DECISION_NOTE = (
+    "تم اعتماد استلام الطلب دون رغبات، ولا يدخل في مفاضلة الرغبات، "
+    "ولا يترتب عليه مطالبة بشاغر محدد، مع احتفاظ الإدارة بحق معالجة الطلب "
+    "وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة."
+)
+
+PREFERENCES_COMPETITION_NOTE = (
+    "يدخل مفاضلة الرغبات وفق الضوابط ونتائج المفاضلة والاحتياج، "
+    "دون أن يعني ذلك تحقق أي رغبة أو أولوية على الأعلى درجة."
+)
+
 
 # =========================================================
 # Helpers
@@ -202,8 +237,419 @@ def _eligible_schools_for(applicant: Applicant):
     )
 
 
+def _checked_post(request, name: str) -> bool:
+    return (
+        (request.POST.get(name) or "").strip().lower()
+        in {"1", "true", "on", "yes", "y"}
+    )
+
+
+def _dt_iso(dt) -> str:
+    if not dt:
+        return ""
+    try:
+        return timezone.localtime(dt).isoformat()
+    except Exception:
+        return str(dt)
+
+
+def _build_submission_snapshot(
+    *,
+    applicant: Applicant,
+    app: Application,
+    vacancies: list[SchoolVacancy],
+    submitted_at,
+    available_count: int,
+    preferences_policy_confirmed: bool,
+    no_preferences_confirmed: bool,
+) -> dict:
+    """
+    لقطة إثبات محفوظة وقت الإرسال.
+    تحفظ نصوص الإقرار وبيانات الرغبات كما كانت وقت الإرسال،
+    حتى لو تغيّرت النصوص أو بيانات الشواغر لاحقًا.
+    """
+    prefs_snapshot = []
+    for rank, vacancy in enumerate(vacancies, start=1):
+        prefs_snapshot.append({
+            "rank": rank,
+            "vacancy_id": vacancy.id,
+            "school_name": getattr(vacancy, "school_name", "") or "",
+            "ministry_no": getattr(vacancy, "ministry_no", "") or "",
+            "stage": getattr(vacancy, "stage", "") or "",
+            "sector": getattr(vacancy, "sector", "") or "",
+            "gender": getattr(vacancy, "gender", "") or "",
+            "deputy_need": getattr(vacancy, "deputy_need", 0) or 0,
+        })
+
+    return {
+        "policy_version": SUBMISSION_POLICY_VERSION,
+        "application_id": app.id,
+        "submitted_at": _dt_iso(submitted_at),
+        "submitted_prefs_count": len(prefs_snapshot),
+        "available_count_at_submission": available_count,
+        "submitted_without_preferences": len(prefs_snapshot) == 0,
+        "no_vacancies_at_submission": available_count == 0,
+        "applicant": {
+            "id": applicant.id,
+            "full_name": getattr(applicant, "full_name", "") or "",
+            "national_id": getattr(applicant, "national_id", "") or "",
+            "mobile": getattr(applicant, "mobile", "") or "",
+            "gender": getattr(applicant, "gender", "") or "",
+            "sector": getattr(applicant, "sector", "") or "",
+            "rank": getattr(applicant, "rank", "") or "",
+            "current_job": getattr(applicant, "current_job", "") or "",
+            "current_school": getattr(applicant, "current_school", "") or "",
+        },
+        "preferences": prefs_snapshot,
+        "acknowledgements": {
+            "preferences_acknowledged": bool(preferences_policy_confirmed),
+            "preferences_ack_text": PREFERENCES_ACK_TEXT if preferences_policy_confirmed else "",
+            "preferences_ack_at": _dt_iso(submitted_at) if preferences_policy_confirmed else "",
+            "no_preferences_acknowledged": bool(no_preferences_confirmed),
+            "no_preferences_ack_text": NO_PREFERENCES_ACK_TEXT if no_preferences_confirmed else "",
+            "no_preferences_ack_at": _dt_iso(submitted_at) if no_preferences_confirmed else "",
+        },
+        "status_after_submission": "submitted",
+        "locked_after_submission": True,
+        "enters_preference_competition": bool(prefs_snapshot),
+        "administrative_processing_eligible": True,
+        "competition_meaning": (
+            PREFERENCES_COMPETITION_NOTE
+            if prefs_snapshot
+            else "لا يدخل في مفاضلة الرغبات لعدم تسجيل رغبات."
+        ),
+        "administrative_meaning": (
+            "مستلم للمعالجة ومقفل للتعديل؛ ولا يعني تسجيل الرغبات تحقق التوجيه عليها."
+            if prefs_snapshot
+            else NO_PREFERENCES_POLICY_MEANING
+        ),
+    }
+
+
+def _set_model_field_if_exists(obj, field_name: str, value, update_fields: list[str]):
+    """يضبط الحقل فقط إذا كان موجودًا في النموذج؛ لتسهيل الانتقال أثناء التحديث."""
+    if any(f.name == field_name for f in obj._meta.fields):
+        setattr(obj, field_name, value)
+        update_fields.append(field_name)
+
+
 def _is_final_submission_locked(app: Application | None) -> bool:
     return bool(app and app.locked and app.status == "submitted")
+
+
+def _is_incomplete_submission_locked(app: Application | None) -> bool:
+    """
+    إقفال إداري للطلبات غير المكتملة بعد نهاية فترة التقديم.
+    لا يغيّر حالة الطلب إلى submitted، ولا ينسب للمتقدم إقرارًا لم يفعله؛
+    فقط يمنع استكمال الطلب لاحقًا إذا قررت الإدارة تثبيت الإقفال.
+    """
+    return bool(app and getattr(app, "locked", False) and getattr(app, "status", "") != "submitted")
+
+
+def _application_progress_code(app: Application | None) -> str:
+    """تصنيف إجرائي لا يعتمد على تغيير قيم status في قاعدة البيانات."""
+    if not app:
+        return "none"
+
+    if _is_incomplete_submission_locked(app):
+        if not getattr(app, "confirmed_at", None):
+            return "locked_entered_not_confirmed"
+        return "locked_confirmed_not_submitted"
+
+    if not getattr(app, "confirmed_at", None):
+        return "entered_not_confirmed"
+
+    if getattr(app, "status", "") != "submitted":
+        return "confirmed_not_submitted"
+
+    has_prefs = app.prefs.exists()
+    return "submitted_with_prefs" if has_prefs else "submitted_without_prefs"
+
+
+def _application_progress_label(code: str) -> str:
+    labels = {
+        "none": "لم يدخل البوابة",
+        "entered_not_confirmed": "دخل ولم يؤكد البيانات",
+        "confirmed_not_submitted": "أكد ولم يرسل الطلب",
+        "submitted_without_prefs": "مرسل بلا رغبات",
+        "submitted_with_prefs": "مرسل برغبات",
+        "locked_entered_not_confirmed": "مقفل إداريًا: دخل ولم يؤكد",
+        "locked_confirmed_not_submitted": "مقفل إداريًا: أكد ولم يرسل",
+    }
+    return labels.get(code, code or "-")
+
+
+def _application_progress_note(code: str) -> str:
+    notes = {
+        "none": "لم يباشر إجراءات التقديم رغم إتاحة البوابة خلال الفترة المحددة.",
+        "entered_not_confirmed": "تم إثبات الدخول فقط، ولم يتم تأكيد البيانات.",
+        "confirmed_not_submitted": "تم تأكيد البيانات، ولم يتم تنفيذ الإرسال النهائي.",
+        "submitted_without_prefs": "تم الإرسال النهائي دون رغبات؛ لا يدخل في مفاضلة الرغبات، مع احتفاظ الإدارة بحق المعالجة وفق المصلحة التعليمية.",
+        "submitted_with_prefs": "طلب مكتمل وداخل في مفاضلة الرغبات وفق الضوابط ونتائج المفاضلة والاحتياج.",
+        "locked_entered_not_confirmed": "طلب غير مكتمل تم إقفاله إداريًا بعد نهاية فترة التقديم.",
+        "locked_confirmed_not_submitted": "طلب غير مكتمل تم إقفاله إداريًا بعد نهاية فترة التقديم.",
+    }
+    return notes.get(code, "-")
+
+
+
+def _application_preferences_count(app: Application, prefs: list[ApplicationPreference] | None = None) -> int:
+    """
+    يرجع عدد الرغبات بأقل تكلفة ممكنة:
+    - يستخدم prefs الجاهزة إن مررت له.
+    - يستخدم annotation باسم prefs_count في لوحة الإدارة.
+    - وإلا يستعلم من العلاقة.
+    """
+    if prefs is not None:
+        return len(prefs)
+
+    if hasattr(app, "prefs_count"):
+        try:
+            return int(getattr(app, "prefs_count") or 0)
+        except Exception:
+            return 0
+
+    try:
+        return app.prefs.count()
+    except Exception:
+        return 0
+
+
+def _is_submitted_without_preferences(app: Application, prefs: list[ApplicationPreference] | None = None) -> bool:
+    """
+    مسار إداري مستقل:
+    الطلب المرسل دون رغبات لا يدخل مفاضلة الرغبات،
+    لكنه يبقى قابلاً للمعالجة الإدارية وفق المصلحة التعليمية.
+    """
+    if not app or app.status != "submitted":
+        return False
+    return _application_preferences_count(app, prefs) == 0
+
+
+def _is_submitted_with_preferences(app: Application, prefs: list[ApplicationPreference] | None = None) -> bool:
+    return bool(app and app.status == "submitted" and _application_preferences_count(app, prefs) > 0)
+
+
+def _admin_decision_display(app: Application, prefs: list[ApplicationPreference] | None = None) -> dict:
+    """
+    يضبط معنى القرار إداريًا حسب مسار الطلب:
+    approved مع رغبات = معتمد، approved بلا رغبات = موثق الاستلام.
+    """
+    raw = (getattr(app, "admin_decision", "") or "").strip()
+    no_prefs = _is_submitted_without_preferences(app, prefs)
+
+    if raw == "approved" and no_prefs:
+        return {
+            "code": "documented",
+            "label": "موثق الاستلام",
+            "css": "green",
+            "note": "تم توثيق استلام الطلب دون رغبات، ولا يدخل في مفاضلة الرغبات.",
+        }
+
+    if raw == "approved":
+        return {
+            "code": "approved",
+            "label": "معتمد",
+            "css": "green",
+            "note": "قرار اعتماد ضمن مسار المفاضلة والترشيح.",
+        }
+
+    if raw == "rejected":
+        return {
+            "code": "rejected",
+            "label": "مرفوض",
+            "css": "red",
+            "note": "تم رفض الطلب وفق الملاحظة الإدارية المسجلة.",
+        }
+
+    if raw == "returned":
+        return {
+            "code": "returned",
+            "label": "معاد للتعديل",
+            "css": "blue",
+            "note": "أعيد الطلب للتعديل وفق الملاحظة الإدارية المسجلة.",
+        }
+
+    if no_prefs:
+        return {
+            "code": "pending_documentation",
+            "label": "بانتظار توثيق",
+            "css": "gold",
+            "note": "طلب مرسل دون رغبات وينتظر توثيق الاستلام إداريًا.",
+        }
+
+    return {
+        "code": "pending",
+        "label": "بانتظار قرار",
+        "css": "gold",
+        "note": "طلب ينتظر اتخاذ القرار الإداري.",
+    }
+
+
+def _application_path_info(app: Application, prefs: list[ApplicationPreference] | None = None) -> dict:
+    prefs_count = _application_preferences_count(app, prefs)
+    status = (getattr(app, "status", "") or "").strip()
+    decision = (getattr(app, "admin_decision", "") or "").strip()
+
+    if status == "submitted" and prefs_count == 0:
+        return {
+            "code": "no_preferences",
+            "label": "مستلم دون رغبات",
+            "status_label": "مرسل دون رغبات",
+            "brief": "لا يدخل مفاضلة الرغبات — قابل للمعالجة الإدارية",
+            "long_note": NO_PREFERENCES_POLICY_MEANING,
+            "competition_label": "لا يدخل مفاضلة الرغبات",
+            "competition_value": "لا",
+            "admin_processing_label": "قابل للمعالجة الإدارية",
+            "admin_processing_value": "نعم",
+            "claim_label": "لا توجد مطالبة بشاغر محدد",
+            "claim_value": "لا",
+            "primary_action_label": "توثيق الاستلام",
+            "css": "gold",
+        }
+
+    if status == "submitted" and prefs_count > 0:
+        if decision == "approved":
+            label = "معتمد في مسار المفاضلة"
+        elif decision == "rejected":
+            label = "مرفوض في مسار المفاضلة"
+        elif decision == "returned":
+            label = "معاد للتعديل"
+        else:
+            label = "جاهز للمفاضلة"
+
+        return {
+            "code": "competition",
+            "label": label,
+            "status_label": "مرسل برغبات",
+            "brief": "يدخل مفاضلة الرغبات وفق الضوابط والدرجة والاحتياج",
+            "long_note": PREFERENCES_COMPETITION_NOTE,
+            "competition_label": "يدخل مفاضلة الرغبات",
+            "competition_value": "نعم",
+            "admin_processing_label": "يعالج ضمن مسار المفاضلة",
+            "admin_processing_value": "نعم",
+            "claim_label": "لا يضمن تحقق الرغبات",
+            "claim_value": "لا يضمن",
+            "primary_action_label": "اعتماد",
+            "css": "green",
+        }
+
+    if status == "draft" and getattr(app, "confirmed_at", None):
+        return {
+            "code": "confirmed_not_submitted",
+            "label": "غير مكتمل — أكد ولم يرسل",
+            "status_label": "مسودة مؤكدة",
+            "brief": "تم تأكيد البيانات ولم يتم الإرسال النهائي.",
+            "long_note": "لا يدخل الطلب في المفاضلة قبل الإرسال النهائي.",
+            "competition_label": "لا يدخل مفاضلة الرغبات",
+            "competition_value": "لا",
+            "admin_processing_label": "غير قابل للمعالجة كطلب مرسل",
+            "admin_processing_value": "لا",
+            "claim_label": "لا توجد مطالبة",
+            "claim_value": "لا",
+            "primary_action_label": "—",
+            "css": "gold",
+        }
+
+    if status == "draft":
+        return {
+            "code": "entered_not_confirmed",
+            "label": "غير مكتمل — دخل ولم يؤكد",
+            "status_label": "مسودة",
+            "brief": "تم إثبات الدخول فقط، ولم يتم تأكيد البيانات أو الإرسال.",
+            "long_note": "لا يدخل الطلب في المفاضلة قبل تأكيد البيانات والإرسال النهائي.",
+            "competition_label": "لا يدخل مفاضلة الرغبات",
+            "competition_value": "لا",
+            "admin_processing_label": "غير قابل للمعالجة كطلب مرسل",
+            "admin_processing_value": "لا",
+            "claim_label": "لا توجد مطالبة",
+            "claim_value": "لا",
+            "primary_action_label": "—",
+            "css": "gold",
+        }
+
+    return {
+        "code": status or "unknown",
+        "label": status or "غير محدد",
+        "status_label": status or "غير محدد",
+        "brief": "حالة غير مكتملة أو غير محددة.",
+        "long_note": "تراجع حالة الطلب وسجل الإجراءات قبل اتخاذ القرار.",
+        "competition_label": "غير محدد",
+        "competition_value": "—",
+        "admin_processing_label": "غير محدد",
+        "admin_processing_value": "—",
+        "claim_label": "غير محدد",
+        "claim_value": "—",
+        "primary_action_label": "—",
+        "css": "blue",
+    }
+
+
+def _submission_proof_context(app: Application, prefs: list[ApplicationPreference]) -> dict:
+    snapshot = getattr(app, "submission_snapshot", None) or {}
+    if not isinstance(snapshot, dict):
+        snapshot = {}
+
+    prefs_count = _application_preferences_count(app, prefs)
+    saved_count = getattr(app, "submitted_prefs_count", None)
+    try:
+        saved_count = int(saved_count)
+    except Exception:
+        saved_count = prefs_count
+
+    ack_items = []
+
+    if getattr(app, "preferences_acknowledged", False):
+        ack_items.append({
+            "title": "إقرار سياسة الرغبات",
+            "status": "تم الإقرار",
+            "at": _fmt_dt(getattr(app, "preferences_ack_at", None)),
+            "text": (getattr(app, "preferences_ack_text", "") or PREFERENCES_ACK_TEXT).strip(),
+        })
+
+    if getattr(app, "no_preferences_acknowledged", False):
+        ack_items.append({
+            "title": "إقرار الإرسال دون رغبات",
+            "status": "تم الإقرار",
+            "at": _fmt_dt(getattr(app, "no_preferences_ack_at", None)),
+            "text": (getattr(app, "no_preferences_ack_text", "") or NO_PREFERENCES_ACK_TEXT).strip(),
+        })
+
+    if getattr(app, "status", "") == "submitted" and not ack_items:
+        ack_items.append({
+            "title": "إثبات الإقرارات",
+            "status": "غير محفوظ",
+            "at": "—",
+            "text": "طلب سابق أو لم يتم العثور على نص إقرار محفوظ ضمن حقول الإثبات الحالية.",
+        })
+
+    return {
+        "policy_version": getattr(app, "submission_policy_version", "") or SUBMISSION_POLICY_VERSION,
+        "submitted_at": _fmt_dt(getattr(app, "submitted_at", None)),
+        "submitted_prefs_count": saved_count,
+        "snapshot": snapshot,
+        "ack_items": ack_items,
+        "snapshot_preferences": snapshot.get("preferences", []) if isinstance(snapshot.get("preferences", []), list) else [],
+    }
+
+
+def _enrich_admin_application(app: Application, prefs: list[ApplicationPreference] | None = None) -> Application:
+    path_info = _application_path_info(app, prefs)
+    decision_info = _admin_decision_display(app, prefs)
+
+    app.path_info = path_info
+    app.decision_info = decision_info
+    app.path_label = path_info["label"]
+    app.path_brief = path_info["brief"]
+    app.path_status_label = path_info["status_label"]
+    app.path_css = path_info["css"]
+    app.is_no_preferences_path = path_info["code"] == "no_preferences"
+    app.is_competition_path = path_info["code"] == "competition"
+    app.admin_decision_display = decision_info["label"]
+    app.admin_decision_css = decision_info["css"]
+    app.admin_decision_note_display = decision_info["note"]
+    app.primary_action_label = path_info["primary_action_label"]
+    return app
 
 
 def _build_preferences_context(*, applicant: Applicant, app: Application, win: PortalWindow, schools, selected_prefs, selected_ids, error: str = "") -> dict:
@@ -228,6 +674,10 @@ def _build_preferences_context(*, applicant: Applicant, app: Application, win: P
         "available_count": available_count,
         "min_required": min_required,
         "selection_hint": selection_hint,
+        "preferences_policy_confirm_text": PREFERENCES_ACK_TEXT,
+        "preferences_ack_text": PREFERENCES_ACK_TEXT,
+        "no_preferences_ack_text": NO_PREFERENCES_ACK_TEXT,
+        "submission_policy_version": SUBMISSION_POLICY_VERSION,
     }
     if error:
         ctx["error"] = error
@@ -340,7 +790,9 @@ def _run_new_applicants_sorting(*, decided_by):
             vacancy = matched_pref.vacancy
             vacancy.reserved_application = app
             vacancy.reserved_at = timezone.now()
-            vacancy.save(update_fields=["reserved_application", "reserved_at"])
+            # إغلاق تلقائي للشاغر عند تحقق الترشيح؛ ولا يُعاد فتحه إلا يدويًا من إدارة الشواغر.
+            vacancy.is_open = False
+            vacancy.save(update_fields=["reserved_application", "reserved_at", "is_open"])
 
             app.achieved_pref = matched_pref
             app.achieved_at = timezone.now()
@@ -610,6 +1062,13 @@ def login_view(request):
         if _is_final_submission_locked(app):
             return redirect("portal:done")
 
+        if _is_incomplete_submission_locked(app):
+            messages.error(
+                request,
+                "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
+            )
+            return redirect("portal:closed")
+
         return redirect("portal:confirm")
 
     ctx = {}
@@ -632,6 +1091,13 @@ def confirm_view(request):
     app = Application.objects.filter(applicant=a).first()
     if _is_final_submission_locked(app):
         return redirect("portal:done")
+
+    if _is_incomplete_submission_locked(app):
+        messages.error(
+            request,
+            "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
+        )
+        return redirect("portal:closed")
 
     def gv(attr: str, dash: str = "-"):
         v = getattr(a, attr, None)
@@ -708,6 +1174,13 @@ def preferences_view(request):
     if _is_final_submission_locked(app):
         return redirect("portal:done")
 
+    if _is_incomplete_submission_locked(app):
+        messages.error(
+            request,
+            "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
+        )
+        return redirect("portal:closed")
+
     selected_prefs = list(
         ApplicationPreference.objects
         .filter(application=app)
@@ -751,6 +1224,13 @@ def submit_view(request):
         messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
         return redirect("portal:done")
 
+    if _is_incomplete_submission_locked(app):
+        messages.error(
+            request,
+            "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
+        )
+        return redirect("portal:closed")
+
     ids = request.POST.getlist("vacancy_ids")
 
     schools = _eligible_schools_for(a)
@@ -770,10 +1250,39 @@ def submit_view(request):
     # ضابط الإرسال بدون رغبات:
     # الرغبات غير إلزامية، لكن إذا كانت هناك شواغر متاحة ولم يختر المرشح أي رغبة،
     # فلا يتم الإرسال النهائي إلا بعد إقرار صريح منه بأنه اطلع ويرغب بالإرسال دون رغبات.
-    no_preferences_confirmed = (
-        (request.POST.get("confirm_no_preferences") or "").strip().lower()
-        in {"1", "true", "on", "yes", "y"}
-    )
+    no_preferences_confirmed = _checked_post(request, "confirm_no_preferences")
+
+    # ضابط إقرار سياسة التوجيه عند اختيار رغبات:
+    # لا يُقبل إرسال الطلب برغبات مختارة إلا بعد إقرار صريح بأن التوجيه
+    # لا يعني الاستحقاق المباشر للرغبات، وإنما يكون وفق المصلحة التعليمية
+    # واحتياج الإدارة والضوابط المعتمدة، وفي حدود الرغبات المحددة.
+    preferences_policy_confirmed = _checked_post(request, "confirm_preferences_policy")
+
+    if clean_ids and not preferences_policy_confirmed:
+        selected_prefs = list(
+            ApplicationPreference.objects
+            .filter(application=app)
+            .select_related("vacancy")
+            .order_by("rank", "id")
+        )
+        selected_ids = [p.vacancy_id for p in selected_prefs]
+
+        ctx = _build_preferences_context(
+            applicant=a,
+            app=app,
+            win=win,
+            schools=schools,
+            selected_prefs=selected_prefs,
+            selected_ids=selected_ids,
+            error=(
+                "يلزم تفعيل إقرار سياسة التوجيه قبل إرسال الرغبات؛ "
+                "فاختيار الرغبات لا يعني تحقق التوجيه عليها، "
+                "ولا يمنح أولوية على من هو أعلى درجة أو أحق في المفاضلة، "
+                "ويكون التوجيه وفق المصلحة التعليمية واحتياج الإدارة "
+                "والضوابط المعتمدة ونتائج المفاضلة."
+            ),
+        )
+        return render(request, "portal/preferences.html", ctx)
 
     if available_count > 0 and not clean_ids and not no_preferences_confirmed:
         selected_prefs = list(
@@ -793,28 +1302,91 @@ def submit_view(request):
             selected_ids=selected_ids,
             error=(
                 "لم تقم باختيار أي رغبة. إذا كنت ترغب في إرسال الطلب دون رغبات، "
-                "فضلاً فعّل إقرار الإرسال دون رغبات ثم اضغط إرسال الطلب مرة أخرى."
+                "فضلاً فعّل إقرار الإرسال دون رغبات؛ وسيُعد الطلب مستلمًا دون رغبات، "
+                "ولا يدخل في مفاضلة الرغبات مع احتفاظ الإدارة بحق المعالجة وفق المصلحة التعليمية."
             ),
         )
         ctx["require_no_preferences_confirm"] = True
-        ctx["no_preferences_confirm_text"] = (
-            "أقرّ بأنني اطلعت على الشواغر المتاحة، وأؤكد إرسال طلبي دون اختيار رغبات."
-        )
+        ctx["no_preferences_confirm_text"] = NO_PREFERENCES_ACK_TEXT
         return render(request, "portal/preferences.html", ctx)
+
+    # نحفظ الشواغر المختارة بترتيب clean_ids قبل إنشاء الرغبات؛
+    # حتى تدخل نفس البيانات في لقطة الإرسال المحفوظة.
+    selected_vacancy_map = {
+        v.id: v
+        for v in SchoolVacancy.objects.filter(id__in=clean_ids)
+    }
+    selected_vacancies = [
+        selected_vacancy_map[vid]
+        for vid in clean_ids
+        if vid in selected_vacancy_map
+    ]
+
+    submitted_at = timezone.now()
 
     ApplicationPreference.objects.filter(application=app).delete()
 
-    for idx, vid in enumerate(clean_ids, start=1):
+    for idx, vacancy in enumerate(selected_vacancies, start=1):
         ApplicationPreference.objects.create(
             application=app,
-            vacancy_id=vid,
+            vacancy=vacancy,
             rank=idx,
         )
 
+    # لا نسجل إقرار عدم اختيار الرغبات إلا إذا فعّله المتقدم صراحة.
+    # أما إذا لم تكن هناك شواغر متاحة أصلًا، فتسجل لقطة الإرسال ذلك دون نسبة إقرار غير موجود.
+    no_preferences_acknowledged = bool(not selected_vacancies and no_preferences_confirmed)
+    preferences_acknowledged = bool(selected_vacancies and preferences_policy_confirmed)
+
+    snapshot = _build_submission_snapshot(
+        applicant=a,
+        app=app,
+        vacancies=selected_vacancies,
+        submitted_at=submitted_at,
+        available_count=available_count,
+        preferences_policy_confirmed=preferences_acknowledged,
+        no_preferences_confirmed=no_preferences_acknowledged,
+    )
+
     app.status = "submitted"
     app.locked = True
-    app.submitted_at = timezone.now()
-    app.save(update_fields=["status", "locked", "submitted_at"])
+    app.submitted_at = submitted_at
+
+    update_fields = ["status", "locked", "submitted_at"]
+
+    _set_model_field_if_exists(app, "preferences_acknowledged", preferences_acknowledged, update_fields)
+    _set_model_field_if_exists(
+        app,
+        "preferences_ack_text",
+        PREFERENCES_ACK_TEXT if preferences_acknowledged else "",
+        update_fields,
+    )
+    _set_model_field_if_exists(
+        app,
+        "preferences_ack_at",
+        submitted_at if preferences_acknowledged else None,
+        update_fields,
+    )
+
+    _set_model_field_if_exists(app, "no_preferences_acknowledged", no_preferences_acknowledged, update_fields)
+    _set_model_field_if_exists(
+        app,
+        "no_preferences_ack_text",
+        NO_PREFERENCES_ACK_TEXT if no_preferences_acknowledged else "",
+        update_fields,
+    )
+    _set_model_field_if_exists(
+        app,
+        "no_preferences_ack_at",
+        submitted_at if no_preferences_acknowledged else None,
+        update_fields,
+    )
+
+    _set_model_field_if_exists(app, "submitted_prefs_count", len(selected_vacancies), update_fields)
+    _set_model_field_if_exists(app, "submission_policy_version", SUBMISSION_POLICY_VERSION, update_fields)
+    _set_model_field_if_exists(app, "submission_snapshot", snapshot, update_fields)
+
+    app.save(update_fields=update_fields)
 
     return redirect("portal:done")
 
@@ -1015,6 +1587,36 @@ def admin_applicants_enable_all_view(request):
     return redirect("portal:admin_applicants_list")
 
 
+
+@staff_member_required
+@require_POST
+def admin_applicants_bulk_action_view(request):
+    """
+    إجراء جماعي على المتقدمين المحددين من صفحة إدارة المتقدمين:
+    - enable  : تفعيل المحدد
+    - disable : تعطيل المحدد
+    """
+    selected_ids = request.POST.getlist("selected_applicants")
+    bulk_action = (request.POST.get("bulk_action") or "").strip()
+
+    if not selected_ids:
+        messages.warning(request, "لم يتم تحديد أي متقدم.")
+        return redirect("portal:admin_applicants_list")
+
+    qs = Applicant.objects.filter(id__in=selected_ids)
+
+    if bulk_action == "enable":
+        updated = qs.update(is_active=True)
+        messages.success(request, f"تم تفعيل ({updated}) من المتقدمين المحددين.")
+    elif bulk_action == "disable":
+        updated = qs.update(is_active=False)
+        messages.success(request, f"تم تعطيل ({updated}) من المتقدمين المحددين.")
+    else:
+        messages.warning(request, "إجراء غير معروف.")
+
+    return redirect("portal:admin_applicants_list")
+
+
 @staff_member_required
 @require_POST
 def admin_applicants_delete(request, pk: int):
@@ -1051,6 +1653,36 @@ def admin_vacancies_list(request):
         .values("c")[:1]
     )
 
+    # مؤشر التفعيل الجزئي:
+    # إذا كانت المدرسة مكررة كسجلات شواغر، وكان بعض سجلاتها مفتوحًا وبعضها مغلقًا،
+    # يظهر مربع/مؤشر ذهبي بجوار اسم المدرسة في القالب.
+    same_school_total_sq = (
+        SchoolVacancy.objects
+        .filter(
+            school_name=OuterRef("school_name"),
+            sector=OuterRef("sector"),
+            gender=OuterRef("gender"),
+        )
+        .order_by()
+        .values("school_name", "sector", "gender")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
+    same_school_open_sq = (
+        SchoolVacancy.objects
+        .filter(
+            school_name=OuterRef("school_name"),
+            sector=OuterRef("sector"),
+            gender=OuterRef("gender"),
+            is_open=True,
+        )
+        .order_by()
+        .values("school_name", "sector", "gender")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
     qs = (
         SchoolVacancy.objects
         .all()
@@ -1062,6 +1694,8 @@ def admin_vacancies_list(request):
                 distinct=True,
             ),
             achieved_total=Coalesce(Subquery(achieved_sq, output_field=IntegerField()), Value(0)),
+            school_vacancy_count=Coalesce(Subquery(same_school_total_sq, output_field=IntegerField()), Value(1)),
+            school_open_count=Coalesce(Subquery(same_school_open_sq, output_field=IntegerField()), Value(0)),
         )
         .order_by("-id")
     )
@@ -1087,6 +1721,16 @@ def admin_vacancies_list(request):
         )
 
     page_obj = _paginate(request, qs, per_page=40)
+
+    # نضيف الخاصية على كائنات الصفحة حتى يستخدمها القالب مباشرة.
+    for v in page_obj.object_list:
+        total_for_school = int(getattr(v, "school_vacancy_count", 0) or 0)
+        open_for_school = int(getattr(v, "school_open_count", 0) or 0)
+        v.is_partial_activation = bool(
+            total_for_school > 1
+            and open_for_school > 0
+            and open_for_school < total_for_school
+        )
 
     return render(
         request,
@@ -1138,6 +1782,18 @@ def admin_vacancies_toggle(request, pk: int):
 @staff_member_required
 @require_POST
 def admin_vacancies_disable_all_view(request):
+    selected_ids = [x for x in request.POST.getlist("selected_vacancies") if str(x).isdigit()]
+    scope = (request.POST.get("scope") or "").strip()
+
+    if scope == "selected":
+        if not selected_ids:
+            messages.warning(request, "لم يتم تحديد أي مدرسة/شاغر للإغلاق.")
+            return _redirect_admin_vacancies_list_with_filters(request)
+
+        updated = SchoolVacancy.objects.filter(id__in=selected_ids, is_open=True).update(is_open=False)
+        messages.success(request, f"تم إغلاق المدارس/الشواغر المحددة بنجاح. العدد المتأثر: {updated}")
+        return _redirect_admin_vacancies_list_with_filters(request)
+
     updated = SchoolVacancy.objects.filter(is_open=True).update(is_open=False)
     messages.success(request, f"تم تعطيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
     return _redirect_admin_vacancies_list_with_filters(request)
@@ -1146,6 +1802,18 @@ def admin_vacancies_disable_all_view(request):
 @staff_member_required
 @require_POST
 def admin_vacancies_enable_all_view(request):
+    selected_ids = [x for x in request.POST.getlist("selected_vacancies") if str(x).isdigit()]
+    scope = (request.POST.get("scope") or "").strip()
+
+    if scope == "selected":
+        if not selected_ids:
+            messages.warning(request, "لم يتم تحديد أي مدرسة/شاغر للفتح.")
+            return _redirect_admin_vacancies_list_with_filters(request)
+
+        updated = SchoolVacancy.objects.filter(id__in=selected_ids, is_open=False).update(is_open=True)
+        messages.success(request, f"تم فتح المدارس/الشواغر المحددة بنجاح. العدد المتأثر: {updated}")
+        return _redirect_admin_vacancies_list_with_filters(request)
+
     updated = SchoolVacancy.objects.filter(is_open=False).update(is_open=True)
     messages.success(request, f"تم تفعيل جميع المدارس/الشواغر بنجاح. العدد المتأثر: {updated}")
     return _redirect_admin_vacancies_list_with_filters(request)
@@ -1177,11 +1845,21 @@ def _final_approvals_filters_from_request(request):
     sector = (request.GET.get("sector") or "").strip()
     gender = (request.GET.get("gender") or "").strip()
     achieved_only = (request.GET.get("achieved_only") or "").strip()
-    return q, sector, gender, achieved_only
+    decision_type = (request.GET.get("decision_type") or "").strip()
+
+    # توافق خلفي مع خيار "المتحققة فقط" القديم.
+    if achieved_only == "1" and not decision_type:
+        decision_type = "achieved"
+
+    allowed_types = {"", "achieved", "pending_achieved", "documented_no_prefs"}
+    if decision_type not in allowed_types:
+        decision_type = ""
+
+    return q, sector, gender, achieved_only, decision_type
 
 
-def _final_approvals_qs(request):
-    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+def _final_approvals_base_qs(request):
+    q, sector, gender, _achieved_only, _decision_type = _final_approvals_filters_from_request(request)
 
     qs = (
         Application.objects
@@ -1191,12 +1869,10 @@ def _final_approvals_qs(request):
             "admin_decided_by",
             "achieved_by",
         )
+        .prefetch_related("prefs", "prefs__vacancy")
         .filter(admin_decision="approved")
         .order_by("-admin_decided_at", "-id")
     )
-
-    if achieved_only == "1":
-        qs = qs.filter(achieved_pref__isnull=False)
 
     if sector:
         qs = qs.filter(applicant__sector__icontains=sector)
@@ -1218,19 +1894,70 @@ def _final_approvals_qs(request):
     return qs
 
 
+def _apply_final_approvals_decision_type_filter(qs, decision_type: str):
+    """
+    مخرجات القرار الإداري بعد اعتماد الإدارة:
+    - achieved: معتمد وله رغبة متحققة.
+    - pending_achieved: معتمد وله رغبات لكنه بانتظار تحديد رغبة نهائية.
+    - documented_no_prefs: موثق الاستلام دون رغبات، وليس بانتظار رغبة.
+    """
+    decision_type = (decision_type or "").strip()
+
+    if decision_type == "achieved":
+        return qs.filter(achieved_pref__isnull=False)
+
+    if decision_type == "documented_no_prefs":
+        return qs.filter(status="submitted", prefs__isnull=True).distinct()
+
+    if decision_type == "pending_achieved":
+        return qs.filter(
+            status="submitted",
+            achieved_pref__isnull=True,
+            prefs__isnull=False,
+        ).distinct()
+
+    return qs
+
+
+def _final_approvals_qs(request):
+    _q, _sector, _gender, _achieved_only, decision_type = _final_approvals_filters_from_request(request)
+    qs = _final_approvals_base_qs(request)
+    return _apply_final_approvals_decision_type_filter(qs, decision_type)
+
+
+def _final_approval_output_type(app: Application) -> str:
+    if _is_submitted_without_preferences(app):
+        return "موثق الاستلام"
+    if getattr(app, "achieved_pref_id", None):
+        return "معتمد برغبة متحققة"
+    if _is_submitted_with_preferences(app):
+        return "معتمد بانتظار تحديد رغبة"
+    return _admin_decision_display(app).get("label", "معتمد")
+
+
 # =========================================================
 # Admin: Final Approvals
 # =========================================================
 @staff_member_required
 def admin_final_approvals_view(request):
-    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+    q, sector, gender, achieved_only, decision_type = _final_approvals_filters_from_request(request)
     qs = _final_approvals_qs(request)
+    base_qs = _final_approvals_base_qs(request)
 
     page_obj = _paginate(request, qs, per_page=40)
+    for app in page_obj.object_list:
+        _enrich_admin_application(app)
+        app.final_output_type = _final_approval_output_type(app)
 
     total = qs.count()
-    total_achieved = qs.filter(achieved_pref__isnull=False).count()
-    total_pending_achieved = qs.filter(achieved_pref__isnull=True).count()
+    total_outputs = base_qs.count()
+    total_achieved = base_qs.filter(achieved_pref__isnull=False).count()
+    total_documented_no_prefs = base_qs.filter(status="submitted", prefs__isnull=True).distinct().count()
+    total_pending_achieved = base_qs.filter(
+        status="submitted",
+        achieved_pref__isnull=True,
+        prefs__isnull=False,
+    ).distinct().count()
 
     sectors = list(
         Applicant.objects
@@ -1247,8 +1974,11 @@ def admin_final_approvals_view(request):
         "sector": sector,
         "gender": gender,
         "achieved_only": achieved_only,
+        "decision_type": decision_type,
         "total": total,
+        "total_outputs": total_outputs,
         "total_achieved": total_achieved,
+        "total_documented_no_prefs": total_documented_no_prefs,
         "total_pending_achieved": total_pending_achieved,
         "sectors": sectors,
     }
@@ -1257,21 +1987,36 @@ def admin_final_approvals_view(request):
 
 @staff_member_required
 def admin_final_approvals_print_view(request):
-    q, sector, gender, achieved_only = _final_approvals_filters_from_request(request)
+    q, sector, gender, achieved_only, decision_type = _final_approvals_filters_from_request(request)
     qs = _final_approvals_qs(request)
+    base_qs = _final_approvals_base_qs(request)
+
+    rows = list(qs[:5000])
+    for app in rows:
+        _enrich_admin_application(app)
+        app.final_output_type = _final_approval_output_type(app)
 
     total = qs.count()
-    total_achieved = qs.filter(achieved_pref__isnull=False).count()
-    total_pending_achieved = qs.filter(achieved_pref__isnull=True).count()
+    total_outputs = base_qs.count()
+    total_achieved = base_qs.filter(achieved_pref__isnull=False).count()
+    total_documented_no_prefs = base_qs.filter(status="submitted", prefs__isnull=True).distinct().count()
+    total_pending_achieved = base_qs.filter(
+        status="submitted",
+        achieved_pref__isnull=True,
+        prefs__isnull=False,
+    ).distinct().count()
 
     ctx = {
-        "rows": list(qs[:5000]),
+        "rows": rows,
         "q": q,
         "sector": sector,
         "gender": gender,
         "achieved_only": achieved_only,
+        "decision_type": decision_type,
         "total": total,
+        "total_outputs": total_outputs,
         "total_achieved": total_achieved,
+        "total_documented_no_prefs": total_documented_no_prefs,
         "total_pending_achieved": total_pending_achieved,
         "now": timezone.localtime(),
         "print_mode": True,
@@ -1285,7 +2030,7 @@ def admin_final_approvals_excel_view(request):
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Final Approvals"
+    ws.title = "Decision Outputs"
 
     headers = [
         "#",
@@ -1294,13 +2039,17 @@ def admin_final_approvals_excel_view(request):
         "السجل المدني",
         "القطاع",
         "الجنس",
+        "نوع المخرج الإداري",
         "قرار الإدارة",
+        "يدخل مفاضلة الرغبات؟",
+        "قابل للمعالجة الإدارية؟",
         "الرغبة المتحققة",
         "المدرسة النهائية",
         "مرحلة المدرسة",
         "قطاع المدرسة",
-        "تاريخ الاعتماد",
-        "اعتمد بواسطة",
+        "الملاحظة/الأثر الإداري",
+        "تاريخ القرار/التوثيق",
+        "قرر بواسطة",
         "تاريخ التحقق النهائي",
         "تحقق بواسطة",
     ]
@@ -1313,7 +2062,31 @@ def admin_final_approvals_excel_view(request):
         c.alignment = Alignment(horizontal="center", vertical="center")
 
     for i, app in enumerate(qs, start=1):
+        prefs = list(app.prefs.select_related("vacancy").order_by("rank", "id"))
+        _enrich_admin_application(app, prefs)
+
+        no_prefs = bool(getattr(app, "is_no_preferences_path", False))
         vac = app.achieved_pref.vacancy if app.achieved_pref else None
+
+        if no_prefs:
+            achieved_text = "غير منطبق — لا توجد رغبات مسجلة"
+            school_text = "لا توجد مدرسة محددة"
+            stage_text = "—"
+            school_sector_text = "—"
+            effect_note = "موثق الاستلام دون رغبات؛ لا يدخل مفاضلة الرغبات، ولا يترتب عليه مطالبة بشاغر محدد، مع احتفاظ الإدارة بحق المعالجة وفق المصلحة التعليمية والاحتياج والضوابط المعتمدة."
+        elif app.achieved_pref:
+            achieved_text = f"رغبة {app.achieved_pref.rank}"
+            school_text = getattr(vac, "school_name", "") if vac else ""
+            stage_text = getattr(vac, "stage", "") if vac else ""
+            school_sector_text = getattr(vac, "sector", "") if vac else ""
+            effect_note = "معتمد برغبة متحققة وفق الضوابط ونتائج المفاضلة والاحتياج."
+        else:
+            achieved_text = "بانتظار تحديد رغبة نهائية"
+            school_text = "—"
+            stage_text = "—"
+            school_sector_text = "—"
+            effect_note = "معتمد إداريًا ولديه رغبات مسجلة، لكنه بانتظار تحديد الرغبة النهائية المتحققة."
+
         ws.append([
             i,
             app.id,
@@ -1321,18 +2094,22 @@ def admin_final_approvals_excel_view(request):
             getattr(app.applicant, "national_id", "") or "",
             getattr(app.applicant, "sector", "") or "",
             getattr(app.applicant, "gender", "") or "",
-            "معتمد",
-            getattr(app.achieved_pref, "rank", "") if app.achieved_pref else "",
-            getattr(vac, "school_name", "") if vac else "",
-            getattr(vac, "stage", "") if vac else "",
-            getattr(vac, "sector", "") if vac else "",
+            _final_approval_output_type(app),
+            getattr(app, "admin_decision_display", "") or _admin_decision_display(app, prefs).get("label", ""),
+            getattr(app, "path_info", {}).get("competition_value", ""),
+            getattr(app, "path_info", {}).get("admin_processing_value", ""),
+            achieved_text,
+            school_text,
+            stage_text,
+            school_sector_text,
+            effect_note,
             _fmt_dt(app.admin_decided_at),
             getattr(app.admin_decided_by, "username", "") if app.admin_decided_by else "",
             _fmt_dt(app.achieved_at),
             getattr(app.achieved_by, "username", "") if app.achieved_by else "",
         ])
 
-    widths = [6, 10, 28, 18, 18, 12, 14, 14, 34, 16, 18, 20, 16, 20, 16]
+    widths = [6, 10, 28, 18, 18, 12, 24, 18, 18, 20, 24, 34, 16, 18, 60, 20, 16, 20, 16]
     for idx, width in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(idx)].width = width
 
@@ -1340,7 +2117,7 @@ def admin_final_approvals_excel_view(request):
     wb.save(bio)
     bio.seek(0)
 
-    filename = f"final_approvals_{timezone.now().strftime('%Y%m%d_%H%M')}.xlsx"
+    filename = f"decision_outputs_{timezone.now().strftime('%Y%m%d_%H%M')}.xlsx"
     resp = HttpResponse(
         bio.getvalue(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1352,9 +2129,9 @@ def admin_final_approvals_excel_view(request):
 @staff_member_required
 def admin_final_approvals_to_dashboard_view(request):
     """
-    تحويل الفلاتر الحالية من صفحة الطلبات المعتمدة إلى لوحة القرارات.
+    تحويل الفلاتر الحالية من صفحة مخرجات القرار إلى لوحة القرارات.
     """
-    q, sector, gender, _ = _final_approvals_filters_from_request(request)
+    q, sector, gender, _achieved_only, _decision_type = _final_approvals_filters_from_request(request)
 
     params = {
         "decision": "approved",
@@ -1618,6 +2395,9 @@ def admin_dashboard_view(request):
     )
 
     rows = list(qs[:500])
+    for row in rows:
+        _enrich_admin_application(row)
+
     total_apps = qs.count()
 
     total_prefs = (
@@ -1668,6 +2448,14 @@ def admin_dashboard_view(request):
         prefs__isnull=False,
     ).distinct().count()
 
+    # قابل للمفاضلة: مرسل، لديه رغبات، ولم يصدر عليه قرار إداري بعد.
+    count_competition_ready = qs.filter(
+        status="submitted",
+        prefs__isnull=False,
+    ).filter(
+        Q(admin_decision__isnull=True) | Q(admin_decision__exact="")
+    ).distinct().count()
+
     sectors = list(
         Applicant.objects
         .exclude(sector__isnull=True)
@@ -1696,6 +2484,7 @@ def admin_dashboard_view(request):
         "count_confirmed_not_submitted": count_confirmed_not_submitted,
         "count_submitted_without_prefs": count_submitted_without_prefs,
         "count_submitted_with_prefs": count_submitted_with_prefs,
+        "count_competition_ready": count_competition_ready,
         "f_q": q,
         "f_status": status,
         "f_sector": sector,
@@ -1741,10 +2530,25 @@ def admin_application_detail_view(request, app_id: int):
     if not back_url:
         back_url = redirect("portal:admin_dashboard").url
 
+    _enrich_admin_application(app, prefs)
+    path_info = app.path_info
+    decision_info = app.decision_info
+    proof = _submission_proof_context(app, prefs)
+
     return render(
         request,
         "portal/admin_application_detail.html",
-        {"app": app, "a": app.applicant, "prefs": prefs, "back_url": back_url},
+        {
+            "app": app,
+            "a": app.applicant,
+            "prefs": prefs,
+            "back_url": back_url,
+            "path_info": path_info,
+            "decision_info": decision_info,
+            "proof": proof,
+            "has_admin_decision": bool((getattr(app, "admin_decision", "") or "").strip()),
+            "prefs_count": len(prefs),
+        },
     )
 
 
@@ -1760,12 +2564,31 @@ def admin_application_print_view(request, app_id: int):
         id=app_id,
     )
 
+    prefs = list(
+        ApplicationPreference.objects
+        .filter(application=application)
+        .select_related("vacancy")
+        .order_by("rank")
+    )
     selected_pref = application.achieved_pref if getattr(application, "achieved_pref_id", None) else None
+    _enrich_admin_application(application, prefs)
+    path_info = application.path_info
+    decision_info = application.decision_info
+    proof = _submission_proof_context(application, prefs)
 
     return render(
         request,
         "portal/admin_application_print.html",
-        {"application": application, "selected_pref": selected_pref},
+        {
+            "application": application,
+            "app": application,
+            "a": application.applicant,
+            "prefs": prefs,
+            "selected_pref": selected_pref,
+            "path_info": path_info,
+            "decision_info": decision_info,
+            "proof": proof,
+        },
     )
 
 
@@ -1807,6 +2630,9 @@ def admin_application_detail_json_view(request, app_id: int):
             "sector": app.applicant.sector,
             "gender": app.applicant.gender,
         },
+        "decision_display": _admin_decision_display(app, prefs),
+        "path_info": _application_path_info(app, prefs),
+        "proof": _submission_proof_context(app, prefs),
         "prefs": [{"id": p.id, "rank": p.rank, "label": f"{p.vacancy.school_name} — {p.vacancy.stage}"} for p in prefs],
     }
     return JsonResponse(data, json_dumps_params={"ensure_ascii": False})
@@ -1821,12 +2647,29 @@ def admin_decide_approve_view(request, app_id: int):
     app = get_object_or_404(Application, id=app_id)
     note = (request.POST.get("note") or "").strip()
     back_url = (request.GET.get("back") or "").strip()
+
+    is_no_prefs = _is_submitted_without_preferences(app)
+    if is_no_prefs and not note:
+        note = NO_PREFERENCES_ADMIN_DECISION_NOTE
+
     _set_admin_decision(app, request.user, "approved", note)
 
     if _is_ajax(request):
-        return JsonResponse({"ok": True, "id": app.id, "admin_decision": "approved"}, json_dumps_params={"ensure_ascii": False})
+        return JsonResponse(
+            {
+                "ok": True,
+                "id": app.id,
+                "admin_decision": "approved",
+                "no_preferences_path": is_no_prefs,
+                "message": "تم توثيق استلام الطلب دون رغبات." if is_no_prefs else "تم اعتماد الطلب.",
+            },
+            json_dumps_params={"ensure_ascii": False},
+        )
 
-    messages.success(request, f"تم اعتماد الطلب #{app.id}")
+    if is_no_prefs:
+        messages.success(request, f"تم توثيق استلام الطلب دون رغبات #{app.id}")
+    else:
+        messages.success(request, f"تم اعتماد الطلب #{app.id}")
     return _redirect_admin_app_detail_with_back(app.id, back_url)
 
 
@@ -1963,7 +2806,10 @@ def admin_decide_bulk_view(request):
 
         elif action == "approve":
             for app in qs.select_for_update():
-                _set_admin_decision(app, request.user, "approved", note)
+                note_for_app = note
+                if _is_submitted_without_preferences(app) and not note_for_app:
+                    note_for_app = NO_PREFERENCES_ADMIN_DECISION_NOTE
+                _set_admin_decision(app, request.user, "approved", note_for_app)
                 updated += 1
 
         else:
@@ -2116,10 +2962,12 @@ def admin_set_achieved_view(request, app_id: int):
     app.achieved_by = request.user
     app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
 
-    if getattr(app.applicant, "is_official_agent", False):
-        vacancy.reserved_application = app
-        vacancy.reserved_at = timezone.now()
-        vacancy.save(update_fields=["reserved_application", "reserved_at"])
+    # عند تحديد أي مرشح على المدرسة يدويًا، يُحجز الشاغر ويُغلق تلقائيًا.
+    # لا يُعاد فتحه لاحقًا إلا يدويًا من شاشة إدارة الشواغر.
+    vacancy.reserved_application = app
+    vacancy.reserved_at = timezone.now()
+    vacancy.is_open = False
+    vacancy.save(update_fields=["reserved_application", "reserved_at", "is_open"])
 
     messages.success(request, f"تم تحديد الرغبة المتحققة: رغبة #{pref.rank}")
     return _redirect_admin_app_detail_with_back(app.id, back_url)
@@ -2314,11 +3162,86 @@ def admin_export_excel_view(request):
     wb = Workbook()
     ws = wb.active
     ws.title = "Applications"
+    ws.sheet_view.rightToLeft = True
+    ws.freeze_panes = "A2"
+
+    def yes_no(value) -> str:
+        return "نعم" if bool(value) else "لا"
+
+    def decision_label(app: Application, prefs: list[ApplicationPreference]) -> str:
+        return _admin_decision_display(app, prefs).get("label", "قيد المعالجة")
+
+    def submission_type(app: Application, prefs: list[ApplicationPreference]) -> str:
+        if app.status == "submitted":
+            return "مرسل برغبات" if prefs else "مرسل دون رغبات"
+        if getattr(app, "confirmed_at", None):
+            return "أكد البيانات ولم يرسل"
+        return "دخل ولم يؤكد البيانات"
+
+    def administrative_status(app: Application, prefs: list[ApplicationPreference]) -> str:
+        if app.status == "submitted" and prefs:
+            return "مستلم للمعالجة / مقفل للتعديل"
+        if app.status == "submitted" and not prefs:
+            return "مستلم دون رغبات / مقفل للتعديل"
+        if getattr(app, "locked", False):
+            return "مقفل إداريًا كطلب غير مكتمل"
+        return "غير مكتمل"
+
+    def competition_status(app: Application, prefs: list[ApplicationPreference]) -> tuple[str, str]:
+        if app.status != "submitted":
+            return "لا", "لم يكتمل الإرسال النهائي"
+        if not prefs:
+            return "لا", "لم يسجل رغبات؛ لا يدخل في مفاضلة الرغبات ولا يترتب عليه مطالبة بشاغر محدد"
+        return "نعم", PREFERENCES_COMPETITION_NOTE
+
+    def administrative_processing_status(app: Application, prefs: list[ApplicationPreference]) -> tuple[str, str]:
+        if app.status != "submitted":
+            return "لا", "طلب غير مكتمل؛ لا يعالج كطلب مرسل إلا بعد الإرسال النهائي"
+        if not prefs:
+            return "نعم", "قابل للمعالجة الإدارية عند الحاجة وفق المصلحة التعليمية والاحتياج والضوابط، دون مطالبة بشاغر محدد"
+        return "نعم", "قابل للمعالجة ضمن إجراءات المفاضلة والاعتماد النهائي وفق الضوابط والاحتياج"
+
+    def achieved_label(app: Application, prefs: list[ApplicationPreference]) -> str:
+        if getattr(app, "achieved_pref", None) and getattr(app.achieved_pref, "vacancy", None):
+            return f"الرغبة {app.achieved_pref.rank} — {app.achieved_pref.vacancy.school_name}"
+        if app.status == "submitted" and not prefs:
+            return "غير منطبق — لا توجد رغبات مسجلة"
+        if app.status == "submitted" and prefs:
+            return "لم تتحقق رغبة حتى تاريخه"
+        return "غير منطبق — طلب غير مكتمل"
+
+    def prefs_count_at_submission(app: Application, prefs: list[ApplicationPreference]) -> int:
+        saved_count = getattr(app, "submitted_prefs_count", None)
+        if saved_count is not None:
+            try:
+                return int(saved_count)
+            except Exception:
+                pass
+        return len(prefs)
 
     headers = [
-        "ID", "National ID", "Full Name", "Sector", "Gender",
-        "Status", "Submitted At",
-        "Admin Decision", "Admin Note", "Admin Decided At", "Achieved Pref",
+        "ID",
+        "رقم الهوية",
+        "الاسم",
+        "القطاع",
+        "الجنس",
+        "حالة النظام",
+        "نوع الإرسال",
+        "عدد الرغبات",
+        "يدخل مفاضلة الرغبات؟",
+        "سبب عدم الدخول / ملاحظة المفاضلة",
+        "قابل للمعالجة الإدارية؟",
+        "نطاق المعالجة الإدارية",
+        "حالة الطلب إداريًا",
+        "تاريخ الإرسال",
+        "إقرار سياسة الرغبات",
+        "وقت إقرار سياسة الرغبات",
+        "إقرار دون رغبات",
+        "وقت إقرار دون رغبات",
+        "قرار الإدارة",
+        "ملاحظة الإدارة",
+        "تاريخ قرار الإدارة",
+        "الرغبة المتحققة",
     ]
     for i in range(1, 11):
         headers.append(f"Pref {i}")
@@ -2328,21 +3251,27 @@ def admin_export_excel_view(request):
     for col in range(1, len(headers) + 1):
         cell = ws.cell(row=1, column=col)
         cell.font = header_font
-        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
     for app in qs:
         prefs = sorted(list(app.prefs.all()), key=lambda p: p.rank)
+        entered_competition, competition_reason = competition_status(app, prefs)
+        administrative_processing, administrative_processing_note = administrative_processing_status(app, prefs)
 
         pref_names: list[str] = []
-        for p in prefs[:10]:
-            v = p.vacancy
-            pref_names.append(f"{v.school_name} ({v.stage})")
-        while len(pref_names) < 10:
-            pref_names.append("")
+        if prefs:
+            for p in prefs[:10]:
+                v = p.vacancy
+                pref_names.append(f"{p.rank}. {v.school_name} ({v.stage})")
+        else:
+            # لا نترك خانة الرغبة الأولى فارغة؛ لأن الفراغ في التقرير الإداري قابل للتأويل.
+            if app.status == "submitted":
+                pref_names.append("لم يتم اختيار رغبات")
+            else:
+                pref_names.append("لا توجد رغبات مسجلة")
 
-        achieved_text = ""
-        if getattr(app, "achieved_pref", None) and getattr(app.achieved_pref, "vacancy", None):
-            achieved_text = f"Pref#{app.achieved_pref.rank} - {app.achieved_pref.vacancy.school_name}"
+        while len(pref_names) < 10:
+            pref_names.append("—")
 
         row = [
             app.id,
@@ -2351,14 +3280,29 @@ def admin_export_excel_view(request):
             app.applicant.sector,
             app.applicant.gender,
             app.status,
+            submission_type(app, prefs),
+            prefs_count_at_submission(app, prefs),
+            entered_competition,
+            competition_reason,
+            administrative_processing,
+            administrative_processing_note,
+            administrative_status(app, prefs),
             _fmt_dt(app.submitted_at),
-            getattr(app, "admin_decision", "") or "",
-            getattr(app, "admin_note", "") or "",
+            yes_no(getattr(app, "preferences_acknowledged", False)),
+            _fmt_dt(getattr(app, "preferences_ack_at", None)),
+            yes_no(getattr(app, "no_preferences_acknowledged", False)),
+            _fmt_dt(getattr(app, "no_preferences_ack_at", None)),
+            decision_label(app, prefs),
+            (getattr(app, "admin_note", "") or "").strip(),
             _fmt_dt(getattr(app, "admin_decided_at", None)),
-            achieved_text,
+            achieved_label(app, prefs),
         ] + pref_names
 
         ws.append(row)
+
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        for cell in row:
+            cell.alignment = Alignment(horizontal="right", vertical="center", wrap_text=True)
 
     for col in range(1, ws.max_column + 1):
         max_len = 10
@@ -2367,7 +3311,7 @@ def admin_export_excel_view(request):
             if value is None:
                 continue
             max_len = max(max_len, len(str(value)))
-        ws.column_dimensions[get_column_letter(col)].width = min(max_len + 2, 60)
+        ws.column_dimensions[get_column_letter(col)].width = min(max_len + 2, 55)
 
     bio = BytesIO()
     wb.save(bio)
@@ -2582,14 +3526,15 @@ def admin_run_new_applicants_sorting_view(request):
 
 
 # =========================================================
-# Admin: Non Applicants
+# Admin: Non Applicants / Incomplete Applications
 # =========================================================
-@staff_member_required
-def admin_non_applicants_view(request):
-    q = (request.GET.get("q") or "").strip()
-    mode = (request.GET.get("mode") or "not_submitted").strip()
-
-    qs = Applicant.objects.filter(is_active=True)
+def _admin_non_applicants_base_qs(q: str):
+    qs = (
+        Applicant.objects
+        .filter(is_active=True)
+        .select_related("application")
+        .prefetch_related("application__prefs")
+    )
 
     if q:
         qs = qs.filter(
@@ -2600,34 +3545,163 @@ def admin_non_applicants_view(request):
             | Q(current_school__icontains=q)
         )
 
-    if mode == "none":
-        qs = qs.filter(application__isnull=True)
-    elif mode == "started":
-        qs = qs.filter(application__confirmed_at__isnull=False).exclude(application__status="submitted")
-    else:
-        qs = qs.filter(Q(application__isnull=True) | ~Q(application__status="submitted"))
+    return qs
 
-    qs = qs.order_by("-id")
+
+def _apply_non_applicants_mode(qs, mode: str):
+    if mode == "none":
+        return qs.filter(application__isnull=True)
+
+    if mode == "entered_not_confirmed":
+        return qs.filter(
+            application__isnull=False,
+            application__confirmed_at__isnull=True,
+        )
+
+    if mode == "confirmed_not_submitted":
+        return qs.filter(
+            application__confirmed_at__isnull=False,
+        ).exclude(application__status="submitted")
+
+    if mode == "submitted_without_prefs":
+        return qs.filter(
+            application__status="submitted",
+            application__prefs__isnull=True,
+        ).distinct()
+
+    if mode == "submitted_with_prefs":
+        return qs.filter(
+            application__status="submitted",
+            application__prefs__isnull=False,
+        ).distinct()
+
+    if mode == "locked_incomplete":
+        return qs.filter(
+            application__locked=True,
+        ).exclude(application__status="submitted")
+
+    # الافتراضي: كل من لا يملك إرسالًا نهائيًا
+    return qs.filter(
+        Q(application__isnull=True)
+        | ~Q(application__status="submitted")
+    ).distinct()
+
+
+@staff_member_required
+def admin_non_applicants_view(request):
+    q = (request.GET.get("q") or "").strip()
+    mode = (request.GET.get("mode") or "not_submitted").strip()
+
+    base_qs = _admin_non_applicants_base_qs(q)
+    qs = _apply_non_applicants_mode(base_qs, mode).order_by("-id")
+
     page_obj = _paginate(request, qs, per_page=50)
 
+    for applicant in page_obj.object_list:
+        app = getattr(applicant, "application", None)
+        code = _application_progress_code(app)
+        applicant.progress_code = code
+        applicant.progress_label = _application_progress_label(code)
+        applicant.progress_note = _application_progress_note(code)
+        applicant.prefs_count = app.prefs.count() if app else 0
+        applicant.application_obj = app
+
     total_active = Applicant.objects.filter(is_active=True).count()
-    total_submitted = Applicant.objects.filter(is_active=True, application__status="submitted").count()
+    total_submitted = Applicant.objects.filter(
+        is_active=True,
+        application__status="submitted",
+    ).distinct().count()
     total_not_submitted = Applicant.objects.filter(is_active=True).filter(
         Q(application__isnull=True) | ~Q(application__status="submitted")
-    ).count()
+    ).distinct().count()
+    total_none = Applicant.objects.filter(is_active=True, application__isnull=True).count()
+    total_entered_not_confirmed = Applicant.objects.filter(
+        is_active=True,
+        application__isnull=False,
+        application__confirmed_at__isnull=True,
+    ).distinct().count()
+    total_confirmed_not_submitted = Applicant.objects.filter(
+        is_active=True,
+        application__confirmed_at__isnull=False,
+    ).exclude(application__status="submitted").distinct().count()
+    total_submitted_without_prefs = Applicant.objects.filter(
+        is_active=True,
+        application__status="submitted",
+        application__prefs__isnull=True,
+    ).distinct().count()
+    total_submitted_with_prefs = Applicant.objects.filter(
+        is_active=True,
+        application__status="submitted",
+        application__prefs__isnull=False,
+    ).distinct().count()
+    total_locked_incomplete = Applicant.objects.filter(
+        is_active=True,
+        application__locked=True,
+    ).exclude(application__status="submitted").distinct().count()
+
+    win = PortalWindow.get()
+    portal_open_now, _portal_msg, _ = _portal_gate()
+
+    current_query = request.GET.urlencode()
+    query_suffix = f"?{current_query}" if current_query else ""
 
     ctx = {
         "rows": page_obj,
         "q": q,
         "mode": mode,
         "total": qs.count(),
+        "portal_window": win,
+        "portal_open_now": portal_open_now,
+        "current_query": current_query,
+        "url_non_applicants_csv": f'{redirect("portal:admin_non_applicants_csv").url}{query_suffix}',
         "kpi": {
             "active": total_active,
             "submitted": total_submitted,
             "not_submitted": total_not_submitted,
+            "none": total_none,
+            "entered_not_confirmed": total_entered_not_confirmed,
+            "confirmed_not_submitted": total_confirmed_not_submitted,
+            "submitted_without_prefs": total_submitted_without_prefs,
+            "submitted_with_prefs": total_submitted_with_prefs,
+            "locked_incomplete": total_locked_incomplete,
+        },
+        "mode_labels": {
+            "not_submitted": "غير مكتمل / لم يرسل",
+            "none": "لم يدخل البوابة",
+            "entered_not_confirmed": "دخل ولم يؤكد",
+            "confirmed_not_submitted": "أكد ولم يرسل",
+            "submitted_without_prefs": "مرسل بلا رغبات",
+            "submitted_with_prefs": "مرسل برغبات",
+            "locked_incomplete": "مقفل إداريًا",
         },
     }
     return render(request, "portal/admin_non_applicants.html", ctx)
+
+
+@staff_member_required
+@require_POST
+@transaction.atomic
+def admin_lock_incomplete_applications_view(request):
+    """
+    تثبيت الإجراء بعد إغلاق فترة التقديم:
+    - لا يحوّل غير المكتمل إلى مرسل.
+    - لا ينسب للمتقدم اختيارًا أو إقرارًا لم يفعله.
+    - يقفل الطلبات التي لها سجل Application ولم ترسل نهائيًا.
+    """
+    portal_open_now, _portal_msg, _ = _portal_gate()
+    if portal_open_now:
+        messages.error(request, "أغلق البوابة أولًا قبل تثبيت إقفال الطلبات غير المكتملة.")
+        return redirect("portal:admin_non_applicants")
+
+    qs = Application.objects.select_for_update().exclude(status="submitted")
+    total = qs.count()
+    updated = qs.filter(locked=False).update(locked=True)
+
+    messages.success(
+        request,
+        f"تم تثبيت إقفال الطلبات غير المكتملة. إجمالي الطلبات غير المكتملة: {total}، وتم إقفال الجديد منها: {updated}."
+    )
+    return redirect("portal:admin_non_applicants")
 
 
 @staff_member_required
@@ -2635,35 +3709,49 @@ def admin_non_applicants_csv_view(request):
     q = (request.GET.get("q") or "").strip()
     mode = (request.GET.get("mode") or "not_submitted").strip()
 
-    qs = Applicant.objects.filter(is_active=True)
-
-    if q:
-        qs = qs.filter(
-            Q(full_name__icontains=q)
-            | Q(national_id__icontains=q)
-            | Q(sector__icontains=q)
-            | Q(mobile__icontains=q)
-            | Q(current_school__icontains=q)
-        )
-
-    if mode == "none":
-        qs = qs.filter(application__isnull=True)
-    elif mode == "started":
-        qs = qs.filter(application__confirmed_at__isnull=False).exclude(application__status="submitted")
-    else:
-        qs = qs.filter(Q(application__isnull=True) | ~Q(application__status="submitted"))
+    qs = _apply_non_applicants_mode(_admin_non_applicants_base_qs(q), mode).order_by("-id")
 
     resp = HttpResponse(content_type="text/csv; charset=utf-8")
     resp["Content-Disposition"] = 'attachment; filename="non_applicants.csv"'
     resp.write("\ufeff")
 
     w = csv.writer(resp)
-    w.writerow(["#", "الاسم", "السجل", "الجوال", "القطاع", "الجنس", "المدرسة الحالية", "لديه طلب؟", "حالة الطلب"])
+    w.writerow([
+        "#",
+        "الاسم",
+        "السجل",
+        "الجوال",
+        "القطاع",
+        "الجنس",
+        "المدرسة الحالية",
+        "التصنيف الإجرائي",
+        "الملاحظة الإدارية",
+        "حالة الطلب الخام",
+        "مقفل إداريًا؟",
+        "عدد الرغبات",
+        "تاريخ تأكيد البيانات",
+        "تاريخ الإرسال",
+    ])
 
-    for i, a in enumerate(qs.order_by("-id"), start=1):
-        app = Application.objects.filter(applicant=a).order_by("-id").first()
-        has_app = "نعم" if app else "لا"
-        status = getattr(app, "status", "") if app else ""
-        w.writerow([i, a.full_name, a.national_id, a.mobile, a.sector, a.gender, a.current_school, has_app, status])
+    for i, applicant in enumerate(qs, start=1):
+        app = getattr(applicant, "application", None)
+        code = _application_progress_code(app)
+        prefs_count = app.prefs.count() if app else 0
+        w.writerow([
+            i,
+            applicant.full_name,
+            applicant.national_id,
+            applicant.mobile,
+            applicant.sector,
+            applicant.gender,
+            applicant.current_school,
+            _application_progress_label(code),
+            _application_progress_note(code),
+            getattr(app, "status", "") if app else "",
+            "نعم" if app and getattr(app, "locked", False) else "لا",
+            prefs_count,
+            _fmt_dt(getattr(app, "confirmed_at", None)) if app else "",
+            _fmt_dt(getattr(app, "submitted_at", None)) if app else "",
+        ])
 
     return resp

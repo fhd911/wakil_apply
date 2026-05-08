@@ -73,6 +73,7 @@ urlpatterns = [
     path("admin/applicants/create/", views.admin_applicants_create, name="admin_applicants_create"),
     path("admin/applicants/disable-all/", views.admin_applicants_disable_all_view, name="admin_applicants_disable_all"),
     path("admin/applicants/enable-all/", views.admin_applicants_enable_all_view, name="admin_applicants_enable_all"),
+    path("admin/applicants/bulk-action/", views.admin_applicants_bulk_action_view, name="admin_applicants_bulk_action"),
     path("admin/applicants/<int:pk>/edit/", views.admin_applicants_edit, name="admin_applicants_edit"),
     path("admin/applicants/<int:pk>/toggle/", views.admin_applicants_toggle, name="admin_applicants_toggle"),
     path("admin/applicants/<int:pk>/delete/", views.admin_applicants_delete, name="admin_applicants_delete"),

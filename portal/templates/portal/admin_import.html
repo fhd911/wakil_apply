@@ -3,543 +3,755 @@
 
 {% block extra_css %}
 <style>
+  /*
+    IMPORT CENTER V2 — Cairo Classic
+    - متوافق مع base.html النهائي وخط Cairo
+    - تركيز على التنفيذ: رفع الملفات، مراجعة الملخص، الانتقال للفرز
+    - بدون تغيير في views.py أو أسماء المتغيرات الحالية
+  */
+
   :root{
-    --min-bg:#f4f7f3;
-    --min-bg-2:#eef3ef;
-
-    --min-surface:#ffffff;
-    --min-surface-2:#fbfcfa;
-    --min-surface-3:#f8fbf8;
-
-    --min-ink:#17261f;
-    --min-ink-2:#23382d;
-    --min-muted:#6f8177;
-
-    --min-green-1:#163126;
-    --min-green-2:#234536;
-    --min-green-3:#2f5e4a;
-    --min-green-4:#4e7b68;
-
-    --min-gold-1:#a98235;
-    --min-gold-2:#c8a04a;
-    --min-gold-3:#efe1bb;
-
-    --min-line:#dbe3db;
-    --min-line-2:#cdd8ce;
-
-    --min-shadow:0 12px 28px rgba(16,34,27,.07);
-    --min-shadow-soft:0 8px 18px rgba(16,34,27,.05);
-    --min-shadow-strong:0 18px 38px rgba(16,34,27,.11);
-
-    --min-ok:#166534;
-    --min-ok-soft:#eefbf3;
-    --min-ok-line:#b7e4c7;
-
-    --min-warn:#92400e;
-    --min-warn-soft:#fff8ed;
-    --min-warn-line:#f4cf9b;
-
-    --min-danger:#991b1b;
-    --min-danger-soft:#fef2f2;
-    --min-danger-line:#fecaca;
-
-    --min-info:#1d4ed8;
-    --min-info-soft:#eff6ff;
-    --min-info-line:#bfdbfe;
+    --imp-bg:#f6f8f6;
+    --imp-paper:#ffffff;
+    --imp-paper-2:#fbfcfb;
+    --imp-ink:#20342b;
+    --imp-text:#35483e;
+    --imp-muted:#748279;
+    --imp-line:#d9e2db;
+    --imp-line-2:#cbd7cf;
+    --imp-green:#174935;
+    --imp-green-2:#245941;
+    --imp-gold:#a77a2d;
+    --imp-gold-bg:#fffaf0;
+    --imp-gold-bd:#ecd7a9;
+    --imp-blue:#365f83;
+    --imp-blue-bg:#f3f8fd;
+    --imp-blue-bd:#d6e4f2;
+    --imp-ok:#20643e;
+    --imp-ok-bg:#eff8f2;
+    --imp-ok-bd:#cfe7d8;
+    --imp-warn:#8a5d13;
+    --imp-warn-bg:#fff8ec;
+    --imp-warn-bd:#ead3a6;
+    --imp-danger:#8f2f2f;
+    --imp-danger-bg:#fff5f5;
+    --imp-danger-bd:#eccaca;
+    --imp-shadow:0 1px 4px rgba(17,24,20,.035);
+    --imp-shadow-soft:0 4px 14px rgba(17,24,20,.045);
+    --imp-radius:14px;
   }
 
-  .ui{
-    position:relative;
-    background:
-      radial-gradient(900px 320px at 100% 0%, rgba(200,160,74,.06), transparent 58%),
-      radial-gradient(760px 280px at 0% 14%, rgba(47,94,74,.05), transparent 62%),
-      linear-gradient(180deg, var(--min-bg), var(--min-bg-2));
-    color:var(--min-ink);
+  .imp,
+  .imp *{
+    box-sizing:border-box;
+    font-family:"Cairo", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif !important;
   }
 
-  .ui-page{
-    position:relative;
-    max-width:1120px;
+  .imp{
+    direction:rtl;
+    color:var(--imp-ink);
+    font-size:13px;
+  }
+
+  .imp-page{
+    max-width:1180px;
     margin:0 auto;
     display:grid;
     gap:12px;
   }
 
-  .ui-top{
-    padding:14px 18px;
-    border:1px solid rgba(205,216,206,.95);
-    border-radius:20px;
-    background:linear-gradient(135deg, #1d4a38 0%, #173b2e 52%, #123126 100%);
-    box-shadow:var(--min-shadow-strong);
-    position:relative;
-    overflow:hidden;
-    display:flex;
-    justify-content:space-between;
+  /* Header */
+  .imp-head{
+    border:1px solid var(--imp-line);
+    border-inline-start:4px solid var(--imp-green-2);
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--imp-shadow);
+    padding:14px 16px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
-    align-items:flex-start;
+    align-items:center;
+  }
+
+  .imp-title{
+    margin:0;
+    color:var(--imp-green);
+    font-size:22px;
+    line-height:1.35;
+    font-weight:700;
+    letter-spacing:0;
+  }
+
+  .imp-sub{
+    margin:4px 0 0;
+    color:var(--imp-muted);
+    font-size:11px;
+    line-height:1.8;
+    font-weight:400;
+  }
+
+  .imp-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
     flex-wrap:wrap;
   }
 
-  .ui-top::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:4px;
-    background:linear-gradient(90deg, var(--min-gold-2), var(--min-gold-1), rgba(200,160,74,.26));
-  }
-
-  .ui-top::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-      radial-gradient(420px 160px at 88% 18%, rgba(239,225,187,.08), transparent 60%),
-      linear-gradient(135deg, transparent 0 72%, rgba(255,255,255,.03) 72% 100%);
-  }
-
-  .ui-top > *{position:relative;z-index:1;}
-
-  .ui-title{font-size:20px !important;font-weight:800 !important;letter-spacing:-.2px;color:#fff !important;margin:0;}
-  .ui-subtitle{margin-top:4px;color:rgba(255,255,255,.82) !important;font-size:10.8px !important;line-height:1.7 !important;max-width:760px;}
-
-  .ui-actions,
-  .ui-actions-row,
-  .ui-toolbar,
-  .ui-card-head,
-  .ui-step-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .ui-actions{justify-content:flex-end;}
-
-  .ui-btn{
-    min-height:30px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:9.8px;
-    font-weight:800;
-    border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f8faf7);
-    color:var(--min-green-2);
-    box-shadow:0 3px 8px rgba(16,34,27,.04), inset 0 1px 0 rgba(255,255,255,.98);
-    text-decoration:none;
+  .imp-btn{
+    min-height:34px;
+    padding:6px 12px;
+    border-radius:9px;
+    border:1px solid var(--imp-line-2);
+    background:#fff;
+    color:var(--imp-green);
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    cursor:pointer;
     justify-content:center;
+    gap:7px;
+    text-decoration:none;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:600;
+    line-height:1;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease;
+    white-space:nowrap;
   }
 
-  .ui-btn:hover{transform:translateY(-1px);box-shadow:0 10px 18px rgba(16,34,27,.08), inset 0 1px 0 rgba(255,255,255,.98);}
-  .ui-btn-primary{color:#fff !important;border-color:var(--min-green-2) !important;background:linear-gradient(180deg, var(--min-green-3), var(--min-green-2)) !important;box-shadow:0 12px 20px rgba(35,69,54,.16), inset 0 1px 0 rgba(255,255,255,.10);}
-  .ui-btn-warn{color:#fff !important;border-color:#b45309 !important;background:linear-gradient(180deg,#d97706,#b45309) !important;box-shadow:0 10px 18px rgba(180,83,9,.14), inset 0 1px 0 rgba(255,255,255,.10);}
-  .ui-btn-icon{font-size:11px;line-height:1;}
+  .imp-btn:hover{
+    background:#f7faf8;
+    border-color:#b9c8be;
+    transform:translateY(-1px);
+  }
 
-  .ui-steps{
+  .imp-btn:active{
+    transform:translateY(0);
+  }
+
+  .imp-btn.primary{
+    color:#fff;
+    background:var(--imp-green);
+    border-color:var(--imp-green);
+  }
+
+  .imp-btn.gold{
+    background:var(--imp-gold-bg);
+    border-color:var(--imp-gold-bd);
+    color:#735118;
+  }
+
+  .imp-btn.sm{
+    min-height:30px;
+    padding:5px 10px;
+    font-size:9.2px;
+    border-radius:8px;
+  }
+
+  /* Phase strip */
+  .imp-flow{
+    border:1px solid var(--imp-line);
+    border-radius:14px;
+    background:var(--imp-paper);
+    box-shadow:var(--imp-shadow);
+    padding:8px;
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .imp-flow-item{
+    min-height:44px;
+    border:1px solid #e1e8e2;
+    border-radius:11px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:8px 10px;
+  }
+
+  .imp-flow-no{
+    width:25px;
+    height:25px;
+    border-radius:8px;
+    border:1px solid var(--imp-line);
+    background:#f8faf8;
+    color:var(--imp-green);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:9px;
+    font-weight:700;
+    flex:0 0 auto;
+  }
+
+  .imp-flow-item.done .imp-flow-no{
+    color:var(--imp-ok);
+    background:var(--imp-ok-bg);
+    border-color:var(--imp-ok-bd);
+  }
+
+  .imp-flow-item.ready .imp-flow-no{
+    color:var(--imp-warn);
+    background:var(--imp-warn-bg);
+    border-color:var(--imp-warn-bd);
+  }
+
+  .imp-flow-text{
+    min-width:0;
+    display:grid;
+    gap:1px;
+  }
+
+  .imp-flow-title{
+    color:var(--imp-green);
+    font-size:10px;
+    line-height:1.35;
+    font-weight:600;
+  }
+
+  .imp-flow-state{
+    color:var(--imp-muted);
+    font-size:8.8px;
+    line-height:1.5;
+    font-weight:400;
+  }
+
+  /* Alerts */
+  .imp-alert{
+    border:1px solid var(--imp-blue-bd);
+    background:var(--imp-blue-bg);
+    color:#315b7d;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:10px;
+    line-height:1.8;
+    font-weight:400;
+  }
+
+  .imp-alert.warn{
+    border-color:var(--imp-warn-bd);
+    background:var(--imp-warn-bg);
+    color:var(--imp-warn);
+  }
+
+  .imp-alert.ok{
+    border-color:var(--imp-ok-bd);
+    background:var(--imp-ok-bg);
+    color:var(--imp-ok);
+  }
+
+  .imp-alert.danger{
+    border-color:var(--imp-danger-bd);
+    background:var(--imp-danger-bg);
+    color:var(--imp-danger);
+  }
+
+  .imp-alert b{
+    font-weight:700;
+  }
+
+  /* Cards */
+  .imp-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:12px;
   }
 
-  .ui-step,
-  .ui-card{
-    border:1px solid rgba(211,221,212,.95) !important;
-    border-radius:22px !important;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;
-    box-shadow:var(--min-shadow) !important;
+  .imp-card{
+    border:1px solid var(--imp-line);
+    border-radius:var(--imp-radius);
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+    box-shadow:var(--imp-shadow);
     overflow:hidden;
-    position:relative;
   }
 
-  .ui-step::before,
-  .ui-card::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg, rgba(35,69,54,.72), rgba(200,160,74,.52));
-    opacity:.95;
+  .imp-card-head{
+    padding:11px 13px;
+    border-bottom:1px solid #edf1ed;
+    background:linear-gradient(180deg,#ffffff,#f8faf8);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
   }
 
-  .ui-step{padding:12px 12px 10px;display:grid;gap:8px;min-height:122px;}
-  .ui-step.is-done{background:linear-gradient(180deg,#ffffff,#f6fbf7) !important;}
-  .ui-step.is-ready{background:linear-gradient(180deg,#fffefb,#fffbf5) !important;}
-  .ui-step.is-pending{background:linear-gradient(180deg,#ffffff,#fbfcfa) !important;}
-
-  .ui-step-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .ui-step-index{
-    width:30px;height:30px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;
-    font-size:10px;font-weight:900;border:1px solid rgba(211,221,212,.95);background:#fff;color:var(--min-green-2);
-  }
-  .ui-step.is-done .ui-step-index{background:var(--min-ok-soft);border-color:var(--min-ok-line);color:var(--min-ok);}
-  .ui-step.is-ready .ui-step-index{background:var(--min-warn-soft);border-color:var(--min-warn-line);color:var(--min-warn);}
-
-  .ui-step-state{
-    min-height:28px;padding:4px 10px;border-radius:999px;font-size:8.6px;font-weight:800;border:1px solid rgba(219,227,219,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);color:var(--min-muted);display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
-  }
-  .ui-step-state.done{background:linear-gradient(180deg,#f4fff7,#ecfdf5);border-color:var(--min-ok-line);color:var(--min-ok);}
-  .ui-step-state.ready{background:linear-gradient(180deg,#fffaf0,#fff6e7);border-color:var(--min-warn-line);color:var(--min-warn);}
-  .ui-step-state.pending{background:linear-gradient(180deg,#ffffff,#f9fbf8);border-color:rgba(219,227,219,.95);color:var(--min-muted);}
-
-  .ui-step-title{font-size:10.8px;font-weight:800;color:var(--min-green-2);line-height:1.35;}
-  .ui-step-text{font-size:9.1px;color:var(--min-muted);line-height:1.75;}
-  .ui-step-note{font-size:8.6px;color:#7b8b82;line-height:1.7;}
-
-  .ui-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  .ui-grid-single{display:grid;grid-template-columns:1fr;gap:12px;}
-
-  .ui-card-head{justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(219,227,219,.92);background:linear-gradient(180deg,#fcfdfb,#f8fbf8);}
-  .ui-card-title{font-size:11px;font-weight:800;color:var(--min-green-2);margin:0;}
-  .ui-card-body{padding:12px !important;}
-
-  .ui-pill{
-    min-height:30px;padding:4px 10px;border-radius:999px;font-size:9.8px;font-weight:800;color:var(--min-green-2);
-    border:1px solid rgba(219,227,219,.95);background:linear-gradient(180deg,#ffffff,#f9fbf8);box-shadow:inset 0 1px 0 rgba(255,255,255,.98);
-    display:inline-flex;align-items:center;gap:6px;
-  }
-  .ui-pill-ok{color:var(--min-ok) !important;border-color:var(--min-ok-line) !important;background:linear-gradient(180deg,#f4fff7,#ecfdf5) !important;}
-  .ui-pill-info{color:var(--min-info) !important;border-color:var(--min-info-line) !important;background:linear-gradient(180deg,#f8fbff,#eff6ff) !important;}
-  .ui-pill-warn{color:var(--min-warn) !important;border-color:var(--min-warn-line) !important;background:linear-gradient(180deg,#fffaf0,#fff6e7) !important;}
-  .ui-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(200,160,74,.12);}
-
-  .ui-alert{border:1px solid var(--min-info-line);background:var(--min-info-soft);color:#1e3a8a;padding:10px 12px;border-radius:14px;line-height:1.8;font-size:9.8px;}
-  .ui-alert.warn{border-color:var(--min-warn-line);background:var(--min-warn-soft);color:var(--min-warn);}
-  .ui-alert.ok{border-color:var(--min-ok-line);background:var(--min-ok-soft);color:var(--min-ok);}
-
-  .ui-field{border:1px solid rgba(217,226,217,.95);border-radius:16px;padding:10px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow-soft);}
-  .ui-field + .ui-field{margin-top:10px;}
-  .ui-label{display:block;margin-bottom:6px;font-size:10.6px;font-weight:800;color:var(--min-green-2);line-height:1.3;}
-  .ui-help{margin-top:4px;font-size:9px;color:#87968c;line-height:1.6;}
-  .ui-error{margin-bottom:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--min-danger-line);background:var(--min-danger-soft);color:var(--min-danger);font-size:9.4px;line-height:1.6;}
-
-  .ui-field input[type="file"], .ui-field select{
-    width:100%;min-height:42px;padding:8px 10px;font-size:10.4px;border-radius:14px;border:1px solid rgba(211,221,212,.95);
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);color:var(--min-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.98);outline:none;
-  }
-  .ui-field input[type="file"]::file-selector-button{
-    margin-inline-end:10px;border:1px solid rgba(211,221,212,.95);background:linear-gradient(180deg,#ffffff,#f8faf7);color:var(--min-green-2);
-    border-radius:10px;padding:6px 10px;font-size:9.6px;font-weight:800;cursor:pointer;
-  }
-  .ui-field input[type="file"]:focus, .ui-field select:focus{
-    border-color:rgba(169,130,53,.36);box-shadow:0 0 0 4px rgba(169,130,53,.07), inset 0 1px 0 rgba(255,255,255,.98);
+  .imp-card-title{
+    margin:0;
+    color:var(--imp-green);
+    font-size:13px;
+    line-height:1.5;
+    font-weight:600;
   }
 
-  .ui-actions-row{margin-top:12px;justify-content:flex-start;}
-  .ui-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px;}
-  .ui-item{border:1px solid rgba(217,226,217,.95);border-radius:16px;padding:10px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow-soft);}
-  .ui-item .nm{font-size:10.6px;font-weight:800;color:var(--min-green-1);line-height:1.4;}
-  .ui-item .sm{margin-top:4px;font-size:9.4px;color:var(--min-muted);line-height:1.8;}
-  .ui-item-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-  .ui-stat{min-height:28px;padding:4px 9px;border-radius:999px;border:1px solid rgba(219,227,219,.95);background:#fff;font-size:8.8px;font-weight:800;color:var(--min-green-2);display:inline-flex;align-items:center;gap:4px;}
-  .ui-stat b{font-weight:900;}
-
-  .ui-final{
-    border:1px solid rgba(211,221,212,.95);border-radius:22px;background:linear-gradient(180deg,#ffffff,#fbfcfa);box-shadow:var(--min-shadow) !important;overflow:hidden;
-  }
-  .ui-final-head{padding:10px 12px;border-bottom:1px solid rgba(219,227,219,.92);background:linear-gradient(180deg,#fcfdfb,#f8fbf8);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-  .ui-final-body{padding:12px !important;display:grid;gap:12px;}
-
-  @media (max-width: 960px){
-    .ui-steps{grid-template-columns:1fr 1fr;}
-    .ui-grid,.ui-summary-grid{grid-template-columns:1fr;}
+  .imp-card-body{
+    padding:13px;
+    display:grid;
+    gap:11px;
   }
 
-  @media (max-width: 640px){
-    .ui-top{border-radius:18px;padding:13px 14px;}
-    .ui-title{font-size:18px !important;}
-    .ui-card-body,.ui-final-body{padding:10px !important;}
-    .ui-field{padding:9px;}
-    .ui-steps{grid-template-columns:1fr;}
+  .imp-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:25px;
+    padding:4px 9px;
+    border-radius:999px;
+    border:1px solid var(--imp-line);
+    background:#fff;
+    color:var(--imp-muted);
+    font-size:8.8px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .imp-badge.info{
+    color:var(--imp-blue);
+    background:var(--imp-blue-bg);
+    border-color:var(--imp-blue-bd);
+  }
+
+  .imp-badge.gold{
+    color:#75521b;
+    background:var(--imp-gold-bg);
+    border-color:var(--imp-gold-bd);
+  }
+
+  .imp-badge.ok{
+    color:var(--imp-ok);
+    background:var(--imp-ok-bg);
+    border-color:var(--imp-ok-bd);
+  }
+
+  .imp-field{
+    border:1px solid #e0e8e1;
+    border-radius:12px;
+    background:#fff;
+    padding:10px;
+    display:grid;
+    gap:6px;
+  }
+
+  .imp-label{
+    color:var(--imp-green);
+    font-size:10px;
+    line-height:1.4;
+    font-weight:600;
+  }
+
+  .imp-help{
+    color:var(--imp-muted);
+    font-size:9px;
+    line-height:1.7;
+    font-weight:400;
+  }
+
+  .imp-field input[type="file"],
+  .imp-field select{
+    width:100%;
+    min-height:39px;
+    padding:7px 10px;
+    border-radius:10px;
+    border:1px solid var(--imp-line-2);
+    background:#fff;
+    color:var(--imp-ink);
+    outline:none;
+    font-size:10px;
+    font-weight:400;
+  }
+
+  .imp-field input[type="file"]::file-selector-button{
+    margin-inline-end:10px;
+    border:1px solid var(--imp-line);
+    background:#f8faf8;
+    color:var(--imp-green);
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:9px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .imp-field input[type="file"]:focus,
+  .imp-field select:focus{
+    border-color:var(--imp-gold);
+    box-shadow:0 0 0 2px rgba(167,122,45,.08);
+  }
+
+  .imp-form-actions{
+    display:flex;
+    justify-content:flex-start;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:2px;
+  }
+
+  /* Summary */
+  .imp-summary{
+    border:1px solid var(--imp-line);
+    border-radius:var(--imp-radius);
+    background:#fff;
+    box-shadow:var(--imp-shadow);
+    overflow:hidden;
+  }
+
+  .imp-summary-head{
+    padding:11px 13px;
+    border-bottom:1px solid #edf1ed;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg,#fff,#f8faf8);
+  }
+
+  .imp-summary-title{
+    margin:0;
+    color:var(--imp-green);
+    font-size:13px;
+    font-weight:600;
+  }
+
+  .imp-summary-body{
+    padding:12px 13px;
+  }
+
+  .imp-table-wrap{
+    overflow:auto;
+    border:1px solid #edf1ed;
+    border-radius:12px;
+    background:#fff;
+  }
+
+  .imp-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:560px;
+  }
+
+  .imp-table th{
+    background:#f5f8f6;
+    border-bottom:1px solid var(--imp-line);
+    padding:10px 9px;
+    text-align:right;
+    color:var(--imp-green);
+    font-size:9.5px;
+    font-weight:600;
+  }
+
+  .imp-table td{
+    border-bottom:1px solid #edf1ed;
+    padding:10px 9px;
+    color:var(--imp-text);
+    font-size:10px;
+    font-weight:400;
+  }
+
+  .imp-table tr:last-child td{
+    border-bottom:0;
+  }
+
+  .imp-num{
+    font-weight:700;
+    color:var(--imp-green);
+  }
+
+  .imp-empty{
+    border:1px solid var(--imp-blue-bd);
+    background:var(--imp-blue-bg);
+    color:#315b7d;
+    border-radius:12px;
+    padding:11px 12px;
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  /* Final section */
+  .imp-final{
+    border:1px solid var(--imp-line);
+    border-inline-start:4px solid var(--imp-gold);
+    border-radius:var(--imp-radius);
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+    box-shadow:var(--imp-shadow);
+    padding:13px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+  }
+
+  .imp-final-title{
+    margin:0;
+    color:var(--imp-green);
+    font-size:13px;
+    line-height:1.5;
+    font-weight:600;
+  }
+
+  .imp-final-text{
+    margin:4px 0 0;
+    color:var(--imp-muted);
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  .imp-error{
+    border:1px solid var(--imp-danger-bd);
+    background:var(--imp-danger-bg);
+    color:var(--imp-danger);
+    border-radius:12px;
+    padding:9px 10px;
+    font-size:10px;
+    line-height:1.8;
+  }
+
+  @media (max-width:980px){
+    .imp-head,
+    .imp-final{
+      grid-template-columns:1fr;
+    }
+
+    .imp-actions{
+      justify-content:flex-start;
+    }
+
+    .imp-grid,
+    .imp-flow{
+      grid-template-columns:1fr 1fr;
+    }
+  }
+
+  @media (max-width:640px){
+    .imp-page{
+      gap:10px;
+    }
+
+    .imp-head{
+      padding:13px;
+      border-radius:14px;
+    }
+
+    .imp-title{
+      font-size:19px;
+    }
+
+    .imp-grid,
+    .imp-flow{
+      grid-template-columns:1fr;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="ui">
-  <div class="ui-page">
+<div class="imp">
+  <div class="imp-page">
 
-    <div class="ui-top">
-      <div class="ui-title-wrap">
-        <h1 class="ui-title">استيراد ملفات الإكسل</h1>
-        <p class="ui-subtitle">تنفيذ رفع بيانات المتقدمين الجدد والمدارس ثم التحقق من النتيجة والانتقال إلى الفرز ضمن مسار إداري واضح.</p>
+    <section class="imp-head">
+      <div>
+        <h1 class="imp-title">استيراد ملفات الإكسل</h1>
+        <p class="imp-sub">رفع بيانات المتقدمين والشواغر، ثم مراجعة ملخص الاستيراد قبل الانتقال إلى شاشة الفرز.</p>
       </div>
 
-      <div class="ui-actions">
-        <a class="ui-btn" href="{% url 'portal:admin_dashboard' %}">
-          <span class="ui-btn-icon">▦</span>
-          لوحة الإدارة
-        </a>
-
-        <a class="ui-btn" href="{% url 'portal:admin_applicants_list' %}">
-          <span class="ui-btn-icon">👤</span>
-          إدارة المتقدمين
-        </a>
-
-        <a class="ui-btn" href="{% url 'portal:admin_vacancies_list' %}">
-          <span class="ui-btn-icon">🧩</span>
-          إدارة الشواغر
-        </a>
+      <div class="imp-actions">
+        <a class="imp-btn" href="{% url 'portal:admin_dashboard' %}">لوحة الإدارة</a>
+        <a class="imp-btn" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
+        <a class="imp-btn" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
       </div>
-    </div>
+    </section>
 
     {% if form.non_field_errors %}
-      <div class="ui-error">{{ form.non_field_errors }}</div>
+      <div class="imp-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
-    <div class="ui-steps">
-      <div class="ui-step {% if result and result.applicants %}is-done{% else %}is-pending{% endif %}">
-        <div class="ui-step-top">
-          <span class="ui-step-index">1</span>
-          <span class="ui-step-state {% if result and result.applicants %}done{% else %}pending{% endif %}">
-            {% if result and result.applicants %}مكتمل{% else %}يحتاج تنفيذ{% endif %}
-          </span>
-        </div>
-        <div class="ui-step-title">رفع المتقدمين الجدد</div>
-        <div class="ui-step-text">تحميل ملف المرحلة الثانية وتحديد وضع الاستيراد المناسب قبل التنفيذ.</div>
-        <div class="ui-step-note">
-          {% if result and result.applicants %}
-            آخر دفعة: {{ result.applicants.batch }}
-          {% else %}
-            لم يتم تسجيل نتيجة رفع للمتقدمين بعد.
-          {% endif %}
-        </div>
+    <section class="imp-flow" aria-label="مراحل الاستيراد">
+      <div class="imp-flow-item {% if result and result.applicants %}done{% endif %}">
+        <span class="imp-flow-no">1</span>
+        <span class="imp-flow-text">
+          <span class="imp-flow-title">رفع المتقدمين</span>
+          <span class="imp-flow-state">{% if result and result.applicants %}مكتمل{% else %}بانتظار الرفع{% endif %}</span>
+        </span>
       </div>
 
-      <div class="ui-step {% if result and result.schools %}is-done{% else %}is-pending{% endif %}">
-        <div class="ui-step-top">
-          <span class="ui-step-index">2</span>
-          <span class="ui-step-state {% if result and result.schools %}done{% else %}pending{% endif %}">
-            {% if result and result.schools %}مكتمل{% else %}يحتاج تنفيذ{% endif %}
-          </span>
-        </div>
-        <div class="ui-step-title">رفع المدارس / الشواغر</div>
-        <div class="ui-step-text">تحميل ملف الشواغر المعتمدة وتحديث المدارس أو إضافتها وفق الوضع المحدد.</div>
-        <div class="ui-step-note">
-          {% if result and result.schools %}
-            آخر دفعة: {{ result.schools.batch }}
-          {% else %}
-            لم يتم تسجيل نتيجة رفع للشواغر بعد.
-          {% endif %}
-        </div>
+      <div class="imp-flow-item {% if result and result.schools %}done{% endif %}">
+        <span class="imp-flow-no">2</span>
+        <span class="imp-flow-text">
+          <span class="imp-flow-title">رفع الشواغر</span>
+          <span class="imp-flow-state">{% if result and result.schools %}مكتمل{% else %}بانتظار الرفع{% endif %}</span>
+        </span>
       </div>
 
-      <div class="ui-step {% if result %}is-done{% else %}is-pending{% endif %}">
-        <div class="ui-step-top">
-          <span class="ui-step-index">3</span>
-          <span class="ui-step-state {% if result %}done{% else %}pending{% endif %}">
-            {% if result %}نتيجة متاحة{% else %}بانتظار النتيجة{% endif %}
-          </span>
-        </div>
-        <div class="ui-step-title">مراجعة آخر عملية</div>
-        <div class="ui-step-text">التحقق من الإضافات والتحديثات والسجلات المتخطاة قبل الانتقال إلى الفرز.</div>
-        <div class="ui-step-note">
-          {% if result %}
-            تم العثور على ملخص لآخر عملية استيراد.
-          {% else %}
-            سيظهر الملخص هنا بعد أول عملية رفع ناجحة.
-          {% endif %}
-        </div>
+      <div class="imp-flow-item {% if result %}done{% endif %}">
+        <span class="imp-flow-no">3</span>
+        <span class="imp-flow-text">
+          <span class="imp-flow-title">مراجعة الملخص</span>
+          <span class="imp-flow-state">{% if result %}نتيجة متاحة{% else %}بانتظار النتيجة{% endif %}</span>
+        </span>
       </div>
 
-      <div class="ui-step {% if result and result.applicants and result.schools %}is-ready{% else %}is-pending{% endif %}">
-        <div class="ui-step-top">
-          <span class="ui-step-index">4</span>
-          <span class="ui-step-state {% if result and result.applicants and result.schools %}ready{% else %}pending{% endif %}">
-            {% if result and result.applicants and result.schools %}جاهز للفرز{% else %}ينتظر الاكتمال{% endif %}
-          </span>
-        </div>
-        <div class="ui-step-title">بدء الفرز</div>
-        <div class="ui-step-text">الانتقال إلى شاشة الفرز بعد اكتمال رفع ملفات المتقدمين والشواغر ومراجعة النتيجة.</div>
-        <div class="ui-step-note">
-          {% if result and result.applicants and result.schools %}
-            يمكن الانتقال الآن إلى الفرز بثقة.
-          {% else %}
-            أكمل الرفع أو راجع النتائج قبل تنفيذ الفرز.
-          {% endif %}
-        </div>
+      <div class="imp-flow-item {% if result and result.applicants and result.schools %}ready{% endif %}">
+        <span class="imp-flow-no">4</span>
+        <span class="imp-flow-text">
+          <span class="imp-flow-title">الانتقال للفرز</span>
+          <span class="imp-flow-state">{% if result and result.applicants and result.schools %}جاهز{% else %}بعد اكتمال الملفات{% endif %}</span>
+        </span>
       </div>
-    </div>
+    </section>
 
-    <div class="ui-alert warn">
+    <div class="imp-alert warn">
       <b>تنبيه:</b>
-      رفع ملف <b>المتقدمين الجدد</b> يخص المرحلة الثانية، ويُفضّل بعد كل عملية مراجعة الملخص ثم الانتقال إلى خطوة الفرز عند الجاهزية.
+      الاستيراد لا يعيد فتح الشواغر المغلقة بسبب ترشيح سابق. فتح الشاغر يتم يدويًا من إدارة الشواغر.
     </div>
 
-    <div class="ui-grid">
-      <div class="ui-card">
-        <div class="ui-card-head">
-          <h3 class="ui-card-title">الخطوة الأولى: رفع المتقدمين الجدد</h3>
-          <span class="ui-pill ui-pill-info">
-            <span class="ui-dot"></span>
-            المرحلة الثانية
-          </span>
+    <section class="imp-grid">
+      <article class="imp-card">
+        <div class="imp-card-head">
+          <h2 class="imp-card-title">رفع المتقدمين الجدد</h2>
+          <span class="imp-badge info">ملف المتقدمين</span>
         </div>
 
-        <div class="ui-card-body">
+        <div class="imp-card-body">
           {% if form.applicants_file.errors %}
-            <div class="ui-error">{{ form.applicants_file.errors }}</div>
+            <div class="imp-error">{{ form.applicants_file.errors }}</div>
           {% endif %}
 
           <form method="post" enctype="multipart/form-data" action="{% url 'portal:admin_import_new_applicants' %}">
             {% csrf_token %}
 
-            <div class="ui-field">
-              <label class="ui-label" for="id_applicants_file">ملف المتقدمين الجدد</label>
+            <div class="imp-field">
+              <label class="imp-label" for="id_applicants_file">ملف المتقدمين الجدد</label>
               {{ form.applicants_file }}
-              <div class="ui-help">ارفع ملف المتقدمين الجدد بصيغة Excel، وسيتم تنفيذ الإضافة أو التحديث حسب وضع الاستيراد المختار.</div>
+              <div class="imp-help">ارفع ملف المتقدمين بصيغة Excel، ثم اختر وضع الاستيراد المناسب.</div>
             </div>
 
-            <div class="ui-field">
-              <label class="ui-label" for="import_mode_applicants">وضع الاستيراد</label>
+            <div class="imp-field">
+              <label class="imp-label" for="import_mode_applicants">وضع الاستيراد</label>
               <select name="import_mode" id="import_mode_applicants">
                 <option value="sync">إضافة الجديد + تحديث الموجود</option>
                 <option value="create_only">إضافة الجديد فقط</option>
                 <option value="update_only">تحديث الموجود فقط</option>
               </select>
-              <div class="ui-help">اختر آلية التنفيذ: مزامنة كاملة، إضافة فقط، أو تحديث فقط.</div>
+              <div class="imp-help">المزامنة هي الخيار الافتراضي عند الإضافة والتحديث معًا.</div>
             </div>
 
-            <div class="ui-actions-row">
-              <button class="ui-btn ui-btn-primary" type="submit">
-                <span class="ui-btn-icon">⤴</span>
-                رفع المتقدمين الجدد
-              </button>
+            <div class="imp-form-actions">
+              <button class="imp-btn primary" type="submit">رفع المتقدمين</button>
             </div>
           </form>
         </div>
-      </div>
+      </article>
 
-      <div class="ui-card">
-        <div class="ui-card-head">
-          <h3 class="ui-card-title">الخطوة الثانية: رفع المدارس / الشواغر</h3>
-          <span class="ui-pill ui-pill-warn">
-            <span class="ui-dot"></span>
-            الشواغر المعتمدة
-          </span>
+      <article class="imp-card">
+        <div class="imp-card-head">
+          <h2 class="imp-card-title">رفع المدارس / الشواغر</h2>
+          <span class="imp-badge gold">ملف الشواغر</span>
         </div>
 
-        <div class="ui-card-body">
+        <div class="imp-card-body">
           {% if form.schools_file.errors %}
-            <div class="ui-error">{{ form.schools_file.errors }}</div>
+            <div class="imp-error">{{ form.schools_file.errors }}</div>
           {% endif %}
 
           <form method="post" enctype="multipart/form-data" action="{% url 'portal:admin_import_schools' %}">
             {% csrf_token %}
 
-            <div class="ui-field">
-              <label class="ui-label" for="id_schools_file">ملف المدارس / الشواغر</label>
+            <div class="imp-field">
+              <label class="imp-label" for="id_schools_file">ملف المدارس / الشواغر</label>
               {{ form.schools_file }}
-              <div class="ui-help">ارفع ملف المدارس أو الشواغر بصيغة Excel، وسيتم تحديث السجلات أو إضافتها حسب الوضع المحدد.</div>
+              <div class="imp-help">ارفع ملف الشواغر بصيغة Excel، مع مراعاة عدم إعادة فتح الشواغر المغلقة آليًا.</div>
             </div>
 
-            <div class="ui-field">
-              <label class="ui-label" for="import_mode_schools">وضع الاستيراد</label>
+            <div class="imp-field">
+              <label class="imp-label" for="import_mode_schools">وضع الاستيراد</label>
               <select name="import_mode" id="import_mode_schools">
                 <option value="sync">إضافة الجديد + تحديث الموجود</option>
                 <option value="create_only">إضافة الجديد فقط</option>
                 <option value="update_only">تحديث الموجود فقط</option>
               </select>
-              <div class="ui-help">استخدم هذا الخيار إذا رغبت في التحديث فقط أو الإضافة فقط أو تنفيذ الأمرين معًا.</div>
+              <div class="imp-help">استخدم التحديث فقط عند مراجعة بيانات شواغر موجودة مسبقًا.</div>
             </div>
 
-            <div class="ui-actions-row">
-              <button class="ui-btn ui-btn-primary" type="submit">
-                <span class="ui-btn-icon">⤴</span>
-                رفع المدارس / الشواغر
-              </button>
+            <div class="imp-form-actions">
+              <button class="imp-btn primary" type="submit">رفع الشواغر</button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
 
-    <div class="ui-card">
-      <div class="ui-card-head">
-        <h3 class="ui-card-title">الخطوة الثالثة: مراجعة آخر عملية</h3>
-        <span class="ui-pill {% if result %}ui-pill-ok{% else %}ui-pill-info{% endif %}">
-          <span class="ui-dot"></span>
+    <section class="imp-summary">
+      <div class="imp-summary-head">
+        <h2 class="imp-summary-title">ملخص آخر عملية استيراد</h2>
+        <span class="imp-badge {% if result %}ok{% else %}info{% endif %}">
           {% if result %}نتيجة متاحة{% else %}بانتظار أول نتيجة{% endif %}
         </span>
       </div>
 
-      <div class="ui-card-body">
+      <div class="imp-summary-body">
         {% if result %}
-          <div class="ui-alert ok">
-            تم العثور على ملخص لآخر عملية استيراد. راجع الإضافات والتحديثات والسجلات المتخطاة قبل الانتقال إلى الفرز.
-          </div>
+          <div class="imp-table-wrap">
+            <table class="imp-table">
+              <thead>
+                <tr>
+                  <th>النوع</th>
+                  <th>الدفعة</th>
+                  <th>إضافة</th>
+                  <th>تحديث</th>
+                  <th>تخطي</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if result.applicants %}
+                  <tr>
+                    <td>المتقدمون الجدد</td>
+                    <td>{{ result.applicants.batch }}</td>
+                    <td><span class="imp-num">{{ result.applicants.created }}</span></td>
+                    <td><span class="imp-num">{{ result.applicants.updated }}</span></td>
+                    <td><span class="imp-num">{{ result.applicants.skipped }}</span></td>
+                  </tr>
+                {% endif %}
 
-          <div class="ui-summary-grid">
-            {% if result.applicants %}
-              <div class="ui-item">
-                <div class="nm">المتقدمون الجدد</div>
-                <div class="sm">الدفعة رقم {{ result.applicants.batch }}</div>
-                <div class="ui-item-stats">
-                  <span class="ui-stat">إضافة <b>{{ result.applicants.created }}</b></span>
-                  <span class="ui-stat">تحديث <b>{{ result.applicants.updated }}</b></span>
-                  <span class="ui-stat">تخطي <b>{{ result.applicants.skipped }}</b></span>
-                </div>
-              </div>
-            {% endif %}
+                {% if result.schools %}
+                  <tr>
+                    <td>المدارس / الشواغر</td>
+                    <td>{{ result.schools.batch }}</td>
+                    <td><span class="imp-num">{{ result.schools.created }}</span></td>
+                    <td><span class="imp-num">{{ result.schools.updated }}</span></td>
+                    <td><span class="imp-num">{{ result.schools.skipped }}</span></td>
+                  </tr>
+                {% endif %}
 
-            {% if result.schools %}
-              <div class="ui-item">
-                <div class="nm">المدارس / الشواغر</div>
-                <div class="sm">الدفعة رقم {{ result.schools.batch }}</div>
-                <div class="ui-item-stats">
-                  <span class="ui-stat">إضافة <b>{{ result.schools.created }}</b></span>
-                  <span class="ui-stat">تحديث <b>{{ result.schools.updated }}</b></span>
-                  <span class="ui-stat">تخطي <b>{{ result.schools.skipped }}</b></span>
-                </div>
-              </div>
-            {% endif %}
-
-            {% if not result.applicants and not result.schools %}
-              <div class="ui-item" style="grid-column:1/-1;">
-                <div class="nm">لا يوجد ملخص مفصل</div>
-                <div class="sm">تم العثور على نتيجة عامة، لكن لا توجد تفاصيل كافية لعرضها هنا.</div>
-              </div>
-            {% endif %}
+                {% if not result.applicants and not result.schools %}
+                  <tr>
+                    <td colspan="5">تم العثور على نتيجة عامة، لكن لا توجد تفاصيل كافية لعرضها.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
           </div>
         {% else %}
-          <div class="ui-alert">
-            لا يوجد ملخص متاح حاليًا. سيظهر هذا القسم تلقائيًا بعد أول عملية رفع ناجحة ليمنحك صورة واضحة عمّا أضيف أو حُدّث أو تم تجاوزه.
+          <div class="imp-empty">
+            لا يوجد ملخص متاح حاليًا. سيظهر هذا القسم بعد أول عملية رفع ناجحة.
           </div>
         {% endif %}
       </div>
-    </div>
+    </section>
 
-    <div class="ui-final">
-      <div class="ui-final-head">
-        <h3 class="ui-card-title">الخطوة الرابعة: بدء فرز المتقدمين الجدد</h3>
-        <span class="ui-pill {% if result and result.applicants and result.schools %}ui-pill-ok{% else %}ui-pill-warn{% endif %}">
-          <span class="ui-dot"></span>
-          {% if result and result.applicants and result.schools %}جاهز للتنفيذ{% else %}ينتظر اكتمال الرفع{% endif %}
-        </span>
+    <section class="imp-final">
+      <div>
+        <h2 class="imp-final-title">الفرز بعد الاستيراد</h2>
+        <p class="imp-final-text">
+          يوصى بمراجعة ملخص الاستيراد قبل الانتقال إلى الفرز، والتأكد من اكتمال ملف المتقدمين وملف الشواغر.
+        </p>
       </div>
 
-      <div class="ui-final-body">
-        {% if result and result.applicants and result.schools %}
-          <div class="ui-alert ok">
-            اكتملت بيانات المتقدمين والشواغر، ويمكن الآن الانتقال إلى شاشة الفرز والبدء في معالجة المرحلة الثانية.
-          </div>
-        {% else %}
-          <div class="ui-alert warn">
-            يوصى بعدم بدء الفرز إلا بعد رفع ملف المتقدمين وملف الشواغر ومراجعة النتيجة الأخيرة لكل منهما.
-          </div>
-        {% endif %}
-
-        <div class="ui-actions-row">
-          <a class="ui-btn" href="{% url 'portal:admin_new_applicants_sorting' %}">
-            <span class="ui-btn-icon">≣</span>
-            فتح شاشة الفرز
-          </a>
-
-          <a class="ui-btn ui-btn-warn" href="{% url 'portal:admin_new_applicants_sorting' %}">
-            <span class="ui-btn-icon">⚙</span>
-            بدء الفرز
-          </a>
-        </div>
+      <div class="imp-actions">
+        <a class="imp-btn gold" href="{% url 'portal:admin_new_applicants_sorting' %}">
+          الانتقال إلى شاشة الفرز
+        </a>
       </div>
-    </div>
+    </section>
 
   </div>
 </div>

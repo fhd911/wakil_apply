@@ -3,902 +3,874 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Vacancies Form — Same Applicants Form Style
+     - نموذج الشواغر بنفس نمط إضافة المتقدمين
+     - تدرج بصري واضح، ألوان هادئة غير موحدة
+     - هيدر مختصر + بطاقات أقسام واضحة + شريط حفظ ثابت
+     - بدون تعديل views.py
+  ========================================================= */
+
   :root{
-    --mx-bg:#f4f6f4;
-    --mx-bg-2:#eef2ef;
-    --mx-surface:#ffffff;
-    --mx-surface-2:#fbfcfb;
-    --mx-surface-3:#f7f9f7;
+    --af-page:#f6f7f4;
+    --af-page-2:#eef3ef;
+    --af-surface:#ffffff;
+    --af-surface-soft:#fbfcfa;
 
-    --mx-ink:#183127;
-    --mx-ink-2:#31483d;
-    --mx-muted:#6e7e76;
+    --af-text:#1f3329;
+    --af-text-2:#3c5147;
+    --af-muted:#738279;
 
-    --mx-green-1:#16382c;
-    --mx-green-2:#1d4335;
-    --mx-green-3:#315646;
+    --af-green:#1f4d3a;
+    --af-green-2:#2f6b53;
+    --af-green-3:#eaf5ef;
+    --af-green-line:#cfe2d7;
 
-    --mx-gold-1:#8a7646;
-    --mx-gold-2:#a89260;
+    --af-blue:#496d7f;
+    --af-blue-2:#eaf2f5;
+    --af-blue-line:#d3e2e8;
 
-    --mx-line:#d9e0da;
-    --mx-line-2:#ced7d0;
-    --mx-line-3:#e8ede9;
+    --af-gold:#9b7734;
+    --af-gold-2:#fbf4e7;
+    --af-gold-line:#ead8ae;
 
-    --mx-ok:#1f5f38;
-    --mx-ok-bg:#eff7f1;
-    --mx-ok-bd:#d4e5d8;
+    --af-red:#9c3e3e;
+    --af-red-2:#fbf2f2;
+    --af-red-line:#e7cccc;
 
-    --mx-warn:#876224;
-    --mx-warn-bg:#faf6ee;
-    --mx-warn-bd:#e5d8bd;
+    --af-line:#dbe3dd;
+    --af-line-soft:#ecf0ed;
 
-    --mx-danger:#8c3434;
-    --mx-danger-bg:#fbf5f5;
-    --mx-danger-bd:#e6cccc;
-
-    --mx-info:#3b5f7a;
-    --mx-info-bg:#f2f6fb;
-    --mx-info-bd:#d8e1ec;
-
-    --mx-shadow:0 1px 2px rgba(16,24,20,.03);
-    --mx-shadow-soft:0 8px 20px rgba(16,24,20,.05);
-    --mx-shadow-hero:0 8px 22px rgba(16,24,20,.055);
-
-    --mx-r-2xl:22px;
-    --mx-r-xl:18px;
-    --mx-r-lg:14px;
-    --mx-r-md:10px;
-    --mx-r-sm:8px;
+    --af-shadow:0 1px 3px rgba(18,32,24,.04);
+    --af-shadow-card:0 10px 24px rgba(18,32,24,.055);
+    --af-shadow-float:0 18px 42px rgba(18,32,24,.13);
   }
 
-  .v963vf2, .v963vf2 *{
+  .af3,
+  .af3 *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .v963vf2{
+  .af3{
     direction:rtl;
-    color:var(--mx-ink);
-    background:linear-gradient(180deg,#f7f8f7 0%, #f2f5f2 50%, #edf1ee 100%);
-    padding:10px;
+    min-height:calc(100vh - 60px);
+    padding:14px 10px 104px;
+    color:var(--af-text);
+    background:
+      radial-gradient(circle at 95% 4%, rgba(31,77,58,.08) 0 130px, transparent 136px),
+      radial-gradient(circle at 4% 12%, rgba(155,119,52,.08) 0 120px, transparent 128px),
+      linear-gradient(180deg,#fbfcfb 0%, var(--af-page) 50%, #eef3ef 100%);
   }
 
-  .v963vf2-page{
-    max-width:1540px;
+  .af3-page{
+    width:min(100%, 1180px);
     margin:0 auto;
     display:grid;
-    gap:12px;
+    gap:14px;
   }
 
-  .v963vf2-shell{
-    background:linear-gradient(180deg,#eef2ef 0%, #e8ede9 100%);
-    border:1px solid #dde4de;
-    border-radius:24px;
-    padding:12px;
-  }
-
-  .v963vf2-hero,
-  .v963vf2-nav,
-  .v963vf2-card,
-  .v963vf2-summary,
-  .v963vf2-stickybar{
-    position:relative;
+  .af3-hero,
+  .af3-card,
+  .af3-savebar{
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--af-line);
+    border-radius:22px;
+    box-shadow:var(--af-shadow-card);
     overflow:hidden;
-    border:1px solid var(--mx-line);
-    border-radius:var(--mx-r-xl);
-    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-    box-shadow:var(--mx-shadow);
-  }
-
-  .v963vf2-hero::before,
-  .v963vf2-card::before,
-  .v963vf2-summary::before,
-  .v963vf2-stickybar::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,rgba(29,67,53,.55) 0%, rgba(168,146,96,.34) 100%);
-    opacity:.88;
-  }
-
-  .v963vf2-hero{
     position:relative;
-    overflow:hidden;
-    border-radius:20px;
-    background:
-      linear-gradient(135deg,rgba(255,255,255,.025),rgba(255,255,255,0) 34%),
-      linear-gradient(135deg,#1f4738 0%, #173a2f 62%, #143329 100%);
-    border:1px solid rgba(168,146,96,.26);
-    box-shadow:var(--mx-shadow-hero);
-    color:#fff;
-    padding:12px 14px;
   }
 
-  .v963vf2-hero::before{
+  .af3-hero::before,
+  .af3-card::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
     height:3px;
-    background:linear-gradient(90deg,rgba(191,168,119,.78) 0%, rgba(102,134,118,.72) 100%);
-    opacity:.9;
+    background:linear-gradient(90deg,var(--af-green),#b59555 52%,rgba(73,109,127,.75));
   }
 
-  .v963vf2-hero-grid{
+  .af3-hero{
+    padding:18px 20px 16px;
+  }
+
+  .af3-hero-grid{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
+    gap:18px;
     align-items:center;
   }
 
-  .v963vf2-hero-main{
-    min-width:0;
-    display:grid;
-    gap:6px;
-  }
-
-  .v963vf2-hero-top{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-
-  .v963vf2-state-pill,
-  .v963vf2-chip,
-  .v963vf2-req,
-  .v963vf2-pill,
-  .v963vf2-badge{
+  .af3-kicker{
     display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:26px;
-    padding:4px 10px;
+    gap:8px;
+    min-height:31px;
+    padding:5px 12px;
     border-radius:999px;
-    border:1px solid var(--mx-line-2);
-    background:#fff;
-    color:var(--mx-ink-2);
-    font-size:7.6px;
-    font-weight:900 !important;
-    white-space:nowrap;
+    border:1px solid var(--af-green-line);
+    background:var(--af-green-3);
+    color:var(--af-green);
+    font-size:11px;
+    font-weight:600 !important;
+    margin-bottom:8px;
   }
 
-  .v963vf2-state-pill{
-    background:rgba(255,255,255,.14);
-    color:#fff;
-    border:1px solid rgba(255,255,255,.14);
-  }
-
-  .v963vf2-state-pill .dot,
-  .v963vf2-mark{
+  .af3-kicker::before{
+    content:"";
     width:8px;
     height:8px;
     border-radius:50%;
-    background:#d0c08f;
-    flex:0 0 auto;
+    background:var(--af-green);
+    box-shadow:0 0 0 4px rgba(31,77,58,.10);
   }
 
-  .v963vf2-chip{min-height:22px;padding:2px 8px}
-  .v963vf2-chip.ok,
-  .v963vf2-pill.ok,
-  .v963vf2-badge.ok{background:var(--mx-ok-bg);border-color:var(--mx-ok-bd);color:var(--mx-ok)}
-  .v963vf2-pill.warn,
-  .v963vf2-badge.warn{background:var(--mx-warn-bg);border-color:var(--mx-warn-bd);color:var(--mx-warn)}
-  .v963vf2-pill.info,
-  .v963vf2-badge.info{background:var(--mx-info-bg);border-color:var(--mx-info-bd);color:var(--mx-info)}
-
-  .v963vf2-hero-title{
+  .af3-title{
     margin:0;
-    color:#fff;
-    font-size:19px;
-    line-height:1.15;
-    font-weight:900 !important;
+    color:var(--af-green);
+    font-size:30px;
+    line-height:1.25;
+    font-weight:700 !important;
+    letter-spacing:0;
   }
 
-  .v963vf2-hero-sub{
-    margin:0;
-    max-width:82ch;
-    color:rgba(255,255,255,.9);
-    font-size:8.6px;
+  .af3-subtitle{
+    margin:6px 0 0;
+    color:var(--af-muted);
+    font-size:13px;
     line-height:1.9;
-    font-weight:800 !important;
+    font-weight:400 !important;
+    max-width:80ch;
   }
 
-  .v963vf2-hero-actions{
-    min-width:0;
+  .af3-actions,
+  .af3-status,
+  .af3-status-row,
+  .af3-save-actions,
+  .af3-save-info{
     display:flex;
     align-items:center;
-    justify-content:flex-end;
-    gap:7px;
+    gap:9px;
     flex-wrap:wrap;
   }
 
-  .v963vf2-btn,
-  .v963vf2-nav-link,
-  .v963vf2-action-link{
+  .af3-actions{
+    justify-content:flex-end;
+  }
+
+  .af3-btn,
+  .af3-save-btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
-    min-height:36px;
-    padding:7px 13px;
-    border-radius:10px;
-    border:1px solid var(--mx-line-2);
+    gap:7px;
+    min-height:42px;
+    padding:9px 16px;
+    border-radius:12px;
+    border:1px solid var(--af-line);
     background:#fff;
-    color:var(--mx-green-2);
+    color:var(--af-green);
     text-decoration:none;
     cursor:pointer;
-    font-size:8.5px;
-    font-weight:900 !important;
-    transition:background .15s ease,border-color .15s ease,transform .15s ease;
+    font-size:12px;
+    line-height:1;
+    font-weight:600 !important;
+    white-space:nowrap;
     box-shadow:none;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease,box-shadow .14s ease;
   }
 
-  .v963vf2-btn:hover,
-  .v963vf2-nav-link:hover,
-  .v963vf2-action-link:hover{
+  .af3-btn:hover,
+  .af3-save-btn:hover{
     transform:translateY(-1px);
-    background:#f7faf8;
-    border-color:#bcc9c0;
+    background:#f8fbf9;
+    border-color:#c6d5cc;
+    box-shadow:0 6px 16px rgba(18,32,24,.06);
   }
 
-  .v963vf2-btn-primary{
-    background:linear-gradient(180deg,#244638 0%, #19392d 100%);
-    border-color:#19392d;
+  .af3-btn.primary,
+  .af3-save-btn.primary{
+    border-color:var(--af-green);
+    background:linear-gradient(180deg,var(--af-green-2),var(--af-green));
     color:#fff;
   }
 
-  .v963vf2-btn-primary:hover{
-    background:linear-gradient(180deg,#294c3d 0%, #1f3f32 100%);
-    color:#fff;
-    border-color:#1f3f32;
+  .af3-btn.gold{
+    border-color:var(--af-gold-line);
+    background:var(--af-gold-2);
+    color:#6d4c18;
   }
 
-  .v963vf2-btn-gold,
-  .v963vf2-btn-soft,
-  .v963vf2-btn-info{
+  .af3-status{
+    margin-top:14px;
+    padding:12px 0 0;
+    border-top:1px solid var(--af-line-soft);
+    justify-content:space-between;
+  }
+
+  .af3-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    min-height:32px;
+    padding:5px 12px;
+    border-radius:999px;
+    border:1px solid var(--af-line);
     background:#fff;
-    color:var(--mx-green-2);
+    color:var(--af-text-2);
+    font-size:10.5px;
+    line-height:1;
+    font-weight:500 !important;
+    white-space:nowrap;
   }
 
-  .v963vf2-btn-icon{font-size:11px;line-height:1}
+  .af3-chip.green{
+    border-color:var(--af-green-line);
+    background:var(--af-green-3);
+    color:var(--af-green);
+  }
 
-  .v963vf2-nav{padding:7px 8px}
-  .v963vf2-nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .v963vf2-nav-link{min-height:32px;padding:5px 12px;background:#fbfcfb;border-color:var(--mx-line);color:var(--mx-green-1)}
-  .v963vf2-nav-link.is-active{background:linear-gradient(180deg,#f7f3ea,#f3ecdc);border-color:rgba(168,146,96,.45);color:#6d5728}
+  .af3-chip.gold{
+    border-color:var(--af-gold-line);
+    background:var(--af-gold-2);
+    color:#6d4c18;
+  }
 
-  .v963vf2-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 320px;
+  .af3-chip.blue{
+    border-color:var(--af-blue-line);
+    background:var(--af-blue-2);
+    color:var(--af-blue);
+  }
+
+  .af3-note{
+    color:var(--af-muted);
+    font-size:11px;
+    line-height:1.85;
+    font-weight:400 !important;
+  }
+
+  .af3-form-head{
+    padding:16px 18px;
+    border-bottom:1px solid var(--af-line-soft);
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
     gap:12px;
-    align-items:start;
+    flex-wrap:wrap;
   }
 
-  .v963vf2-summary{
-    padding:12px;
-    position:sticky;
-    top:12px;
-    display:grid;
-    gap:12px;
-  }
-
-  .v963vf2-summary-title{
+  .af3-head-title{
     margin:0;
-    font-size:10.4px;
-    font-weight:900 !important;
-    color:var(--mx-green-1);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--af-green);
+    font-size:16px;
+    line-height:1.5;
+    font-weight:700 !important;
   }
 
-  .v963vf2-summary-text,
-  .v963vf2-help,
-  .v963vf2-note,
-  .v963vf2-caption{
-    color:var(--mx-muted);
-    font-size:7.5px;
+  .af3-head-title::before{
+    content:"";
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--af-green);
+    box-shadow:0 0 0 5px rgba(31,77,58,.09);
+  }
+
+  .af3-head-sub{
+    margin-top:3px;
+    color:var(--af-muted);
+    font-size:11px;
+    line-height:1.8;
+    font-weight:400 !important;
+  }
+
+  .af3-form-body{
+    padding:16px;
+    display:grid;
+    gap:16px;
+  }
+
+  .af3-alert{
+    border:1px solid var(--af-red-line);
+    border-radius:16px;
+    background:var(--af-red-2);
+    color:var(--af-red);
+    padding:12px 14px;
+    font-size:11px;
+    line-height:1.8;
+  }
+
+  .af3-section{
+    border:1px solid var(--af-line);
+    border-radius:20px;
+    background:#fff;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(18,32,24,.025);
+  }
+
+  .af3-section.basic{
+    border-color:var(--af-green-line);
+  }
+
+  .af3-section.contact{
+    border-color:var(--af-blue-line);
+    background:linear-gradient(180deg,#ffffff 0%, #fbfdfe 100%);
+  }
+
+  .af3-section.extra{
+    border-color:var(--af-gold-line);
+    background:linear-gradient(180deg,#ffffff 0%, #fffdf8 100%);
+  }
+
+  .af3-section-head{
+    padding:15px 16px;
+    border-bottom:1px solid var(--af-line-soft);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .af3-section-title{
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--af-text);
+    font-size:15px;
+    line-height:1.5;
+    font-weight:700 !important;
+  }
+
+  .af3-section-title::before{
+    content:"";
+    width:12px;
+    height:12px;
+    border-radius:5px;
+    background:var(--af-green);
+  }
+
+  .af3-section.contact .af3-section-title::before{
+    background:var(--af-blue);
+  }
+
+  .af3-section.extra .af3-section-title::before{
+    background:var(--af-gold);
+  }
+
+  .af3-section-sub{
+    margin-top:3px;
+    color:var(--af-muted);
+    font-size:11px;
     line-height:1.75;
-    font-weight:800 !important;
+    font-weight:400 !important;
   }
 
-  .v963vf2-summary-grid{
+  .af3-tag{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:29px;
+    padding:4px 11px;
+    border-radius:999px;
+    font-size:10px;
+    line-height:1;
+    font-weight:500 !important;
+    white-space:nowrap;
+  }
+
+  .af3-tag.green{
+    border:1px solid var(--af-green-line);
+    background:var(--af-green-3);
+    color:var(--af-green);
+  }
+
+  .af3-tag.blue{
+    border:1px solid var(--af-blue-line);
+    background:var(--af-blue-2);
+    color:var(--af-blue);
+  }
+
+  .af3-tag.gold{
+    border:1px solid var(--af-gold-line);
+    background:var(--af-gold-2);
+    color:#6d4c18;
+  }
+
+  .af3-grid{
+    padding:16px;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+
+  .af3-field{
     display:grid;
     gap:8px;
+    min-width:0;
   }
 
-  .v963vf2-summary-item{
-    border:1px solid var(--mx-line);
-    border-radius:12px;
-    background:var(--mx-surface-2);
-    padding:9px 10px;
+  .af3-field.full{
+    grid-column:1 / -1;
   }
 
-  .v963vf2-summary-k{
-    font-size:7px;
-    color:var(--mx-muted);
-    margin-bottom:4px;
-    font-weight:900 !important;
-  }
-
-  .v963vf2-summary-v{
-    font-size:8.8px;
-    color:var(--mx-ink);
-    line-height:1.7;
-    font-weight:900 !important;
-    word-break:break-word;
-  }
-
-  .v963vf2-card-head{
+  .af3-label-row{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    padding:11px 12px;
-    border-bottom:1px solid var(--mx-line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
   }
 
-  .v963vf2-card-head-main{display:grid;gap:3px}
-  .v963vf2-card-title{
-    margin:0;
-    font-size:11px;
-    font-weight:900 !important;
-    color:var(--mx-green-1);
+  .af3-label{
+    color:var(--af-text);
+    font-size:13px;
+    line-height:1.5;
+    font-weight:600 !important;
   }
 
-  .v963vf2-card-body{padding:12px !important;display:grid;gap:12px}
+  .af3-required,
+  .af3-optional{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:24px;
+    padding:0 9px;
+    border-radius:999px;
+    font-size:9px;
+    line-height:1;
+    font-weight:500 !important;
+    white-space:nowrap;
+  }
 
-  .v963vf2-section{
-    border:1px solid var(--mx-line);
+  .af3-required{
+    border:1px solid var(--af-gold-line);
+    background:var(--af-gold-2);
+    color:#6d4c18;
+  }
+
+  .af3-optional{
+    border:1px solid var(--af-line);
+    background:#fafbfa;
+    color:var(--af-muted);
+  }
+
+  .af3-field input:not([type="checkbox"]):not([type="radio"]),
+  .af3-field select,
+  .af3-field textarea{
+    width:100%;
+    min-height:48px;
+    border:1px solid var(--af-line);
     border-radius:14px;
-    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-    overflow:hidden;
+    background:#fff;
+    color:var(--af-text);
+    padding:10px 13px;
+    font-size:13px;
+    line-height:1.5;
+    font-weight:400 !important;
+    outline:none;
+    box-shadow:none;
+    transition:border-color .14s ease, box-shadow .14s ease, background .14s ease;
   }
 
-  .v963vf2-section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:11px 12px;
-    border-bottom:1px solid var(--mx-line-3);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  .af3-field textarea{
+    min-height:106px;
+    height:auto;
+    resize:vertical;
+    line-height:1.8;
   }
 
-  .v963vf2-section-title-wrap{display:flex;align-items:center;gap:8px;min-width:0}
-  .v963vf2-section-title{
-    margin:0;
-    color:var(--mx-green-1);
-    font-size:9.6px;
-    font-weight:900 !important;
+  .af3-field input:focus,
+  .af3-field select:focus,
+  .af3-field textarea:focus{
+    border-color:var(--af-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.09);
+    background:#fff;
   }
 
-  .v963vf2-section-body{padding:12px}
-
-  .v963vf2-fields{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:10px;
+  .af3-section.contact .af3-field input:focus,
+  .af3-section.contact .af3-field select:focus,
+  .af3-section.contact .af3-field textarea:focus{
+    border-color:var(--af-blue);
+    box-shadow:0 0 0 4px rgba(73,109,127,.09);
   }
 
-  .v963vf2-field{
-    padding:10px;
-    border:1px solid var(--mx-line);
-    border-radius:12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  .af3-section.extra .af3-field input:focus,
+  .af3-section.extra .af3-field select:focus,
+  .af3-section.extra .af3-field textarea:focus{
+    border-color:var(--af-gold);
+    box-shadow:0 0 0 4px rgba(155,119,52,.09);
   }
 
-  .v963vf2-field.is-focused{
-    border-color:rgba(168,146,96,.7);
-    box-shadow:0 0 0 2px rgba(168,146,96,.07);
-    background:#fffdfa;
+  .af3-field input[type="checkbox"],
+  .af3-field input[type="radio"]{
+    width:17px;
+    height:17px;
+    accent-color:var(--af-green);
   }
 
-  .v963vf2-field.has-error{
-    border-color:#dfb7b7;
+  .af3-field.has-error input,
+  .af3-field.has-error select,
+  .af3-field.has-error textarea{
+    border-color:var(--af-red-line);
     background:#fffafa;
   }
 
-  .v963vf2-field-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    margin-bottom:6px;
-  }
-
-  .v963vf2-label{
-    font-size:8.8px;
-    font-weight:900 !important;
-    color:var(--mx-green-1);
-    line-height:1.4;
-  }
-
-  .v963vf2-req{min-height:22px;padding:2px 8px;font-size:7px;border-color:#e7d7b7;background:#fcf7ee;color:#8a6526}
-  .v963vf2-req.optional{opacity:.72}
-
-  .v963vf2-field input:not([type="checkbox"]):not([type="radio"]),
-  .v963vf2-field select,
-  .v963vf2-field textarea{
-    width:100%;
-    min-height:40px;
-    height:40px;
+  .af3-field-error{
+    border:1px solid var(--af-red-line);
+    background:var(--af-red-2);
+    color:var(--af-red);
+    border-radius:12px;
     padding:8px 10px;
-    font-size:8.75px;
-    font-weight:800;
-    border-radius:9px;
-    border:1px solid var(--mx-line-2);
-    background:#fff;
-    color:var(--mx-ink);
-    outline:none;
-    box-shadow:none;
+    font-size:10px;
+    line-height:1.75;
+    font-weight:400 !important;
   }
 
-  .v963vf2-field textarea{
-    min-height:108px;
-    height:auto;
-    resize:vertical;
-    line-height:1.85;
+  .af3-field-error ul{
+    margin:0;
+    padding:0 16px 0 0;
   }
 
-  .v963vf2-field input:focus,
-  .v963vf2-field select:focus,
-  .v963vf2-field textarea:focus{
-    border-color:rgba(168,146,96,.72);
-    box-shadow:0 0 0 2px rgba(168,146,96,.08);
+  .af3-help{
+    color:var(--af-muted);
+    font-size:10px;
+    line-height:1.75;
+    font-weight:400 !important;
   }
 
-  .v963vf2-field input[type="checkbox"],
-  .v963vf2-field input[type="radio"]{
-    accent-color:var(--mx-green-2);
-    width:auto;
-    min-height:auto;
-    height:auto;
-    transform:translateY(1px);
+  .af3-savebar{
+    position:fixed;
+    inset-inline-start:12px;
+    inset-inline-end:12px;
+    bottom:12px;
+    z-index:90;
+    padding:12px 14px;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(12px);
+    box-shadow:var(--af-shadow-float);
   }
 
-  .v963vf2-error{
-    margin-top:6px;
-    padding:7px 8px;
-    border-radius:8px;
-    border:1px solid #e7c7c7;
-    background:#fcf6f6;
-    color:#8f2f2f;
-    font-size:7.7px;
-    line-height:1.65;
-    font-weight:800 !important;
+  .af3-savebar::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:2px;
+    background:linear-gradient(90deg,var(--af-green),var(--af-gold));
   }
 
-  .v963vf2-error ul{margin:0;padding:0 15px 0 0}
-
-  .v963vf2-alert{
-    border:1px solid #e7c7c7;
-    border-radius:14px;
-    background:linear-gradient(180deg,#fffdfd,#fcf7f7);
-    padding:11px 12px;
-  }
-
-  .v963vf2-alert-title{
-    margin:0 0 4px;
-    color:var(--mx-danger);
-    font-size:9px;
-    font-weight:900 !important;
-  }
-
-  .v963vf2-alert-text{
-    color:#8b4444;
-    font-size:7.8px;
-    line-height:1.8;
-    font-weight:800 !important;
-  }
-
-  .v963vf2-stickybar{
-    position:sticky;
-    bottom:10px;
-    z-index:30;
+  .af3-save-inner{
+    width:min(100%,1180px);
+    margin:0 auto;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-    padding:10px 12px;
-    background:rgba(255,255,255,.97);
-    backdrop-filter:blur(8px);
-    box-shadow:var(--mx-shadow-soft);
-  }
-
-  .v963vf2-stickybar-left,
-  .v963vf2-stickybar-right{
-    display:flex;
-    align-items:center;
-    gap:8px;
+    gap:12px;
     flex-wrap:wrap;
   }
 
-  .v963vf2-stickybar .v963vf2-btn{min-height:38px;padding:8px 14px}
-
-  @media (max-width:1180px){
-    .v963vf2-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .af3-save-btn{
+    min-width:110px;
   }
 
-  @media (max-width:1080px){
-    .v963vf2-layout{grid-template-columns:1fr}
-    .v963vf2-summary{position:static}
-  }
+  @media (max-width:980px){
+    .af3-hero-grid{
+      grid-template-columns:1fr;
+      align-items:start;
+    }
 
-  @media (max-width:820px){
-    .v963vf2-hero-grid{grid-template-columns:1fr}
-    .v963vf2-hero-actions{justify-content:flex-start}
-    .v963vf2-fields{grid-template-columns:1fr}
+    .af3-actions{
+      justify-content:flex-start;
+    }
+
+    .af3-grid{
+      grid-template-columns:1fr;
+    }
+
+    .af3-field.full{
+      grid-column:auto;
+    }
   }
 
   @media (max-width:640px){
-    .v963vf2{padding:8px}
-    .v963vf2-shell{padding:10px;border-radius:22px}
-    .v963vf2-hero-title{font-size:17px}
-    .v963vf2-stickybar{bottom:6px}
-    .v963vf2-stickybar-left,
-    .v963vf2-stickybar-right{width:100%}
+    .af3{
+      padding:8px 8px 110px;
+    }
+
+    .af3-title{
+      font-size:23px;
+    }
+
+    .af3-subtitle{
+      font-size:12px;
+    }
+
+    .af3-hero,
+    .af3-form-head,
+    .af3-form-body{
+      padding-inline:12px;
+    }
+
+    .af3-save-info,
+    .af3-save-actions{
+      width:100%;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="v963vf2">
-  <div class="v963vf2-page">
-    <div class="v963vf2-shell">
+<div class="af3">
+  <div class="af3-page">
 
-      <div class="v963vf2-hero">
-        <div class="v963vf2-hero-grid">
-          <div class="v963vf2-hero-main">
-            <div class="v963vf2-hero-top">
-              <span class="v963vf2-state-pill">
-                <span class="dot" style="background:{% if mode == 'create' %}#d0c08f{% else %}#91b79d{% endif %};"></span>
-                {% if mode == "create" %}وضع الإضافة{% else %}وضع التعديل{% endif %}
-              </span>
-
-              <span class="v963vf2-state-pill">
-                <span class="dot" style="background:#d0c08f;"></span>
-                نموذج بيانات الشاغر
-              </span>
-            </div>
-
-            <h1 class="v963vf2-hero-title">{% if mode == "create" %}إضافة شاغر{% else %}تعديل شاغر{% endif %}</h1>
-            <p class="v963vf2-hero-sub">إدخال وتحديث بيانات الشاغر ضمن نموذج ثقيل البيانات، مع تقسيم واضح للمعلومات لتسهيل المراجعة والحفظ والإدارة.</p>
-          </div>
-
-          <div class="v963vf2-hero-actions">
-            <a class="v963vf2-btn v963vf2-btn-primary" href="{% url 'portal:admin_vacancies_list' %}">
-              <span class="v963vf2-btn-icon">↩</span>
-              رجوع للقائمة
-            </a>
-            <a class="v963vf2-btn v963vf2-btn-gold" href="{% url 'portal:admin_dashboard' %}">
-              <span class="v963vf2-btn-icon">▦</span>
-              لوحة القرار
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="v963vf2-nav" style="margin-top:10px;">
-        <div class="v963vf2-nav-links">
-          <a class="v963vf2-nav-link" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
-          <a class="v963vf2-nav-link" href="{% url 'portal:admin_vacancies_list' %}">إدارة الشواغر</a>
-          <a class="v963vf2-nav-link is-active" href="#">{% if mode == "create" %}إضافة شاغر{% else %}تعديل شاغر{% endif %}</a>
-        </div>
-      </div>
-
-      <div class="v963vf2-layout" style="margin-top:10px;">
-
+    <section class="af3-hero">
+      <div class="af3-hero-grid">
         <div>
-          <div class="v963vf2-card">
-            <div class="v963vf2-card-head">
-              <div class="v963vf2-card-head-main">
-                <h2 class="v963vf2-card-title">بيانات الشاغر</h2>
-                <div class="v963vf2-caption">تم تقسيم الحقول إلى مجموعات واضحة لتسهيل الإدخال والمراجعة.</div>
-              </div>
-              <span class="v963vf2-pill {% if mode == 'create' %}warn{% else %}ok{% endif %}">{% if mode == "create" %}سجل جديد{% else %}سجل قائم{% endif %}</span>
+          <span class="af3-kicker">{% if mode == "create" %}وضع الإضافة{% else %}وضع التعديل{% endif %}</span>
+          <h1 class="af3-title">{% if mode == "create" %}إضافة شاغر{% else %}تعديل شاغر{% endif %}</h1>
+          <p class="af3-subtitle">
+            {% if mode == "create" %}
+              أدخل بيانات الشاغر ضمن نموذج عملي واضح، بنفس نمط صفحة إضافة المتقدمين، مع تقسيم الحقول وتسهيل الحفظ والمراجعة.
+            {% else %}
+              حدّث بيانات الشاغر الحالية مع الحفاظ على اتساق السجل الإداري ومؤشرات التشغيل والاحتياج.
+            {% endif %}
+          </p>
+        </div>
+
+        <div class="af3-actions">
+          <a class="af3-btn" href="{% url 'portal:admin_vacancies_list' %}">رجوع للقائمة</a>
+          <a class="af3-btn" href="{% url 'portal:admin_dashboard' %}">لوحة الإدارة</a>
+          <a class="af3-btn gold" href="{% url 'portal:admin_applicants_list' %}">إدارة المتقدمين</a>
+        </div>
+      </div>
+
+      <div class="af3-status">
+        <div class="af3-status-row">
+          <span class="af3-chip green">نموذج بيانات الشاغر</span>
+          <span class="af3-chip gold">الحقول الإلزامية مميزة</span>
+          <span class="af3-chip blue">متطابق مع نمط المتقدمين</span>
+        </div>
+        <div class="af3-note">راجع بيانات المدرسة والقطاع ثم أكمل مؤشرات الاحتياج والتشغيل قبل الحفظ.</div>
+      </div>
+    </section>
+
+    <section class="af3-card">
+      <div class="af3-form-head">
+        <div>
+          <h2 class="af3-head-title">بيانات الشاغر</h2>
+          <div class="af3-head-sub">نموذج إدخال مركّز، بأقسام واضحة وتدرج بصري مطابق لصفحة إضافة المتقدمين.</div>
+        </div>
+        {% if mode == "edit" %}
+          <span class="af3-chip green">سجل قائم</span>
+        {% else %}
+          <span class="af3-chip gold">سجل جديد</span>
+        {% endif %}
+      </div>
+
+      <form method="post" class="af3-form-body" id="vacancyForm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="af3-alert">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="af3-section basic">
+          <div class="af3-section-head">
+            <div>
+              <h3 class="af3-section-title">البيانات الأساسية للشاغر</h3>
+              <div class="af3-section-sub">اسم المدرسة، رقم الوزارة، القطاع، الجنس، المرحلة، ونوع التعليم.</div>
             </div>
+            <span class="af3-tag green">أساسي</span>
+          </div>
 
-            <form method="post" class="v963vf2-card-body" id="vacancyForm">
-              {% csrf_token %}
-
-              {% if form.errors %}
-                <div class="v963vf2-alert" id="formErrorsBox">
-                  <h3 class="v963vf2-alert-title">يرجى مراجعة الحقول التالية</h3>
-                  <div class="v963vf2-alert-text">يوجد بعض الحقول التي تحتاج إلى تصحيح قبل إتمام الحفظ. تم تمييز الحقول التي تحتوي على ملاحظات أو أخطاء داخل النموذج.</div>
+          <div class="af3-grid">
+            {% for field in form %}
+              {% if field.name == "ministry_no" or field.name == "school_name" or field.name == "stage" or field.name == "gender" or field.name == "sector" or field.name == "establishment_status" or field.name == "education_type" %}
+                <div class="af3-field{% if field.errors %} has-error{% endif %}{% if field.name == 'school_name' %} full{% endif %}">
+                  <div class="af3-label-row">
+                    <label class="af3-label" for="{{ field.id_for_label }}">
+                      {% if field.name == "ministry_no" %}رقم الوزارة
+                      {% elif field.name == "school_name" %}اسم المدرسة
+                      {% elif field.name == "stage" %}المرحلة
+                      {% elif field.name == "gender" %}الجنس
+                      {% elif field.name == "sector" %}القطاع
+                      {% elif field.name == "establishment_status" %}حالة المدرسة
+                      {% elif field.name == "education_type" %}نوع التعليم
+                      {% else %}{{ field.label }}{% endif %}
+                    </label>
+                    {% if field.field.required %}<span class="af3-required">إلزامي</span>{% else %}<span class="af3-optional">اختياري</span>{% endif %}
+                  </div>
+                  {{ field }}
+                  {% if field.errors %}<div class="af3-field-error">{{ field.errors }}</div>{% endif %}
+                  {% if field.help_text %}<div class="af3-help">{{ field.help_text }}</div>{% endif %}
                 </div>
               {% endif %}
-
-              <section class="v963vf2-section">
-                <div class="v963vf2-section-head">
-                  <div class="v963vf2-section-title-wrap">
-                    <span class="v963vf2-mark"></span>
-                    <h3 class="v963vf2-section-title">البيانات الأساسية للشاغر</h3>
-                  </div>
-                  <span class="v963vf2-chip">تعريف الشاغر</span>
-                </div>
-                <div class="v963vf2-section-body">
-                  <div class="v963vf2-fields">
-                    {% for field in form %}
-                      {% if field.name == "ministry_no" or field.name == "school_name" or field.name == "stage" or field.name == "gender" or field.name == "sector" or field.name == "establishment_status" or field.name == "education_type" %}
-                        <div class="v963vf2-field{% if field.errors %} has-error{% endif %}">
-                          <div class="v963vf2-field-top">
-                            <div class="v963vf2-label">
-                              {% if field.name == "ministry_no" %}رقم الوزارة
-                              {% elif field.name == "school_name" %}اسم المدرسة
-                              {% elif field.name == "stage" %}المرحلة
-                              {% elif field.name == "gender" %}الجنس
-                              {% elif field.name == "establishment_status" %}حالة المدرسة
-                              {% elif field.name == "sector" %}القطاع
-                              {% elif field.name == "education_type" %}نوع التعليم
-                              {% else %}{{ field.label }}{% endif %}
-                            </div>
-                            {% if field.field.required %}
-                              <span class="v963vf2-req">إلزامي</span>
-                            {% else %}
-                              <span class="v963vf2-req optional">اختياري</span>
-                            {% endif %}
-                          </div>
-                          {{ field }}
-                          {% if field.errors %}<div class="v963vf2-error">{{ field.errors }}</div>{% endif %}
-                          {% if field.help_text %}<div class="v963vf2-help">{{ field.help_text }}</div>{% endif %}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </section>
-
-              <section class="v963vf2-section">
-                <div class="v963vf2-section-head">
-                  <div class="v963vf2-section-title-wrap">
-                    <span class="v963vf2-mark"></span>
-                    <h3 class="v963vf2-section-title">بيانات الإدارة</h3>
-                  </div>
-                  <span class="v963vf2-chip">الإدارة المدرسية</span>
-                </div>
-                <div class="v963vf2-section-body">
-                  <div class="v963vf2-fields">
-                    {% for field in form %}
-                      {% if field.name == "manager_name" or field.name == "manager_national_id" %}
-                        <div class="v963vf2-field{% if field.errors %} has-error{% endif %}">
-                          <div class="v963vf2-field-top">
-                            <div class="v963vf2-label">
-                              {% if field.name == "manager_name" %}اسم المدير
-                              {% elif field.name == "manager_national_id" %}سجل المدير
-                              {% else %}{{ field.label }}{% endif %}
-                            </div>
-                            {% if field.field.required %}
-                              <span class="v963vf2-req">إلزامي</span>
-                            {% else %}
-                              <span class="v963vf2-req optional">اختياري</span>
-                            {% endif %}
-                          </div>
-                          {{ field }}
-                          {% if field.errors %}<div class="v963vf2-error">{{ field.errors }}</div>{% endif %}
-                          {% if field.help_text %}<div class="v963vf2-help">{{ field.help_text }}</div>{% endif %}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </section>
-
-              <section class="v963vf2-section">
-                <div class="v963vf2-section-head">
-                  <div class="v963vf2-section-title-wrap">
-                    <span class="v963vf2-mark"></span>
-                    <h3 class="v963vf2-section-title">المؤشرات المدرسية</h3>
-                  </div>
-                  <span class="v963vf2-chip">مؤشرات وأرقام</span>
-                </div>
-                <div class="v963vf2-section-body">
-                  <div class="v963vf2-fields">
-                    {% for field in form %}
-                      {% if field.name == "students_metric" or field.name == "classes_total" or field.name == "students_total" or field.name == "stage_metric" or field.name == "stage_code" or field.name == "class_metric" %}
-                        <div class="v963vf2-field{% if field.errors %} has-error{% endif %}">
-                          <div class="v963vf2-field-top">
-                            <div class="v963vf2-label">
-                              {% if field.name == "students_metric" %}معيار الطلاب
-                              {% elif field.name == "classes_total" %}إجمالي الفصول
-                              {% elif field.name == "students_total" %}إجمالي الطلاب
-                              {% elif field.name == "stage_metric" %}معيار المرحلة
-                              {% elif field.name == "stage_code" %}كود المرحلة
-                              {% elif field.name == "class_metric" %}معيار الفصول
-                              {% else %}{{ field.label }}{% endif %}
-                            </div>
-                            {% if field.field.required %}
-                              <span class="v963vf2-req">إلزامي</span>
-                            {% else %}
-                              <span class="v963vf2-req optional">اختياري</span>
-                            {% endif %}
-                          </div>
-                          {{ field }}
-                          {% if field.errors %}<div class="v963vf2-error">{{ field.errors }}</div>{% endif %}
-                          {% if field.help_text %}<div class="v963vf2-help">{{ field.help_text }}</div>{% endif %}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </section>
-
-              <section class="v963vf2-section">
-                <div class="v963vf2-section-head">
-                  <div class="v963vf2-section-title-wrap">
-                    <span class="v963vf2-mark"></span>
-                    <h3 class="v963vf2-section-title">الاحتياج والتشغيل</h3>
-                  </div>
-                  <span class="v963vf2-chip">الحالة التشغيلية</span>
-                </div>
-                <div class="v963vf2-section-body">
-                  <div class="v963vf2-fields">
-                    {% for field in form %}
-                      {% if field.name == "deputy_need" or field.name == "deputy_existing" or field.name == "deputy_staff" or field.name == "is_open" %}
-                        <div class="v963vf2-field{% if field.errors %} has-error{% endif %}">
-                          <div class="v963vf2-field-top">
-                            <div class="v963vf2-label">
-                              {% if field.name == "deputy_need" %}الاحتياج لوكيل
-                              {% elif field.name == "deputy_existing" %}الوكلاء الحاليون
-                              {% elif field.name == "deputy_staff" %}الكادر الإداري
-                              {% elif field.name == "is_open" %}مفتوح للتقديم
-                              {% else %}{{ field.label }}{% endif %}
-                            </div>
-                            {% if field.field.required %}
-                              <span class="v963vf2-req">إلزامي</span>
-                            {% else %}
-                              <span class="v963vf2-req optional">اختياري</span>
-                            {% endif %}
-                          </div>
-                          {{ field }}
-                          {% if field.errors %}<div class="v963vf2-error">{{ field.errors }}</div>{% endif %}
-                          {% if field.help_text %}<div class="v963vf2-help">{{ field.help_text }}</div>{% endif %}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </section>
-
-              <section class="v963vf2-section">
-                <div class="v963vf2-section-head">
-                  <div class="v963vf2-section-title-wrap">
-                    <span class="v963vf2-mark"></span>
-                    <h3 class="v963vf2-section-title">حقول إضافية</h3>
-                  </div>
-                  <span class="v963vf2-chip">احتياطي</span>
-                </div>
-                <div class="v963vf2-section-body">
-                  <div class="v963vf2-fields">
-                    {% for field in form %}
-                      {% if field.name != "ministry_no" and field.name != "school_name" and field.name != "stage" and field.name != "gender" and field.name != "sector" and field.name != "establishment_status" and field.name != "education_type" and field.name != "manager_name" and field.name != "manager_national_id" and field.name != "students_metric" and field.name != "classes_total" and field.name != "students_total" and field.name != "stage_metric" and field.name != "stage_code" and field.name != "class_metric" and field.name != "deputy_need" and field.name != "deputy_existing" and field.name != "deputy_staff" and field.name != "is_open" %}
-                        <div class="v963vf2-field{% if field.errors %} has-error{% endif %}">
-                          <div class="v963vf2-field-top">
-                            <div class="v963vf2-label">{{ field.label }}</div>
-                            {% if field.field.required %}
-                              <span class="v963vf2-req">إلزامي</span>
-                            {% else %}
-                              <span class="v963vf2-req optional">اختياري</span>
-                            {% endif %}
-                          </div>
-                          {{ field }}
-                          {% if field.errors %}<div class="v963vf2-error">{{ field.errors }}</div>{% endif %}
-                          {% if field.help_text %}<div class="v963vf2-help">{{ field.help_text }}</div>{% endif %}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </section>
-
-              <div class="v963vf2-stickybar">
-                <div class="v963vf2-stickybar-right">
-                  <button class="v963vf2-btn v963vf2-btn-primary" type="submit">
-                    <span class="v963vf2-btn-icon">✓</span>
-                    حفظ
-                  </button>
-                  <button class="v963vf2-btn" type="submit" name="action" value="save_back">
-                    <span class="v963vf2-btn-icon">↶</span>
-                    حفظ والعودة
-                  </button>
-                </div>
-
-                <div class="v963vf2-stickybar-left">
-                  <a class="v963vf2-btn v963vf2-btn-soft" href="{% url 'portal:admin_vacancies_list' %}">إلغاء</a>
-                  <span class="v963vf2-note">{% if mode == "create" %}سيتم إنشاء سجل شاغر جديد عند الحفظ.{% else %}سيتم تحديث بيانات الشاغر الحالي مباشرة بعد الحفظ.{% endif %}</span>
-                </div>
-              </div>
-            </form>
+            {% endfor %}
           </div>
         </div>
 
-        <aside class="v963vf2-summary">
-          <div>
-            <h3 class="v963vf2-summary-title">ملخص النموذج</h3>
-            <div class="v963vf2-summary-text">تظهر هنا أهم المعلومات المرجعية لتسهيل إدخال البيانات الثقيلة ومراجعتها قبل الحفظ.</div>
+        <div class="af3-section contact">
+          <div class="af3-section-head">
+            <div>
+              <h3 class="af3-section-title">بيانات الإدارة المدرسية</h3>
+              <div class="af3-section-sub">بيانات مدير المدرسة أو البيانات الإدارية المرتبطة بالشاغر.</div>
+            </div>
+            <span class="af3-tag blue">إداري</span>
           </div>
 
-          <div class="v963vf2-summary-grid">
-            <div class="v963vf2-summary-item">
-              <div class="v963vf2-summary-k">وضع الصفحة</div>
-              <div class="v963vf2-summary-v">{% if mode == "create" %}إضافة شاغر جديد{% else %}تعديل شاغر قائم{% endif %}</div>
-            </div>
+          <div class="af3-grid">
+            {% for field in form %}
+              {% if field.name == "manager_name" or field.name == "manager_national_id" %}
+                <div class="af3-field{% if field.errors %} has-error{% endif %}{% if field.name == 'manager_name' %} full{% endif %}">
+                  <div class="af3-label-row">
+                    <label class="af3-label" for="{{ field.id_for_label }}">
+                      {% if field.name == "manager_name" %}اسم المدير
+                      {% elif field.name == "manager_national_id" %}سجل المدير
+                      {% else %}{{ field.label }}{% endif %}
+                    </label>
+                    {% if field.field.required %}<span class="af3-required">إلزامي</span>{% else %}<span class="af3-optional">اختياري</span>{% endif %}
+                  </div>
+                  {{ field }}
+                  {% if field.errors %}<div class="af3-field-error">{{ field.errors }}</div>{% endif %}
+                  {% if field.help_text %}<div class="af3-help">{{ field.help_text }}</div>{% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
 
-            <div class="v963vf2-summary-item">
-              <div class="v963vf2-summary-k">المدرسة</div>
-              <div class="v963vf2-summary-v">{% if mode == "edit" %}{{ obj.school_name|default:"—" }}{% else %}تظهر بعد تعبئة الحقل{% endif %}</div>
+        <div class="af3-section extra">
+          <div class="af3-section-head">
+            <div>
+              <h3 class="af3-section-title">المؤشرات المدرسية</h3>
+              <div class="af3-section-sub">مؤشرات الطلاب والفصول والمرحلة التي تساعد في قراءة الاحتياج.</div>
             </div>
-
-            <div class="v963vf2-summary-item">
-              <div class="v963vf2-summary-k">القطاع</div>
-              <div class="v963vf2-summary-v">{% if mode == "edit" %}{{ obj.sector|default:"—" }}{% else %}يُحدد ضمن البيانات الأساسية{% endif %}</div>
-            </div>
-
-            <div class="v963vf2-summary-item">
-              <div class="v963vf2-summary-k">المرحلة / الجنس</div>
-              <div class="v963vf2-summary-v">{% if mode == "edit" %}{{ obj.stage|default:"—" }} — {{ obj.gender|default:"—" }}{% else %}يُحدد أثناء الإدخال{% endif %}</div>
-            </div>
-
-            <div class="v963vf2-summary-item">
-              <div class="v963vf2-summary-k">حالة التقديم</div>
-              <div class="v963vf2-summary-v">{% if mode == "edit" %}{% if obj.is_open %}مفتوح للتقديم{% else %}مغلق للتقديم{% endif %}{% else %}تظهر بعد تحديد الحقل{% endif %}</div>
-            </div>
+            <span class="af3-tag gold">مؤشرات</span>
           </div>
 
-          <div class="v963vf2-summary-item">
-            <div class="v963vf2-summary-k">إرشاد سريع</div>
-            <div class="v963vf2-summary-v">ابدأ بالبيانات الأساسية أولًا، ثم الإدارة، ثم المؤشرات، ثم الاحتياج والتشغيل. هذا الترتيب يقلل أخطاء الإدخال ويجعل المراجعة أسرع.</div>
+          <div class="af3-grid">
+            {% for field in form %}
+              {% if field.name == "students_metric" or field.name == "classes_total" or field.name == "students_total" or field.name == "stage_metric" or field.name == "stage_code" or field.name == "class_metric" %}
+                <div class="af3-field{% if field.errors %} has-error{% endif %}">
+                  <div class="af3-label-row">
+                    <label class="af3-label" for="{{ field.id_for_label }}">
+                      {% if field.name == "students_metric" %}معيار الطلاب
+                      {% elif field.name == "classes_total" %}إجمالي الفصول
+                      {% elif field.name == "students_total" %}إجمالي الطلاب
+                      {% elif field.name == "stage_metric" %}معيار المرحلة
+                      {% elif field.name == "stage_code" %}كود المرحلة
+                      {% elif field.name == "class_metric" %}معيار الفصول
+                      {% else %}{{ field.label }}{% endif %}
+                    </label>
+                    {% if field.field.required %}<span class="af3-required">إلزامي</span>{% else %}<span class="af3-optional">اختياري</span>{% endif %}
+                  </div>
+                  {{ field }}
+                  {% if field.errors %}<div class="af3-field-error">{{ field.errors }}</div>{% endif %}
+                  {% if field.help_text %}<div class="af3-help">{{ field.help_text }}</div>{% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
           </div>
-        </aside>
+        </div>
 
+        <div class="af3-section basic">
+          <div class="af3-section-head">
+            <div>
+              <h3 class="af3-section-title">الاحتياج والتشغيل</h3>
+              <div class="af3-section-sub">بيانات الاحتياج وعدد الوكلاء وحالة فتح الشاغر للتقديم.</div>
+            </div>
+            <span class="af3-tag green">تشغيلي</span>
+          </div>
+
+          <div class="af3-grid">
+            {% for field in form %}
+              {% if field.name == "deputy_need" or field.name == "deputy_existing" or field.name == "deputy_staff" or field.name == "is_open" %}
+                <div class="af3-field{% if field.errors %} has-error{% endif %}">
+                  <div class="af3-label-row">
+                    <label class="af3-label" for="{{ field.id_for_label }}">
+                      {% if field.name == "deputy_need" %}الاحتياج لوكيل
+                      {% elif field.name == "deputy_existing" %}الوكلاء الحاليون
+                      {% elif field.name == "deputy_staff" %}الكادر الإداري
+                      {% elif field.name == "is_open" %}مفتوح للتقديم
+                      {% else %}{{ field.label }}{% endif %}
+                    </label>
+                    {% if field.field.required %}<span class="af3-required">إلزامي</span>{% else %}<span class="af3-optional">اختياري</span>{% endif %}
+                  </div>
+                  {{ field }}
+                  {% if field.errors %}<div class="af3-field-error">{{ field.errors }}</div>{% endif %}
+                  {% if field.help_text %}<div class="af3-help">{{ field.help_text }}</div>{% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="af3-section extra">
+          <div class="af3-section-head">
+            <div>
+              <h3 class="af3-section-title">حقول إضافية</h3>
+              <div class="af3-section-sub">أي حقول أخرى غير مصنفة ضمن المجموعات السابقة.</div>
+            </div>
+            <span class="af3-tag gold">إضافي</span>
+          </div>
+
+          <div class="af3-grid">
+            {% for field in form %}
+              {% if field.name != "ministry_no" and field.name != "school_name" and field.name != "stage" and field.name != "gender" and field.name != "sector" and field.name != "establishment_status" and field.name != "education_type" and field.name != "manager_name" and field.name != "manager_national_id" and field.name != "students_metric" and field.name != "classes_total" and field.name != "students_total" and field.name != "stage_metric" and field.name != "stage_code" and field.name != "class_metric" and field.name != "deputy_need" and field.name != "deputy_existing" and field.name != "deputy_staff" and field.name != "is_open" %}
+                <div class="af3-field{% if field.errors %} has-error{% endif %}">
+                  <div class="af3-label-row">
+                    <label class="af3-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.field.required %}<span class="af3-required">إلزامي</span>{% else %}<span class="af3-optional">اختياري</span>{% endif %}
+                  </div>
+                  {{ field }}
+                  {% if field.errors %}<div class="af3-field-error">{{ field.errors }}</div>{% endif %}
+                  {% if field.help_text %}<div class="af3-help">{{ field.help_text }}</div>{% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <div class="af3-savebar">
+      <div class="af3-save-inner">
+        <div class="af3-save-info">
+          <span class="af3-chip green">{% if mode == "create" %}إضافة شاغر جديد{% else %}تعديل شاغر قائم{% endif %}</span>
+          <span class="af3-note">احفظ البيانات ثم تابع إدارة الشواغر من القائمة.</span>
+        </div>
+
+        <div class="af3-save-actions">
+          <button type="submit" form="vacancyForm" class="af3-save-btn primary">حفظ البيانات</button>
+          <a class="af3-save-btn" href="{% url 'portal:admin_vacancies_list' %}">إلغاء</a>
+        </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
-(function(){
-  const form = document.getElementById('vacancyForm');
-  if(!form) return;
+  (function(){
+    const form = document.getElementById('vacancyForm');
+    if (!form) return;
 
-  const selector = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([disabled]), select:not([disabled]), textarea:not([disabled])';
-  const fields = Array.from(form.querySelectorAll(selector)).filter(el => el.offsetParent !== null || el.type === 'hidden');
-
-  function fieldWrap(el){
-    return el.closest('.v963vf2-field');
-  }
-
-  fields.forEach(el => {
-    el.addEventListener('focus', () => {
-      const wrap = fieldWrap(el);
-      if(wrap) wrap.classList.add('is-focused');
+    form.querySelectorAll('.af3-field input, .af3-field select, .af3-field textarea').forEach(el => {
+      el.addEventListener('focus', () => el.closest('.af3-field')?.classList.add('is-focused'));
+      el.addEventListener('blur', () => el.closest('.af3-field')?.classList.remove('is-focused'));
     });
-    el.addEventListener('blur', () => {
-      const wrap = fieldWrap(el);
-      if(wrap) wrap.classList.remove('is-focused');
-    });
-    el.addEventListener('keydown', (e) => {
-      if(e.key !== 'Enter') return;
-      if(el.tagName === 'TEXTAREA') return;
-      if(el.type === 'checkbox' || el.type === 'radio') return;
-      e.preventDefault();
-      const currentIndex = fields.indexOf(el);
-      if(currentIndex === -1) return;
-      const next = fields.slice(currentIndex + 1).find(item => item.offsetParent !== null);
-      if(next) next.focus();
-    });
-  });
 
-  const firstError = form.querySelector('.v963vf2-field.has-error input, .v963vf2-field.has-error select, .v963vf2-field.has-error textarea');
-  const firstField = form.querySelector(selector);
-  if(firstError){
-    firstError.focus();
-  }else if(firstField){
-    firstField.focus();
-  }
-})();
+    const firstError = form.querySelector('.af3-field.has-error input, .af3-field.has-error select, .af3-field.has-error textarea');
+    const firstInput = form.querySelector('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+    const target = firstError || firstInput;
+    if (target) setTimeout(() => target.focus(), 120);
+  })();
 </script>
 {% endblock %}

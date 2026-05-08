@@ -3,251 +3,226 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Closed Gate — Clean Direct Access
+     - صفحة حالة بسيطة بدون دوائر خلفية أو زخرفة نقاط
+     - كرت واحد مباشر مثل صفحة الدخول
+     - الحفاظ على msg وروابط الرجوع دون تعديل views.py
+  ========================================================= */
+
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
+    --cg-bg:#f6f8f6;
+    --cg-surface:#ffffff;
+    --cg-ink:#162f25;
+    --cg-muted:#6f7f76;
 
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --cg-green-1:#173c2f;
+    --cg-green-2:#1f4d3a;
+    --cg-green-3:#2e6b53;
+    --cg-green-soft:#edf7f2;
+    --cg-green-line:#cfe4d8;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --cg-red:#8f2f2f;
+    --cg-red-soft:#fcf7f7;
+    --cg-red-line:#e8caca;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-
-    --danger:#8f2f2f;
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
-
-    --warn:#8e6113;
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
-
-    --moe-mid:#1f7a62;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --cg-line:#d8e2dc;
+    --cg-line-2:#cbd8d0;
+    --cg-shadow:0 12px 26px rgba(18,32,24,.055);
   }
 
-  .cls, .cls *{
+  .closedDirect,
+  .closedDirect *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .cls{
+  .closedDirect{
     direction:rtl;
-    color:var(--ink);
-  }
-
-  .cls-wrap{
-    max-width:960px;
-    margin:0 auto;
+    min-height:calc(100vh - 54px);
+    color:var(--cg-ink);
+    padding:44px 10px 28px;
     display:grid;
-    gap:12px;
+    place-items:start center;
+    background:linear-gradient(180deg,#fbfcfb 0%, var(--cg-bg) 58%, #eef3ef 100%);
   }
 
-  .cls-head,
-  .cls-card{
-    position:relative;
+  .closedDirect-card{
+    width:min(100%, 540px);
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--shadow);
+    border:1px solid var(--cg-line);
+    border-radius:18px;
+    background:var(--cg-surface);
+    box-shadow:var(--cg-shadow);
   }
 
-  .cls-head::before,
-  .cls-card::before{
+  .closedDirect-head{
+    padding:24px 24px 20px;
+    text-align:center;
+    border-bottom:1px solid #edf1ee;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+  }
+
+  .closedDirect-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    min-height:29px;
+    padding:5px 11px;
+    margin-bottom:12px;
+    border-radius:999px;
+    border:1px solid var(--cg-red-line);
+    background:var(--cg-red-soft);
+    color:var(--cg-red);
+    font-size:8.8px;
+    line-height:1;
+    font-weight:800 !important;
+    white-space:nowrap;
+  }
+
+  .closedDirect-status::before{
     content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--cg-red);
+    box-shadow:0 0 0 4px rgba(143,47,47,.07);
   }
 
-  .cls-head{
-    padding:16px 18px 14px;
-    border-inline-start:4px solid var(--moe-mid);
-    background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-  }
-
-  .cls-title{
+  .closedDirect-title{
     margin:0;
-    font-size:20px;
-    line-height:1.2;
-    font-weight:900;
-    color:var(--green-1);
+    color:var(--cg-green-1);
+    font-size:25px;
+    line-height:1.3;
+    font-weight:800 !important;
     letter-spacing:0;
   }
 
-  .cls-sub{
-    margin:6px 0 0;
-    color:var(--muted);
-    font-size:10.4px;
+  .closedDirect-subtitle{
+    margin:7px auto 0;
+    max-width:34rem;
+    color:var(--cg-muted);
+    font-size:10.2px;
     line-height:1.9;
-    font-weight:800;
+    font-weight:500 !important;
   }
 
-  .cls-card{
-    padding:18px;
+  .closedDirect-body{
+    padding:18px 22px 20px;
+    display:grid;
+    gap:13px;
   }
 
-  .cls-alert{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    min-height:30px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--warn-bd);
-    background:var(--warn-bg);
-    color:#8a6526;
-    font-size:9px;
-    font-weight:900;
-    white-space:nowrap;
-    margin-bottom:12px;
-  }
-
-  .cls-msg{
-    margin:0;
-    color:var(--ink-2);
-    line-height:2;
-    font-size:10.4px;
-    font-weight:800;
-  }
-
-  .cls-actions{
-    margin-top:16px;
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
+  .closedDirect-actions{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:9px;
     align-items:center;
   }
 
-  .cls-btn{
+  .closedDirect-btn{
     appearance:none;
-    border:1px solid var(--line-2);
+    min-height:42px;
+    padding:8px 15px;
+    border-radius:12px;
+    border:1px solid var(--cg-line-2);
     background:#fff;
-    color:var(--green-2);
-    border-radius:8px;
-    padding:8px 14px;
-    min-height:35px;
-    font-size:9.4px;
-    font-weight:900;
+    color:var(--cg-green-2);
     text-decoration:none;
+    cursor:pointer;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
-    cursor:pointer;
-    box-shadow:none;
-    transition:background .12s ease, border-color .12s ease, transform .12s ease;
+    font-size:10px;
+    line-height:1;
+    font-weight:800 !important;
+    white-space:nowrap;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease;
   }
 
-  .cls-btn:hover{
-    background:var(--paper-2);
-    border-color:#b8c6bb;
+  .closedDirect-btn:hover{
     transform:translateY(-1px);
+    background:#f8fbf9;
+    border-color:#b8c6bb;
   }
 
-  .cls-btn:active{
-    transform:translateY(0);
-  }
-
-  .cls-btn-primary{
-    background:var(--green-2);
-    border-color:var(--green-2);
+  .closedDirect-btn.primary{
+    background:var(--cg-green-2);
+    border-color:var(--cg-green-2);
     color:#fff;
   }
 
-  .cls-note{
-    margin-top:10px;
-    padding:11px 12px;
-    border-radius:10px;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--muted);
-    font-size:8.8px;
+  .closedDirect-btn.primary:hover{
+    background:var(--cg-green-1);
+    border-color:var(--cg-green-1);
+  }
+
+  .closedDirect-note{
+    border:1px dashed var(--cg-line-2);
+    border-radius:13px;
+    background:linear-gradient(180deg,#ffffff,#fafcf9);
+    color:var(--cg-muted);
+    font-size:9.2px;
     line-height:1.9;
-    font-weight:800;
+    font-weight:500 !important;
+    padding:10px 12px;
+    text-align:center;
   }
 
   @media (max-width:640px){
-    .cls-head,
-    .cls-card{
-      border-radius:10px;
+    .closedDirect{
+      padding:28px 8px 18px;
+      place-items:start stretch;
     }
 
-    .cls-head{
-      padding:14px;
-    }
-
-    .cls-card{
-      padding:14px;
-    }
-
-    .cls-title{
-      font-size:18px;
-    }
-
-    .cls-actions{
-      flex-direction:column;
-      align-items:stretch;
-    }
-
-    .cls-btn{
+    .closedDirect-card{
       width:100%;
+    }
+
+    .closedDirect-head{
+      padding:22px 16px 19px;
+    }
+
+    .closedDirect-title{
+      font-size:22px;
+    }
+
+    .closedDirect-body{
+      padding:16px;
+    }
+
+    .closedDirect-actions{
+      grid-template-columns:1fr;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="cls">
-  <div class="cls-wrap">
-
-    <div class="cls-head">
-      <h1 class="cls-title">التقديم مغلق حالياً</h1>
-      <p class="cls-sub">
-        هذه الصفحة تظهر عند إيقاف التقديم مؤقتًا أو عند انتهاء فترة التقديم المحددة في النظام.
+<div class="closedDirect">
+  <section class="closedDirect-card" aria-label="حالة التقديم">
+    <header class="closedDirect-head">
+      <span class="closedDirect-status">غير متاح الآن</span>
+      <h1 class="closedDirect-title">
+        {{ msg|default:"التقديم مغلق حاليًا" }}
+      </h1>
+      <p class="closedDirect-subtitle">
+        لا يمكن الدخول إلى خطوات التقديم في الوقت الحالي.
       </p>
-    </div>
+    </header>
 
-    <div class="cls-card">
-      <div class="cls-alert">
-        تنبيه
+    <div class="closedDirect-body">
+      <div class="closedDirect-actions">
+        <a href="{% url 'portal:login' %}" class="closedDirect-btn primary">العودة لصفحة الدخول</a>
+        <a href="javascript:window.location.reload();" class="closedDirect-btn">تحديث الحالة</a>
       </div>
 
-      <p class="cls-msg">
-        {{ msg|default:"نحيطكم علمًا بأن فترة التقديم مغلقة حالياً." }}
-      </p>
-
-      <div class="cls-actions">
-        <a href="{% url 'portal:login' %}" class="cls-btn cls-btn-primary">
-          رجوع لصفحة الدخول
-        </a>
-      </div>
-
-      <div class="cls-note">
-        في حال تم فتح التقديم لاحقًا، يمكنكم العودة إلى صفحة الدخول والمحاولة مرة أخرى.
+      <div class="closedDirect-note">
+        عند فتح التقديم لاحقًا، يمكنكم المحاولة مرة أخرى باستخدام السجل المدني المسجل في بيانات المرشحين.
       </div>
     </div>
-
-  </div>
+  </section>
 </div>
 {% endblock %}

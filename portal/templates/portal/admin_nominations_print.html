@@ -66,49 +66,51 @@
       position:relative;
       overflow:hidden;
       border:1px solid var(--line);
-      border-radius:16px;
+      border-radius:18px;
       padding:16px 18px 14px;
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
-      background:linear-gradient(135deg,#1f4738 0%, #173b2f 56%, #143328 100%);
+      background:
+        radial-gradient(circle at 8% 18%, rgba(180,146,86,.05) 0 2px, transparent 2.6px) 0 0/25px 25px,
+        linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
       box-shadow:var(--shadow-soft);
       margin-bottom:12px;
-      color:#fff;
+      color:var(--ink);
     }
 
     .screenHead::before{
       content:"";
       position:absolute;
       inset:0 0 auto 0;
-      height:4px;
-      background:linear-gradient(90deg,rgba(199,171,112,.92), rgba(166,141,89,.72), rgba(199,171,112,.26));
+      height:2px;
+      background:linear-gradient(90deg,var(--green-2),var(--gold-2));
+      opacity:.9;
     }
 
     .screenHead::after{
       content:"";
       position:absolute;
-      inset:0;
+      inset:auto 0 0 0;
+      height:1px;
+      background:var(--line-3);
       pointer-events:none;
-      background:
-        radial-gradient(380px 150px at 88% 18%, rgba(255,255,255,.07), transparent 60%),
-        linear-gradient(135deg, transparent 0 68%, rgba(255,255,255,.03) 68% 100%);
     }
 
     .screenHead > *{ position:relative; z-index:1; }
 
     .screenHead h1{
       margin:0;
-      font-size:20px;
+      font-size:22px;
       font-weight:900;
       line-height:1.2;
-      color:#fff;
+      color:var(--green-1);
     }
 
     .screenHead .meta{
       margin-top:6px;
-      color:rgba(255,255,255,.84);
+      color:var(--muted);
       font-size:10.2px;
       line-height:1.85;
       font-weight:800;
@@ -116,7 +118,7 @@
 
     .screenHead .hint{
       margin-top:7px;
-      color:rgba(255,255,255,.76);
+      color:var(--muted);
       font-size:8.7px;
       line-height:1.8;
       font-weight:800;
@@ -144,9 +146,9 @@
 
     .pill{
       padding:4px 11px;
-      border:1px solid rgba(231,217,190,.82);
-      background:rgba(255,248,237,.95);
-      color:#7a5a19;
+      border:1px solid var(--ok-bd);
+      background:var(--ok-bg);
+      color:var(--ok);
       font-size:9px;
     }
 
@@ -168,8 +170,8 @@
     }
 
     .btn.primary{
-      background:linear-gradient(180deg,#26493a 0%, #1d3f31 100%);
-      border-color:#1d3f31;
+      background:var(--green-2);
+      border-color:var(--green-2);
       color:#fff;
     }
 
@@ -179,7 +181,7 @@
       position:relative;
       overflow:hidden;
       border:1px solid var(--line);
-      border-radius:14px;
+      border-radius:18px;
       background:linear-gradient(180deg,#ffffff,#fbfcfa);
       box-shadow:var(--shadow);
       margin-bottom:14px;
@@ -201,7 +203,9 @@
       grid-template-columns:230px minmax(0,1fr) 170px;
       gap:12px;
       align-items:start;
-      background:linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
+      background:
+        radial-gradient(circle at 8% 18%, rgba(180,146,86,.04) 0 2px, transparent 2.6px) 0 0/24px 24px,
+        linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
       border-bottom:1px solid var(--line);
       border-inline-start:4px solid #2b7560;
     }
@@ -212,8 +216,8 @@
       inset:0;
       pointer-events:none;
       background:
-        radial-gradient(circle at 88% 22%, rgba(46,155,129,.08) 0 2px, transparent 2.5px) 0 0/18px 18px,
-        radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px;
+        radial-gradient(circle at 88% 22%, rgba(46,155,129,.045) 0 2px, transparent 2.5px) 0 0/22px 22px,
+        radial-gradient(circle at 82% 34%, rgba(15,95,73,.035) 0 2px, transparent 2.5px) 0 0/26px 26px;
     }
 
     .pageHeader > *{ position:relative; z-index:1; }
@@ -332,7 +336,7 @@
       background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
       border-bottom:1px solid var(--line-2);
       padding:10px 8px;
-      font-size:8.55px;
+      font-size:8.65px;
       font-weight:900;
       text-align:right;
       white-space:nowrap;
@@ -342,7 +346,7 @@
     tbody td{
       border-bottom:1px solid #edf1ed;
       padding:9px 8px;
-      font-size:8.95px;
+      font-size:9px;
       vertical-align:top;
       background:#fff;
       color:var(--ink);
@@ -519,6 +523,7 @@
       @page{ size:A4 portrait; margin:10mm 9mm 12mm 9mm; }
 
       .no-print{ display:none !important; }
+      .screenActions .btn{ display:none !important; }
 
       body{ background:#fff !important; }
 
@@ -536,6 +541,10 @@
         page-break-after:always;
         break-after:page;
         min-height:277mm;
+      }
+
+      .page::before{
+        display:none !important;
       }
 
       .page:last-child{
@@ -598,6 +607,7 @@
 
     <div class="screenHead no-print">
       <div>
+        <div class="pill" style="margin-bottom:8px">كشف داخلي</div>
         <h1>كشف الترشيح النهائي</h1>
         <div class="meta">
           كشف داخلي رسمي للطلبات ذات الرغبة المتحققة فقط، مهيأ للطباعة والأرشفة الداخلية.<br>
@@ -609,6 +619,13 @@
       </div>
 
       <div class="screenActions">
+        <button
+          class="btn"
+          type="button"
+          onclick="if (document.referrer) { window.location.href = document.referrer; } else { window.location.href = '/admin/final-approvals/'; }"
+        >
+          العودة للطلبات المعتمدة
+        </button>
         <span class="pill">إجمالي المرشحين: <b>{{ total|default:"0" }}</b></span>
         <button class="btn primary" onclick="window.print()">طباعة الكشف</button>
       </div>

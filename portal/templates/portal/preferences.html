@@ -1,155 +1,171 @@
 {% extends "portal/base.html" %}
 {% block title %}ترتيب الرغبات{% endblock %}
 
+
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Preferences — Full Workspace / Practical Applicant Step
+     - عودة لفكرة الصفحة العملية الممتلئة
+     - يمين: الشواغر المتاحة، يسار: الرغبات المختارة + الإرسال
+     - معالجة الفراغات فقط بدون تحويل الصفحة إلى كرت صغير
+     - الحفاظ على جميع data attributes والجافاسكربت دون تعديل views.py
+  ========================================================= */
+
   :root{
-    --prf-bg:#f6f7f5;
-    --prf-bg-2:#f0f2ef;
-    --prf-bg-3:#e8eeea;
+    --prf-bg:#f6f8f6;
+    --prf-surface:#ffffff;
+    --prf-surface-2:#fbfcfb;
 
-    --prf-paper:#ffffff;
-    --prf-paper-2:#f9fbf8;
-    --prf-paper-3:#f3f6f3;
-
-    --prf-ink:#203128;
-    --prf-ink-2:#33453b;
+    --prf-ink:#162f25;
     --prf-muted:#6f7f76;
 
-    --prf-green-1:#1f3a2d;
-    --prf-green-2:#294638;
-    --prf-green-3:#4b6457;
-    --prf-green-4:#7b8f84;
+    --prf-green-1:#173c2f;
+    --prf-green-2:#1f4d3a;
+    --prf-green-3:#2e6b53;
+    --prf-green-soft:#edf7f2;
+    --prf-green-line:#cfe4d8;
 
-    --prf-gold-1:#846735;
-    --prf-gold-2:#ab8950;
-    --prf-gold-3:#d7c190;
-
-    --prf-line:#d7dfd8;
-    --prf-line-2:#c8d2ca;
-    --prf-line-3:#ebf0eb;
-
-    --prf-ok:#215f39;
-    --prf-ok-bg:#eff8f3;
-    --prf-ok-bd:#cfe6d8;
-
-    --prf-warn:#8e6113;
-    --prf-warn-bg:#fcf7ee;
-    --prf-warn-bd:#e7d7b7;
+    --prf-gold:#9b7734;
+    --prf-gold-soft:#fbf6ea;
+    --prf-gold-line:#e6d5b4;
 
     --prf-danger:#8f2f2f;
-    --prf-danger-bg:#fcf6f6;
-    --prf-danger-bd:#e7c7c7;
+    --prf-danger-bg:#fcf5f5;
+    --prf-danger-bd:#e8caca;
 
-    --prf-shadow:0 1px 4px rgba(17,24,20,.035);
-    --prf-shadow-soft:0 2px 8px rgba(17,24,20,.04);
-    --prf-shadow-strong:0 8px 22px rgba(17,24,20,.06);
+    --prf-line:#d8e2dc;
+    --prf-line-2:#cbd8d0;
+    --prf-line-soft:#eaf0ec;
 
-    --prf-moe-mid:#1f7a62;
+    --prf-shadow:0 8px 22px rgba(18,32,24,.05);
+    --prf-shadow-soft:0 18px 44px rgba(18,32,24,.06);
   }
 
-  .prf, .prf *{
+  .prf,
+  .prf *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
   .prf{
-    color:var(--prf-ink);
     direction:rtl;
+    color:var(--prf-ink);
+    min-height:calc(100vh - 54px);
+    padding:16px 14px 24px;
+    background:linear-gradient(180deg,#fbfcfb 0%, var(--prf-bg) 58%, #eef3ef 100%);
   }
 
   .prf .wrap{
-    max-width:1100px;
+    width:min(100%,1320px);
     margin:0 auto;
   }
 
   .prf .shell{
-    position:relative;
     overflow:hidden;
     border:1px solid var(--prf-line);
-    border-radius:12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--prf-shadow);
+    border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--prf-shadow-soft);
   }
 
-  .prf .shell::before{
+  .prf .hero{
+    padding:18px 22px 16px;
+    border-bottom:1px solid var(--prf-line-soft);
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+  }
+
+  .prf .hero-main{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:14px;
+    align-items:center;
+  }
+
+  .prf .kicker,
+  .prf .pill,
+  .prf .tag,
+  .prf .summary-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    min-height:29px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid var(--prf-line);
+    background:#fff;
+    color:#31483d;
+    font-size:8.8px;
+    line-height:1;
+    font-weight:700 !important;
+    white-space:nowrap;
+  }
+
+  .prf .kicker{
+    border-color:var(--prf-green-line);
+    background:var(--prf-green-soft);
+    color:var(--prf-green-2);
+    margin-bottom:7px;
+  }
+
+  .prf .kicker::before,
+  .prf .section-title::before{
     content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--prf-green-2) 0%, var(--prf-gold-2) 100%);
-    opacity:.95;
-  }
-
-  .prf .top{
-    position:relative;
-    padding:16px 18px 14px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    border-bottom:1px solid var(--prf-line);
-    border-inline-start:4px solid var(--prf-moe-mid);
-  }
-
-  .prf .top > *{
-    position:relative;
-    z-index:1;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--prf-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.08);
+    flex:0 0 auto;
   }
 
   .prf h1{
     margin:0;
-    font-size:20px;
-    font-weight:900 !important;
-    letter-spacing:0;
     color:var(--prf-green-1);
-    line-height:1.2;
-  }
-
-  .prf .sub{
-    margin:6px 0 0;
-    color:var(--prf-muted);
-    font-size:10.4px;
-    line-height:1.9;
-    max-width:66ch;
+    font-size:25px;
+    line-height:1.25;
     font-weight:800 !important;
   }
 
-  .prf .pill{
-    display:inline-flex;
+  .prf .sub{
+    margin:4px 0 0;
+    color:var(--prf-muted);
+    font-size:10.6px;
+    line-height:1.85;
+    font-weight:500 !important;
+    max-width:82ch;
+  }
+
+  .prf .hero-actions{
+    display:flex;
     align-items:center;
+    justify-content:flex-end;
     gap:8px;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--prf-warn-bd);
-    background:var(--prf-warn-bg);
-    color:#7f5d1a;
-    font-size:9px;
-    font-weight:900 !important;
-    white-space:nowrap;
+    flex-wrap:wrap;
   }
 
   .prf .dot{
     width:8px;
     height:8px;
     border-radius:50%;
-    background:linear-gradient(135deg,var(--prf-green-2),var(--prf-green-3));
-    box-shadow:0 0 0 3px rgba(171,137,80,.12);
+    background:var(--prf-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.08);
+    flex:0 0 auto;
+  }
+
+  .prf .content{
+    padding:14px;
+    display:grid;
+    gap:12px;
   }
 
   .prf .timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid var(--prf-line);
-    background:linear-gradient(180deg,#fffdfa 0%, #f9fbf8 100%);
-    border-radius:10px;
-    padding:12px;
-    box-shadow:var(--prf-shadow-soft);
+    border:1px solid var(--prf-gold-line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#fffdf8,#fbf6ea);
+    padding:8px 10px;
+    margin:0 0 10px;
   }
 
   .prf .timer-head{
@@ -157,28 +173,29 @@
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    margin-bottom:8px;
+    flex-wrap:wrap;
   }
 
   .prf .timer-title{
     margin:0;
-    font-size:9.2px;
-    font-weight:900 !important;
     color:var(--prf-green-1);
+    font-size:9.4px;
+    font-weight:800 !important;
+    white-space:nowrap;
   }
 
   .prf .timer-state{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    min-height:24px;
-    padding:4px 10px;
+    min-height:25px;
+    padding:4px 9px;
     border-radius:999px;
-    font-size:8.6px;
-    font-weight:900 !important;
-    border:1px solid var(--prf-line);
-    background:#fff;
-    color:var(--prf-ink-2);
+    border:1px solid var(--prf-gold-line);
+    background:#fffaf0;
+    color:#76551f;
+    font-size:8.2px;
+    font-weight:700 !important;
     white-space:nowrap;
   }
 
@@ -187,231 +204,221 @@
     width:7px;
     height:7px;
     border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
+    background:var(--prf-gold);
+    box-shadow:0 0 0 3px rgba(155,119,52,.08);
     flex:0 0 auto;
   }
 
   .prf .timer-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    display:flex;
+    justify-content:center;
+    align-items:center;
     gap:8px;
+    color:#76551f;
+    font-size:8.6px;
+    font-weight:800 !important;
+    white-space:nowrap;
+    flex:1 1 auto;
   }
 
   .prf .time-box{
-    border:1px solid var(--prf-line);
-    background:#fff;
-    border-radius:10px;
-    padding:10px 8px;
+    display:inline-flex;
+    align-items:baseline;
+    gap:3px;
+    border:0;
+    background:transparent;
+    padding:0;
     text-align:center;
   }
 
   .prf .time-num{
-    display:block;
-    font-size:18px;
+    display:inline;
+    color:#76551f;
+    font-size:11px;
     line-height:1;
-    font-weight:900 !important;
-    letter-spacing:-.4px;
-    color:var(--prf-green-2);
+    font-weight:800 !important;
   }
 
   .prf .time-label{
-    display:block;
-    margin-top:6px;
-    font-size:8.4px;
-    color:var(--prf-muted);
-    font-weight:800 !important;
+    display:inline;
+    margin:0;
+    color:#76551f;
+    font-size:7.8px;
+    font-weight:700 !important;
   }
 
   .prf .timer-note{
-    margin-top:8px;
-    font-size:8.8px;
-    color:var(--prf-muted);
-    line-height:1.8;
-    font-weight:800 !important;
+    display:none;
   }
 
-  .prf .timer.is-warn{
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7 0%, #fffaf0 100%);
-  }
-
-  .prf .timer.is-warn .timer-state{
-    color:#9a6708;
-    border-color:rgba(217,119,6,.20);
-    background:linear-gradient(180deg,#fffdf7,#fff8ec);
-  }
-
-  .prf .timer.is-warn .timer-state::before{
-    background:#d97706;
-    box-shadow:0 0 0 3px rgba(217,119,6,.10);
-  }
-
-  .prf .timer.is-warn .time-num{
-    color:#9a6708;
-  }
-
-  .prf .timer.is-danger{
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffafa 0%, #fff6f6 100%);
-  }
-
-  .prf .timer.is-danger .timer-state{
-    color:#991b1b;
-    border-color:rgba(185,28,28,.18);
-    background:linear-gradient(180deg,#fffdfd,#fff7f7);
-  }
-
-  .prf .timer.is-danger .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .prf .timer.is-danger .time-num{
-    color:#991b1b;
-  }
-
+  .prf .timer.is-danger,
   .prf .timer.is-expired{
     border-color:var(--prf-danger-bd);
-    background:var(--prf-danger-bg);
+    background:linear-gradient(180deg,#fffafa,#fcf5f5);
   }
 
+  .prf .timer.is-danger .timer-state,
   .prf .timer.is-expired .timer-state{
-    color:#7f1d1d;
-    border-color:rgba(185,28,28,.16);
+    color:var(--prf-danger);
+    border-color:var(--prf-danger-bd);
     background:#fff;
   }
 
+  .prf .timer.is-danger .timer-state::before,
   .prf .timer.is-expired .timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
+    background:var(--prf-danger);
   }
 
-  .prf .timer.is-expired .time-num{
-    color:#991b1b;
+  .prf .timer.is-danger .time-num,
+  .prf .timer.is-expired .time-num,
+  .prf .timer.is-danger .time-label,
+  .prf .timer.is-expired .time-label{
+    color:var(--prf-danger);
   }
 
-  .prf .grid{
-    padding:12px;
+  .prf .workspace{
     display:grid;
-    grid-template-columns:1.4fr .9fr;
+    grid-template-columns:minmax(560px,1.42fr) minmax(390px,.9fr);
+    grid-template-areas:"available side";
     gap:12px;
     align-items:start;
   }
 
-  .prf .stack{
+  .prf .available-area{ grid-area:available; }
+  .prf .side-area{
+    grid-area:side;
     display:grid;
     gap:12px;
-  }
-
-  .prf .side{
-    position:sticky;
-    top:12px;
+    align-content:start;
   }
 
   .prf .card{
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid var(--prf-line);
-    border-radius:10px;
     overflow:hidden;
-    box-shadow:var(--prf-shadow-soft);
+    border:1px solid var(--prf-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--prf-shadow);
   }
 
   .prf .ch{
-    padding:11px 12px;
-    border-bottom:1px solid var(--prf-line);
+    padding:12px 14px;
+    border-bottom:1px solid var(--prf-line-soft);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    flex-wrap:wrap;
   }
 
-  .prf .ch h3{
+  .prf .ch h3,
+  .prf .section-title{
     margin:0;
-    font-size:12px;
-    font-weight:900 !important;
+    display:flex;
+    align-items:center;
+    gap:9px;
     color:var(--prf-green-1);
+    font-size:12.6px;
+    line-height:1.5;
+    font-weight:800 !important;
   }
 
   .prf .tag{
-    padding:4px 10px;
-    min-height:26px;
-    border-radius:999px;
-    border:1px solid var(--prf-line);
-    background:var(--prf-paper-2);
+    min-height:27px;
+    font-size:8.7px;
     color:var(--prf-muted);
-    font-size:8.6px;
-    font-weight:900 !important;
-    display:inline-flex;
-    align-items:center;
-    white-space:nowrap;
+    background:#fff;
   }
 
   .prf .tag b{
     color:var(--prf-green-1);
-    font-weight:900 !important;
+    font-weight:800 !important;
+  }
+
+  .prf .tag.green{
+    border-color:var(--prf-green-line);
+    background:var(--prf-green-soft);
+    color:var(--prf-green-2);
+  }
+
+  .prf .tag.gold{
+    border-color:var(--prf-gold-line);
+    background:var(--prf-gold-soft);
+    color:#76551f;
   }
 
   .prf .cb{
     padding:12px;
   }
 
-  .prf .alert{
-    border:1px solid var(--prf-danger-bd);
-    background:var(--prf-danger-bg);
-    color:#991b1b;
-    padding:10px 12px;
-    border-radius:10px;
-    margin-bottom:10px;
-    line-height:1.8;
-    font-size:8.9px;
-    font-weight:800 !important;
+  .prf .available-card .cb{
+    display:grid;
+    gap:10px;
   }
 
-  .prf .alert.warn{
-    border-color:var(--prf-warn-bd);
-    background:var(--prf-warn-bg);
-    color:#7c2d12;
+  .prf .search-wrap{
+    display:flex;
+    gap:8px;
   }
 
-  .prf .note{
-    margin-top:10px;
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--prf-line);
-    background:var(--prf-paper-2);
-    color:var(--prf-muted);
-    font-size:8.8px;
-    line-height:1.9;
-    font-weight:800 !important;
+  .prf .search{
+    width:100%;
+    min-height:42px;
+    border-radius:13px;
+    border:1px solid var(--prf-line-2);
+    background:#fff;
+    padding:0 12px;
+    outline:none;
+    color:#31483d;
+    font-size:10px;
+  }
+
+  .prf .search:focus{
+    border-color:var(--prf-green-2);
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
   }
 
   .prf .rows{
     display:grid;
-    gap:10px;
+    gap:8px;
+  }
+
+  .prf .rows.scrollable{
+    height:min(56vh,570px);
+    max-height:570px;
+    overflow:auto;
+    padding-inline-end:2px;
+    scrollbar-width:thin;
+  }
+
+  .prf .rows.selected-scroll{
+    max-height:340px;
+    overflow:auto;
+    padding-inline-end:2px;
+    scrollbar-width:thin;
   }
 
   .prf .row{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
-    min-height:58px;
-    padding:10px 12px;
+    gap:10px;
+    min-height:56px;
+    padding:9px 10px;
     border:1px solid var(--prf-line);
-    border-radius:10px;
-    background:linear-gradient(180deg,#ffffff,#f9fbf8);
+    border-radius:14px;
+    background:#fff;
     transition:border-color .15s ease, background .15s ease, opacity .15s ease, transform .15s ease;
   }
 
   .prf .row:hover{
-    border-color:rgba(22,163,74,.16);
+    border-color:var(--prf-green-line);
+    background:#fcfffd;
   }
 
   .prf .row.is-selected{
-    background:linear-gradient(180deg,#fcfffd,#f8fbf9);
-    border-color:rgba(22,163,74,.16);
+    background:linear-gradient(180deg,#fcfffd,#f7fbf8);
+    border-color:var(--prf-green-line);
   }
 
   .prf .row.is-locked{
@@ -422,22 +429,22 @@
     min-width:0;
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:9px;
     flex:1 1 auto;
   }
 
   .prf .rank{
-    min-width:40px;
-    height:34px;
-    border-radius:10px;
+    min-width:36px;
+    height:32px;
+    border-radius:11px;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:var(--prf-warn-bg);
-    border:1px solid var(--prf-warn-bd);
-    color:#7f5d1a;
+    background:var(--prf-gold-soft);
+    border:1px solid var(--prf-gold-line);
+    color:#76551f;
     font-size:8.8px;
-    font-weight:900 !important;
+    font-weight:800 !important;
     flex:0 0 auto;
   }
 
@@ -445,12 +452,12 @@
     min-width:0;
     display:flex;
     flex-direction:column;
-    gap:3px;
+    gap:2px;
   }
 
   .prf .ttl{
-    font-size:10px;
-    font-weight:900 !important;
+    font-size:10.2px;
+    font-weight:800 !important;
     color:var(--prf-green-1);
     white-space:nowrap;
     overflow:hidden;
@@ -463,82 +470,63 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    line-height:1.8;
-    font-weight:800 !important;
+    line-height:1.75;
+    font-weight:500 !important;
   }
 
   .prf .row-actions{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:7px;
     flex:0 0 auto;
   }
 
-  .prf .search-wrap{
-    display:flex;
-    gap:8px;
-    margin-bottom:10px;
-  }
-
-  .prf .search{
-    width:100%;
-    min-height:39px;
-    border-radius:8px;
-    border:1px solid var(--prf-line-2);
-    background:#fff;
-    padding:0 12px;
-    outline:none;
-    color:var(--prf-ink-2);
-    font-size:9.5px;
-  }
-
-  .prf .search:focus{
-    border-color:rgba(171,137,80,.55);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
-  }
-
-  .prf .btn{
+  .prf .btn,
+  .prf-dialog-btn{
     appearance:none;
-    border:1px solid var(--prf-line-2);
-    cursor:pointer;
-    padding:6px 12px;
-    min-height:32px;
-    border-radius:999px;
-    font-size:9.2px;
-    font-weight:900 !important;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
+    min-height:34px;
+    padding:7px 12px;
+    border-radius:999px;
+    border:1px solid var(--prf-line-2);
+    background:#fff;
+    color:var(--prf-green-2);
     text-decoration:none;
+    cursor:pointer;
+    font-size:9.3px;
+    line-height:1;
+    font-weight:700 !important;
     box-shadow:none;
-    transition:transform .15s ease, opacity .15s ease, filter .15s ease, background .15s ease, border-color .15s ease;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease,opacity .14s ease;
   }
 
-  .prf .btn.primary{
+  .prf .btn.primary,
+  .prf-dialog-btn.primary{
     color:#fff;
     border-color:var(--prf-green-2);
     background:var(--prf-green-2);
   }
 
-  .prf .btn.secondary{
+  .prf .btn.secondary,
+  .prf-dialog-btn.secondary{
     background:#fff;
     color:var(--prf-green-2);
   }
 
-  .prf .btn:hover{
+  .prf .btn:hover,
+  .prf-dialog-btn:hover{
     transform:translateY(-1px);
-    background:var(--prf-paper-2);
+    background:#f8fbf9;
     border-color:#b8c6bb;
   }
 
-  .prf .btn.primary:hover{
-    background:var(--prf-green-2);
-    border-color:var(--prf-green-2);
-  }
-
-  .prf .btn:active{
-    transform:translateY(0);
+  .prf .btn.primary:hover,
+  .prf-dialog-btn.primary:hover{
+    background:var(--prf-green-1);
+    border-color:var(--prf-green-1);
   }
 
   .prf .btn[disabled],
@@ -550,10 +538,11 @@
     filter:grayscale(.10);
   }
 
-  .prf .mini{
-    width:34px;
-    height:34px;
-    border-radius:10px;
+  .prf .mini,
+  .prf .handle{
+    width:33px;
+    height:33px;
+    border-radius:11px;
     border:1px solid var(--prf-line);
     background:#fff;
     display:flex;
@@ -561,89 +550,141 @@
     justify-content:center;
     cursor:pointer;
     color:var(--prf-muted);
-    font-weight:900 !important;
+    font-weight:800 !important;
   }
 
-  .prf .mini:hover{
-    background:rgba(148,163,184,.08);
+  .prf .mini:hover,
+  .prf .handle:hover{
+    background:#f8fbf9;
   }
 
   .prf .mini.danger{
     color:#991b1b;
-    border-color:rgba(248,113,113,.20);
+    border-color:var(--prf-danger-bd);
+    background:#fffafa;
   }
 
   .prf .mini[disabled],
-  .prf .mini.is-disabled{
+  .prf .mini.is-disabled,
+  .prf .handle.is-disabled{
     opacity:.4;
     cursor:not-allowed;
     pointer-events:none;
   }
 
   .prf .handle{
-    width:34px;
-    height:34px;
-    border-radius:10px;
-    border:1px solid var(--prf-line);
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
     user-select:none;
     cursor:grab;
-    color:var(--prf-muted);
-    font-weight:900 !important;
   }
 
   .prf .handle:active{
     cursor:grabbing;
   }
 
-  .prf .handle.is-disabled{
-    opacity:.45;
-    cursor:not-allowed;
-  }
-
   .prf .dragging{
     opacity:.70;
     transform:scale(.995);
-    border-color:rgba(22,163,74,.28) !important;
+    border-color:var(--prf-green-line) !important;
   }
 
   .prf .drop-here{
-    outline:2px dashed rgba(22,163,74,.30);
+    outline:2px dashed rgba(31,77,58,.25);
     outline-offset:4px;
-    background:rgba(22,163,74,.04);
+    background:rgba(31,77,58,.04);
   }
 
   .prf .empty-box{
     border:1px dashed var(--prf-line-2);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    background:#fbfcfb;
     color:var(--prf-muted);
-    padding:16px 12px;
-    border-radius:10px;
+    padding:13px 12px;
+    border-radius:13px;
     text-align:center;
-    font-size:8.9px;
-    line-height:1.9;
-    font-weight:800 !important;
+    font-size:9px;
+    line-height:1.85;
+    font-weight:600 !important;
   }
 
   .prf .empty-box b{
     color:var(--prf-green-1);
-    font-weight:900 !important;
+    font-weight:800 !important;
   }
 
+  .prf .note,
+  .prf .compact-note{
+    padding:10px 11px;
+    border-radius:12px;
+    border:1px dashed var(--prf-line-2);
+    background:#fbfcfb;
+    color:var(--prf-muted);
+    font-size:8.8px;
+    line-height:1.85;
+    font-weight:500 !important;
+  }
+
+  .prf .compact-note{
+    border-color:var(--prf-gold-line);
+    background:var(--prf-gold-soft);
+    color:#76551f;
+    margin-bottom:10px;
+  }
+
+  .prf .alert{
+    border:1px solid var(--prf-danger-bd);
+    background:var(--prf-danger-bg);
+    color:#7f1d1d;
+    padding:10px 12px;
+    border-radius:12px;
+    margin-bottom:10px;
+    line-height:1.8;
+    font-size:9px;
+    font-weight:700 !important;
+  }
+
+  .prf .alert.warn{
+    border-color:var(--prf-gold-line);
+    background:var(--prf-gold-soft);
+    color:#76551f;
+  }
+
+  .prf .summary-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  .prf .summary-chip{
+    min-height:48px;
+    border-radius:13px;
+    flex-direction:column;
+    gap:4px;
+    align-items:flex-start;
+    padding:8px 10px;
+  }
+
+  .prf .summary-chip span{
+    color:var(--prf-muted);
+    font-size:8px;
+    font-weight:600 !important;
+  }
+
+  .prf .summary-chip b{
+    color:var(--prf-green-1);
+    font-size:13px;
+    font-weight:800 !important;
+  }
 
   .prf .ack{
     margin-top:10px;
     padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--prf-warn-bd);
-    background:var(--prf-warn-bg);
-    color:#7c2d12;
-    font-size:8.9px;
+    border-radius:13px;
+    border:1px solid var(--prf-gold-line);
+    background:var(--prf-gold-soft);
+    color:#76551f;
+    font-size:9px;
     line-height:1.9;
-    font-weight:900 !important;
+    font-weight:700 !important;
     display:flex;
     align-items:flex-start;
     gap:8px;
@@ -657,21 +698,43 @@
     flex:0 0 auto;
   }
 
+  .prf .ack[hidden]{
+    display:none !important;
+  }
+
+  .prf .ack.policy{
+    border-color:var(--prf-green-line);
+    background:var(--prf-green-soft);
+    color:var(--prf-green-2);
+  }
+
+  .prf .ack.policy b{
+    color:var(--prf-green-1);
+    font-weight:800 !important;
+  }
+
   .prf .expired-inline{
     display:none;
     margin-top:10px;
     border:1px solid var(--prf-danger-bd);
     background:var(--prf-danger-bg);
     color:#7f1d1d;
-    border-radius:10px;
+    border-radius:12px;
     padding:10px 12px;
     line-height:1.8;
-    font-size:8.9px;
-    font-weight:800 !important;
+    font-size:9px;
+    font-weight:700 !important;
   }
 
   .prf .expired-inline.show{
     display:block;
+  }
+
+  .prf .submit-actions{
+    display:grid;
+    grid-template-columns:1fr 1.25fr;
+    gap:9px;
+    margin-top:12px;
   }
 
   .prf-modal{
@@ -693,22 +756,16 @@
   .prf-dialog{
     width:min(100%,540px);
     border:1px solid var(--prf-line);
-    border-radius:12px;
+    border-radius:18px;
     overflow:hidden;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
     box-shadow:0 30px 70px rgba(15,23,42,.18);
     animation:prfPop .18s ease-out;
   }
 
   @keyframes prfPop{
-    from{
-      opacity:0;
-      transform:translateY(8px) scale(.98);
-    }
-    to{
-      opacity:1;
-      transform:translateY(0) scale(1);
-    }
+    from{opacity:0;transform:translateY(8px) scale(.98);}
+    to{opacity:1;transform:translateY(0) scale(1);}
   }
 
   .prf-dialog-head{
@@ -721,7 +778,7 @@
     margin:0;
     color:var(--prf-green-1);
     font-size:13px;
-    font-weight:900 !important;
+    font-weight:800 !important;
     line-height:1.4;
   }
 
@@ -731,10 +788,10 @@
 
   .prf-dialog-text{
     margin:0;
-    color:var(--prf-ink-2);
+    color:#31483d;
     font-size:10px;
     line-height:2;
-    font-weight:800 !important;
+    font-weight:600 !important;
   }
 
   .prf-dialog-actions{
@@ -744,63 +801,50 @@
     flex-wrap:wrap;
   }
 
-  .prf-dialog-btn{
-    appearance:none;
-    border:1px solid var(--prf-line-2);
-    cursor:pointer;
-    min-height:36px;
-    padding:7px 16px;
-    border-radius:999px;
-    font-size:9.6px;
-    font-weight:900 !important;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    box-shadow:none;
-    background:#fff;
-    color:var(--prf-green-2);
-  }
-
-  .prf-dialog-btn.primary{
-    color:#fff;
-    border-color:var(--prf-green-2);
-    background:var(--prf-green-2);
-  }
-
   body.prf-modal-open{
     overflow:hidden;
   }
 
-  @media (max-width: 980px){
-    .prf .grid{
+  @media (max-width:1080px){
+    .prf .workspace{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "available"
+        "side";
+    }
+
+    .prf .rows.scrollable{
+      height:auto;
+      max-height:460px;
+    }
+
+    .prf .hero-main,
+    .prf .timer-head{
       grid-template-columns:1fr;
     }
 
-    .prf .side{
-      position:static;
+    .prf .hero-actions,
+    .prf .timer-state,
+    .prf .timer-grid{
+      justify-content:flex-start;
+      justify-self:start;
     }
   }
 
-  @media (max-width: 640px){
-    .prf .top{
-      padding:14px;
-      flex-direction:column;
-      align-items:flex-start;
+  @media (max-width:640px){
+    .prf{
+      padding:8px;
+    }
+
+    .prf .hero{
+      padding:15px 14px;
     }
 
     .prf h1{
-      font-size:18px;
+      font-size:21px;
     }
 
-    .prf .pill{
-      display:none;
-    }
-
-    .prf .grid{
-      padding:10px;
-    }
-
+    .prf .content,
     .prf .cb{
       padding:10px;
     }
@@ -814,17 +858,13 @@
       justify-content:flex-start;
     }
 
-    .prf .timer{
-      margin:10px;
-      margin-bottom:0;
-    }
-
-    .prf .timer-grid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
+    .prf .summary-grid,
+    .prf .submit-actions{
+      grid-template-columns:1fr;
     }
 
     .prf-dialog{
-      border-radius:10px;
+      border-radius:14px;
     }
 
     .prf-dialog-actions{
@@ -849,6 +889,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedEmptyEl = document.querySelector("[data-selected-empty]");
   const submitBtn = document.querySelector("[data-submit]");
   const searchInput = document.querySelector("[data-search-input]");
+
+  const noPrefsAck = document.querySelector("[data-no-prefs-ack]");
+  const noPrefsInput = document.querySelector("[data-no-prefs-input]");
+  const policyAck = document.querySelector("[data-policy-ack]");
+  const policyInput = document.querySelector("[data-policy-input]");
 
   const modal = document.querySelector("[data-modal]");
   const modalTitle = document.querySelector("[data-modal-title]");
@@ -964,6 +1009,34 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...availableList.querySelectorAll("[data-item='available']")];
   }
 
+  function updateAckVisibility(){
+    const selectedCount = selectedItems().length;
+    const shouldShowNoPrefsAck = selectedCount === 0 && availableCount > 0;
+    const shouldShowPolicyAck = selectedCount > 0;
+
+    if(noPrefsAck){
+      noPrefsAck.hidden = !shouldShowNoPrefsAck;
+    }
+
+    if(noPrefsInput){
+      noPrefsInput.required = shouldShowNoPrefsAck;
+      if(!shouldShowNoPrefsAck){
+        noPrefsInput.checked = false;
+      }
+    }
+
+    if(policyAck){
+      policyAck.hidden = !shouldShowPolicyAck;
+    }
+
+    if(policyInput){
+      policyInput.required = shouldShowPolicyAck;
+      if(!shouldShowPolicyAck){
+        policyInput.checked = false;
+      }
+    }
+  }
+
   function setCounts(){
     const selectedCount = selectedItems().length;
     const availableVisibleCount = availableItems().filter(el => el.style.display !== "none").length;
@@ -974,6 +1047,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(selectedEmptyEl){
       selectedEmptyEl.style.display = selectedCount ? "none" : "";
     }
+
+    updateAckVisibility();
 
     if(submitBtn){
       submitBtn.disabled = portalExpired;
@@ -1243,15 +1318,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     syncHiddenInputs();
-
-    // تنظيف إقرار الإرسال دون رغبات قبل تحديد الحالة النهائية
-    form.querySelectorAll("input[name='confirm_no_preferences'][data-auto-confirm]").forEach(el => el.remove());
+    updateAckVisibility();
 
     const selectedCount = selectedItems().length;
 
     if(selectedCount === 0){
+      if(availableCount > 0 && noPrefsInput && !noPrefsInput.checked){
+        await showAlert(
+          "يلزم تفعيل إقرار الإرسال دون رغبات قبل الإرسال النهائي.",
+          "إقرار مطلوب"
+        );
+        try{ noPrefsInput.focus(); }catch(_){ }
+        return;
+      }
+
       const noPrefsMessage = availableCount > 0
-        ? "لم تقم باختيار أي رغبة. بالمتابعة سيتم تسجيل طلبك على أنه تم الدخول والاطلاع، مع إرسال الطلب دون رغبات مختارة. هل تؤكد ذلك؟"
+        ? "سيتم إرسال الطلب دون اختيار أي رغبة بناءً على الإقرار الذي فعّلته. هل تؤكد الإرسال النهائي؟"
         : "لا توجد شواغر متاحة حاليًا في قطاعك. بالمتابعة سيتم تسجيل دخولك وإرسال طلبك دون رغبات مختارة. هل تؤكد ذلك؟";
 
       const agreedNoPrefs = await showConfirm(
@@ -1261,19 +1343,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if(!agreedNoPrefs) return;
 
-      const ack = document.createElement("input");
-      ack.type = "hidden";
-      ack.name = "confirm_no_preferences";
-      ack.value = "1";
-      ack.setAttribute("data-auto-confirm", "1");
-      form.appendChild(ack);
-
       form.submit();
       return;
     }
 
+    if(policyInput && !policyInput.checked){
+      await showAlert(
+        "يلزم تفعيل إقرار سياسة التوجيه قبل إرسال الرغبات؛ لأن اختيار الرغبات لا يعني تحقق التوجيه عليها، ولا يمنح أولوية على من هو أعلى درجة أو أحق في المفاضلة، ويكون التوجيه وفق المصلحة التعليمية واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة.",
+        "إقرار مطلوب"
+      );
+      try{ policyInput.focus(); }catch(_){ }
+      return;
+    }
+
     const agreed = await showConfirm(
-      "هل أنت متأكد من إرسال الطلب نهائيًا؟ لن تتمكن من التعديل بعد الإرسال.",
+      "سيتم إرسال الرغبات المحددة نهائيًا، مع الإقرار بأن اختيار الرغبات لا يعني تحققها في حال وجود مرشحين أعلى درجة أو أحق في المفاضلة، وأن التوجيه يكون وفق المصلحة التعليمية واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة. هل تؤكد الإرسال؟",
       "تأكيد نهائي"
     );
 
@@ -1281,6 +1365,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.submit();
   });
+
 
   function pad(n){
     return String(n).padStart(2, "0");
@@ -1371,219 +1456,245 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 {% endblock %}
 
+
+
+
 {% block content %}
 <div class="prf">
   <div class="wrap">
-    <div class="shell">
+    <section class="shell">
 
-      <div class="top">
-        <div>
-          <h1>ترتيب الرغبات</h1>
-          <p class="sub">
-            اختيار الرغبات متاح دون إلزام، ويمكنك إرسال الطلب برغبات مختارة أو تأكيد الدخول والإرسال دون رغبات.
-          </p>
-        </div>
-
-        {% if available_count > 0 %}
-        <div class="pill"><span class="dot"></span>الاختيار متاح دون إلزام</div>
-        {% else %}
-        <div class="pill"><span class="dot"></span>تأكيد الدخول متاح دون رغبات</div>
-        {% endif %}
-      </div>
-
-      {% if portal_show_countdown %}
-      <div class="timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
-        <div class="timer-head">
-          <p class="timer-title">الوقت المتبقي لإغلاق التقديم</p>
-          <div class="timer-state" data-timer-state>مفتوح الآن</div>
-        </div>
-
-        <div class="timer-grid">
-          <div class="time-box">
-            <span class="time-num" id="cdDays">00</span>
-            <span class="time-label">يوم</span>
+      <header class="hero">
+        <div class="hero-main">
+          <div>
+            <span class="kicker">الخطوة الثانية</span>
+            <h1>ترتيب الرغبات</h1>
+            <p class="sub">
+              اختر المدارس المناسبة من الشواغر المتاحة، ثم رتّب رغباتك حسب الأولوية قبل الإرسال النهائي.
+            </p>
           </div>
-          <div class="time-box">
-            <span class="time-num" id="cdHours">00</span>
-            <span class="time-label">ساعة</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdMinutes">00</span>
-            <span class="time-label">دقيقة</span>
-          </div>
-          <div class="time-box">
-            <span class="time-num" id="cdSeconds">00</span>
-            <span class="time-label">ثانية</span>
+
+          <div class="hero-actions">
+            {% if available_count > 0 %}
+              <span class="pill"><span class="dot"></span>الاختيار متاح دون إلزام</span>
+            {% else %}
+              <span class="pill"><span class="dot"></span>تأكيد الدخول متاح دون رغبات</span>
+            {% endif %}
+            <span class="pill">الخطوة 2 من 2</span>
           </div>
         </div>
+      </header>
 
-        <div class="timer-note" data-timer-note>
-          سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
-        </div>
-      </div>
-      {% endif %}
+      <div class="content">
+        <div class="workspace">
 
-      <div class="grid">
-
-        <div class="stack">
-
-          <div class="card">
+          <section class="card available-card available-area">
             <div class="ch">
-              <h3>الرغبات المختارة</h3>
-              <span class="tag">العدد المختار: <b data-selected-count>{{ selected_prefs|length }}</b></span>
+              <h3 class="section-title">الشواغر المتاحة لك</h3>
+              <span class="tag green">المعروض: <b data-available-count>{{ schools|length }}</b></span>
             </div>
+
             <div class="cb">
-
-              <div class="alert warn">
-                {{ selection_hint }}
-              </div>
-
-              {% if error %}
-              <div class="alert">{{ error }}</div>
-              {% endif %}
-
-              <div class="rows" data-selected-list>
-                {% for p in selected_prefs %}
-                <div class="row is-selected" data-item="selected" data-id="{{ p.vacancy.id }}" draggable="true">
-                  <div class="row-main">
-                    <div class="rank" data-rank>{{ forloop.counter }}</div>
-                    <div class="meta">
-                      <div class="ttl">{{ p.vacancy.school_name }}</div>
-                      <div class="subt">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
-                    </div>
-                  </div>
-
-                  <div class="row-actions">
-                    <button type="button" class="mini" data-up title="رفع">↑</button>
-                    <button type="button" class="mini" data-down title="خفض">↓</button>
-                    <button type="button" class="mini danger" data-remove title="حذف">×</button>
-                    <div class="handle" title="اسحب لترتيب">⋮⋮</div>
-                  </div>
-                </div>
-                {% endfor %}
-              </div>
-
-              <div class="empty-box" data-selected-empty {% if selected_prefs %}style="display:none"{% endif %}>
-                {% if available_count > 0 %}
-                لم يتم اختيار أي رغبة بعد. يمكنك اختيار رغبة أو أكثر، أو إرسال الطلب دون رغبات بعد تأكيد الإقرار.
-                {% else %}
-                لا توجد رغبات متاحة للاختيار حاليًا.
-                {% endif %}
-              </div>
-
-              <div class="note">
-                بعد الإضافة يمكنك إعادة ترتيب الرغبات أو حذف أي رغبة قبل الإرسال النهائي. وفي حال عدم اختيار رغبات سيطلب منك النظام تأكيد الإرسال دون رغبات.
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="ch">
-              <h3>الشواغر المتاحة لك</h3>
-              <span class="tag">المعروض: <b data-available-count>{{ schools|length }}</b></span>
-            </div>
-            <div class="cb">
-
               {% if schools %}
-              <div class="search-wrap">
-                <input
-                  type="text"
-                  class="search"
-                  placeholder="ابحث باسم المدرسة أو المرحلة أو القطاع"
-                  data-search-input
-                >
+                <div class="search-wrap">
+                  <input
+                    type="text"
+                    class="search"
+                    placeholder="ابحث باسم المدرسة أو المرحلة أو القطاع"
+                    data-search-input
+                  >
+                </div>
+
+                <div class="rows scrollable" data-available-list>
+                  {% for s in schools %}
+                    {% if s.id not in selected_ids %}
+                    <div
+                      class="row"
+                      data-item="available"
+                      data-id="{{ s.id }}"
+                      data-name="{{ s.school_name }}"
+                      data-meta="{{ s.stage }} — {{ s.sector }}"
+                    >
+                      <div class="row-main">
+                        <div class="rank">+</div>
+                        <div class="meta">
+                          <div class="ttl">{{ s.school_name }}</div>
+                          <div class="subt">{{ s.stage }} — {{ s.sector }}</div>
+                        </div>
+                      </div>
+
+                      <div class="row-actions">
+                        <button type="button" class="btn secondary" data-add>إضافة</button>
+                      </div>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="alert warn">
+                  لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
+                </div>
+              {% endif %}
+            </div>
+          </section>
+
+          <aside class="side-area">
+
+            <section class="card selected-card">
+              <div class="ch">
+                <h3 class="section-title">رغباتك المختارة</h3>
+                <span class="tag">مرتبة حسب الأولوية</span>
               </div>
 
-              <div class="rows" data-available-list>
-                {% for s in schools %}
-                  {% if s.id not in selected_ids %}
-                  <div
-                    class="row"
-                    data-item="available"
-                    data-id="{{ s.id }}"
-                    data-name="{{ s.school_name }}"
-                    data-meta="{{ s.stage }} — {{ s.sector }}"
-                  >
+              <div class="cb">
+                <div class="rows selected-scroll" data-selected-list>
+                  {% for p in selected_prefs %}
+                  <div class="row is-selected" data-item="selected" data-id="{{ p.vacancy.id }}" draggable="true">
                     <div class="row-main">
-                      <div class="rank">+</div>
+                      <div class="rank" data-rank>{{ forloop.counter }}</div>
                       <div class="meta">
-                        <div class="ttl">{{ s.school_name }}</div>
-                        <div class="subt">{{ s.stage }} — {{ s.sector }}</div>
+                        <div class="ttl">{{ p.vacancy.school_name }}</div>
+                        <div class="subt">{{ p.vacancy.stage }} — {{ p.vacancy.sector }}</div>
                       </div>
                     </div>
 
                     <div class="row-actions">
-                      <button type="button" class="btn secondary" data-add>إضافة</button>
+                      <button type="button" class="mini" data-up title="رفع">↑</button>
+                      <button type="button" class="mini" data-down title="خفض">↓</button>
+                      <button type="button" class="mini danger" data-remove title="حذف">×</button>
+                      <div class="handle" title="اسحب لترتيب">⋮⋮</div>
                     </div>
                   </div>
-                  {% endif %}
-                {% endfor %}
-              </div>
-              {% else %}
-              <div class="alert warn">
-                لا توجد مدارس متاحة لك حاليًا وفق الضوابط.
-              </div>
-              {% endif %}
-
-            </div>
-          </div>
-
-        </div>
-
-        <div class="side">
-          <div class="card">
-            <div class="ch">
-              <h3>إرسال الطلب</h3>
-              <span class="tag">الخطوة 2 من 2</span>
-            </div>
-            <div class="cb">
-              <form
-                method="post"
-                action="{% url 'portal:submit' %}"
-                data-form
-                data-min-required="{{ min_required }}"
-                data-available-count="{{ available_count }}"
-              >
-                {% csrf_token %}
-
-                <div class="note">
-                  {{ selection_hint }}
+                  {% endfor %}
                 </div>
 
-                {% if require_no_preferences_confirm %}
-                <label class="ack">
-                  <input type="checkbox" name="confirm_no_preferences" value="1" required>
-                  <span>{{ no_preferences_confirm_text }}</span>
-                </label>
+                <div class="empty-box" data-selected-empty {% if selected_prefs %}style="display:none"{% endif %}>
+                  {% if available_count > 0 %}
+                    لم يتم اختيار أي رغبة بعد. أضف رغباتك من قائمة الشواغر المتاحة، أو أرسل الطلب دون رغبات بعد الإقرار.
+                  {% else %}
+                    لا توجد رغبات متاحة للاختيار حاليًا.
+                  {% endif %}
+                </div>
+
+                <div class="note" style="margin-top:10px;">
+                  يمكنك السحب لإعادة الترتيب، أو استخدام أزرار الرفع والخفض والحذف قبل الإرسال النهائي.
+                </div>
+              </div>
+            </section>
+
+            <section class="card submit-card">
+              <div class="ch">
+                <h3 class="section-title">الإرسال النهائي</h3>
+                <span class="tag gold">مراجعة أخيرة</span>
+              </div>
+
+              <div class="cb">
+                {% if error %}
+                  <div class="alert">{{ error }}</div>
                 {% endif %}
 
-                <div class="expired-inline" data-expired-inline>
-                  انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
+                {% if portal_show_countdown %}
+                <div class="timer submit-timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
+                  <div class="timer-head">
+                    <p class="timer-title">يغلق التقديم بعد</p>
+
+                    <div class="timer-grid">
+                      <div class="time-box"><span class="time-num" id="cdDays">00</span><span class="time-label">يوم</span></div>
+                      <div class="time-box"><span class="time-num" id="cdHours">00</span><span class="time-label">ساعة</span></div>
+                      <div class="time-box"><span class="time-num" id="cdMinutes">00</span><span class="time-label">دقيقة</span></div>
+                    </div>
+
+                    <div class="timer-state" data-timer-state>مفتوح الآن</div>
+                  </div>
+
+                  <div class="timer-note" data-timer-note>سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.</div>
+                </div>
+                {% endif %}
+
+                <div class="summary-grid">
+                  <div class="summary-chip">
+                    <span>المختار</span>
+                    <b data-selected-count>{{ selected_prefs|length }}</b>
+                  </div>
+                  <div class="summary-chip">
+                    <span>المتاح</span>
+                    <b>{{ available_count }}</b>
+                  </div>
                 </div>
 
-                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-                  <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}" style="flex:1">السابق</a>
+                <form
+                  method="post"
+                  action="{% url 'portal:submit' %}"
+                  data-form
+                  data-min-required="{{ min_required }}"
+                  data-available-count="{{ available_count }}"
+                >
+                  {% csrf_token %}
 
-                  {% if available_count > 0 %}
-                  <button class="btn primary" data-submit type="submit" style="flex:1">إرسال الطلب نهائيًا</button>
-                  {% else %}
-                  <button class="btn primary" data-submit type="submit" style="flex:1">تأكيد الدخول دون رغبات</button>
-                  {% endif %}
+                  <div class="note" style="margin-top:0;">
+                    {{ selection_hint }}
+                  </div>
+
+                  <label
+                    class="ack"
+                    data-no-prefs-ack
+                    {% if selected_prefs or available_count <= 0 %}hidden{% endif %}
+                  >
+                    <input
+                      type="checkbox"
+                      name="confirm_no_preferences"
+                      value="1"
+                      data-no-prefs-input
+                    >
+                    <span>
+                      أقرّ بأنني اطلعت على الشواغر المتاحة خلال فترة التقديم، وأرغب في إرسال طلبي دون اختيار أي رغبة، وأتحمل ما يترتب على ذلك من عدم دخولي في الترشيح على الشواغر المتاحة.
+                    </span>
+                  </label>
+
+                  <label
+                    class="ack policy"
+                    data-policy-ack
+                    {% if not selected_prefs %}hidden{% endif %}
+                  >
+                    <input
+                      type="checkbox"
+                      name="confirm_preferences_policy"
+                      value="1"
+                      data-policy-input
+                    >
+                    <span>
+                      أقرّ بأن اختياري وترتيبي للرغبات لا يعني استحقاق التوجيه عليها أو تحققها، ولا يترتب عليه أي التزام بتوجيهي إلى أي منها في حال وجود مرشحين <b>أعلى درجة</b> أو أحق في المفاضلة، وأن التوجيه النهائي يكون وفق <b>المصلحة التعليمية</b> واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة، وفي حدود الرغبات المحددة.
+                    </span>
+                  </label>
+
+                  <div class="expired-inline" data-expired-inline>
+                    انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
+                  </div>
+
+                  <div class="submit-actions">
+                    <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}">السابق</a>
+
+                    {% if available_count > 0 %}
+                    <button class="btn primary" data-submit type="submit">إرسال نهائي</button>
+                    {% else %}
+                    <button class="btn primary" data-submit type="submit">تأكيد دون رغبات</button>
+                    {% endif %}
+                  </div>
+                </form>
+
+                {% if not schools and not selected_prefs %}
+                <div class="alert warn" style="margin:10px 0 0;">
+                  لا توجد شواغر متاحة حاليًا لك. يمكنك تأكيد الدخول وإرسال الطلب دون رغبات، أو الرجوع للصفحة السابقة.
                 </div>
-              </form>
-            </div>
-          </div>
+                {% endif %}
+              </div>
+            </section>
 
-          {% if not schools and not selected_prefs %}
-          <div class="alert warn" style="margin-top:12px">
-            لا توجد شواغر متاحة حاليًا لك. يمكنك تأكيد الدخول وإرسال الطلب دون رغبات، أو الرجوع للصفحة السابقة.
-          </div>
-          {% endif %}
+          </aside>
         </div>
-
       </div>
 
-    </div>
+    </section>
   </div>
 </div>
 

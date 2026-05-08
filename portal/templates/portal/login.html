@@ -3,671 +3,356 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Login — Direct Access Page / Plain Clean
+     - صفحة دخول فقط: مركزة ومباشرة
+     - تأخذ روح الداش: الألوان، الخط، الحواف، الهدوء
+     - بدون هيدر داخلي عريض، بدون إحصاءات، بدون عداد، بدون بطاقات جانبية
+     - الحفاظ على IDs والمتغيرات والجافاسكربت الأساسية دون تعديل views.py
+  ========================================================= */
+
   :root{
-    --moe-bg:#f4f6f3;
-    --moe-surface:#ffffff;
-    --moe-surface-2:#fafbf9;
-    --moe-surface-3:#f7f9f6;
+    --login-bg:#f5f7f5;
+    --login-surface:#ffffff;
+    --login-surface-2:#fbfcfb;
 
-    --moe-ink:#203229;
-    --moe-ink-2:#42544b;
-    --moe-muted:#73827a;
+    --login-ink:#152f25;
+    --login-ink-2:#31483d;
+    --login-muted:#6f7f76;
 
-    --moe-green-1:#1f4b3b;
-    --moe-green-2:#2b5e4b;
-    --moe-green-3:#557567;
+    --login-green-1:#173c2f;
+    --login-green-2:#1f4d3a;
+    --login-green-3:#2e6b53;
+    --login-green-soft:#edf7f2;
+    --login-green-line:#cfe4d8;
 
-    --moe-gold-1:#8b7447;
-    --moe-gold-2:#b29862;
-    --moe-gold-3:#d7ccaf;
+    --login-gold:#9b7734;
+    --login-gold-2:#b49256;
+    --login-gold-soft:#fbf6ea;
+    --login-gold-line:#e6d5b4;
 
-    --moe-line:#dde4dd;
-    --moe-line-2:#d2dbd3;
-    --moe-line-soft:#edf1ed;
+    --login-danger:#8f2f2f;
+    --login-danger-soft:#fbf4f4;
+    --login-danger-line:#e7c7c7;
 
-    --moe-ok:#2f6c4b;
-    --moe-ok-bg:#f2f8f4;
-    --moe-ok-bd:#d9e8de;
+    --login-line:#d8e2dc;
+    --login-line-2:#cbd8d0;
+    --login-line-soft:#eaf0ec;
 
-    --moe-warn:#8a6d32;
-    --moe-warn-bg:#fbf8f1;
-    --moe-warn-bd:#e9ddc3;
-
-    --moe-danger:#8c4a4a;
-    --moe-danger-bg:#fbf6f6;
-    --moe-danger-bd:#e7d4d4;
-
-    --moe-shadow:0 1px 3px rgba(18,30,24,.028);
-    --moe-shadow-soft:0 6px 16px rgba(18,30,24,.032);
-
-    --moe-radius:14px;
-    --moe-radius-lg:18px;
+    --login-shadow:0 8px 22px rgba(18,32,24,.055);
+    --login-shadow-soft:0 12px 30px rgba(18,32,24,.045);
   }
 
-  .moe-login,.moe-login *{
+  .loginPage,
+  .loginPage *{
     box-sizing:border-box;
     font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .moe-login{
+  .loginPage{
     direction:rtl;
-    color:var(--moe-ink);
+    min-height:calc(100vh - 54px);
+    padding:22px 14px 22px;
+    color:var(--login-ink);
+    background:linear-gradient(180deg,#fbfcfb 0%, #f7f9f7 55%, #f1f5f2 100%);
   }
 
-  .moe-login-wrap{
-    max-width:1080px;
+  .loginPage-wrap{
+    width:min(100%,520px);
     margin:0 auto;
+    display:grid;
+    gap:12px;
   }
 
-  .moe-login-panel{
-    width:min(100%, 640px);
-    margin:16px auto 0;
-  }
-
-  .moe-login-shell{
+  .loginCard{
     position:relative;
     overflow:hidden;
-    border:1px solid var(--moe-line);
-    border-radius:var(--moe-radius-lg);
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--moe-shadow);
+    border:1px solid var(--login-line);
+    border-radius:20px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--login-shadow-soft);
   }
 
-  .moe-login-shell::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--moe-green-2),var(--moe-gold-2));
-    opacity:.95;
+  .loginCard::before{
+    display:none;
   }
 
-  .moe-login-top{
-    padding:0;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border-inline-start:3px solid var(--moe-green-2);
-    border-bottom:1px solid var(--moe-line-soft);
+  .loginHead{
+    padding:22px 24px 15px;
+    text-align:center;
+    border-bottom:1px solid var(--login-line-soft);
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
   }
 
-  .moe-login-top-head{
-    position:relative;
-    padding:14px 18px 12px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    background:
-      radial-gradient(circle at 86% 24%, rgba(85,117,103,.055) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-  }
-
-  .moe-login-kicker{
+  .loginEyebrow{
     display:inline-flex;
     align-items:center;
+    justify-content:center;
     gap:7px;
     min-height:28px;
-    padding:4px 10px;
+    padding:5px 11px;
+    margin-bottom:10px;
     border-radius:999px;
-    border:1px solid #dfd4bc;
-    background:#fcfaf5;
-    color:var(--moe-gold-1);
-    font-size:8.6px;
-    font-weight:900 !important;
-    margin-bottom:8px;
+    border:1px solid var(--login-green-line);
+    background:var(--login-green-soft);
+    color:var(--login-green-2);
+    font-size:9px;
+    line-height:1;
+    font-weight:700 !important;
+    white-space:nowrap;
   }
 
-  .moe-login-kicker-dot{
+  .loginEyebrow::before{
+    content:"";
     width:8px;
     height:8px;
     border-radius:50%;
-    background:var(--moe-green-2);
+    background:var(--login-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.08);
     flex:0 0 auto;
   }
 
-  .moe-login-title{
+  .loginTitle{
     margin:0;
-    font-size:21px;
-    font-weight:900 !important;
-    color:var(--moe-green-1);
-    line-height:1.2;
+    color:var(--login-green-1);
+    font-size:28px;
+    line-height:1.25;
+    font-weight:800 !important;
     letter-spacing:0;
   }
 
-  .moe-login-sub{
-    margin:6px 0 0;
-    color:var(--moe-muted);
-    font-size:10.1px;
-    line-height:1.95;
-    max-width:54ch;
-    font-weight:700 !important;
+  .loginSubtitle{
+    margin:7px auto 0;
+    max-width:430px;
+    color:var(--login-muted);
+    font-size:11px;
+    line-height:1.9;
+    font-weight:500 !important;
   }
 
-  .moe-login-status{
-    padding:10px 18px 12px;
-    display:flex;
+  .loginBody{
+    padding:22px 24px 24px;
+    display:grid;
+    gap:14px;
+  }
+
+  .loginAlert,
+  .loginExpired{
+    border:1px solid var(--login-danger-line);
+    border-radius:14px;
+    background:var(--login-danger-soft);
+    color:#7f1d1d;
+    padding:10px 12px;
+    line-height:1.85;
+    font-size:10px;
+    font-weight:600 !important;
+  }
+
+  .loginExpired{display:none;}
+  .loginExpired.show{display:block;}
+
+  .loginForm{
+    display:grid;
+    gap:13px;
+  }
+
+  .loginField{
+    display:grid;
     gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
-    background:var(--moe-surface);
   }
 
-  .moe-badge{
+  .loginLabelRow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .loginLabel{
+    color:var(--login-green-1);
+    font-size:10px;
+    line-height:1.5;
+    font-weight:800 !important;
+  }
+
+  .loginMini{
     display:inline-flex;
     align-items:center;
-    gap:7px;
-    min-height:28px;
-    padding:4px 10px;
+    justify-content:center;
+    min-height:25px;
+    padding:3px 9px;
     border-radius:999px;
-    border:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
-    color:var(--moe-ink-2);
+    border:1px solid var(--login-gold-line);
+    background:var(--login-gold-soft);
+    color:#76551f;
     font-size:8.5px;
     font-weight:800 !important;
     white-space:nowrap;
   }
 
-  .moe-badge-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--moe-green-2);
-    flex:0 0 auto;
-  }
-
-  .moe-badge.warn{
-    background:var(--moe-warn-bg);
-    border-color:var(--moe-warn-bd);
-    color:var(--moe-warn);
-  }
-
-  .moe-badge.warn .moe-badge-dot{
-    background:var(--moe-warn);
-  }
-
-  .moe-login-timer{
-    margin:12px;
-    margin-bottom:0;
-    border:1px solid var(--moe-line);
-    background:linear-gradient(180deg,#fffdfa 0%, #fafbf9 100%);
-    border-radius:14px;
-    padding:12px;
-    box-shadow:var(--moe-shadow);
-  }
-
-  .moe-login-timer-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:8px;
-  }
-
-  .moe-login-timer-title{
-    margin:0;
-    font-size:9px;
-    font-weight:900 !important;
-    color:var(--moe-green-1);
-  }
-
-  .moe-login-timer-state{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:24px;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:8.4px;
-    font-weight:800 !important;
-    border:1px solid var(--moe-line);
-    background:#fff;
-    color:var(--moe-ink-2);
-    white-space:nowrap;
-  }
-
-  .moe-login-timer-state::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:999px;
-    background:#15803d;
-    box-shadow:0 0 0 3px rgba(21,128,61,.10);
-    flex:0 0 auto;
-  }
-
-  .moe-login-timer-grid{
-    display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:8px;
-  }
-
-  .moe-login-time-box{
-    border:1px solid var(--moe-line);
-    background:#fff;
-    border-radius:12px;
-    padding:10px 8px;
-    text-align:center;
-  }
-
-  .moe-login-time-num{
-    display:block;
-    font-size:18px;
-    line-height:1;
-    font-weight:900 !important;
-    letter-spacing:-.3px;
-    color:var(--moe-green-2);
-  }
-
-  .moe-login-time-label{
-    display:block;
-    margin-top:6px;
-    font-size:8.1px;
-    color:var(--moe-muted);
-    font-weight:700 !important;
-  }
-
-  .moe-login-timer-note{
-    margin-top:8px;
-    font-size:8.4px;
-    color:var(--moe-muted);
-    line-height:1.8;
-    font-weight:700 !important;
-  }
-
-  .moe-login-timer.is-warn{
-    border-color:rgba(178,152,98,.35);
-    background:linear-gradient(180deg,#fffdf8 0%, #fcfaf5 100%);
-  }
-
-  .moe-login-timer.is-warn .moe-login-timer-state{
-    color:var(--moe-warn);
-    border-color:rgba(178,152,98,.26);
-    background:#fffdf8;
-  }
-
-  .moe-login-timer.is-warn .moe-login-timer-state::before{
-    background:#b7791f;
-    box-shadow:0 0 0 3px rgba(183,121,31,.08);
-  }
-
-  .moe-login-timer.is-warn .moe-login-time-num{
-    color:var(--moe-warn);
-  }
-
-  .moe-login-timer.is-danger{
-    border-color:rgba(140,74,74,.22);
-    background:linear-gradient(180deg,#fffafa 0%, #fbf6f6 100%);
-  }
-
-  .moe-login-timer.is-danger .moe-login-timer-state{
-    color:var(--moe-danger);
-    border-color:rgba(140,74,74,.18);
-    background:#fff;
-  }
-
-  .moe-login-timer.is-danger .moe-login-timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .moe-login-timer.is-danger .moe-login-time-num{
-    color:var(--moe-danger);
-  }
-
-  .moe-login-timer.is-expired{
-    border-color:var(--moe-danger-bd);
-    background:var(--moe-danger-bg);
-  }
-
-  .moe-login-timer.is-expired .moe-login-timer-state{
-    color:var(--moe-danger);
-    border-color:rgba(140,74,74,.16);
-    background:#fff;
-  }
-
-  .moe-login-timer.is-expired .moe-login-timer-state::before{
-    background:#b91c1c;
-    box-shadow:0 0 0 3px rgba(185,28,28,.08);
-  }
-
-  .moe-login-timer.is-expired .moe-login-time-num{
-    color:var(--moe-danger);
-  }
-
-  .moe-login-card{
-    margin:12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid var(--moe-line);
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:var(--moe-shadow);
-  }
-
-  .moe-login-card-head{
-    padding:11px 12px;
-    border-bottom:1px solid var(--moe-line-soft);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    background:linear-gradient(180deg,#ffffff,#fafcf9);
-  }
-
-  .moe-login-card-head h3{
-    margin:0;
-    font-size:11.3px;
-    font-weight:900 !important;
-    color:var(--moe-green-1);
-  }
-
-  .moe-login-tag{
-    padding:4px 10px;
-    min-height:26px;
-    border-radius:999px;
-    border:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
-    color:var(--moe-muted);
-    font-size:8.3px;
-    font-weight:800 !important;
-    display:inline-flex;
-    align-items:center;
-    white-space:nowrap;
-  }
-
-  .moe-login-card-body{
-    padding:12px;
-  }
-
-  .moe-login-alert{
-    border:1px solid var(--moe-danger-bd);
-    background:var(--moe-danger-bg);
-    color:#7f1d1d;
-    border-radius:11px;
-    padding:10px 12px;
-    line-height:1.8;
-    margin-bottom:12px;
-    font-size:8.6px;
-    font-weight:800 !important;
-  }
-
-  .moe-login-field{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-  }
-
-  .moe-login-label{
-    font-size:8.8px;
-    color:var(--moe-green-1);
-    font-weight:900 !important;
-    padding-inline:2px;
-    line-height:1.4;
-  }
-
-  .moe-login-input{
+  .loginInput{
     width:100%;
-    min-height:39px;
-    padding:9px 11px;
-    border-radius:10px;
-    border:1px solid var(--moe-line-2);
+    min-height:46px;
+    padding:9px 12px;
+    border-radius:13px;
+    border:1px solid var(--login-line-2);
     background:#fff;
-    font-size:9.1px;
+    color:var(--login-ink);
+    font-size:13px;
     line-height:1.6;
-    color:var(--moe-ink-2);
+    font-weight:600 !important;
     outline:none;
-    transition:border-color .15s ease, box-shadow .15s ease, opacity .15s ease;
     box-shadow:none;
+    direction:ltr;
+    text-align:center;
+    letter-spacing:1px;
+    transition:border-color .14s ease, box-shadow .14s ease, background .14s ease;
   }
 
-  .moe-login-input::placeholder{
-    color:rgba(115,130,122,.72);
+  .loginInput::placeholder{
+    color:rgba(115,130,121,.65);
+    letter-spacing:0;
   }
 
-  .moe-login-input:focus{
-    border-color:rgba(178,152,98,.52);
-    box-shadow:0 0 0 2px rgba(178,152,98,.07);
+  .loginInput:focus{
+    border-color:var(--login-green-3);
+    box-shadow:0 0 0 3px rgba(31,77,58,.09);
   }
 
-  .moe-login-input[disabled]{
-    opacity:.75;
+  .loginInput[disabled]{
+    opacity:.72;
     cursor:not-allowed;
-    background:linear-gradient(180deg,#f4f6f4,#eef2ee);
+    background:linear-gradient(180deg,#f4f6f4,#eef2ef);
   }
 
-  .moe-login-note{
-    margin-top:10px;
-    padding:10px 12px;
-    border-radius:11px;
-    border:1px solid var(--moe-line);
-    background:var(--moe-surface-2);
-    color:var(--moe-muted);
-    font-size:8.4px;
-    line-height:1.9;
-    font-weight:700 !important;
-  }
-
-  .moe-login-actions{
-    margin-top:12px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .moe-login-btn{
+  .loginBtn{
     appearance:none;
-    border:1px solid var(--moe-line-2);
+    border:1px solid var(--login-green-2);
     cursor:pointer;
-    min-height:35px;
-    padding:8px 14px;
-    border-radius:999px;
-    font-size:9px;
-    font-weight:900 !important;
-    display:flex;
+    width:100%;
+    min-height:46px;
+    padding:9px 18px;
+    border-radius:13px;
+    font-size:10.5px;
+    font-weight:800 !important;
+    display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
     text-decoration:none;
-    background:#fff;
-    color:var(--moe-green-2);
-    transition:transform .15s ease, opacity .15s ease, background .15s ease, border-color .15s ease;
-    width:100%;
-    box-shadow:none;
-  }
-
-  .moe-login-btn.primary{
     color:#fff;
-    border-color:var(--moe-green-2);
-    background:var(--moe-green-2);
+    background:var(--login-green-2);
+    transition:transform .13s ease, background .13s ease, border-color .13s ease;
+    box-shadow:none;
+    white-space:nowrap;
   }
 
-  .moe-login-btn:hover{
+  .loginBtn:hover{
     transform:translateY(-1px);
-    background:var(--moe-surface-2);
-    border-color:#c6d0c7;
+    background:var(--login-green-1);
+    border-color:var(--login-green-1);
   }
 
-  .moe-login-btn.primary:hover{
-    background:var(--moe-green-1);
-    border-color:var(--moe-green-1);
-  }
-
-  .moe-login-btn:active{
-    transform:translateY(0);
-  }
-
-  .moe-login-btn[disabled],
-  .moe-login-btn.is-disabled{
+  .loginBtn[disabled]{
     opacity:.55;
     cursor:not-allowed;
-    transform:none;
     pointer-events:none;
-    filter:grayscale(.10);
+    transform:none;
   }
 
-  .moe-login-expired{
-    display:none;
-    margin-top:10px;
-    border:1px solid var(--moe-danger-bd);
-    background:var(--moe-danger-bg);
-    color:#7f1d1d;
-    border-radius:11px;
+  .loginNote{
+    border:1px dashed var(--login-line-2);
+    border-radius:14px;
+    background:linear-gradient(180deg,#ffffff,#fafcf9);
+    color:var(--login-muted);
+    font-size:9.3px;
+    line-height:1.9;
+    font-weight:500 !important;
     padding:10px 12px;
-    line-height:1.7;
-    font-size:8.6px;
-    font-weight:800 !important;
-  }
-
-  .moe-login-expired.show{
-    display:block;
+    text-align:center;
   }
 
   @media (max-width:640px){
-    .moe-login-panel{
-      width:min(100%, 100%);
-      margin-top:10px;
+    .loginPage{
+      padding:18px 10px;
+      min-height:calc(100vh - 48px);
     }
 
-    .moe-login-top-head{
-      padding:12px 14px 10px;
-      flex-direction:column;
-      align-items:flex-start;
+    .loginPage-wrap{
+      width:100%;
     }
 
-    .moe-login-title{
-      font-size:18px;
+    .loginHead{
+      padding:22px 16px 15px;
     }
 
-    .moe-login-kicker{
-      display:none;
+    .loginTitle{
+      font-size:24px;
     }
 
-    .moe-login-status{
-      padding:10px 14px 12px;
+    .loginSubtitle{
+      font-size:10.3px;
     }
 
-    .moe-login-timer,
-    .moe-login-card{
-      margin:10px;
-    }
-
-    .moe-login-card-body{
-      padding:10px;
-    }
-
-    .moe-login-timer-grid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
+    .loginBody{
+      padding:18px 16px 20px;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="moe-login">
-  <div class="moe-login-wrap">
-    <div class="moe-login-panel">
-      <div class="moe-login-shell">
+<div class="loginPage">
+  <main class="loginPage-wrap" aria-label="تسجيل الدخول">
 
-        <div class="moe-login-top">
-          <div class="moe-login-top-head">
-            <div>
-              <span class="moe-login-kicker">
-                <span class="moe-login-kicker-dot"></span>
-                التحقق من البيانات
-              </span>
-              <h1 class="moe-login-title">تسجيل الدخول</h1>
-              <p class="moe-login-sub">
-                أدخل السجل المدني للتحقق من وجودك ضمن بيانات المرشحين والانتقال إلى خطوات التقديم.
-              </p>
-            </div>
-          </div>
+    <section class="loginCard">
+      <header class="loginHead">
+        <h1 class="loginTitle">تسجيل الدخول</h1>
+        <p class="loginSubtitle">
+          أدخل السجل المدني للتحقق من بياناتك ومتابعة طلب التقديم.
+        </p>
+      </header>
 
-          <div class="moe-login-status">
-            <span class="moe-badge warn">
-              <span class="moe-badge-dot"></span>
-              الخطوة التمهيدية
-            </span>
-          </div>
-        </div>
-
-        {% if portal_show_countdown %}
-        <div id="portalTimer" class="moe-login-timer" data-closes-at="{{ portal_closes_at_iso }}">
-          <div class="moe-login-timer-head">
-            <p class="moe-login-timer-title">الوقت المتبقي لإغلاق التقديم</p>
-            <div class="moe-login-timer-state" id="timerState">مفتوح الآن</div>
-          </div>
-
-          <div class="moe-login-timer-grid">
-            <div class="moe-login-time-box">
-              <span class="moe-login-time-num" id="cdDays">00</span>
-              <span class="moe-login-time-label">يوم</span>
-            </div>
-            <div class="moe-login-time-box">
-              <span class="moe-login-time-num" id="cdHours">00</span>
-              <span class="moe-login-time-label">ساعة</span>
-            </div>
-            <div class="moe-login-time-box">
-              <span class="moe-login-time-num" id="cdMinutes">00</span>
-              <span class="moe-login-time-label">دقيقة</span>
-            </div>
-            <div class="moe-login-time-box">
-              <span class="moe-login-time-num" id="cdSeconds">00</span>
-              <span class="moe-login-time-label">ثانية</span>
-            </div>
-          </div>
-
-          <div class="moe-login-timer-note" id="timerNote">
-            سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.
-          </div>
-        </div>
+      <div class="loginBody">
+        {% if error %}
+          <div class="loginAlert">{{ error }}</div>
         {% endif %}
 
-        <div class="moe-login-card">
-          <div class="moe-login-card-head">
-            <h3>الدخول إلى النظام</h3>
-            <span class="moe-login-tag">التحقق الأولي</span>
+        <form method="post" id="loginForm" class="loginForm" novalidate>
+          {% csrf_token %}
+
+          <div class="loginField">
+            <div class="loginLabelRow">
+              <label class="loginLabel" for="nid">السجل المدني</label>
+              <span class="loginMini">10 أرقام</span>
+            </div>
+
+            <input
+              id="nid"
+              class="loginInput"
+              name="national_id"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="10xxxxxxxx"
+              maxlength="10"
+              value="{{ national_id|default:'' }}"
+            />
           </div>
 
-          <div class="moe-login-card-body">
+          <button class="loginBtn" id="loginBtn" type="submit">دخول</button>
 
-            {% if error %}
-            <div class="moe-login-alert">{{ error }}</div>
-            {% endif %}
-
-            <form method="post" id="loginForm" novalidate>
-              {% csrf_token %}
-
-              <div class="moe-login-field">
-                <label class="moe-login-label" for="nid">السجل المدني</label>
-                <input
-                  id="nid"
-                  class="moe-login-input"
-                  name="national_id"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  placeholder="10xxxxxxxx"
-                  maxlength="10"
-                  value="{{ national_id|default:'' }}"
-                />
-              </div>
-
-              <div class="moe-login-actions">
-                <button class="moe-login-btn primary" id="loginBtn" type="submit">دخول</button>
-              </div>
-
-              <div class="moe-login-expired" id="expiredMsg">
-                انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
-              </div>
-
-              <div class="moe-login-note">
-                أدخل رقم الهوية كما هو مسجل في بيانات المرشحين للمتابعة.
-              </div>
-            </form>
-
+          <div class="loginExpired" id="expiredMsg">
+            انتهى وقت التقديم، سيتم تحديث الصفحة الآن.
           </div>
-        </div>
 
+          <div class="loginNote">
+            في حال عدم ظهور بياناتك، تأكد من صحة رقم الهوية أو تواصل مع جهة الاختصاص.
+          </div>
+        </form>
       </div>
-    </div>
-  </div>
+    </section>
+
+  </main>
 </div>
 
 <script>
@@ -694,8 +379,8 @@
       if (v.length !== 10){
         e.preventDefault();
         nid.focus();
-        nid.style.borderColor = "rgba(140,74,74,.40)";
-        nid.style.boxShadow = "0 0 0 4px rgba(140,74,74,.08)";
+        nid.style.borderColor = "rgba(143,47,47,.40)";
+        nid.style.boxShadow = "0 0 0 4px rgba(143,47,47,.08)";
         setTimeout(() => {
           nid.style.borderColor = "";
           nid.style.boxShadow = "";
@@ -703,102 +388,6 @@
       }
     });
   }
-
-  const timer = document.getElementById("portalTimer");
-  if (!timer) return;
-
-  const timerState = document.getElementById("timerState");
-  const timerNote = document.getElementById("timerNote");
-  const expiredMsg = document.getElementById("expiredMsg");
-
-  const dEl = document.getElementById("cdDays");
-  const hEl = document.getElementById("cdHours");
-  const mEl = document.getElementById("cdMinutes");
-  const sEl = document.getElementById("cdSeconds");
-
-  const closesAtRaw = timer.getAttribute("data-closes-at");
-  if (!closesAtRaw) return;
-
-  const target = new Date(closesAtRaw).getTime();
-  if (Number.isNaN(target)) return;
-
-  let expiredHandled = false;
-
-  function pad(n){
-    return String(n).padStart(2, "0");
-  }
-
-  function lockFormBecauseExpired(){
-    if (expiredHandled) return;
-    expiredHandled = true;
-
-    timer.classList.remove("is-warn", "is-danger");
-    timer.classList.add("is-expired");
-
-    if (timerState) timerState.textContent = "انتهى الوقت";
-    if (timerNote) timerNote.textContent = "تم الوصول إلى وقت إغلاق التقديم.";
-
-    if (expiredMsg) expiredMsg.classList.add("show");
-
-    if (dEl) dEl.textContent = "00";
-    if (hEl) hEl.textContent = "00";
-    if (mEl) mEl.textContent = "00";
-    if (sEl) sEl.textContent = "00";
-
-    if (nid){
-      nid.disabled = true;
-      nid.setAttribute("disabled", "disabled");
-    }
-
-    if (btn){
-      btn.disabled = true;
-      btn.setAttribute("disabled", "disabled");
-      btn.textContent = "انتهى التقديم";
-    }
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 1600);
-  }
-
-  function updateTimer(){
-    const now = Date.now();
-    const diff = target - now;
-
-    if (diff <= 0){
-      lockFormBecauseExpired();
-      return;
-    }
-
-    const totalSeconds = Math.floor(diff / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    if (dEl) dEl.textContent = pad(days);
-    if (hEl) hEl.textContent = pad(hours);
-    if (mEl) mEl.textContent = pad(minutes);
-    if (sEl) sEl.textContent = pad(seconds);
-
-    timer.classList.remove("is-warn", "is-danger", "is-expired");
-
-    if (diff <= 3600 * 1000){
-      timer.classList.add("is-danger");
-      if (timerState) timerState.textContent = "أقل من ساعة";
-      if (timerNote) timerNote.textContent = "المهلة أوشكت على الانتهاء، يرجى إكمال الدخول قبل الإغلاق.";
-    } else if (diff <= 24 * 3600 * 1000){
-      timer.classList.add("is-warn");
-      if (timerState) timerState.textContent = "أقل من 24 ساعة";
-      if (timerNote) timerNote.textContent = "الوقت المتبقي محدود، وسيتم إغلاق التقديم تلقائيًا عند انتهاء المدة.";
-    } else {
-      if (timerState) timerState.textContent = "مفتوح الآن";
-      if (timerNote) timerNote.textContent = "سيتم إغلاق التقديم تلقائيًا عند انتهاء الوقت المحدد.";
-    }
-  }
-
-  updateTimer();
-  setInterval(updateTimer, 1000);
 })();
 </script>
 {% endblock %}

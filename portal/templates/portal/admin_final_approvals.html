@@ -1,709 +1,1137 @@
 {% extends "portal/base.html" %}
-{% block title %}الطلبات المعتمدة{% endblock %}
+{% block title %}الطلبات المعتمدة والموثقة{% endblock %}
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Final Approvals — Classic Cairo Dashboard Style
+     مطابق لهوية لوحة القرارات: هيدر فاتح، مؤشرات مدمجة، فلاتر عملية، جدول قرار
+     يحافظ على المتغيرات والروابط الحالية دون الحاجة لتعديل views.py
+  ========================================================= */
+
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
-
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
-
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
-
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
-
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
-
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
-
-    --ok:#215f39;
-    --ok-bg:#eff8f3;
-    --ok-bd:#cfe6d8;
-
-    --warn:#8e6113;
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
-
-    --danger:#8f2f2f;
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
-
-    --moe-mid:#1f7a62;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
-    --shadow-strong:0 8px 22px rgba(17,24,20,.06);
+    --cl-bg:#f7f9f8;
+    --cl-surface:#ffffff;
+    --cl-surface-soft:#fbfcfb;
+    --cl-border:#dce5df;
+    --cl-border-soft:#eef2ef;
+    --cl-text:#19362b;
+    --cl-text-2:#42594f;
+    --cl-muted:#7b8a83;
+    --cl-green:#164734;
+    --cl-green-2:#216046;
+    --cl-green-soft:#edf8f1;
+    --cl-gold:#a87a25;
+    --cl-gold-soft:#fff8ea;
+    --cl-red:#9a3b3b;
+    --cl-red-soft:#fff5f5;
+    --cl-blue:#365f83;
+    --cl-blue-soft:#f2f7fd;
+    --cl-shadow:0 6px 18px rgba(25,54,43,.04);
+    --cl-shadow-sm:0 1px 6px rgba(25,54,43,.03);
+    --cl-radius:18px;
+    --cl-radius-sm:12px;
   }
 
-  .faX, .faX *{
+  .cairo-final,
+  .cairo-final *{
     box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-family:"Cairo", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif !important;
   }
 
-  .faX{
+  .cairo-final{
     direction:rtl;
-    color:var(--ink);
-    font-size:13px;
+    background:var(--cl-bg);
+    color:var(--cl-text);
+    padding:10px 14px;
+    min-height:calc(100vh - 16px);
+    font-weight:400;
   }
 
-  .faX .shell{
-    position:relative;
+  .cf-page{
+    max-width:1560px;
+    margin:0 auto;
+    display:grid;
+    gap:8px;
+  }
+
+  .cf-card{
+    background:var(--cl-surface);
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius);
+    box-shadow:var(--cl-shadow-sm);
     overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--shadow);
   }
 
-  .faX .shell::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
-  }
-
-  .faX .top{
-    position:relative;
-    padding:16px 18px 14px;
+  .cf-topbar{
+    min-height:82px;
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:space-between;
-    gap:12px;
-    background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    overflow:hidden;
-    border-bottom:1px solid var(--line);
-    border-inline-start:4px solid var(--moe-mid);
+    gap:16px;
+    padding:9px 14px;
+    border:1px solid var(--cl-border);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%,#fbfcfb 100%);
+    box-shadow:var(--cl-shadow);
   }
 
-  .faX .top > *{
-    position:relative;
-    z-index:1;
+  .cf-title-wrap{
+    min-width:0;
+    display:grid;
+    gap:2px;
   }
 
-  .faX h1{
+  .cf-eyebrow{
+    color:var(--cl-muted);
+    font-size:9.4px;
+    font-weight:400;
+  }
+
+  .cf-title{
     margin:0;
-    font-size:20px;
-    font-weight:900;
-    color:var(--green-1);
-    line-height:1.2;
-    letter-spacing:0;
+    color:var(--cl-text);
+    font-size:18.5px;
+    line-height:1.22;
+    font-weight:700;
+    letter-spacing:-.2px;
   }
 
-  .faX .sub{
-    margin:6px 0 0;
-    color:var(--muted);
-    font-size:10.4px;
-    line-height:1.95;
-    max-width:70ch;
-    font-weight:800;
+  .cf-subtitle{
+    margin:0;
+    color:var(--cl-muted);
+    font-size:10.2px;
+    line-height:1.45;
+    font-weight:400;
+    max-width:96ch;
   }
 
-  .faX .pill{
+  .cf-actions,
+  .cf-tools,
+  .cf-report-groups{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .cf-btn,
+  .cf-chip,
+  .cf-tab{
     display:inline-flex;
     align-items:center;
-    gap:8px;
+    justify-content:center;
+    gap:7px;
+    min-height:30px;
+    padding:5px 10px;
+    border-radius:10px;
+    border:1px solid var(--cl-border);
+    background:#fff;
+    color:var(--cl-green);
+    text-decoration:none;
+    font-size:9.8px;
+    font-weight:500;
+    line-height:1;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease;
+  }
+
+  .cf-btn:hover,
+  .cf-tab:hover{
+    background:#f8fbf9;
+    border-color:#c8d7cf;
+    transform:translateY(-1px);
+    box-shadow:0 6px 14px rgba(25,54,43,.055);
+  }
+
+  .cf-btn.primary{
+    background:var(--cl-green);
+    border-color:var(--cl-green);
+    color:#fff;
+    font-weight:600;
+  }
+
+  .cf-btn.primary:hover{
+    background:var(--cl-green-2);
+    border-color:var(--cl-green-2);
+  }
+
+  .cf-btn.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
+  }
+
+  .cf-btn.blue{
+    background:var(--cl-blue-soft);
+    border-color:#d4e2ef;
+    color:var(--cl-blue);
+  }
+
+  .cf-chip{
     min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--warn-bd);
-    background:var(--warn-bg);
-    color:#8a6526;
-    font-size:9px;
-    font-weight:900;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--cl-surface-soft);
+    color:var(--cl-text-2);
+    cursor:default;
+  }
+
+  .cf-dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:var(--cl-green-2);
+    display:inline-block;
+    flex:0 0 auto;
+  }
+
+  .cf-nav{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .cf-nav a{
+    min-height:31px;
+    border:1px solid var(--cl-border);
+    border-radius:12px;
+    background:#fff;
+    color:var(--cl-text-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    font-size:10.2px;
+    font-weight:500;
+  }
+
+  .cf-nav a.active{
+    color:var(--cl-green);
+    border-color:#c9dbcf;
+    background:var(--cl-green-soft);
+  }
+
+  .cf-reportbar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:12px;
+    padding:8px 12px;
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius-sm);
+    background:linear-gradient(180deg,#fff,#fcfdfc);
+    box-shadow:var(--cl-shadow-sm);
+  }
+
+  .cf-reportbar-title{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:var(--cl-text);
+    font-size:10.5px;
+    font-weight:600;
     white-space:nowrap;
   }
 
-  .faX .body{
-    padding:12px;
+  .cf-reportbar-title::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:var(--cl-green-2);
+  }
+
+  .cf-report-groups{
+    min-width:0;
+  }
+
+  .cf-report-group{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    flex-wrap:wrap;
+    padding:3px 0;
+  }
+
+  .cf-report-group + .cf-report-group{
+    padding-inline-start:10px;
+    border-inline-start:1px solid var(--cl-border-soft);
+  }
+
+  .cf-report-group-label{
+    color:var(--cl-muted);
+    font-size:9.4px;
+    font-weight:400;
+    padding:0 4px;
+    white-space:nowrap;
+  }
+
+  .cf-kpis{
     display:grid;
-    gap:12px;
-    position:relative;
-    z-index:1;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
   }
 
-  .faX .kpis{
+  .cf-kpi{
+    background:#fff;
+    border:1px solid var(--cl-border);
+    border-radius:14px;
+    padding:8px 11px;
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:10px;
+    gap:3px;
+    min-height:62px;
   }
 
-  .faX .kpi{
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--shadow-soft);
-    padding:12px;
+  .cf-kpi .label{
+    color:var(--cl-muted);
+    font-size:9.7px;
+    font-weight:500;
   }
 
-  .faX .kpi .label{
-    color:var(--muted);
-    font-size:8.8px;
-    margin-bottom:6px;
-    font-weight:900;
-  }
-
-  .faX .kpi .num{
-    color:var(--green-1);
-    font-size:24px;
-    font-weight:900;
+  .cf-kpi .value{
+    color:var(--cl-text);
+    font-size:18px;
     line-height:1;
-    letter-spacing:-.4px;
+    font-weight:700;
   }
 
-  .faX .card{
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    box-shadow:var(--shadow-soft);
-    overflow:hidden;
+  .cf-kpi .note{
+    color:var(--cl-muted);
+    font-size:9px;
+    line-height:1.45;
+    font-weight:400;
   }
 
-  .faX .ch{
-    padding:11px 12px;
-    border-bottom:1px solid var(--line);
+  .cf-kpi.priority{
+    border-color:#bdd5c6;
+    background:linear-gradient(180deg,#ffffff 0%,#eef8f2 100%);
+  }
+
+  .cf-kpi.priority .value{color:var(--cl-green);}
+  .cf-kpi.attention{border-color:#e8cf9c;background:linear-gradient(180deg,#ffffff 0%,#fff8ea 100%);}
+  .cf-kpi.attention .value{color:#76551a;}
+  .cf-kpi.info{border-color:#d4e2ef;background:linear-gradient(180deg,#ffffff 0%,#f2f7fd 100%);}
+  .cf-kpi.info .value{color:var(--cl-blue);}
+
+  .cf-section-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:10px;
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    gap:12px;
+    padding:8px 14px;
+    border-bottom:1px solid var(--cl-border-soft);
+    background:linear-gradient(180deg,#fff,#fbfcfb);
   }
 
-  .faX .ch h3{
-    margin:0;
-    font-size:12px;
-    font-weight:900;
-    color:var(--green-1);
-  }
-
-  .faX .cb{
-    padding:12px;
-  }
-
-  .faX .tools{
+  .cf-section-title{
     display:flex;
-    gap:10px;
-    flex-wrap:wrap;
     align-items:center;
+    gap:8px;
+    color:var(--cl-text);
+    font-size:12.5px;
+    font-weight:600;
   }
 
-  .faX .filters{
+  .cf-section-title::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:99px;
+    background:var(--cl-green-2);
+  }
+
+  .cf-section-sub{
+    margin-top:3px;
+    color:var(--cl-muted);
+    font-size:9.4px;
+    line-height:1.65;
+    font-weight:400;
+  }
+
+  .cf-filter-body{
+    padding:8px 14px;
+  }
+
+  .cf-filters{
     display:grid;
-    grid-template-columns:1.2fr 1fr 1fr auto auto;
-    gap:10px;
+    grid-template-columns:1.55fr .8fr .65fr .95fr auto;
+    gap:8px;
     align-items:end;
   }
 
-  .faX label{
-    display:block;
-    margin-bottom:6px;
-    color:var(--green-1);
-    font-size:9px;
-    font-weight:900;
+  .cf-field{
+    display:grid;
+    gap:5px;
+    min-width:0;
   }
 
-  .faX .inp,
-  .faX .sel{
+  .cf-label{
+    font-size:10.2px;
+    color:var(--cl-text-2);
+    font-weight:500;
+  }
+
+  .cf-input,
+  .cf-select{
     width:100%;
-    min-height:39px;
-    padding:7px 10px;
-    border-radius:8px;
-    border:1px solid var(--line-2);
+    min-height:34px;
+    border:1px solid #cfdcd4;
+    border-radius:12px;
     background:#fff;
-    color:var(--ink);
-    font-size:9.5px;
+    color:#2d4339;
+    padding:8px 10px;
+    font-size:10.8px;
+    font-weight:400;
     outline:none;
-    box-shadow:none;
   }
 
-  .faX .inp:focus,
-  .faX .sel:focus{
-    border-color:var(--gold-2);
-    box-shadow:0 0 0 2px rgba(171,137,80,.08);
+  .cf-input:focus,
+  .cf-select:focus{
+    border-color:#9fb9a8;
+    box-shadow:0 0 0 3px rgba(33,96,70,.08);
   }
 
-  .faX .check{
+  .cf-table-toolbar{
     display:flex;
     align-items:center;
-    gap:8px;
-    min-height:39px;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:8px 14px;
+    border-bottom:1px solid var(--cl-border-soft);
+    background:#fff;
+  }
+
+  .cf-tabs{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .cf-tab{
+    min-height:30px;
+    font-size:10.4px;
+    border-radius:999px;
+    padding:6px 11px;
+  }
+
+  .cf-tab.active{
+    background:var(--cl-green-soft);
+    border-color:#c8dfd0;
+    color:var(--cl-green);
+    font-weight:600;
+  }
+
+  .cf-tab.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
+  }
+
+  .cf-tab .count{
+    min-width:20px;
+    height:20px;
+    border:1px solid var(--cl-border);
+    background:#fff;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
     padding:0 6px;
     font-size:9px;
-    color:var(--ink-2);
-    white-space:nowrap;
-    font-weight:800;
+    font-weight:600;
   }
 
-  .faX .check input{
-    accent-color:var(--green-2);
-  }
-
-  .faX .btn{
-    appearance:none;
-    border:1px solid var(--line-2);
-    cursor:pointer;
-    min-height:35px;
-    padding:8px 14px;
-    border-radius:8px;
-    font-size:9.4px;
-    font-weight:900;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    gap:8px;
-    background:#fff;
-    color:var(--green-2);
-    box-shadow:none;
-    transition:background .12s ease, border-color .12s ease, transform .12s ease;
-  }
-
-  .faX .btn:hover{
-    background:var(--paper-2);
-    border-color:#b8c6bb;
-    transform:translateY(-1px);
-  }
-
-  .faX .btn:active{
-    transform:translateY(0);
-  }
-
-  .faX .btn.primary{
-    color:#fff;
-    border-color:var(--green-2);
-    background:var(--green-2);
-  }
-
-  .faX .btn.secondary{
-    background:#fff;
-    color:var(--green-2);
-  }
-
-  .faX .btn.gold{
-    background:var(--warn-bg);
-    color:#8a6526;
-    border-color:var(--warn-bd);
-  }
-
-  .faX .table-wrap{
-    width:100%;
-    overflow:auto;
-  }
-
-  .faX table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:980px;
-  }
-
-  .faX th,
-  .faX td{
-    padding:10px 8px;
-    text-align:right;
-    vertical-align:middle;
-    border-bottom:1px solid #edf1ed;
-    font-size:9.3px;
-  }
-
-  .faX th{
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    color:var(--green-1);
-    font-weight:900;
-    white-space:nowrap;
-  }
-
-  .faX tbody td{
-    color:var(--ink);
-    background:#fff;
-  }
-
-  .faX tbody tr:nth-child(even) td{
-    background:#fcfdfc;
-  }
-
-  .faX tbody tr:hover td{
-    background:#f8faf8;
-  }
-
-  .faX tr:last-child td{
-    border-bottom:none;
-  }
-
-  .faX .name{
-    font-weight:900;
-    color:var(--green-1);
-    font-size:10.2px;
-  }
-
-  .faX .muted{
-    color:var(--muted);
-    font-weight:800;
-  }
-
-  .faX .badge{
-    display:inline-flex;
-    align-items:center;
-    min-height:24px;
-    padding:3px 9px;
-    border-radius:999px;
-    font-size:8.5px;
-    font-weight:900;
-    white-space:nowrap;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--ink-2);
-  }
-
-  .faX .badge.ok{
-    border-color:var(--ok-bd);
-    background:var(--ok-bg);
-    color:var(--ok);
-  }
-
-  .faX .badge.warn{
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-    color:var(--warn);
-  }
-
-  .faX .empty{
-    padding:18px;
-    text-align:center;
-    color:var(--muted);
-    font-size:9px;
-    font-weight:800;
-  }
-
-  .faX .pager{
+  .cf-local-search{
     display:flex;
-    gap:8px;
-    flex-wrap:wrap;
     align-items:center;
-    justify-content:center;
-    margin-top:12px;
+    gap:7px;
   }
 
-  .faX .pager a,
-  .faX .pager span{
-    min-width:34px;
-    min-height:34px;
-    padding:6px 10px;
-    border-radius:8px;
-    border:1px solid var(--line);
+  .cf-local-search .cf-input{
+    min-width:270px;
+    min-height:32px;
+  }
+
+  .cf-table-wrap{
+    overflow:auto;
+    background:#fff;
+    border-top:1px solid var(--cl-border-soft);
+  }
+
+  .cf-table{
+    width:100%;
+    min-width:1120px;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:fixed;
+  }
+
+  .cf-table th{
+    position:sticky;
+    top:0;
+    z-index:2;
+    padding:8px 8px;
+    background:#f2f6f4;
+    color:#183a2f;
+    border-bottom:1px solid #ccd9d1;
+    border-inline-start:1px solid #dfe7e2;
+    text-align:center;
+    font-size:10.2px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .cf-table td{
+    padding:8.5px 8px;
+    background:#fff;
+    border-bottom:1px solid #eef2ef;
+    border-inline-start:1px solid #eef2ef;
+    vertical-align:middle;
+    color:#2d4138;
+    font-size:10.8px;
+    font-weight:400;
+  }
+
+  .cf-table th:first-child,
+  .cf-table td:first-child{
+    border-inline-start:none;
+  }
+
+  .cf-row:hover td{
+    background:#f7faf8;
+  }
+
+  .cf-row[data-type="documented_no_prefs"] td{
+    background:linear-gradient(90deg,#fffdf8 0%,#fff 18%);
+  }
+
+  .cf-row[data-type="achieved"] td{
+    background:linear-gradient(90deg,#fbfefc 0%,#fff 18%);
+  }
+
+  .cf-row[data-type="pending_achieved"] td{
+    background:linear-gradient(90deg,#f8fbff 0%,#fff 18%);
+  }
+
+  .c-id{width:58px;text-align:center}
+  .c-applicant{width:255px}
+  .c-sector{width:175px}
+  .c-output{width:190px}
+  .c-pref{width:250px}
+  .c-school{width:240px}
+  .c-date{width:150px}
+  .c-actions{width:110px;text-align:center}
+
+  .cf-person{
+    display:grid;
+    gap:4px;
+    min-width:0;
+  }
+
+  .cf-person-name{
+    font-size:12.7px;
+    font-weight:500;
+    color:#243a31;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cf-person-meta{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    flex-wrap:wrap;
+    color:#7d8d85;
+    font-size:9.5px;
+    font-weight:400;
+  }
+
+  .cf-pill,
+  .cf-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:21px;
+    padding:2px 8px;
+    border-radius:999px;
+    border:1px solid var(--cl-border);
+    background:#f8faf8;
+    color:var(--cl-text-2);
+    font-size:9px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+
+  .cf-badge{
+    min-height:24px;
+    padding:4px 9px;
+    gap:6px;
+  }
+
+  .cf-badge.green,
+  .cf-pill.green{
+    background:var(--cl-green-soft);
+    border-color:#cfe5d7;
+    color:var(--cl-green);
+  }
+
+  .cf-badge.gold,
+  .cf-pill.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
+  }
+
+  .cf-badge.blue,
+  .cf-pill.blue{
+    background:var(--cl-blue-soft);
+    border-color:#d4e2ef;
+    color:var(--cl-blue);
+  }
+
+  .cf-output{
+    display:grid;
+    gap:5px;
+    align-items:start;
+  }
+
+  .cf-output-main{
+    color:#233a31;
+    font-size:11px;
+    font-weight:500;
+    line-height:1.7;
+  }
+
+  .cf-output-sub{
+    color:#7d8d85;
+    font-size:9.2px;
+    font-weight:400;
+    line-height:1.65;
+  }
+
+  .cf-school{
+    color:#233a31;
+    font-size:11px;
+    line-height:1.7;
+    font-weight:500;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cf-empty{
+    padding:28px;
+    text-align:center;
+    color:var(--cl-muted);
+    font-size:10px;
+    font-weight:500;
+  }
+
+  .cf-pager{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:9px 14px;
+    border-top:1px solid var(--cl-border-soft);
+    background:#fbfcfb;
+  }
+
+  .cf-pager-info{
+    display:grid;
+    gap:3px;
+    color:var(--cl-muted);
+    font-size:10px;
+    font-weight:400;
+  }
+
+  .cf-pager-info strong{
+    color:var(--cl-text);
+    font-size:11px;
+    font-weight:600;
+  }
+
+  .cf-pager-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .cf-page-link{
+    min-width:30px;
+    min-height:30px;
+    padding:5px 9px;
+    border-radius:10px;
+    border:1px solid var(--cl-border);
     display:inline-flex;
     align-items:center;
     justify-content:center;
     text-decoration:none;
-    font-size:9px;
-    color:var(--green-2);
+    font-size:9.5px;
+    color:var(--cl-green);
     background:#fff;
-    font-weight:900;
+    font-weight:500;
   }
 
-  .faX .pager .current{
-    background:var(--green-2);
+  .cf-page-link.current{
+    background:var(--cl-green);
     color:#fff;
-    border-color:var(--green-2);
+    border-color:var(--cl-green);
   }
 
-  .faX .print-note{
+  .cf-print-note{
     display:none;
   }
 
+
+
+  /* Final compact refinements — closer to dashboard rhythm */
+  .cf-topbar{min-height:74px;padding:8px 14px;}
+  .cf-reportbar{padding:6px 10px;}
+  .cf-kpi{min-height:56px;padding:7px 10px;}
+  .cf-kpi .value{font-size:17px;}
+  .cf-kpi .note{font-size:8.7px;}
+
+  .cf-filter-summary{
+    list-style:none;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .cf-filter-summary::-webkit-details-marker{display:none;}
+
+  .cf-filter-summary .cf-section-title::after{
+    content:"إظهار";
+    margin-inline-start:8px;
+    min-height:22px;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid #d8e4dc;
+    background:#fff;
+    color:var(--cl-green);
+    font-size:8.8px;
+    font-weight:500;
+  }
+
+  .cf-filters-card[open] .cf-filter-summary .cf-section-title::after{content:"إخفاء";}
+  .cf-filter-summary:hover{background:#fbfdfb;}
+  .cf-filter-summary .cf-chip{pointer-events:none;}
+
+  @media (max-width:1260px){
+    .cf-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-filters .cf-field:first-child{grid-column:1/-1}
+  }
+
+  @media (max-width:900px){
+    .cairo-final{padding:10px}
+    .cf-topbar{align-items:flex-start;flex-direction:column}
+    .cf-actions{justify-content:flex-start}
+    .cf-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-kpis{grid-template-columns:1fr}
+    .cf-filters{grid-template-columns:1fr}
+    .cf-reportbar{grid-template-columns:1fr}
+    .cf-report-groups{justify-content:flex-start}
+    .cf-report-group{width:100%;justify-content:flex-start}
+    .cf-report-group + .cf-report-group{border-inline-start:0;padding-inline-start:0;border-top:1px solid var(--cl-border-soft);padding-top:7px}
+    .cf-local-search{width:100%}
+    .cf-local-search .cf-input{min-width:0;flex:1}
+  }
+
   @media print{
-    .faX .top{
+    @page{size:A4 landscape;margin:10mm}
+
+    html,body{
       background:#fff !important;
-      color:#000 !important;
-      border-bottom:1px solid #d1d5db !important;
-      border-inline-start:0 !important;
+      margin:0 !important;
+      padding:0 !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
     }
 
-    .faX .top::before,
-    .faX .pill,
-    .faX .tools,
-    .faX .filters-wrap,
-    .faX .pager{
+    body *{visibility:hidden}
+    .cairo-final,.cairo-final *{visibility:visible}
+
+    .cairo-final{
+      background:#fff !important;
+      padding:0 !important;
+      min-height:auto !important;
+      color:#000 !important;
+    }
+
+    .cf-page{
+      max-width:none !important;
+      width:100% !important;
+      gap:8px !important;
+    }
+
+    .cf-topbar{
+      border:0 !important;
+      border-bottom:2px solid #d1d5db !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      padding:0 0 8px !important;
+      min-height:auto !important;
+      display:block !important;
+    }
+
+    .cf-actions,
+    .cf-nav,
+    .cf-reportbar,
+    .cf-filters-card,
+    .cf-table-toolbar,
+    .cf-pager,
+    .cf-btn,
+    .cf-chip{
       display:none !important;
     }
 
-    .faX .print-note{
-      display:block;
-      margin-top:8px;
-      color:#000 !important;
-      font-size:10px;
-      font-weight:800;
+    .cf-eyebrow{display:none !important}
+    .cf-title{font-size:17px !important;color:#000 !important}
+    .cf-subtitle,.cf-print-note{font-size:9.5px !important;color:#444 !important}
+    .cf-print-note{display:block !important;margin-top:4px !important}
+
+    .cf-kpis{
+      grid-template-columns:repeat(4,1fr) !important;
+      gap:6px !important;
     }
 
-    .faX h1,
-    .faX .sub,
-    .faX .ch h3,
-    .faX th,
-    .faX td,
-    .faX .name{
-      color:#000 !important;
-    }
-
-    .faX .shell,
-    .faX .card,
-    .faX .kpi{
+    .cf-kpi,
+    .cf-card{
       box-shadow:none !important;
+      border:1px solid #d1d5db !important;
+      background:#fff !important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .cf-section-head{
+      background:#fff !important;
+      border-bottom:1px solid #d1d5db !important;
+    }
+
+    .cf-table-wrap{overflow:visible !important}
+    .cf-table{min-width:auto !important}
+    .cf-table th,.cf-table td{
+      color:#000 !important;
+      font-size:8.3px !important;
+      padding:6px !important;
       background:#fff !important;
     }
 
-    .faX .table-wrap{
-      overflow:visible !important;
-    }
-
-    .faX table{
-      min-width:auto !important;
-    }
-  }
-
-  @media (max-width: 980px){
-    .faX .filters{
-      grid-template-columns:1fr 1fr;
-    }
-
-    .faX .kpis{
-      grid-template-columns:1fr;
-    }
-  }
-
-  @media (max-width: 640px){
-    .faX .top{
-      flex-direction:column;
-      align-items:flex-start;
-      padding:14px;
-    }
-
-    .faX .pill{
-      display:none;
-    }
-
-    .faX .tools{
-      flex-direction:column;
-      align-items:stretch;
-    }
-
-    .faX .tools .btn{
-      width:100%;
-    }
-
-    .faX .filters{
-      grid-template-columns:1fr;
-    }
-
-    .faX h1{
-      font-size:18px;
+    .cf-badge,.cf-pill{
+      background:#fff !important;
+      color:#000 !important;
+      border-color:#d1d5db !important;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="faX">
-  <div class="shell">
+<div class="cairo-final">
+  <div class="cf-page">
 
-    <div class="top">
-      <div>
-        <h1>الطلبات المعتمدة</h1>
-        <p class="sub">
-          شاشة مستقلة لعرض الطلبات التي تم اعتمادها من الإدارة، مع إمكانية الطباعة والتصدير والانتقال إلى لوحة القرارات.
+    <header class="cf-topbar">
+      <div class="cf-title-wrap">
+        <div class="cf-eyebrow">بوابة التقديم على شواغر وكيل</div>
+        <h1 class="cf-title">الطلبات المعتمدة والموثقة</h1>
+        <p class="cf-subtitle">
+          شاشة مخرجات القرار الإداري؛ تفصل بين الاعتماد برغبة، والتوثيق دون رغبات، والاعتماد بانتظار تحديد الرغبة النهائية.
         </p>
         {% if print_mode %}
-          <div class="print-note">
-            تم تجهيز الصفحة للطباعة.
-          </div>
+          <div class="cf-print-note">تم تجهيز الصفحة للطباعة.</div>
         {% endif %}
-      </div>
-      <div class="pill">موافقات نهائية</div>
-    </div>
-
-    <div class="body">
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="label">إجمالي الطلبات المعتمدة</div>
-          <div class="num">{{ total }}</div>
-        </div>
-        <div class="kpi">
-          <div class="label">مع رغبة متحققة</div>
-          <div class="num">{{ total_achieved }}</div>
-        </div>
-        <div class="kpi">
-          <div class="label">معتمدة بانتظار التحديد النهائي</div>
-          <div class="num">{{ total_pending_achieved }}</div>
-        </div>
       </div>
 
       {% if not print_mode %}
-      <div class="card filters-wrap">
-        <div class="ch">
-          <h3>مرشحات البحث والأدوات</h3>
-          <div class="tools">
-            <a class="btn secondary"
-               href="{% url 'portal:admin_final_approvals_to_dashboard' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">
-              لوحة القرارات
-            </a>
+      <div class="cf-actions">
+        <span class="cf-chip"><span class="cf-dot"></span>{{ total }} نتيجة</span>
+        <a class="cf-btn primary" href="{% url 'portal:admin_final_approvals_to_dashboard' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}">لوحة القرارات</a>
+      </div>
+      {% endif %}
+    </header>
 
-            <a class="btn gold"
-               href="{% url 'portal:admin_final_approvals_print' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}"
-               target="_blank"
-               rel="noopener">
-              طباعة
-            </a>
+    {% if not print_mode %}
+    <nav class="cf-nav" aria-label="روابط الإدارة">
+      <a href="{% url 'portal:admin_dashboard' %}"><span class="cf-dot"></span>لوحة القرارات</a>
+      <a href="{% url 'portal:admin_applicants_list' %}"><span class="cf-dot"></span>المتقدمون</a>
+      <a href="{% url 'portal:admin_vacancies_list' %}"><span class="cf-dot"></span>الشواغر</a>
+      <a class="active" href="{% url 'portal:admin_final_approvals' %}"><span class="cf-dot"></span>المعتمدون والموثقون</a>
+      <a href="{% url 'portal:admin_vacancies_pressure' %}"><span class="cf-dot"></span>إقبال المدارس</a>
+    </nav>
 
-            <a class="btn primary"
-               href="{% url 'portal:admin_final_approvals_excel' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">
-              تصدير Excel
-            </a>
+    <section class="cf-reportbar" aria-label="التقارير والتصدير">
+      <div class="cf-reportbar-title">التقارير والتصدير</div>
+      <div class="cf-report-groups">
+        <div class="cf-report-group">
+          <span class="cf-report-group-label">مخرجات القرار الحالية</span>
+          <a class="cf-btn" href="{% url 'portal:admin_final_approvals_excel' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}">Excel</a>
+          <a class="cf-btn" href="{% url 'portal:admin_final_approvals_print' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}" target="_blank" rel="noopener">طباعة</a>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="cf-kpis" aria-label="المؤشرات المختصرة">
+      <div class="cf-kpi">
+        <div class="label">إجمالي المعتمد/الموثق</div>
+        <div class="value">{{ total_outputs|default:total }}</div>
+        <div class="note">إجمالي مخرجات القرار</div>
+      </div>
+
+      <div class="cf-kpi priority">
+        <div class="label">معتمد برغبة متحققة</div>
+        <div class="value">{{ total_achieved }}</div>
+        <div class="note">لها مدرسة نهائية</div>
+      </div>
+
+      <div class="cf-kpi attention">
+        <div class="label">موثق دون رغبات</div>
+        <div class="value">{{ total_documented_no_prefs|default:"0" }}</div>
+        <div class="note">لا يدخل مفاضلة الرغبات</div>
+      </div>
+
+      <div class="cf-kpi info">
+        <div class="label">بانتظار تحديد رغبة</div>
+        <div class="value">{{ total_pending_achieved }}</div>
+        <div class="note">معتمد ولم تحدد الرغبة بعد</div>
+      </div>
+    </section>
+
+    {% if not print_mode %}
+    <details class="cf-card cf-filters-card">
+      <summary class="cf-section-head cf-filter-summary">
+        <div>
+          <div class="cf-section-title">الفلاتر والبحث</div>
+          <div class="cf-section-sub">استخدمها عند الحاجة لتضييق مخرجات القرار دون إزاحة الجدول.</div>
+        </div>
+        <span class="cf-chip"><span class="cf-dot"></span>تصفية النتائج</span>
+      </summary>
+
+      <div class="cf-filter-body">
+        <form method="get" class="cf-filters">
+          <div class="cf-field">
+            <label class="cf-label">بحث عام</label>
+            <input class="cf-input" type="text" name="q" value="{{ q }}" placeholder="اسم المتقدم / السجل / المدرسة">
           </div>
+
+          <div class="cf-field">
+            <label class="cf-label">القطاع</label>
+            <select class="cf-select" name="sector">
+              <option value="">الكل</option>
+              {% for s in sectors %}
+                <option value="{{ s }}" {% if sector == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label">الجنس</label>
+            <input class="cf-input" type="text" name="gender" value="{{ gender }}" placeholder="بنين / بنات">
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label">نوع القرار</label>
+            <select class="cf-select" name="decision_type">
+              <option value="" {% if not decision_type %}selected{% endif %}>الكل</option>
+              <option value="achieved" {% if decision_type == "achieved" %}selected{% endif %}>معتمد برغبة متحققة</option>
+              <option value="pending_achieved" {% if decision_type == "pending_achieved" %}selected{% endif %}>معتمد بانتظار تحديد رغبة</option>
+              <option value="documented_no_prefs" {% if decision_type == "documented_no_prefs" %}selected{% endif %}>موثق دون رغبات</option>
+            </select>
+          </div>
+
+          <div class="cf-tools">
+            <button class="cf-btn primary" type="submit">تطبيق</button>
+            <a class="cf-btn" href="{% url 'portal:admin_final_approvals' %}">إعادة ضبط</a>
+          </div>
+        </form>
+      </div>
+    </details>
+    {% endif %}
+
+    <section class="cf-card">
+      <div class="cf-section-head">
+        <div>
+          <div class="cf-section-title">قائمة مخرجات القرار</div>
+          <div class="cf-section-sub">عرض مفصل للطلبات المعتمدة والموثقة مع توضيح المسار الإداري لكل طلب.</div>
+        </div>
+        {% if print_mode %}
+          <button type="button" class="cf-btn gold" onclick="window.print();">طباعة الآن</button>
+        {% else %}
+          <span class="cf-chip"><span class="cf-dot"></span>{{ rows|length }} سجل في الصفحة</span>
+        {% endif %}
+      </div>
+
+      {% if not print_mode %}
+      <div class="cf-table-toolbar">
+        <div class="cf-tabs" role="tablist" aria-label="تصنيف محلي">
+          <a class="cf-tab {% if not decision_type %}active{% endif %}" href="{% url 'portal:admin_final_approvals' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}">الكل <span class="count">{{ total_outputs|default:total }}</span></a>
+          <a class="cf-tab {% if decision_type == 'achieved' %}active{% endif %}" href="{% url 'portal:admin_final_approvals' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type=achieved">معتمد برغبة <span class="count">{{ total_achieved }}</span></a>
+          <a class="cf-tab gold {% if decision_type == 'documented_no_prefs' %}active{% endif %}" href="{% url 'portal:admin_final_approvals' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type=documented_no_prefs">موثق دون رغبات <span class="count">{{ total_documented_no_prefs|default:"0" }}</span></a>
+          <a class="cf-tab {% if decision_type == 'pending_achieved' %}active{% endif %}" href="{% url 'portal:admin_final_approvals' %}?q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type=pending_achieved">بانتظار تحديد <span class="count">{{ total_pending_achieved }}</span></a>
         </div>
 
-        <div class="cb">
-          <form method="get" class="filters">
-            <div>
-              <label>بحث</label>
-              <input class="inp" type="text" name="q" value="{{ q }}" placeholder="اسم المتقدم / السجل / المدرسة">
-            </div>
-
-            <div>
-              <label>القطاع</label>
-              <select class="sel" name="sector">
-                <option value="">الكل</option>
-                {% for s in sectors %}
-                  <option value="{{ s }}" {% if sector == s %}selected{% endif %}>{{ s }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <label>الجنس</label>
-              <input class="inp" type="text" name="gender" value="{{ gender }}" placeholder="بنين / بنات">
-            </div>
-
-            <div class="check">
-              <input type="checkbox" id="achieved_only" name="achieved_only" value="1" {% if achieved_only == "1" %}checked{% endif %}>
-              <label for="achieved_only" style="margin:0;">المتحققة فقط</label>
-            </div>
-
-            <div style="display:flex;gap:8px;">
-              <button class="btn primary" type="submit">تطبيق</button>
-              <a class="btn secondary" href="{% url 'portal:admin_final_approvals' %}">إعادة ضبط</a>
-            </div>
-          </form>
+        <div class="cf-local-search">
+          <input id="localSearch" class="cf-input" type="text" placeholder="بحث سريع داخل النتائج الحالية..." oninput="filterRows()">
+          <button class="cf-btn" type="button" onclick="clearRowsSearch()">مسح</button>
         </div>
       </div>
       {% endif %}
 
-      <div class="card">
-        <div class="ch">
-          <h3>قائمة الطلبات المعتمدة</h3>
-          {% if print_mode %}
-            <button type="button" class="btn gold" onclick="window.print();">طباعة الآن</button>
-          {% endif %}
+      <div class="cf-table-wrap">
+        {% if rows %}
+        <table class="cf-table">
+          <thead>
+            <tr>
+              <th class="c-id">#</th>
+              <th class="c-applicant">المتقدم</th>
+              <th class="c-sector">القطاع / الجنس</th>
+              <th class="c-output">نوع المخرج</th>
+              <th class="c-pref">حالة الرغبة</th>
+              <th class="c-school">المدرسة النهائية</th>
+              <th class="c-date">تاريخ القرار</th>
+              {% if not print_mode %}
+                <th class="c-actions">إجراء</th>
+              {% endif %}
+            </tr>
+          </thead>
+
+          <tbody id="rowsBody">
+            {% for app in rows %}
+            <tr class="cf-row"
+                data-type="{% if app.is_no_preferences_path %}documented_no_prefs{% elif app.achieved_pref %}achieved{% else %}pending_achieved{% endif %}"
+                data-search="{{ app.applicant.full_name }} {{ app.applicant.national_id }} {{ app.applicant.sector }} {{ app.applicant.gender }} {% if app.achieved_pref %}{{ app.achieved_pref.vacancy.school_name }}{% endif %}">
+              <td class="c-id">{{ app.id }}</td>
+
+              <td class="c-applicant">
+                <div class="cf-person">
+                  <div class="cf-person-name" title="{{ app.applicant.full_name }}">{{ app.applicant.full_name|default:"—" }}</div>
+                  <div class="cf-person-meta">
+                    <span class="cf-pill">{{ app.applicant.national_id|default:"—" }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="c-sector">
+                <div class="cf-person-meta">
+                  <span class="cf-pill">{{ app.applicant.sector|default:"—" }}</span>
+                  <span class="cf-pill">{{ app.applicant.gender|default:"—" }}</span>
+                </div>
+              </td>
+
+              <td class="c-output">
+                {% if app.is_no_preferences_path %}
+                  <span class="cf-badge gold">موثق الاستلام</span>
+                  <div class="cf-output-sub">مسار توثيق دون رغبات</div>
+                {% elif app.achieved_pref %}
+                  <span class="cf-badge green">معتمد برغبة متحققة</span>
+                  <div class="cf-output-sub">مسار المفاضلة</div>
+                {% else %}
+                  <span class="cf-badge blue">بانتظار تحديد</span>
+                {% endif %}
+              </td>
+
+              <td class="c-pref">
+                {% if app.is_no_preferences_path %}
+                  <div class="cf-output">
+                    <div class="cf-output-main">غير منطبق — لا توجد رغبات</div>
+                    <div class="cf-output-sub">لا يدخل مفاضلة الرغبات</div>
+                  </div>
+                {% elif app.achieved_pref %}
+                  <span class="cf-badge green">رغبة {{ app.achieved_pref.rank }}</span>
+                {% else %}
+                  <span class="cf-badge gold">بانتظار تحديد</span>
+                {% endif %}
+              </td>
+
+              <td class="c-school">
+                {% if app.is_no_preferences_path %}
+                  <span class="cf-output-sub">لا توجد مدرسة محددة</span>
+                {% elif app.achieved_pref %}
+                  <div class="cf-school" title="{{ app.achieved_pref.vacancy.school_name }}">
+                    {{ app.achieved_pref.vacancy.school_name }}
+                  </div>
+                {% else %}
+                  <span class="cf-output-sub">—</span>
+                {% endif %}
+              </td>
+
+              <td class="c-date">
+                <span class="cf-output-sub">{{ app.admin_decided_at|date:"Y-m-d H:i"|default:"-" }}</span>
+              </td>
+
+              {% if not print_mode %}
+              <td class="c-actions">
+                <a class="cf-btn" href="{% url 'portal:admin_app_detail' app.id %}">تفاصيل</a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <div class="cf-empty">لا توجد مخرجات قرار مطابقة للمرشحات الحالية.</div>
+        {% endif %}
+      </div>
+
+      {% if not print_mode and rows and rows.paginator.num_pages > 1 %}
+      <div class="cf-pager">
+        <div class="cf-pager-info">
+          <strong>صفحة {{ rows.number }} من {{ rows.paginator.num_pages }}</strong>
+          <span>استخدم التنقل لعرض بقية السجلات.</span>
         </div>
 
-        <div class="cb">
-          {% if rows %}
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>المتقدم</th>
-                    <th>السجل</th>
-                    <th>القطاع</th>
-                    <th>الجنس</th>
-                    <th>قرار الإدارة</th>
-                    <th>الرغبة المتحققة</th>
-                    <th>المدرسة النهائية</th>
-                    <th>تاريخ الاعتماد</th>
-                    {% if not print_mode %}
-                      <th>إجراء</th>
-                    {% endif %}
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for app in rows %}
-                  <tr>
-                    <td>{{ app.id }}</td>
-                    <td class="name">{{ app.applicant.full_name }}</td>
-                    <td>{{ app.applicant.national_id }}</td>
-                    <td>{{ app.applicant.sector|default:"-" }}</td>
-                    <td>{{ app.applicant.gender|default:"-" }}</td>
-                    <td><span class="badge ok">معتمد</span></td>
-                    <td>
-                      {% if app.achieved_pref %}
-                        <span class="badge ok">رغبة {{ app.achieved_pref.rank }}</span>
-                      {% else %}
-                        <span class="badge warn">لم تحدد بعد</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% if app.achieved_pref %}
-                        {{ app.achieved_pref.vacancy.school_name }}
-                      {% else %}
-                        <span class="muted">—</span>
-                      {% endif %}
-                    </td>
-                    <td>{{ app.admin_decided_at|date:"Y-m-d H:i"|default:"-" }}</td>
-                    {% if not print_mode %}
-                    <td>
-                      <a class="btn secondary" href="{% url 'portal:admin_app_detail' app.id %}">فتح</a>
-                    </td>
-                    {% endif %}
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+        <div class="cf-pager-actions">
+          {% if rows.has_previous %}
+            <a class="cf-page-link" href="?page={{ rows.previous_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}">السابق</a>
+          {% endif %}
 
-            {% if not print_mode and rows.paginator.num_pages > 1 %}
-            <div class="pager">
-              {% if rows.has_previous %}
-                <a href="?page={{ rows.previous_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">السابق</a>
-              {% endif %}
-
-              {% for n in rows.paginator.page_range %}
-                {% if n == rows.number %}
-                  <span class="current">{{ n }}</span>
-                {% elif n >= rows.number|add:-2 and n <= rows.number|add:2 %}
-                  <a href="?page={{ n }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">{{ n }}</a>
-                {% endif %}
-              {% endfor %}
-
-              {% if rows.has_next %}
-                <a href="?page={{ rows.next_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&achieved_only={{ achieved_only|urlencode }}">التالي</a>
-              {% endif %}
-            </div>
+          {% for n in rows.paginator.page_range %}
+            {% if n == rows.number %}
+              <span class="cf-page-link current">{{ n }}</span>
+            {% elif n >= rows.number|add:-2 and n <= rows.number|add:2 %}
+              <a class="cf-page-link" href="?page={{ n }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}">{{ n }}</a>
             {% endif %}
-          {% else %}
-            <div class="empty">لا توجد طلبات معتمدة مطابقة للمرشحات الحالية.</div>
+          {% endfor %}
+
+          {% if rows.has_next %}
+            <a class="cf-page-link" href="?page={{ rows.next_page_number }}&q={{ q|urlencode }}&sector={{ sector|urlencode }}&gender={{ gender|urlencode }}&decision_type={{ decision_type|urlencode }}">التالي</a>
           {% endif %}
         </div>
       </div>
+      {% endif %}
+    </section>
 
-    </div>
   </div>
 </div>
+
+{% if not print_mode %}
+<script>
+  function filterRows(){
+    const q = (document.getElementById("localSearch")?.value || "").trim().toLowerCase();
+    document.querySelectorAll("#rowsBody .cf-row").forEach(row => {
+      const text = (row.dataset.search || "").toLowerCase();
+      row.style.display = (!q || text.includes(q)) ? "" : "none";
+    });
+  }
+
+  function clearRowsSearch(){
+    const input = document.getElementById("localSearch");
+    if(input) input.value = "";
+    filterRows();
+  }
+</script>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

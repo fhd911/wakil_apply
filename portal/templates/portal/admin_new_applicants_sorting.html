@@ -3,938 +3,1127 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Final Approvals — Classic Cairo Dashboard Style
+     مطابق لهوية لوحة القرارات: هيدر فاتح، مؤشرات مدمجة، فلاتر عملية، جدول قرار
+     يحافظ على المتغيرات والروابط الحالية دون الحاجة لتعديل views.py
+  ========================================================= */
+
   :root{
-    --s-bg:#f3f6f3;
-    --s-bg-2:#edf2ee;
-    --s-surface:#ffffff;
-    --s-surface-2:#fbfcfb;
-    --s-surface-3:#f7faf7;
-
-    --s-ink:#183127;
-    --s-ink-2:#2f483d;
-    --s-muted:#6f8177;
-
-    --s-green-1:#17382c;
-    --s-green-2:#214738;
-    --s-green-3:#2f5e4a;
-
-    --s-gold-1:#8c7543;
-    --s-gold-2:#a78d59;
-
-    --s-line:#d9e1da;
-    --s-line-2:#ccd6ce;
-    --s-line-3:#e7ece8;
-
-    --s-ok:#1f6239;
-    --s-ok-bg:#eef7f1;
-    --s-ok-bd:#d2e4d7;
-
-    --s-warn:#88621f;
-    --s-warn-bg:#faf6ee;
-    --s-warn-bd:#e7d9be;
-
-    --s-danger:#8d3333;
-    --s-danger-bg:#fbf5f5;
-    --s-danger-bd:#e7cbcb;
-
-    --s-info:#395f7b;
-    --s-info-bg:#f2f6fb;
-    --s-info-bd:#d7e1ec;
-
-    --s-shadow:0 1px 3px rgba(16,24,20,.035);
-    --s-shadow-soft:0 8px 22px rgba(16,24,20,.05);
+    --cl-bg:#f7f9f8;
+    --cl-surface:#ffffff;
+    --cl-surface-soft:#fbfcfb;
+    --cl-border:#dce5df;
+    --cl-border-soft:#eef2ef;
+    --cl-text:#19362b;
+    --cl-text-2:#42594f;
+    --cl-muted:#7b8a83;
+    --cl-green:#164734;
+    --cl-green-2:#216046;
+    --cl-green-soft:#edf8f1;
+    --cl-gold:#a87a25;
+    --cl-gold-soft:#fff8ea;
+    --cl-red:#9a3b3b;
+    --cl-red-soft:#fff5f5;
+    --cl-blue:#365f83;
+    --cl-blue-soft:#f2f7fd;
+    --cl-shadow:0 6px 18px rgba(25,54,43,.04);
+    --cl-shadow-sm:0 1px 6px rgba(25,54,43,.03);
+    --cl-radius:18px;
+    --cl-radius-sm:12px;
   }
 
-  .soc,.soc *{
+  .cairo-final,
+  .cairo-final *{
     box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-family:"Cairo", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif !important;
   }
 
-  .soc{
+  .cairo-final{
     direction:rtl;
-    color:var(--s-ink);
-    background:linear-gradient(180deg,#f7f9f7 0%, #f1f5f1 52%, #edf2ee 100%);
-    padding:10px;
+    background:var(--cl-bg);
+    color:var(--cl-text);
+    padding:10px 14px;
+    min-height:calc(100vh - 16px);
+    font-weight:400;
   }
 
-  .soc-page{
-    max-width:1540px;
+  .cf-page{
+    max-width:1560px;
     margin:0 auto;
     display:grid;
-    gap:10px;
+    gap:8px;
   }
 
-  .soc-hero,
-  .soc-card,
-  .soc-statusbar,
-  .soc-menu,
-  .soc-modal-card{
-    position:relative;
+  .cf-card{
+    background:var(--cl-surface);
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius);
+    box-shadow:var(--cl-shadow-sm);
     overflow:hidden;
-    border:1px solid var(--s-line);
-    border-radius:18px;
-    background:linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-    box-shadow:var(--s-shadow);
   }
 
-  .soc-card::before,
-  .soc-statusbar::before,
-  .soc-modal-card::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,rgba(33,71,56,.72) 0%, rgba(167,141,89,.52) 100%);
-    opacity:.95;
-  }
-
-  .soc-hero{
-    padding:14px 16px;
-    border:1px solid rgba(167,141,89,.24);
-    box-shadow:var(--s-shadow-soft);
-    color:#fff;
-    background:
-      linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,0) 34%),
-      linear-gradient(135deg,#214738 0%, #17382c 60%, #123126 100%);
-  }
-
-  .soc-hero::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:3px;
-    background:linear-gradient(90deg,rgba(167,141,89,.92) 0%, rgba(109,146,127,.82) 100%);
-    opacity:.95;
-  }
-
-  .soc-hero-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:14px;
-    align-items:center;
-  }
-
-  .soc-title{
-    margin:0;
-    font-size:21px;
-    line-height:1.12;
-    font-weight:900 !important;
-    color:#fff;
-  }
-
-  .soc-subtitle{
-    margin:6px 0 0;
-    color:rgba(255,255,255,.9);
-    font-size:10px;
-    line-height:1.9;
-    font-weight:800 !important;
-    max-width:860px;
-  }
-
-  .soc-hero-actions,
-  .soc-top-pills,
-  .soc-status-grid,
-  .soc-stats,
-  .soc-table-head,
-  .soc-table-foot,
-  .soc-modal-actions{
+  .cf-topbar{
+    min-height:82px;
     display:flex;
     align-items:center;
-    gap:8px;
+    justify-content:space-between;
+    gap:16px;
+    padding:9px 14px;
+    border:1px solid var(--cl-border);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff 0%,#fbfcfb 100%);
+    box-shadow:var(--cl-shadow);
+  }
+
+  .cf-title-wrap{
+    min-width:0;
+    display:grid;
+    gap:2px;
+  }
+
+  .cf-eyebrow{
+    color:var(--cl-muted);
+    font-size:9.4px;
+    font-weight:400;
+  }
+
+  .cf-title{
+    margin:0;
+    color:var(--cl-text);
+    font-size:18.5px;
+    line-height:1.22;
+    font-weight:700;
+    letter-spacing:-.2px;
+  }
+
+  .cf-subtitle{
+    margin:0;
+    color:var(--cl-muted);
+    font-size:10.2px;
+    line-height:1.45;
+    font-weight:400;
+    max-width:96ch;
+  }
+
+  .cf-actions,
+  .cf-tools,
+  .cf-report-groups{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
     flex-wrap:wrap;
   }
 
-  .soc-hero-actions{justify-content:flex-end}
-  .soc-top-pills{margin-top:10px}
-
-  .soc-btn,
-  .soc-pill,
-  .soc-mini,
-  .soc-status-pill,
-  .soc-chip,
-  .soc-modal-close{
+  .cf-btn,
+  .cf-chip,
+  .cf-tab{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
-    min-height:36px;
-    padding:7px 13px;
+    gap:7px;
+    min-height:30px;
+    padding:5px 10px;
     border-radius:10px;
-    border:1px solid var(--s-line-2);
+    border:1px solid var(--cl-border);
     background:#fff;
-    color:var(--s-green-2);
+    color:var(--cl-green);
     text-decoration:none;
+    font-size:9.8px;
+    font-weight:500;
+    line-height:1;
     cursor:pointer;
-    font-size:9px;
-    font-weight:900 !important;
-    transition:background .15s ease,border-color .15s ease,transform .15s ease,opacity .15s ease;
-    box-shadow:none;
+    white-space:nowrap;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease;
   }
 
-  .soc-btn:hover,
-  .soc-modal-close:hover{
+  .cf-btn:hover,
+  .cf-tab:hover{
+    background:#f8fbf9;
+    border-color:#c8d7cf;
     transform:translateY(-1px);
-    background:#f7faf8;
-    border-color:#bcc9c0;
+    box-shadow:0 6px 14px rgba(25,54,43,.055);
   }
 
-  .soc-btn-primary{
-    background:linear-gradient(180deg,#26493a 0%, #1d3f31 100%);
-    border-color:#1d3f31;
+  .cf-btn.primary{
+    background:var(--cl-green);
+    border-color:var(--cl-green);
     color:#fff;
+    font-weight:600;
   }
 
-  .soc-btn-primary[disabled]{
-    opacity:.78;
-    cursor:not-allowed;
-    transform:none;
+  .cf-btn.primary:hover{
+    background:var(--cl-green-2);
+    border-color:var(--cl-green-2);
   }
 
-  .soc-btn-warn{
-    background:linear-gradient(180deg,#b07a1e 0%, #93651a 100%);
-    border-color:#93651a;
-    color:#fff;
+  .cf-btn.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
   }
 
-  .soc-btn-danger{
-    background:var(--s-danger-bg);
-    border-color:var(--s-danger-bd);
-    color:var(--s-danger);
+  .cf-btn.blue{
+    background:var(--cl-blue-soft);
+    border-color:#d4e2ef;
+    color:var(--cl-blue);
   }
 
-  .soc-btn-soft,
-  .soc-btn-info{
-    background:#fff;
-    border-color:var(--s-line-2);
-    color:var(--s-green-2);
-  }
-
-  .soc-pill,
-  .soc-status-pill,
-  .soc-chip,
-  .soc-mini{
+  .cf-chip{
     min-height:28px;
-    padding:4px 10px;
+    padding:5px 10px;
     border-radius:999px;
-    font-size:8px;
+    background:var(--cl-surface-soft);
+    color:var(--cl-text-2);
+    cursor:default;
   }
 
-  .soc-pill.ok,
-  .soc-status-pill.ok,
-  .soc-chip.ok{
-    background:var(--s-ok-bg);
-    border-color:var(--s-ok-bd);
-    color:var(--s-ok);
-  }
-
-  .soc-pill.warn,
-  .soc-status-pill.warn,
-  .soc-chip.warn{
-    background:var(--s-warn-bg);
-    border-color:var(--s-warn-bd);
-    color:var(--s-warn);
-  }
-
-  .soc-pill.danger,
-  .soc-status-pill.danger,
-  .soc-chip.danger{
-    background:var(--s-danger-bg);
-    border-color:var(--s-danger-bd);
-    color:var(--s-danger);
-  }
-
-  .soc-pill.info,
-  .soc-status-pill.info,
-  .soc-chip.info{
-    background:var(--s-info-bg);
-    border-color:var(--s-info-bd);
-    color:var(--s-info);
-  }
-
-  .soc-dot{
+  .cf-dot{
     width:8px;
     height:8px;
-    border-radius:50%;
-    background:#2c7a62;
+    border-radius:999px;
+    background:var(--cl-green-2);
+    display:inline-block;
     flex:0 0 auto;
   }
 
-  .soc-statusbar{
-    padding:11px 13px;
+  .cf-nav{
     display:grid;
-    gap:10px;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:7px;
   }
 
-  .soc-statusbar-head{
+  .cf-nav a{
+    min-height:31px;
+    border:1px solid var(--cl-border);
+    border-radius:12px;
+    background:#fff;
+    color:var(--cl-text-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    font-size:10.2px;
+    font-weight:500;
+  }
+
+  .cf-nav a.active{
+    color:var(--cl-green);
+    border-color:#c9dbcf;
+    background:var(--cl-green-soft);
+  }
+
+  .cf-reportbar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:12px;
+    padding:8px 12px;
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius-sm);
+    background:linear-gradient(180deg,#fff,#fcfdfc);
+    box-shadow:var(--cl-shadow-sm);
+  }
+
+  .cf-reportbar-title{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:var(--cl-text);
+    font-size:10.5px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .cf-reportbar-title::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:var(--cl-green-2);
+  }
+
+  .cf-report-groups{
+    min-width:0;
+  }
+
+  .cf-report-group{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    flex-wrap:wrap;
+    padding:3px 0;
+  }
+
+  .cf-report-group + .cf-report-group{
+    padding-inline-start:10px;
+    border-inline-start:1px solid var(--cl-border-soft);
+  }
+
+  .cf-report-group-label{
+    color:var(--cl-muted);
+    font-size:9.4px;
+    font-weight:400;
+    padding:0 4px;
+    white-space:nowrap;
+  }
+
+  .cf-kpis{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .cf-kpi{
+    background:#fff;
+    border:1px solid var(--cl-border);
+    border-radius:14px;
+    padding:8px 11px;
+    display:grid;
+    gap:3px;
+    min-height:62px;
+  }
+
+  .cf-kpi .label{
+    color:var(--cl-muted);
+    font-size:9.7px;
+    font-weight:500;
+  }
+
+  .cf-kpi .value{
+    color:var(--cl-text);
+    font-size:18px;
+    line-height:1;
+    font-weight:700;
+  }
+
+  .cf-kpi .note{
+    color:var(--cl-muted);
+    font-size:9px;
+    line-height:1.45;
+    font-weight:400;
+  }
+
+  .cf-kpi.priority{
+    border-color:#bdd5c6;
+    background:linear-gradient(180deg,#ffffff 0%,#eef8f2 100%);
+  }
+
+  .cf-kpi.priority .value{color:var(--cl-green);}
+  .cf-kpi.attention{border-color:#e8cf9c;background:linear-gradient(180deg,#ffffff 0%,#fff8ea 100%);}
+  .cf-kpi.attention .value{color:#76551a;}
+  .cf-kpi.info{border-color:#d4e2ef;background:linear-gradient(180deg,#ffffff 0%,#f2f7fd 100%);}
+  .cf-kpi.info .value{color:var(--cl-blue);}
+
+  .cf-section-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:10px;
+    gap:12px;
+    padding:8px 14px;
+    border-bottom:1px solid var(--cl-border-soft);
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+  }
+
+  .cf-section-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--cl-text);
+    font-size:12.5px;
+    font-weight:600;
+  }
+
+  .cf-section-title::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:99px;
+    background:var(--cl-green-2);
+  }
+
+  .cf-section-sub{
+    margin-top:3px;
+    color:var(--cl-muted);
+    font-size:9.4px;
+    line-height:1.65;
+    font-weight:400;
+  }
+
+  .cf-filter-body{
+    padding:8px 14px;
+  }
+
+  .cf-filters{
+    display:grid;
+    grid-template-columns:1.55fr .8fr .65fr .95fr auto;
+    gap:8px;
+    align-items:end;
+  }
+
+  .cf-field{
+    display:grid;
+    gap:5px;
+    min-width:0;
+  }
+
+  .cf-label{
+    font-size:10.2px;
+    color:var(--cl-text-2);
+    font-weight:500;
+  }
+
+  .cf-input,
+  .cf-select{
+    width:100%;
+    min-height:34px;
+    border:1px solid #cfdcd4;
+    border-radius:12px;
+    background:#fff;
+    color:#2d4339;
+    padding:8px 10px;
+    font-size:10.8px;
+    font-weight:400;
+    outline:none;
+  }
+
+  .cf-input:focus,
+  .cf-select:focus{
+    border-color:#9fb9a8;
+    box-shadow:0 0 0 3px rgba(33,96,70,.08);
+  }
+
+  .cf-table-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:8px 14px;
+    border-bottom:1px solid var(--cl-border-soft);
+    background:#fff;
+  }
+
+  .cf-tabs{
+    display:flex;
+    align-items:center;
+    gap:7px;
     flex-wrap:wrap;
   }
 
-  .soc-section-title{
-    margin:0;
-    color:var(--s-green-1);
-    font-size:10px;
-    font-weight:900 !important;
+  .cf-tab{
+    min-height:30px;
+    font-size:10.4px;
+    border-radius:999px;
+    padding:6px 11px;
   }
 
-  .soc-section-sub{
-    color:var(--s-muted);
-    font-size:8px;
-    line-height:1.8;
-    font-weight:800 !important;
+  .cf-tab.active{
+    background:var(--cl-green-soft);
+    border-color:#c8dfd0;
+    color:var(--cl-green);
+    font-weight:600;
   }
 
-  .soc-status-grid{
-    align-items:stretch;
-    gap:10px;
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+  .cf-tab.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
   }
 
-  .soc-status-card,
-  .soc-stat,
-  .soc-summary-item{
-    border:1px solid var(--s-line);
-    border-radius:14px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfb);
-    padding:11px 12px;
-    box-shadow:var(--s-shadow);
+  .cf-tab .count{
+    min-width:20px;
+    height:20px;
+    border:1px solid var(--cl-border);
+    background:#fff;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 6px;
+    font-size:9px;
+    font-weight:600;
   }
 
-  .soc-status-card .k,
-  .soc-stat .k,
-  .soc-summary-item .k{
-    color:var(--s-muted);
-    font-size:8px;
-    font-weight:900 !important;
-    margin-bottom:6px;
-  }
-
-  .soc-status-card .v{
-    font-size:10px;
-    line-height:1.55;
-    font-weight:900 !important;
-    color:var(--s-green-1);
-  }
-
-  .soc-status-card .s{
-    margin-top:6px;
-    font-size:7.4px;
-    line-height:1.7;
-    color:var(--s-muted);
-    font-weight:800 !important;
-  }
-
-  .soc-stats{
-    align-items:stretch;
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .soc-stat .v{
-    font-size:24px;
-    line-height:1;
-    font-weight:900 !important;
-    color:var(--s-green-2);
-    letter-spacing:-.4px;
-  }
-
-  .soc-stat.ok .v{color:var(--s-ok)}
-  .soc-stat.warn .v{color:var(--s-warn)}
-  .soc-stat.info .v{color:var(--s-info)}
-
-  .soc-card-head{
+  .cf-local-search{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:11px 13px;
-    border-bottom:1px solid var(--s-line-3);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    gap:7px;
   }
 
-  .soc-card-body{
-    padding:12px !important;
-    display:grid;
-    gap:12px;
+  .cf-local-search .cf-input{
+    min-width:270px;
+    min-height:32px;
   }
 
-  .soc-alert{
-    border:1px solid var(--s-info-bd);
-    background:var(--s-info-bg);
-    color:#1f4175;
-    padding:10px 12px;
-    border-radius:12px;
-    line-height:1.8;
-    font-size:8.9px;
-    font-weight:800 !important;
-  }
-
-  .soc-alert.warn{
-    border-color:var(--s-warn-bd);
-    background:var(--s-warn-bg);
-    color:var(--s-warn);
-  }
-
-  .soc-alert.danger{
-    border-color:var(--s-danger-bd);
-    background:var(--s-danger-bg);
-    color:var(--s-danger);
-  }
-
-  .soc-summary{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .soc-summary-item .v{
-    font-size:9.2px;
-    line-height:1.7;
-    color:var(--s-green-1);
-    font-weight:900 !important;
-  }
-
-  .soc-summary-note{
-    border:1px dashed var(--s-line-2);
-    border-radius:12px;
-    padding:10px 12px;
-    background:var(--s-surface-3);
-    color:var(--s-muted);
-    font-size:8.2px;
-    line-height:1.85;
-    font-weight:800 !important;
-  }
-
-  .soc-table-wrap{
+  .cf-table-wrap{
     overflow:auto;
     background:#fff;
-    border-top:1px solid var(--s-line);
+    border-top:1px solid var(--cl-border-soft);
   }
 
-  .soc-table{
+  .cf-table{
     width:100%;
-    min-width:1240px;
-    border-collapse:collapse;
+    min-width:1120px;
+    border-collapse:separate;
+    border-spacing:0;
     table-layout:fixed;
   }
 
-  .soc-table thead th{
+  .cf-table th{
     position:sticky;
     top:0;
-    z-index:4;
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%) !important;
-    color:var(--s-green-1);
-    font-size:8.75px;
-    font-weight:900 !important;
-    padding:12px 8px;
-    border-bottom:1px solid var(--s-line-2) !important;
-    white-space:nowrap;
-    text-align:right;
-  }
-
-  .soc-table tbody td{
-    padding:11px 8px;
-    font-size:9.25px;
-    vertical-align:top;
-    border-bottom:1px solid #edf1ed !important;
-    background:#ffffff;
-    color:var(--s-ink);
-    font-weight:700 !important;
-  }
-
-  .soc-table tbody tr:nth-child(even) td{background:#fcfdfc}
-  .soc-table tbody tr:hover td{background:#f8faf8}
-
-  .col-name{width:255px}
-  .col-prefs{width:390px}
-
-  .soc-name .n1{
-    font-size:10.5px;
-    line-height:1.35;
-    font-weight:900 !important;
-    color:var(--s-green-1);
-  }
-
-  .soc-name .n2{
-    margin-top:3px;
-    font-size:8.7px;
-    color:var(--s-muted);
-    direction:ltr;
-    text-align:right;
-    font-weight:800 !important;
-  }
-
-  .soc-pref-stack{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-  }
-
-  .soc-pref-chip{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:4px 9px;
-    min-height:28px;
-    border-radius:999px;
-    border:1px solid var(--s-line);
-    background:var(--s-surface-2);
-    color:var(--s-green-2);
-    font-size:8.75px;
-    font-weight:900 !important;
-    max-width:100%;
-  }
-
-  .soc-pref-chip.more{
-    background:#f7faf8;
-    color:var(--s-muted);
-  }
-
-  .soc-pref-rank{
-    width:18px;
-    height:18px;
-    border-radius:999px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--s-warn-bg);
-    color:var(--s-warn);
-    font-size:8px;
-    font-weight:900 !important;
-    border:1px solid var(--s-warn-bd);
-    flex:0 0 auto;
-  }
-
-  .soc-empty{
-    padding:20px 14px;
+    z-index:2;
+    padding:8px 8px;
+    background:#f2f6f4;
+    color:#183a2f;
+    border-bottom:1px solid #ccd9d1;
+    border-inline-start:1px solid #dfe7e2;
     text-align:center;
-    color:var(--s-muted);
-    font-size:8.9px;
-    line-height:1.9;
-    font-weight:800 !important;
+    font-size:10.2px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .cf-table td{
+    padding:8.5px 8px;
     background:#fff;
+    border-bottom:1px solid #eef2ef;
+    border-inline-start:1px solid #eef2ef;
+    vertical-align:middle;
+    color:#2d4138;
+    font-size:10.8px;
+    font-weight:400;
   }
 
-  .soc-table-foot{
-    justify-content:space-between;
-    padding:11px 13px;
-    border-top:1px solid var(--s-line);
-    background:#fff;
+  .cf-table th:first-child,
+  .cf-table td:first-child{
+    border-inline-start:none;
   }
 
-  .soc-foot-note{
-    color:var(--s-muted);
-    font-size:8px;
-    font-weight:800 !important;
+  .cf-row:hover td{
+    background:#f7faf8;
   }
 
-  .soc-modal{
-    position:fixed;
-    inset:0;
-    z-index:100001;
-    background:rgba(15,23,20,.14);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:14px;
+  .cf-row[data-type="documented_no_prefs"] td{
+    background:linear-gradient(90deg,#fffdf8 0%,#fff 18%);
   }
 
-  .soc-modal.on{display:flex}
-
-  .soc-modal-card{
-    width:min(100%,520px);
-    border-radius:18px;
+  .cf-row[data-type="achieved"] td{
+    background:linear-gradient(90deg,#fbfefc 0%,#fff 18%);
   }
 
-  .soc-modal-head,
-  .soc-modal-foot{
-    padding:12px 13px;
+  .cf-row[data-type="pending_achieved"] td{
+    background:linear-gradient(90deg,#f8fbff 0%,#fff 18%);
+  }
+
+  .c-id{width:58px;text-align:center}
+  .c-applicant{width:255px}
+  .c-sector{width:175px}
+  .c-output{width:190px}
+  .c-pref{width:250px}
+  .c-school{width:240px}
+  .c-date{width:150px}
+  .c-actions{width:110px;text-align:center}
+
+  .cf-person{
+    display:grid;
+    gap:4px;
+    min-width:0;
+  }
+
+  .cf-person-name{
+    font-size:12.7px;
+    font-weight:500;
+    color:#243a31;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cf-person-meta{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    border-bottom:1px solid var(--s-line);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    gap:5px;
+    flex-wrap:wrap;
+    color:#7d8d85;
+    font-size:9.5px;
+    font-weight:400;
   }
 
-  .soc-modal-foot{
-    border-top:1px solid var(--s-line);
-    border-bottom:none;
-    justify-content:flex-start;
+  .cf-pill,
+  .cf-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:21px;
+    padding:2px 8px;
+    border-radius:999px;
+    border:1px solid var(--cl-border);
+    background:#f8faf8;
+    color:var(--cl-text-2);
+    font-size:9px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+
+  .cf-badge{
+    min-height:24px;
+    padding:4px 9px;
+    gap:6px;
+  }
+
+  .cf-badge.green,
+  .cf-pill.green{
+    background:var(--cl-green-soft);
+    border-color:#cfe5d7;
+    color:var(--cl-green);
+  }
+
+  .cf-badge.gold,
+  .cf-pill.gold{
+    background:var(--cl-gold-soft);
+    border-color:#ead1a3;
+    color:#76551a;
+  }
+
+  .cf-badge.blue,
+  .cf-pill.blue{
+    background:var(--cl-blue-soft);
+    border-color:#d4e2ef;
+    color:var(--cl-blue);
+  }
+
+  .cf-output{
+    display:grid;
+    gap:5px;
+    align-items:start;
+  }
+
+  .cf-output-main{
+    color:#233a31;
+    font-size:11px;
+    font-weight:500;
+    line-height:1.7;
+  }
+
+  .cf-output-sub{
+    color:#7d8d85;
+    font-size:9.2px;
+    font-weight:400;
+    line-height:1.65;
+  }
+
+  .cf-school{
+    color:#233a31;
+    font-size:11px;
+    line-height:1.7;
+    font-weight:500;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cf-empty{
+    padding:28px;
+    text-align:center;
+    color:var(--cl-muted);
+    font-size:10px;
+    font-weight:500;
+  }
+
+  .cf-pager{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:9px 14px;
+    border-top:1px solid var(--cl-border-soft);
+    background:#fbfcfb;
+  }
+
+  .cf-pager-info{
+    display:grid;
+    gap:3px;
+    color:var(--cl-muted);
+    font-size:10px;
+    font-weight:400;
+  }
+
+  .cf-pager-info strong{
+    color:var(--cl-text);
+    font-size:11px;
+    font-weight:600;
+  }
+
+  .cf-pager-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
     flex-wrap:wrap;
   }
 
-  .soc-modal-body{padding:13px}
-
-  .soc-modal-title{
-    margin:0;
-    color:var(--s-green-1);
-    font-size:11px;
-    font-weight:900 !important;
+  .cf-page-link{
+    min-width:30px;
+    min-height:30px;
+    padding:5px 9px;
+    border-radius:10px;
+    border:1px solid var(--cl-border);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:9.5px;
+    color:var(--cl-green);
+    background:#fff;
+    font-weight:500;
   }
 
-  .soc-modal-list{
-    display:grid;
-    gap:8px;
-    margin:0;
-    padding:0;
+  .cf-page-link.current{
+    background:var(--cl-green);
+    color:#fff;
+    border-color:var(--cl-green);
+  }
+
+  .cf-print-note{
+    display:none;
+  }
+
+
+
+  /* Final compact refinements — closer to dashboard rhythm */
+  .cf-topbar{min-height:74px;padding:8px 14px;}
+  .cf-reportbar{padding:6px 10px;}
+  .cf-kpi{min-height:56px;padding:7px 10px;}
+  .cf-kpi .value{font-size:17px;}
+  .cf-kpi .note{font-size:8.7px;}
+
+  .cf-filter-summary{
     list-style:none;
+    cursor:pointer;
+    user-select:none;
   }
 
-  .soc-modal-list li{
-    border:1px solid var(--s-line);
-    border-radius:12px;
-    padding:9px 10px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfb);
-    color:var(--s-ink-2);
+  .cf-filter-summary::-webkit-details-marker{display:none;}
+
+  .cf-filter-summary .cf-section-title::after{
+    content:"إظهار";
+    margin-inline-start:8px;
+    min-height:22px;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid #d8e4dc;
+    background:#fff;
+    color:var(--cl-green);
     font-size:8.8px;
-    line-height:1.75;
-    font-weight:800 !important;
+    font-weight:500;
   }
 
-  @media (max-width:1100px){
-    .soc-status-grid,
-    .soc-stats,
-    .soc-summary{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
+  .cf-filters-card[open] .cf-filter-summary .cf-section-title::after{content:"إخفاء";}
+  .cf-filter-summary:hover{background:#fbfdfb;}
+  .cf-filter-summary .cf-chip{pointer-events:none;}
+
+  @media (max-width:1260px){
+    .cf-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-filters .cf-field:first-child{grid-column:1/-1}
   }
 
-  @media (max-width:980px){
-    .soc-hero-grid,
-    .soc-hero-actions,
-    .soc-statusbar-head,
-    .soc-card-head,
-    .soc-table-foot{
-      grid-template-columns:1fr;
-    }
-
-    .soc-hero-grid{
-      display:grid;
-      grid-template-columns:1fr;
-      align-items:start;
-    }
-
-    .soc-hero-actions{justify-content:flex-start}
+  @media (max-width:900px){
+    .cairo-final{padding:10px}
+    .cf-topbar{align-items:flex-start;flex-direction:column}
+    .cf-actions{justify-content:flex-start}
+    .cf-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cf-kpis{grid-template-columns:1fr}
+    .cf-filters{grid-template-columns:1fr}
+    .cf-reportbar{grid-template-columns:1fr}
+    .cf-report-groups{justify-content:flex-start}
+    .cf-report-group{width:100%;justify-content:flex-start}
+    .cf-report-group + .cf-report-group{border-inline-start:0;padding-inline-start:0;border-top:1px solid var(--cl-border-soft);padding-top:7px}
+    .cf-local-search{width:100%}
+    .cf-local-search .cf-input{min-width:0;flex:1}
   }
 
-  @media (max-width:640px){
-    .soc{padding:6px}
-    .soc-hero{padding:14px}
-    .soc-title{font-size:18px}
-    .soc-status-grid,
-    .soc-stats,
-    .soc-summary{grid-template-columns:1fr}
-    .soc-card-body,
-    .soc-modal-body{padding:10px}
+  @media print{
+    @page{size:A4 landscape;margin:10mm}
+
+    html,body{
+      background:#fff !important;
+      margin:0 !important;
+      padding:0 !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    body *{visibility:hidden}
+    .cairo-final,.cairo-final *{visibility:visible}
+
+    .cairo-final{
+      background:#fff !important;
+      padding:0 !important;
+      min-height:auto !important;
+      color:#000 !important;
+    }
+
+    .cf-page{
+      max-width:none !important;
+      width:100% !important;
+      gap:8px !important;
+    }
+
+    .cf-topbar{
+      border:0 !important;
+      border-bottom:2px solid #d1d5db !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      padding:0 0 8px !important;
+      min-height:auto !important;
+      display:block !important;
+    }
+
+    .cf-actions,
+    .cf-nav,
+    .cf-reportbar,
+    .cf-filters-card,
+    .cf-table-toolbar,
+    .cf-pager,
+    .cf-btn,
+    .cf-chip{
+      display:none !important;
+    }
+
+    .cf-eyebrow{display:none !important}
+    .cf-title{font-size:17px !important;color:#000 !important}
+    .cf-subtitle,.cf-print-note{font-size:9.5px !important;color:#444 !important}
+    .cf-print-note{display:block !important;margin-top:4px !important}
+
+    .cf-kpis{
+      grid-template-columns:repeat(4,1fr) !important;
+      gap:6px !important;
+    }
+
+    .cf-kpi,
+    .cf-card{
+      box-shadow:none !important;
+      border:1px solid #d1d5db !important;
+      background:#fff !important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .cf-section-head{
+      background:#fff !important;
+      border-bottom:1px solid #d1d5db !important;
+    }
+
+    .cf-table-wrap{overflow:visible !important}
+    .cf-table{min-width:auto !important}
+    .cf-table th,.cf-table td{
+      color:#000 !important;
+      font-size:8.3px !important;
+      padding:6px !important;
+      background:#fff !important;
+    }
+
+    .cf-badge,.cf-pill{
+      background:#fff !important;
+      color:#000 !important;
+      border-color:#d1d5db !important;
+    }
   }
 </style>
+
+
+<style>
+  /* Sorting exact dashboard refinements */
+  .cf-runbar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:12px;
+    padding:8px 12px;
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius-sm);
+    background:linear-gradient(180deg,#fff,#fcfdfc);
+    box-shadow:var(--cl-shadow-sm);
+  }
+  .cf-runbar-title{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:var(--cl-text);
+    font-size:10.5px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .cf-runbar-title::before{content:"";width:7px;height:7px;border-radius:999px;background:var(--cl-green-2)}
+  .cf-runbar .cf-report-groups{justify-content:flex-end}
+  .cf-readiness{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;
+    margin-top:-2px;
+  }
+  .cf-readiness-item{
+    min-height:48px;
+    border:1px solid var(--cl-border);
+    border-radius:14px;
+    background:#fff;
+    padding:8px 10px;
+    display:grid;
+    gap:3px;
+  }
+  .cf-readiness-item .top{display:flex;align-items:center;gap:7px;color:var(--cl-text);font-size:10.2px;font-weight:600}
+  .cf-readiness-item .top::before{content:"";width:8px;height:8px;border-radius:999px;background:var(--cl-green-2);box-shadow:0 0 0 4px rgba(33,96,70,.07)}
+  .cf-readiness-item.warn .top::before{background:var(--cl-gold)}
+  .cf-readiness-item.danger .top::before{background:var(--cl-red)}
+  .cf-readiness-item .bottom{color:var(--cl-muted);font-size:9px;line-height:1.45}
+  .cf-row[data-type="no_prefs"] td{background:linear-gradient(90deg,#fffdf8 0%,#fff 18%)}
+  .cf-row[data-type="unassigned"] td{background:linear-gradient(90deg,#fffafa 0%,#fff 18%)}
+  .cf-pref-stack{display:flex;flex-wrap:wrap;gap:5px;max-height:64px;overflow:hidden;align-items:center}
+  .cf-pref-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:26px;padding:4px 8px;border-radius:999px;border:1px solid var(--cl-border);background:#fff;color:var(--cl-green);font-size:9px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cf-rank{width:18px;height:18px;border-radius:999px;border:1px solid #ead1a3;background:var(--cl-gold-soft);color:#76551a;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex:0 0 auto}
+  .cf-modal{position:fixed;inset:0;z-index:100001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,20,.22);backdrop-filter:blur(4px)}
+  .cf-modal.on{display:flex}
+  .cf-modal-card{width:min(560px,96vw);border:1px solid var(--cl-border);border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.18);overflow:hidden}
+  .cf-modal-head{padding:12px 14px;border-bottom:1px solid var(--cl-border-soft);background:linear-gradient(180deg,#fff,#f8fbf9);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .cf-modal-title{margin:0;color:var(--cl-text);font-size:13px;line-height:1.5;font-weight:700}
+  .cf-modal-body{padding:13px}
+  .cf-modal-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+  .cf-modal-list li{border:1px solid var(--cl-border);border-radius:12px;padding:9px 10px;background:#fff;color:var(--cl-text-2);font-size:10px;line-height:1.7}
+  .cf-modal-foot{padding:12px 13px;border-top:1px solid var(--cl-border-soft);display:flex;gap:8px;flex-wrap:wrap;background:#fff}
+  .cf-table th.c-id,.cf-table td.c-id{width:46px;text-align:center}
+  .cf-table th.c-applicant,.cf-table td.c-applicant{width:18%}
+  .cf-table th.c-sector,.cf-table td.c-sector{width:13%}
+  .cf-table th.c-date,.cf-table td.c-date{width:11%;text-align:center}
+  .cf-table th.c-count,.cf-table td.c-count{width:8%;text-align:center}
+  .cf-table th.c-prefs,.cf-table td.c-prefs{width:32%}
+  .cf-table th.c-status,.cf-table td.c-status{width:18%}
+  @media (max-width:900px){.cf-runbar{grid-template-columns:1fr}.cf-readiness{grid-template-columns:1fr}.cf-runbar .cf-report-groups{justify-content:flex-start}}
+</style>
+
 {% endblock %}
 
 {% block content %}
-<div class="soc">
-  <div class="soc-page">
+<div class="cairo-final">
+  <div class="cf-page">
 
-    <div class="soc-hero">
-      <div class="soc-hero-grid">
-        <div>
-          <h1 class="soc-title">فرز المتقدمين الجدد</h1>
-          <p class="soc-subtitle">مركز تشغيل ومراقبة للفرز يوضح الجاهزية الحالية قبل التنفيذ، ويعرض النتيجة الظاهرة بعد التشغيل بصورة أوضح وأكثر طمأنينة.</p>
-
-          <div class="soc-top-pills">
-            {% if total_applications and total_open_vacancies %}
-              <span class="soc-pill ok"><span class="soc-dot"></span>جاهز للتشغيل</span>
-            {% elif total_applications and not total_open_vacancies %}
-              <span class="soc-pill warn"><span class="soc-dot"></span>توجد طلبات ولا توجد شواغر مفتوحة</span>
-            {% elif not total_applications and total_open_vacancies %}
-              <span class="soc-pill warn"><span class="soc-dot"></span>توجد شواغر ولا توجد طلبات مرسلة</span>
-            {% else %}
-              <span class="soc-pill danger"><span class="soc-dot"></span>البيانات غير مكتملة للتشغيل</span>
-            {% endif %}
-
-            {% if total_assigned or total_unassigned %}
-              <span class="soc-pill info">نتيجة ظاهرة في النظام: {{ total_assigned|default:0 }} مرشح / {{ total_unassigned|default:0 }} بلا ترشيح</span>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="soc-hero-actions">
-          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_dashboard' %}">
-            <span>▦</span>
-            لوحة الإدارة
-          </a>
-
-          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_import' %}">
-            <span>⤴</span>
-            صفحة الاستيراد
-          </a>
-
-          <form method="post" action="{% url 'portal:admin_run_new_applicants_sorting' %}" class="nas-inline-form" id="sortingRunForm" onsubmit="return false;">
-            {% csrf_token %}
-            <button class="soc-btn soc-btn-warn" type="button" id="sortingRunBtn" onclick="openSortingConfirm()">
-              <span>⚙</span>
-              تشغيل الفرز الآن
-            </button>
-          </form>
-        </div>
+    <header class="cf-topbar">
+      <div class="cf-title-wrap">
+        <div class="cf-eyebrow">بوابة التقديم على شواغر وكيل</div>
+        <h1 class="cf-title">فرز المتقدمين الجدد</h1>
+        <p class="cf-subtitle">مركز تشغيل الفرز ومراجعة جاهزية الطلبات والشواغر وعرض النتائج الحالية قبل أو بعد إعادة التشغيل.</p>
       </div>
-    </div>
 
-    <div class="soc-statusbar">
-      <div class="soc-statusbar-head">
-        <div>
-          <h2 class="soc-section-title">فحص الجاهزية قبل التشغيل</h2>
-          <div class="soc-section-sub">تأكد من اكتمال المتطلبات الأساسية قبل تنفيذ الفرز لتجنب تشغيل غير مكتمل أو نتائج غير موثوقة.</div>
-        </div>
-
+      <div class="cf-actions">
         {% if total_applications and total_open_vacancies %}
-          <span class="soc-status-pill ok">الحالة العامة: جاهز للتشغيل</span>
+          <span class="cf-chip"><span class="cf-dot"></span>جاهز للتشغيل</span>
         {% else %}
-          <span class="soc-status-pill warn">الحالة العامة: يحتاج استكمال</span>
+          <span class="cf-chip"><span class="cf-dot"></span>يتطلب استكمال بيانات</span>
         {% endif %}
+        <button class="cf-btn primary" type="button" onclick="openSortingConfirm()">تشغيل الفرز الآن</button>
+        <a class="cf-btn" href="{% url 'portal:admin_import' %}">الاستيراد</a>
       </div>
+    </header>
 
-      <div class="soc-status-grid">
-        <div class="soc-status-card">
-          <div class="k">جاهزية الطلبات</div>
-          <div class="v">{% if total_applications %}تم رصد طلبات مرسلة{% else %}لا توجد طلبات مرسلة{% endif %}</div>
-          <div class="s">{% if total_applications %}إجمالي الطلبات الحالية: {{ total_applications|default:0 }}{% else %}لن يعمل الفرز دون وجود طلبات مرسلة للمتقدمين الجدد.{% endif %}</div>
+    <nav class="cf-nav" aria-label="روابط الإدارة">
+      <a href="{% url 'portal:admin_dashboard' %}"><span class="cf-dot"></span>لوحة القرارات</a>
+      <a href="{% url 'portal:admin_applicants_list' %}"><span class="cf-dot"></span>المتقدمون</a>
+      <a href="{% url 'portal:admin_vacancies_list' %}"><span class="cf-dot"></span>الشواغر</a>
+      <a class="active" href="{% url 'portal:admin_new_applicants_sorting' %}"><span class="cf-dot"></span>فرز المتقدمين</a>
+      <a href="{% url 'portal:admin_final_approvals' %}"><span class="cf-dot"></span>المعتمدون</a>
+    </nav>
+
+    <section class="cf-runbar" aria-label="تشغيل الفرز">
+      <div class="cf-runbar-title">تشغيل الفرز</div>
+      <div class="cf-report-groups">
+        <div class="cf-report-group">
+          <span class="cf-report-group-label">الحالة</span>
+          {% if total_applications and total_open_vacancies %}
+            <span class="cf-chip"><span class="cf-dot"></span>يمكن تنفيذ الفرز الآن</span>
+          {% else %}
+            <span class="cf-chip"><span class="cf-dot"></span>يوجد تنبيه تشغيلي</span>
+          {% endif %}
         </div>
-
-        <div class="soc-status-card">
-          <div class="k">جاهزية الشواغر</div>
-          <div class="v">{% if total_open_vacancies %}توجد شواغر مفتوحة{% else %}لا توجد شواغر مفتوحة{% endif %}</div>
-          <div class="s">{% if total_open_vacancies %}إجمالي الشواغر المفتوحة الحالية: {{ total_open_vacancies|default:0 }}{% else %}يفضل فتح الشواغر المطلوبة قبل تشغيل الفرز.{% endif %}</div>
-        </div>
-
-        <div class="soc-status-card">
-          <div class="k">أمان التنفيذ</div>
-          <div class="v">يتطلب تأكيدًا قبل التشغيل</div>
-          <div class="s">سيتم عرض ملخص سريع قبل التنفيذ، مع تعطيل الزر أثناء التشغيل لمنع التكرار المتتابع.</div>
-        </div>
-
-        <div class="soc-status-card">
-          <div class="k">الخطوة التالية</div>
-          <div class="v">{% if total_applications and total_open_vacancies %}يمكن تنفيذ الفرز الآن{% else %}استكمل البيانات أولًا{% endif %}</div>
-          <div class="s">بعد التشغيل راجع الملخص والنتيجة الظاهرة قبل الانتقال لأي قرارات لاحقة.</div>
+        <div class="cf-report-group">
+          <span class="cf-report-group-label">الإجراء</span>
+          <button class="cf-btn primary" type="button" onclick="openSortingConfirm()">تشغيل الفرز الآن</button>
+          <button class="cf-btn gold" type="button" onclick="openSortingConfirm()">إعادة تشغيل الفرز</button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="soc-stats">
-      <div class="soc-stat">
-        <div class="k">إجمالي الطلبات</div>
-        <div class="v">{{ total_applications|default:0 }}</div>
+    <section class="cf-kpis" aria-label="المؤشرات المختصرة">
+      <div class="cf-kpi">
+        <div class="label">إجمالي الطلبات</div>
+        <div class="value">{{ total_applications|default:0 }}</div>
+        <div class="note">طلبات مرسلة للفرز</div>
       </div>
 
-      <div class="soc-stat info">
-        <div class="k">الشواغر المفتوحة</div>
-        <div class="v">{{ total_open_vacancies|default:0 }}</div>
+      <div class="cf-kpi priority">
+        <div class="label">الشواغر المفتوحة</div>
+        <div class="value">{{ total_open_vacancies|default:0 }}</div>
+        <div class="note">متاحة لمعالجة الرغبات</div>
       </div>
 
-      <div class="soc-stat ok">
-        <div class="k">طلبات لها ترشيح</div>
-        <div class="v">{{ total_assigned|default:0 }}</div>
+      <div class="cf-kpi success">
+        <div class="label">طلبات لها ترشيح</div>
+        <div class="value">{{ total_assigned|default:0 }}</div>
+        <div class="note">ظهرت لها نتيجة</div>
       </div>
 
-      <div class="soc-stat warn">
-        <div class="k">طلبات بلا ترشيح</div>
-        <div class="v">{{ total_unassigned|default:0 }}</div>
+      <div class="cf-kpi attention">
+        <div class="label">طلبات بلا ترشيح</div>
+        <div class="value">{{ total_unassigned|default:0 }}</div>
+        <div class="note">تحتاج مراجعة بعد التشغيل</div>
       </div>
-    </div>
+    </section>
 
-    <div class="soc-card">
-      <div class="soc-card-head">
+    <section class="cf-readiness" aria-label="فحص الجاهزية">
+      <div class="cf-readiness-item {% if not total_applications %}danger{% endif %}">
+        <div class="top">الطلبات المرسلة</div>
+        <div class="bottom">{% if total_applications %}تم رصد {{ total_applications|default:0 }} طلبًا قابلًا للمعالجة.{% else %}لا توجد طلبات مرسلة للتشغيل.{% endif %}</div>
+      </div>
+
+      <div class="cf-readiness-item {% if not total_open_vacancies %}warn{% endif %}">
+        <div class="top">الشواغر المفتوحة</div>
+        <div class="bottom">{% if total_open_vacancies %}يوجد {{ total_open_vacancies|default:0 }} شاغرًا مفتوحًا.{% else %}افتح الشواغر المطلوبة قبل الفرز.{% endif %}</div>
+      </div>
+
+      <div class="cf-readiness-item">
+        <div class="top">آلية التشغيل</div>
+        <div class="bottom">سيظهر مربع تأكيد قبل التنفيذ، ويتم تعطيل الزر أثناء التشغيل لمنع التكرار.</div>
+      </div>
+    </section>
+
+    <section class="cf-card">
+      <div class="cf-section-head">
         <div>
-          <h3 class="soc-section-title">خلاصة الوضع التشغيلي</h3>
-          <div class="soc-section-sub">ملخص سريع يوضح الوضع الحالي والنتيجة الظاهرة في النظام قبل أو بعد التشغيل.</div>
+          <div class="cf-section-title">معاينة نتائج الفرز</div>
+          <div class="cf-section-sub">الجدول هو مساحة العمل الرئيسية، ويعرض الطلبات مع أعلى الرغبات وحالة الترشيح الحالية.</div>
         </div>
-
-        {% if total_assigned or total_unassigned %}
-          <span class="soc-chip info">توجد نتيجة ظاهرة</span>
-        {% else %}
-          <span class="soc-chip warn">لا توجد نتيجة مؤكدة بعد</span>
-        {% endif %}
+        <span class="cf-chip"><span class="cf-dot"></span>{{ rows|length }} سجل في الصفحة</span>
       </div>
 
-      <div class="soc-card-body">
-        {% if message %}
-          <div class="soc-alert warn">{{ message }}</div>
-        {% endif %}
-
-        {% if total_applications and total_open_vacancies %}
-          <div class="soc-alert">
-            البيانات الحالية تسمح بتشغيل الفرز. يوصى بمراجعة النتائج الظاهرة بعد التنفيذ، خاصة الطلبات التي لم تحصل على ترشيح.
-          </div>
-        {% else %}
-          <div class="soc-alert danger">
-            لا ينصح بتشغيل الفرز قبل اكتمال المتطلبات الأساسية. تأكد من وجود طلبات مرسلة وشواغر مفتوحة أولًا.
-          </div>
-        {% endif %}
-
-        <div class="soc-summary">
-          <div class="soc-summary-item">
-            <div class="k">الوضع الحالي</div>
-            <div class="v">{% if total_applications and total_open_vacancies %}جاهز للتشغيل{% else %}يحتاج استكمال بيانات{% endif %}</div>
-          </div>
-
-          <div class="soc-summary-item">
-            <div class="k">الطلبات المرشحة</div>
-            <div class="v">{{ total_assigned|default:0 }} طلبًا يحمل ترشيحًا ظاهرًا</div>
-          </div>
-
-          <div class="soc-summary-item">
-            <div class="k">الطلبات غير المرشحة</div>
-            <div class="v">{{ total_unassigned|default:0 }} طلبًا ما زال بلا ترشيح</div>
-          </div>
-
-          <div class="soc-summary-item">
-            <div class="k">الإجراء التالي</div>
-            <div class="v">{% if total_applications and total_open_vacancies %}تشغيل الفرز ثم مراجعة النتائج{% else %}استكمال بيانات الإدخال ثم إعادة الفحص{% endif %}</div>
-          </div>
+      <div class="cf-table-toolbar">
+        <div class="cf-tabs" role="tablist" aria-label="تصنيف محلي">
+          <button class="cf-tab active" type="button" data-filter="all" onclick="filterSortingRows('all')">الكل <span class="count" id="countAllRows">0</span></button>
+          <button class="cf-tab" type="button" data-filter="assigned" onclick="filterSortingRows('assigned')">لها ترشيح <span class="count" id="countAssignedRows">0</span></button>
+          <button class="cf-tab gold" type="button" data-filter="unassigned" onclick="filterSortingRows('unassigned')">بلا ترشيح <span class="count" id="countUnassignedRows">0</span></button>
+          <button class="cf-tab" type="button" data-filter="no_prefs" onclick="filterSortingRows('no_prefs')">بلا رغبات <span class="count" id="countNoPrefsRows">0</span></button>
         </div>
 
-        <div class="soc-summary-note">
-          هذه الصفحة مخصصة للتشغيل والمراقبة. الأرقام المعروضة تعكس الحالة الحالية الظاهرة في النظام، وقد تختلف بعد إعادة تشغيل الفرز أو تحديث بيانات الطلبات والشواغر.
+        <div class="cf-local-search">
+          <input id="localSearch" class="cf-input" type="text" placeholder="بحث سريع داخل النتائج الحالية..." oninput="filterSortingRows(currentSortingFilter)">
+          <button class="cf-btn" type="button" onclick="clearRowsSearch()">مسح</button>
         </div>
       </div>
-    </div>
 
-    <div class="soc-card">
-      <div class="soc-card-head">
-        <div>
-          <h3 class="soc-section-title">معاينة النتائج الحالية</h3>
-          <div class="soc-section-sub">عرض مختصر للطلبات مع أعلى الرغبات وحالة الترشيح الحالية قبل أو بعد تشغيل الفرز.</div>
-        </div>
-
-        <span class="soc-pill info">المرحلة الثانية</span>
-      </div>
-
-      <div class="soc-table-wrap">
-        <table class="soc-table">
+      <div class="cf-table-wrap">
+        {% if rows %}
+        <table class="cf-table">
           <thead>
             <tr>
-              <th style="width:60px">#</th>
-              <th class="col-name">المتقدم</th>
-              <th style="width:170px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:150px">تاريخ الإرسال</th>
-              <th style="width:110px">عدد الرغبات</th>
-              <th class="col-prefs">أعلى الرغبات</th>
-              <th style="width:210px">حالة الترشيح</th>
+              <th class="c-id">#</th>
+              <th class="c-applicant">المتقدم</th>
+              <th class="c-sector">القطاع / الجنس</th>
+              <th class="c-date">تاريخ الإرسال</th>
+              <th class="c-count">عدد الرغبات</th>
+              <th class="c-prefs">أعلى الرغبات</th>
+              <th class="c-status">حالة الترشيح</th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody id="rowsBody">
             {% for row in rows %}
-            <tr>
-              <td>{{ forloop.counter }}</td>
+            <tr class="cf-row"
+                data-type="{% if row.achieved_pref %}assigned{% elif row.prefs_count|default:0 == 0 %}no_prefs{% else %}unassigned{% endif %}"
+                data-search="{{ row.applicant.full_name }} {{ row.applicant.national_id }} {{ row.applicant.sector }} {{ row.applicant.gender }} {% for pref in row.prefs %}{{ pref.vacancy.school_name }} {% endfor %}">
+              <td class="c-id">{{ forloop.counter }}</td>
 
-              <td class="col-name">
-                <div class="soc-name">
-                  <div class="n1">{{ row.applicant.full_name|default:"—" }}</div>
-                  <div class="n2">{{ row.applicant.national_id|default:"—" }}</div>
+              <td class="c-applicant">
+                <div class="cf-person">
+                  <div class="cf-person-name" title="{{ row.applicant.full_name|default:'—' }}">{{ row.applicant.full_name|default:"—" }}</div>
+                  <div class="cf-person-meta"><span class="cf-pill">{{ row.applicant.national_id|default:"—" }}</span></div>
                 </div>
               </td>
 
-              <td>
-                {% if row.applicant.sector %}
-                  <span class="soc-pill">{{ row.applicant.sector }}</span>
-                {% else %}
-                  <span class="soc-pill">{{ row.sector|default:"—" }}</span>
-                {% endif %}
+              <td class="c-sector">
+                <div class="cf-person-meta">
+                  <span class="cf-pill">{% if row.applicant.sector %}{{ row.applicant.sector }}{% else %}{{ row.sector|default:"—" }}{% endif %}</span>
+                  <span class="cf-pill">{% if row.applicant.gender %}{{ row.applicant.gender }}{% else %}{{ row.gender|default:"—" }}{% endif %}</span>
+                </div>
               </td>
 
-              <td>
-                {% if row.applicant.gender %}
-                  <span class="soc-pill">{{ row.applicant.gender }}</span>
-                {% else %}
-                  <span class="soc-pill">{{ row.gender|default:"—" }}</span>
-                {% endif %}
-              </td>
+              <td class="c-date"><span class="cf-output-sub">{{ row.app.submitted_at|date:"Y-m-d H:i"|default:"—" }}</span></td>
 
-              <td class="soc-foot-note">{{ row.app.submitted_at|date:"Y-m-d H:i"|default:"—" }}</td>
+              <td class="c-count"><span class="cf-pill">{{ row.prefs_count|default:0 }}</span></td>
 
-              <td>
-                <span class="soc-pill">{{ row.prefs_count|default:0 }}</span>
-              </td>
-
-              <td class="col-prefs">
+              <td class="c-prefs">
                 {% if row.prefs %}
-                  <div class="soc-pref-stack">
+                  <div class="cf-pref-stack">
                     {% for pref in row.prefs %}
                       {% if forloop.counter <= 3 %}
-                        <span class="soc-pref-chip">
-                          <span class="soc-pref-rank">{{ pref.rank }}</span>
+                        <span class="cf-pref-chip" title="{{ pref.vacancy.school_name }}">
+                          <span class="cf-rank">{{ pref.rank }}</span>
                           {{ pref.vacancy.school_name }}
                         </span>
                       {% endif %}
                     {% endfor %}
                     {% if row.prefs|length > 3 %}
-                      <span class="soc-pref-chip more">+ {{ row.prefs|length|add:"-3" }} رغبات أخرى</span>
+                      <span class="cf-pref-chip">+ {{ row.prefs|length|add:"-3" }} رغبات أخرى</span>
                     {% endif %}
                   </div>
                 {% else %}
-                  <span class="soc-foot-note">لا توجد رغبات</span>
+                  <span class="cf-output-sub">لا توجد رغبات</span>
                 {% endif %}
               </td>
 
-              <td>
+              <td class="c-status">
                 {% if row.achieved_pref %}
-                  <span class="soc-pill ok">
-                    مرشح على الرغبة {{ row.achieved_pref.rank }}
-                    {% if row.achieved_pref.vacancy and row.achieved_pref.vacancy.school_name %}
-                      — {{ row.achieved_pref.vacancy.school_name }}
-                    {% endif %}
-                  </span>
+                  <span class="cf-badge green">مرشح على الرغبة {{ row.achieved_pref.rank }}</span>
+                  {% if row.achieved_pref.vacancy and row.achieved_pref.vacancy.school_name %}
+                    <div class="cf-output-sub">{{ row.achieved_pref.vacancy.school_name }}</div>
+                  {% endif %}
+                {% elif row.prefs_count|default:0 == 0 %}
+                  <span class="cf-badge gold">بلا رغبات</span>
+                  <div class="cf-output-sub">لا يدخل مفاضلة الرغبات</div>
                 {% else %}
-                  <span class="soc-pill danger">لم يرشح بعد</span>
+                  <span class="cf-badge red">لم يرشح بعد</span>
+                  <div class="cf-output-sub">تحتاج مراجعة بعد الفرز</div>
                 {% endif %}
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="8">
-                <div class="soc-empty">
-                  لا توجد طلبات مرسلة للمتقدمين الجدد حاليًا.<br>
-                  تأكد من اكتمال الاستيراد وإرسال الطلبات قبل تشغيل الفرز.
-                </div>
               </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+          <div class="cf-empty">لا توجد طلبات مرسلة للمتقدمين الجدد حاليًا. تأكد من اكتمال الاستيراد وإرسال الطلبات قبل تشغيل الفرز.</div>
+        {% endif %}
       </div>
+    </section>
 
-      <div class="soc-table-foot">
-        <div class="soc-foot-note">المعاينة الحالية تركز على أعلى الرغبات والنتيجة الظاهرة فقط لتسهيل القرار قبل إعادة التشغيل.</div>
-        <div class="soc-table-head">
-          <a class="soc-btn soc-btn-soft" href="{% url 'portal:admin_import' %}">العودة للاستيراد</a>
-          <button class="soc-btn soc-btn-primary" type="button" onclick="openSortingConfirm()">إعادة تشغيل الفرز</button>
-        </div>
-      </div>
-    </div>
-
+    <form method="post" action="{% url 'portal:admin_run_new_applicants_sorting' %}" id="sortingRunForm" style="display:none;">
+      {% csrf_token %}
+    </form>
   </div>
 </div>
 
-<div class="soc-modal" id="sortingConfirmModal" aria-hidden="true">
-  <div class="soc-modal-card" role="dialog" aria-modal="true" aria-labelledby="sortingConfirmTitle">
-    <div class="soc-modal-head">
+<div class="cf-modal" id="sortingConfirmModal" aria-hidden="true">
+  <div class="cf-modal-card" role="dialog" aria-modal="true" aria-labelledby="sortingConfirmTitle">
+    <div class="cf-modal-head">
       <div>
-        <h3 class="soc-modal-title" id="sortingConfirmTitle">تأكيد تشغيل الفرز</h3>
-        <div class="soc-section-sub">راجع عناصر الجاهزية الحالية قبل تنفيذ الفرز.</div>
+        <h3 class="cf-modal-title" id="sortingConfirmTitle">تأكيد تشغيل الفرز</h3>
+        <div class="cf-section-sub">راجع عناصر الجاهزية الحالية قبل تنفيذ الفرز.</div>
       </div>
-      <button class="soc-modal-close" type="button" onclick="closeSortingConfirm()">×</button>
+      <button class="cf-btn" type="button" onclick="closeSortingConfirm()">×</button>
     </div>
 
-    <div class="soc-modal-body">
-      <ul class="soc-modal-list">
+    <div class="cf-modal-body">
+      <ul class="cf-modal-list">
         <li>إجمالي الطلبات الحالية: <b>{{ total_applications|default:0 }}</b></li>
         <li>إجمالي الشواغر المفتوحة: <b>{{ total_open_vacancies|default:0 }}</b></li>
         <li>طلبات لها ترشيح ظاهر: <b>{{ total_assigned|default:0 }}</b></li>
@@ -942,54 +1131,95 @@
       </ul>
     </div>
 
-    <div class="soc-modal-foot">
-      <button class="soc-btn soc-btn-warn" type="button" id="confirmSortingSubmitBtn" onclick="submitSortingRun()">تأكيد التشغيل الآن</button>
-      <button class="soc-btn" type="button" onclick="closeSortingConfirm()">إلغاء</button>
+    <div class="cf-modal-foot">
+      <button class="cf-btn gold" type="button" id="confirmSortingSubmitBtn" onclick="submitSortingRun()">تأكيد التشغيل الآن</button>
+      <button class="cf-btn" type="button" onclick="closeSortingConfirm()">إلغاء</button>
     </div>
   </div>
 </div>
 
 <script>
   let lastFocusedSortingButton = null;
+  let currentSortingFilter = 'all';
 
   function openSortingConfirm(){
     lastFocusedSortingButton = document.activeElement;
-    document.getElementById('sortingConfirmModal').classList.add('on');
+    const modal = document.getElementById('sortingConfirmModal');
+    modal.classList.add('on');
+    modal.setAttribute('aria-hidden','false');
     document.getElementById('confirmSortingSubmitBtn').focus();
   }
 
   function closeSortingConfirm(){
-    document.getElementById('sortingConfirmModal').classList.remove('on');
-    if(lastFocusedSortingButton && typeof lastFocusedSortingButton.focus === 'function'){
-      lastFocusedSortingButton.focus();
-    }
+    const modal = document.getElementById('sortingConfirmModal');
+    modal.classList.remove('on');
+    modal.setAttribute('aria-hidden','true');
+    if(lastFocusedSortingButton && typeof lastFocusedSortingButton.focus === 'function') lastFocusedSortingButton.focus();
   }
 
   function submitSortingRun(){
     const form = document.getElementById('sortingRunForm');
-    const btn = document.getElementById('sortingRunBtn');
     const confirmBtn = document.getElementById('confirmSortingSubmitBtn');
-    if(btn){
+    document.querySelectorAll('button[onclick="openSortingConfirm()"]').forEach(btn => {
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span> جاري تشغيل الفرز...';
-    }
+      btn.textContent = 'جاري تشغيل الفرز...';
+    });
     if(confirmBtn){
       confirmBtn.disabled = true;
-      confirmBtn.innerHTML = 'جاري التنفيذ...';
+      confirmBtn.textContent = 'جاري التنفيذ...';
     }
     form.submit();
   }
 
+  function normalizeText(value){
+    return String(value || '').toLowerCase().replace(/[\u064B-\u065F\u0670]/g,'').trim();
+  }
+
+  function updateSortingCounts(){
+    const rows = Array.from(document.querySelectorAll('#rowsBody .cf-row'));
+    const counts = {all: rows.length, assigned:0, unassigned:0, no_prefs:0};
+    rows.forEach(row => {
+      const type = row.dataset.type || 'unassigned';
+      if(counts[type] !== undefined) counts[type] += 1;
+    });
+    const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+    set('countAllRows', counts.all);
+    set('countAssignedRows', counts.assigned);
+    set('countUnassignedRows', counts.unassigned);
+    set('countNoPrefsRows', counts.no_prefs);
+  }
+
+  function filterSortingRows(type){
+    currentSortingFilter = type || 'all';
+    const q = normalizeText(document.getElementById('localSearch')?.value || '');
+    document.querySelectorAll('.cf-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === currentSortingFilter));
+
+    document.querySelectorAll('#rowsBody .cf-row').forEach(row => {
+      const rowType = row.dataset.type || 'unassigned';
+      const rowText = normalizeText(row.dataset.search || row.textContent);
+      const matchType = currentSortingFilter === 'all' || rowType === currentSortingFilter;
+      const matchSearch = !q || rowText.includes(q);
+      row.style.display = (matchType && matchSearch) ? '' : 'none';
+    });
+  }
+
+  function clearRowsSearch(){
+    const input = document.getElementById('localSearch');
+    if(input) input.value = '';
+    filterSortingRows(currentSortingFilter);
+  }
+
   document.addEventListener('click', function(e){
-    if(e.target.id === 'sortingConfirmModal'){
-      closeSortingConfirm();
-    }
+    if(e.target.id === 'sortingConfirmModal') closeSortingConfirm();
   });
 
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){
-      closeSortingConfirm();
-    }
+    if(e.key === 'Escape') closeSortingConfirm();
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    updateSortingCounts();
+    filterSortingRows('all');
   });
 </script>
 {% endblock %}

@@ -3,435 +3,1173 @@
 
 {% block extra_css %}
 <style>
+  /* =========================================================
+     Decision Report / Requests — Matched Previous Pages Style
+     - هيدر فاتح رسمي بدل الداكن
+     - تقرير شاشة + طباعة داخلية
+     - زر عودة واضح بدون تعديل urls.py أو views.py
+     - الحفاظ على المتغيرات الحالية كما هي
+  ========================================================= */
+
   :root{
-    --bg:#f6f7f5;
-    --bg-2:#f0f2ef;
-    --bg-3:#e8eeea;
+    --r-bg:#f5f7f5;
+    --r-surface:#ffffff;
+    --r-surface-2:#fbfcfb;
+    --r-surface-3:#f7faf8;
 
-    --paper:#ffffff;
-    --paper-2:#f9fbf8;
-    --paper-3:#f3f6f3;
+    --r-ink:#162f25;
+    --r-ink-2:#31483d;
+    --r-muted:#6f7f76;
 
-    --ink:#203128;
-    --ink-2:#33453b;
-    --muted:#6f7f76;
+    --r-green-1:#173c2f;
+    --r-green-2:#1f4d3a;
+    --r-green-3:#2e6b53;
+    --r-green-soft:#edf7f2;
+    --r-green-line:#cfe4d8;
 
-    --green-1:#1f3a2d;
-    --green-2:#294638;
-    --green-3:#4b6457;
-    --green-4:#7b8f84;
+    --r-gold:#9b7734;
+    --r-gold-2:#b49256;
+    --r-gold-soft:#fbf6ea;
+    --r-gold-line:#e6d5b4;
 
-    --gold-1:#846735;
-    --gold-2:#ab8950;
-    --gold-3:#d7c190;
+    --r-blue:#496d7f;
+    --r-blue-soft:#f1f6fa;
+    --r-blue-line:#d5e2e9;
 
-    --line:#d7dfd8;
-    --line-2:#c8d2ca;
-    --line-3:#ebf0eb;
+    --r-danger:#8f2f2f;
+    --r-danger-bg:#fcf5f5;
+    --r-danger-bd:#e8caca;
 
-    --ok:#215f39;
-    --ok-bg:#eff8f3;
-    --ok-bd:#cfe6d8;
+    --r-line:#d8e2dc;
+    --r-line-2:#cbd8d0;
+    --r-line-soft:#eaf0ec;
 
-    --warn:#8e6113;
-    --warn-bg:#fcf7ee;
-    --warn-bd:#e7d7b7;
-
-    --danger:#8f2f2f;
-    --danger-bg:#fcf6f6;
-    --danger-bd:#e7c7c7;
-
-    --moe-mid:#1f7a62;
-
-    --shadow:0 1px 4px rgba(17,24,20,.035);
-    --shadow-soft:0 2px 8px rgba(17,24,20,.04);
+    --r-shadow:0 4px 14px rgba(18,32,24,.045);
+    --r-shadow-soft:0 10px 26px rgba(18,32,24,.055);
   }
 
-  .rp, .rp *{
+  .rdec,
+  .rdec *{
     box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
   }
 
-  .rp{
+  .rdec{
     direction:rtl;
-    color:var(--ink);
-    padding:14px;
-    background:linear-gradient(180deg,#f7faf8 0%, #eff4f1 58%, #e8eeea 100%);
+    color:var(--r-ink);
+    background:
+      radial-gradient(circle at 94% 6%, rgba(31,77,58,.045) 0 128px, transparent 136px),
+      radial-gradient(circle at 5% 10%, rgba(180,146,86,.055) 0 118px, transparent 128px),
+      linear-gradient(180deg,#fbfcfb 0%, #f6f8f6 52%, #eef3ef 100%);
+    padding:12px 10px 22px;
+    min-height:calc(100vh - 54px);
   }
 
-  .rp .sheet{
-    max-width:1100px;
+  .rdec-page{
+    width:min(100%,1460px);
     margin:0 auto;
+    display:grid;
+    gap:12px;
+  }
+
+  .rdec-shell,
+  .rdec-hero,
+  .rdec-card,
+  .rdec-mini-card,
+  .rdec-note{
     position:relative;
     overflow:hidden;
-    background:linear-gradient(180deg,#ffffff,#fbfcfa);
-    border:1px solid var(--line);
-    border-radius:12px;
-    box-shadow:var(--shadow);
+    border:1px solid var(--r-line);
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    box-shadow:var(--r-shadow);
   }
 
-  .rp .sheet::before{
+  .rdec-shell{
+    border-radius:22px;
+    box-shadow:var(--r-shadow-soft);
+  }
+
+  .rdec-shell::before,
+  .rdec-hero::before,
+  .rdec-card::before,
+  .rdec-mini-card::before,
+  .rdec-note::before{
     content:"";
     position:absolute;
     inset:0 0 auto 0;
-    height:1px;
-    background:linear-gradient(90deg,var(--green-2) 0%, var(--gold-2) 100%);
-    opacity:.95;
+    height:2px;
+    background:linear-gradient(90deg,var(--r-green-2),var(--r-gold-2));
+    opacity:.85;
   }
 
-  .rp .head{
-    position:relative;
-    padding:16px 18px 14px;
+  .rdec-hero{
+    border-radius:22px 22px 0 0;
+    border:0;
+    border-bottom:1px solid var(--r-line-soft);
+    box-shadow:none;
     background:
-      radial-gradient(circle at 88% 22%, rgba(46,155,129,.09) 0 2px, transparent 2.5px) 0 0/18px 18px,
-      radial-gradient(circle at 82% 34%, rgba(15,95,73,.05) 0 2px, transparent 2.5px) 0 0/22px 22px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfa 100%);
-    border-bottom:1px solid var(--line);
-    border-inline-start:4px solid var(--moe-mid);
+      radial-gradient(circle at 8% 18%, rgba(180,146,86,.05) 0 2px, transparent 2.6px) 0 0/25px 25px,
+      linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
   }
 
-  .rp .head-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:14px;
-    flex-wrap:wrap;
+  .rdec-hero-main{
+    padding:13px 18px 11px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
   }
 
-  .rp h1{
-    margin:0;
-    font-size:20px;
-    font-weight:900;
-    letter-spacing:0;
-    color:var(--green-1);
-    line-height:1.2;
-  }
-
-  .rp .sub{
-    margin-top:6px;
-    color:var(--muted);
-    font-size:10.4px;
-    line-height:1.9;
-    font-weight:800;
-  }
-
-  .rp .head-badge{
+  .rdec-kicker,
+  .rdec-pill,
+  .rdec-chip,
+  .rdec-status{
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    min-height:28px;
-    padding:4px 10px;
-    border-radius:8px;
-    border:1px solid var(--warn-bd);
-    background:var(--warn-bg);
-    color:#8a6526;
-    font-size:9px;
-    font-weight:900;
+    justify-content:center;
+    gap:7px;
+    min-height:29px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid var(--r-line);
+    background:#fff;
+    color:var(--r-ink-2);
+    font-size:8.8px;
+    line-height:1;
+    font-weight:700 !important;
     white-space:nowrap;
+    text-decoration:none;
   }
 
-  .rp .body{
-    padding:12px;
+  .rdec-kicker{
+    width:max-content;
+    border-color:var(--r-green-line);
+    background:var(--r-green-soft);
+    color:var(--r-green-2);
+    margin-bottom:6px;
   }
 
-  .rp .top{
+  .rdec-kicker::before,
+  .rdec-head-title::before,
+  .rdec-status-main::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--r-green-2);
+    box-shadow:0 0 0 4px rgba(31,77,58,.08);
+    flex:0 0 auto;
+  }
+
+  .rdec-title{
+    margin:0;
+    color:var(--r-green-1);
+    font-size:23px;
+    line-height:1.25;
+    font-weight:800 !important;
+    letter-spacing:0;
+  }
+
+  .rdec-sub{
+    margin:3px 0 0;
+    max-width:82ch;
+    color:var(--r-muted);
+    font-size:10px;
+    line-height:1.75;
+    font-weight:500 !important;
+  }
+
+  .rdec-actions,
+  .rdec-pills,
+  .rdec-table-head-tools,
+  .rdec-summary-grid{
     display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:14px;
-    padding:0 0 12px;
-    margin-bottom:10px;
-    border-bottom:1px solid var(--line);
+    align-items:center;
+    gap:8px;
     flex-wrap:wrap;
   }
 
-  .rp .meta{
-    color:var(--muted);
-    font-size:9px;
-    line-height:1.9;
-    font-weight:800;
+  .rdec-actions{
+    justify-content:flex-end;
   }
 
-  .rp .filters{
-    margin-top:8px;
+  .rdec-mini-actions{
+    margin-top:9px;
     display:flex;
     gap:8px;
     flex-wrap:wrap;
   }
 
-  .rp .pill{
-    min-height:28px;
-    padding:4px 9px;
-    border-radius:8px;
-    font-size:9px;
-    font-weight:900;
-    color:var(--ink-2);
-    border:1px solid var(--line);
-    background:var(--paper-2);
+  .rdec-btn{
+    appearance:none;
     display:inline-flex;
     align-items:center;
-    gap:6px;
+    justify-content:center;
+    gap:8px;
+    min-height:38px;
+    padding:8px 14px;
+    border-radius:12px;
+    border:1px solid var(--r-line-2);
+    background:#fff;
+    color:var(--r-green-2);
+    text-decoration:none;
+    cursor:pointer;
+    font-size:9.5px;
+    line-height:1;
+    font-weight:700 !important;
+    box-shadow:none;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease,opacity .14s ease;
+  }
+
+  .rdec-btn:hover{
+    transform:translateY(-1px);
+    background:#f8fbf9;
+    border-color:#b8c6bb;
+  }
+
+  .rdec-btn-primary{
+    background:var(--r-green-2);
+    border-color:var(--r-green-2);
+    color:#fff;
+  }
+
+  .rdec-btn-primary:hover{
+    background:var(--r-green-1);
+    border-color:var(--r-green-1);
+    color:#fff;
+  }
+
+  .rdec-btn-gold{
+    border-color:var(--r-gold-line);
+    background:var(--r-gold-soft);
+    color:#76551f;
+  }
+
+  .rdec-status-strip{
+    padding:8px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    border-top:1px solid var(--r-line-soft);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+  }
+
+  .rdec-status-main{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    color:var(--r-green-1);
+    font-size:9.4px;
+    font-weight:700 !important;
+  }
+
+  .rdec-pill.ok,
+  .rdec-chip.ok,
+  .rdec-status.ok{
+    border-color:var(--r-green-line);
+    background:var(--r-green-soft);
+    color:var(--r-green-2);
+  }
+
+  .rdec-pill.warn,
+  .rdec-chip.warn,
+  .rdec-status.warn{
+    border-color:var(--r-gold-line);
+    background:var(--r-gold-soft);
+    color:#76551f;
+  }
+
+  .rdec-pill.info,
+  .rdec-chip.info,
+  .rdec-status.info{
+    border-color:var(--r-blue-line);
+    background:var(--r-blue-soft);
+    color:var(--r-blue);
+  }
+
+  .rdec-content{
+    padding:10px 12px 12px;
+    display:grid;
+    gap:10px;
+  }
+
+  .rdec-summary{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .rdec-summary-card{
+    flex:1 1 170px;
+    min-width:0;
+    padding:9px 10px;
+    border:1px solid var(--r-line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+  }
+
+  .rdec-summary-label{
+    color:var(--r-muted);
+    font-size:8.2px;
+    font-weight:700 !important;
+    margin-bottom:4px;
+  }
+
+  .rdec-summary-value{
+    color:var(--r-green-1);
+    font-size:9.7px;
+    line-height:1.55;
+    font-weight:800 !important;
     white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  .rp .pill.gold{
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-    color:#8a6526;
+  .rdec-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 320px;
+    gap:12px;
+    align-items:start;
   }
 
-  .rp .box{
-    min-width:250px;
-    padding:11px 12px;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:linear-gradient(180deg,#fcfdfb,#f8fbf8);
-    color:var(--muted);
-    font-size:8.8px;
-    line-height:1.95;
-    box-shadow:var(--shadow-soft);
-    font-weight:800;
+  .rdec-side{
+    display:grid;
+    gap:10px;
+    position:sticky;
+    top:12px;
   }
 
-  .rp .table-wrap{
-    overflow:auto;
-    border:1px solid var(--line);
-    border-radius:10px;
+  .rdec-card-head{
+    padding:10px 13px;
+    border-bottom:1px solid var(--r-line-soft);
+    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .rdec-head-title{
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--r-green-1);
+    font-size:12.6px;
+    line-height:1.5;
+    font-weight:800 !important;
+  }
+
+  .rdec-card-body{
+    padding:10px 12px;
+  }
+
+  .rdec-table-wrap{
+    overflow-x:hidden;
+    overflow-y:visible;
+    border:1px solid var(--r-line);
+    border-radius:14px;
     background:#fff;
   }
 
-  .rp table{
+  .rdec-table{
     width:100%;
+    min-width:0;
     border-collapse:collapse;
-    font-size:9.3px;
-    min-width:920px;
+    table-layout:fixed;
   }
 
-  .rp th,
-  .rp td{
-    padding:10px 8px;
+  .rdec-table th,
+  .rdec-table td{
+    padding:8px 7px;
     text-align:right;
     vertical-align:middle;
-    border-bottom:1px solid #edf1ed;
+    border-bottom:1px solid var(--r-line-soft);
   }
 
-  .rp th{
+  .rdec-table th{
+    position:sticky;
+    top:0;
+    z-index:3;
     background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    color:var(--green-1);
-    font-weight:900;
-    font-size:8.8px;
+    color:var(--r-green-1);
+    font-size:8.4px;
+    font-weight:800 !important;
     white-space:nowrap;
   }
 
-  .rp tbody td{
-    color:var(--ink);
+  .rdec-table td{
     background:#fff;
+    color:var(--r-ink);
+    font-size:8.6px;
+    font-weight:600 !important;
+    line-height:1.5;
+    overflow:hidden;
   }
 
-  .rp tbody tr:nth-child(even) td{
+  .rdec-table tbody tr:nth-child(even) td{
     background:#fcfdfc;
   }
 
-  .rp tbody tr:hover td{
+  .rdec-table tbody tr:hover td{
     background:#f8faf8;
   }
 
-  .rp .mut{
-    color:var(--muted);
-    font-weight:800;
+  .rdec-table th:nth-child(1),
+  .rdec-table td:nth-child(1){width:48px;text-align:center;}
+
+  .rdec-table th:nth-child(2),
+  .rdec-table td:nth-child(2){width:27%;}
+
+  .rdec-table th:nth-child(3),
+  .rdec-table td:nth-child(3){width:13%;}
+
+  .rdec-table th:nth-child(4),
+  .rdec-table td:nth-child(4){width:14%;}
+
+  .rdec-table th:nth-child(5),
+  .rdec-table td:nth-child(5){width:8%;text-align:center;}
+
+  .rdec-table th:nth-child(6),
+  .rdec-table td:nth-child(6){width:8%;text-align:center;}
+
+  .rdec-table th:nth-child(7),
+  .rdec-table td:nth-child(7){width:12%;text-align:center;}
+
+  .rdec-table th:nth-child(8),
+  .rdec-table td:nth-child(8){width:14%;}
+
+  .rdec-name{
+    color:var(--r-green-1);
+    font-size:10.3px;
+    line-height:1.45;
+    font-weight:900 !important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  .rp .ltr{
+  .rdec-subtxt{
+    margin-top:2px;
+    color:var(--r-muted);
+    font-size:8px;
+    line-height:1.5;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:600 !important;
+  }
+
+  .rdec-ltr{
     direction:ltr;
     unicode-bidi:embed;
     text-align:right;
   }
 
-  .rp .status-pill{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
+  .rdec-center{
+    text-align:center !important;
+  }
+
+  .rdec-status{
     min-height:24px;
-    padding:3px 9px;
-    border-radius:999px;
-    font-size:8.5px;
-    font-weight:900;
-    border:1px solid var(--line);
-    background:var(--paper-2);
-    color:var(--green-2);
-    white-space:nowrap;
+    padding:4px 9px;
+    font-size:8.15px;
+    font-weight:800 !important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);
   }
 
-  .rp .status-pill.submitted{
-    border-color:var(--ok-bd);
-    background:var(--ok-bg);
-    color:var(--ok);
+  .rdec-date{
+    color:var(--r-muted);
+    font-size:8.1px;
+    font-weight:600 !important;
+    letter-spacing:-.1px;
   }
 
-  .rp .status-pill.draft{
-    border-color:var(--warn-bd);
-    background:var(--warn-bg);
-    color:var(--warn);
-  }
-
-  .rp .status-pill.other{
-    border-color:var(--danger-bd);
-    background:var(--danger-bg);
-    color:var(--danger);
-  }
-
-  .rp .empty{
-    padding:18px 12px !important;
-    text-align:center;
-    color:var(--muted);
-    font-size:9px;
-    font-weight:800;
+  .rdec-empty{
+    padding:24px 12px !important;
+    text-align:center !important;
+    color:var(--r-muted) !important;
+    font-size:9px !important;
+    font-weight:500 !important;
     background:#fff !important;
   }
 
-  .rp .foot{
-    padding:12px 14px 14px;
-    color:var(--muted);
-    font-size:8.6px;
-    line-height:1.9;
-    font-weight:800;
+  .rdec-fields{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
   }
 
-  @media (max-width: 820px){
-    .rp{
+  .rdec-field{
+    min-width:0;
+    display:grid;
+    gap:5px;
+  }
+
+  .rdec-label{
+    color:var(--r-green-1);
+    font-size:8.6px;
+    font-weight:700 !important;
+  }
+
+  .rdec-value{
+    min-height:37px;
+    padding:7px 9px;
+    border-radius:10px;
+    border:1px solid var(--r-line-2);
+    background:#fff;
+    color:var(--r-ink);
+    font-size:9px;
+    line-height:1.55;
+    font-weight:600 !important;
+    display:flex;
+    align-items:center;
+  }
+
+  .rdec-mini-card{
+    padding:10px;
+    border-radius:14px;
+  }
+
+  .rdec-mini-label{
+    color:var(--r-muted);
+    font-size:8.1px;
+    font-weight:700 !important;
+    margin-bottom:4px;
+  }
+
+  .rdec-mini-value{
+    color:var(--r-green-1);
+    font-size:9.8px;
+    line-height:1.5;
+    font-weight:800 !important;
+  }
+
+  .rdec-note{
+    margin-top:8px;
+    padding:8px 11px;
+    border:1px dashed var(--r-line-2);
+    border-radius:13px;
+    background:var(--r-surface-2);
+    color:var(--r-muted);
+    font-size:8.4px;
+    line-height:1.7;
+    font-weight:500 !important;
+  }
+
+  .rdec-note b{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--r-green-1);
+    font-size:8.4px;
+    font-weight:800 !important;
+    margin-bottom:3px;
+  }
+
+  .rdec-note b::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:var(--r-green-2);
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
+  }
+
+  .rdec-foot{
+    margin-top:8px;
+    padding:8px 11px;
+    border:1px dashed var(--r-line-2);
+    border-radius:999px;
+    background:var(--r-surface-2);
+    color:var(--r-muted);
+    font-size:8.3px;
+    line-height:1.65;
+    font-weight:500 !important;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .rdec-foot::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:999px;
+    background:var(--r-green-2);
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
+    flex:0 0 auto;
+  }
+
+  @media (max-width:1080px){
+    .rdec-grid{
+      grid-template-columns:1fr;
+    }
+
+    .rdec-side{
+      position:static;
+    }
+
+    .rdec-table-wrap{
+      overflow-x:auto;
+    }
+
+    .rdec-table{
+      min-width:980px;
+    }
+  }
+
+  @media (max-width:820px){
+    .rdec-hero-main{
+      grid-template-columns:1fr;
+      padding:15px 14px;
+    }
+
+    .rdec-actions{
+      justify-content:flex-start;
+    }
+
+    .rdec-fields{
+      grid-template-columns:1fr;
+    }
+
+    .rdec-btn{
+      width:100%;
+    }
+  }
+
+  @media (max-width:640px){
+    .rdec{
       padding:8px;
     }
 
-    .rp .head-row,
-    .rp .top{
-      flex-direction:column;
-      align-items:flex-start;
+    .rdec-title{
+      font-size:21px;
     }
 
-    .rp .box{
-      width:100%;
-      min-width:0;
-    }
-
-    .rp h1{
-      font-size:18px;
+    .rdec-sub{
+      font-size:9.4px;
     }
   }
 
   @media print{
-    header.topbar{ display:none !important; }
+    @page{
+      size:A4 portrait;
+      margin:10mm;
+    }
 
-    .rp{
-      padding:0;
+    html, body{
+      background:#fff !important;
+      margin:0 !important;
+      padding:0 !important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    header.topbar,
+    .rdec-btn,
+    .rdec-actions,
+    .rdec-status-strip,
+    nav,
+    .sidebar,
+    .page-actions{
+      display:none !important;
+    }
+
+    body *{
+      visibility:hidden;
+    }
+
+    .rdec, .rdec *{
+      visibility:visible;
+    }
+
+    .rdec{
+      background:#fff !important;
+      padding:0 !important;
+      min-height:auto !important;
+      color:#000 !important;
+    }
+
+    .rdec-page{
+      width:100% !important;
+      max-width:none !important;
+      gap:6px !important;
+      margin:0 !important;
+    }
+
+    .rdec-shell{
+      border:0 !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      background:#fff !important;
+      overflow:visible !important;
+    }
+
+    .rdec-shell::before,
+    .rdec-card::before,
+    .rdec-mini-card::before,
+    .rdec-note::before{
+      display:none !important;
+    }
+
+    .rdec-hero{
+      background:#fff !important;
+      color:#000 !important;
+      border:1px solid #cfd7d1 !important;
+      border-radius:10px !important;
+      box-shadow:none !important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .rdec-hero::before{
+      display:block !important;
+      height:2px !important;
+      background:#1d4335 !important;
+    }
+
+    .rdec-hero-main{
+      display:block !important;
+      padding:10px 12px 8px !important;
+    }
+
+    .rdec-kicker{
+      margin:0 0 2px !important;
+      color:#666 !important;
+      font-size:7px !important;
+      background:#fff !important;
+      border:0 !important;
+      padding:0 !important;
+      min-height:auto !important;
+    }
+
+    .rdec-kicker::before{
+      display:none !important;
+    }
+
+    .rdec-title{
+      color:#111 !important;
+      font-size:15px !important;
+      line-height:1.2 !important;
+    }
+
+    .rdec-sub{
+      color:#444 !important;
+      font-size:7.2px !important;
+      line-height:1.6 !important;
+      max-width:none !important;
+    }
+
+    .rdec-content{
+      padding:6px 0 0 !important;
+      gap:6px !important;
+    }
+
+    .rdec-grid{
+      display:block !important;
+    }
+
+    .rdec-card,
+    .rdec-mini-card,
+    .rdec-note{
+      border:1px solid #cfd7d1 !important;
+      border-radius:10px !important;
+      box-shadow:none !important;
+      background:#fff !important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+      margin-bottom:6px !important;
+    }
+
+    .rdec-card-head{
+      padding:8px 10px !important;
+      background:#fff !important;
+      border-bottom:1px solid #dde4de !important;
+    }
+
+    .rdec-head-title{
+      font-size:9px !important;
+      color:#111 !important;
+    }
+
+    .rdec-head-title::before{
+      width:6px !important;
+      height:6px !important;
+      box-shadow:none !important;
+      background:#1d4335 !important;
+    }
+
+    .rdec-card-body{
+      padding:8px 10px !important;
+    }
+
+    .rdec-summary{
+      gap:6px !important;
+    }
+
+    .rdec-summary-card{
+      flex:1 1 31% !important;
+      padding:5px 7px !important;
+      border:1px solid #d8dfd9 !important;
+      border-radius:8px !important;
       background:#fff !important;
     }
 
-    .rp .sheet{
-      border:0;
-      border-radius:0;
-      box-shadow:none;
+    .rdec-summary-label{
+      font-size:6.7px !important;
+      color:#333 !important;
     }
 
-    .rp .head,
-    .rp th,
-    .rp .pill,
-    .rp .box,
-    .rp .status-pill,
-    .rp .head-badge{
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
+    .rdec-summary-value{
+      font-size:7px !important;
+      color:#111 !important;
+    }
+
+    .rdec-table-wrap{
+      border:1px solid #d8dfd9 !important;
+      border-radius:8px !important;
+      overflow:visible !important;
+    }
+
+    .rdec-table{
+      min-width:0 !important;
+      width:100% !important;
+      table-layout:fixed !important;
+    }
+
+    .rdec-table th,
+    .rdec-table td{
+      padding:6px 7px !important;
+      border-bottom:1px solid #e6ece7 !important;
+      color:#111 !important;
+      background:#fff !important;
+    }
+
+    .rdec-table th{
+      font-size:6.8px !important;
+      font-weight:900 !important;
+    }
+
+    .rdec-table td{
+      font-size:7px !important;
+      font-weight:700 !important;
+      line-height:1.45 !important;
+    }
+
+    .rdec-name{
+      font-size:7.8px !important;
+      color:#111 !important;
+      font-weight:900 !important;
+    }
+
+    .rdec-subtxt{
+      font-size:6.5px !important;
+      color:#666 !important;
+    }
+
+    .rdec-status{
+      min-height:19px !important;
+      padding:2px 7px !important;
+      font-size:6.4px !important;
+      color:#111 !important;
+      background:#fff !important;
+      border:1px solid #cfd7d1 !important;
+    }
+
+    .rdec-side{
+      display:block !important;
+      position:static !important;
+      margin-top:6px !important;
+    }
+
+    .rdec-fields{
+      grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+      gap:6px !important;
+    }
+
+    .rdec-label{
+      font-size:6.7px !important;
+      color:#333 !important;
+    }
+
+    .rdec-value,
+    .rdec-mini-value{
+      min-height:26px !important;
+      padding:4px 7px !important;
+      font-size:7px !important;
+      color:#111 !important;
+      background:#fff !important;
+      border-color:#d8dfd9 !important;
+    }
+
+    .rdec-note,
+    .rdec-foot{
+      padding:5px 7px !important;
+      border:1px solid #d8dfd9 !important;
+      border-radius:8px !important;
+      background:#fff !important;
+      color:#333 !important;
+      font-size:6.8px !important;
+      line-height:1.45 !important;
+    }
+
+    .rdec-note b::before,
+    .rdec-foot::before{
+      display:none !important;
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="rp">
-  <div class="sheet">
+<div class="rdec">
+  <div class="rdec-page">
+    <section class="rdec-shell">
 
-    <div class="head">
-      <div class="head-row">
-        <div>
-          <h1>تقرير لوحة القرار — الطلبات</h1>
-          <div class="sub">تقرير رسمي موحّد لنتائج لوحة القرار وفق الفلاتر الحالية.</div>
-        </div>
+      <div class="rdec-hero">
+        <div class="rdec-hero-main">
+          <div>
+            <span class="rdec-kicker">تقرير لوحة القرار</span>
+            <h1 class="rdec-title">تقرير لوحة القرار — الطلبات</h1>
+            <p class="rdec-sub">
+              تقرير موحّد لنتائج الطلبات وفق الفلاتر الحالية، بصيغة مرتبة ومناسبة للمراجعة الإدارية والطباعة الداخلية.
+            </p>
 
-        <div class="head-badge">
-          تقرير جاهز للطباعة
-        </div>
-      </div>
-    </div>
-
-    <div class="body">
-      <div class="top">
-        <div>
-          <div class="meta">
-            التاريخ: <span class="ltr">{{ now|date:"Y-m-d H:i" }}</span><br>
-            إجمالي النتائج: {{ total|default:"0" }}
+            <div class="rdec-mini-actions">
+              <span class="rdec-pill info">عرض داخلي</span>
+              <span class="rdec-pill ok">إجمالي النتائج: {{ total|default:"0" }}</span>
+            </div>
           </div>
 
-          <div class="filters">
-            <span class="pill gold">الحالة: {{ f.status|default:"الكل" }}</span>
-            <span class="pill">القطاع: {{ f.sector|default:"الكل" }}</span>
-            <span class="pill">الجنس: {{ f.gender|default:"الكل" }}</span>
+          <div class="rdec-actions">
+            <button
+              class="rdec-btn"
+              type="button"
+              onclick="if (document.referrer) { window.location.href = document.referrer; } else { window.location.href = '{% url 'portal:admin_dashboard' %}'; }"
+            >
+              العودة للوحة القرارات
+            </button>
+            <button class="rdec-btn rdec-btn-primary" type="button" onclick="window.print()">
+              طباعة التقرير
+            </button>
           </div>
         </div>
 
-        <div class="box">
-          جهة/إدارة: ___________________<br>
-          إعداد: _______________________<br>
-          اعتماد: ______________________
+        <div class="rdec-status-strip">
+          <div class="rdec-status-main">
+            تاريخ إنشاء التقرير: <span class="rdec-ltr">{{ now|date:"Y-m-d H:i" }}</span>
+          </div>
+          <div class="rdec-pills">
+            <span class="rdec-chip info">نسخة جاهزة للطباعة</span>
+            <span class="rdec-chip ok">عرض داخلي منسق</span>
+          </div>
         </div>
       </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:70px">#</th>
-              <th>الاسم</th>
-              <th style="width:140px">السجل المدني</th>
-              <th style="width:160px">القطاع</th>
-              <th style="width:90px">الجنس</th>
-              <th style="width:90px">الرغبات</th>
-              <th style="width:120px">الحالة</th>
-              <th style="width:150px">التقديم</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in rows %}
-            <tr>
-              <td class="ltr">{{ r.id }}</td>
-              <td>{{ r.applicant.full_name|default:"-" }}</td>
-              <td class="ltr">{{ r.applicant.national_id|default:"-" }}</td>
-              <td>{{ r.applicant.sector|default:"-" }}</td>
-              <td>{{ r.applicant.gender|default:"-" }}</td>
-              <td class="ltr">{{ r.prefs_count|default:"0" }}</td>
-              <td>
-                <span class="status-pill {% if r.status == 'submitted' %}submitted{% elif r.status == 'draft' %}draft{% else %}other{% endif %}">
-                  {{ r.status|default:"-" }}
-                </span>
-              </td>
-              <td class="ltr">{{ r.submitted_at|date:"Y-m-d H:i"|default:"-" }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="8" class="empty">لا توجد نتائج</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+      <div class="rdec-content">
 
-      <div class="foot">
-        هذا التقرير مخصص للعرض والطباعة الداخلية، ويعكس نتائج لوحة القرار وفق الفلاتر المطبقة وقت إنشاء الصفحة.
-      </div>
+        <div class="rdec-summary">
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">تاريخ إنشاء التقرير</div>
+            <div class="rdec-summary-value rdec-ltr">{{ now|date:"Y-m-d H:i" }}</div>
+          </div>
 
-      <script>
-        // للطباعة الفورية عند الحاجة:
-        // window.print();
-      </script>
-    </div>
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">الحالة</div>
+            <div class="rdec-summary-value">{{ f.status|default:"الكل" }}</div>
+          </div>
+
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">القطاع</div>
+            <div class="rdec-summary-value">{{ f.sector|default:"الكل" }}</div>
+          </div>
+
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">الجنس</div>
+            <div class="rdec-summary-value">{{ f.gender|default:"الكل" }}</div>
+          </div>
+
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">نوع الصفحة</div>
+            <div class="rdec-summary-value">تقرير لوحة القرار</div>
+          </div>
+
+          <div class="rdec-summary-card">
+            <div class="rdec-summary-label">نوع الإخراج</div>
+            <div class="rdec-summary-value">عرض / طباعة داخلية</div>
+          </div>
+        </div>
+
+        <div class="rdec-grid">
+          <div>
+            <section class="rdec-card">
+              <div class="rdec-card-head">
+                <h2 class="rdec-head-title">سجل الطلبات</h2>
+
+                <div class="rdec-table-head-tools">
+                  <span class="rdec-pill warn">الحالة: {{ f.status|default:"الكل" }}</span>
+                  <span class="rdec-pill">القطاع: {{ f.sector|default:"الكل" }}</span>
+                  <span class="rdec-pill">الجنس: {{ f.gender|default:"الكل" }}</span>
+                </div>
+              </div>
+
+              <div class="rdec-card-body">
+                <div class="rdec-table-wrap">
+                  <table class="rdec-table">
+                    <thead>
+                      <tr>
+                        <th>م</th>
+                        <th>الاسم</th>
+                        <th>السجل المدني</th>
+                        <th>القطاع</th>
+                        <th>الجنس</th>
+                        <th>الرغبات</th>
+                        <th>حالة الطلب</th>
+                        <th>تاريخ التقديم</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for r in rows %}
+                      <tr>
+                        <td class="rdec-center">{{ forloop.counter }}</td>
+
+                        <td>
+                          <div class="rdec-name">{{ r.applicant.full_name|default:"-" }}</div>
+                          <div class="rdec-subtxt">طلب رقم #{{ r.id }}</div>
+                        </td>
+
+                        <td class="rdec-ltr">{{ r.applicant.national_id|default:"-" }}</td>
+                        <td>{{ r.applicant.sector|default:"-" }}</td>
+                        <td class="rdec-center">{{ r.applicant.gender|default:"-" }}</td>
+                        <td class="rdec-center">{{ r.prefs_count|default:"0" }}</td>
+
+                        <td class="rdec-center">
+                          {% if r.status == "submitted" %}
+                            <span class="rdec-status ok">مُرسل</span>
+                          {% elif r.status == "draft" %}
+                            <span class="rdec-status warn">مسودة</span>
+                          {% elif r.status %}
+                            <span class="rdec-status info">{{ r.status }}</span>
+                          {% else %}
+                            <span class="rdec-status">-</span>
+                          {% endif %}
+                        </td>
+
+                        <td class="rdec-ltr rdec-date">
+                          {% if r.submitted_at %}
+                            {{ r.submitted_at|date:"Y-m-d H:i" }}
+                          {% else %}
+                            -
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                        <td colspan="8" class="rdec-empty">لا توجد نتائج مطابقة للفلاتر الحالية.</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="rdec-foot">
+                  هذا التقرير مخصص للعرض والطباعة الداخلية، ويعكس نتائج لوحة القرار وفق الفلاتر المطبقة وقت إنشاء الصفحة.
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="rdec-side">
+
+            <section class="rdec-card">
+              <div class="rdec-card-head">
+                <h2 class="rdec-head-title">بيانات التقرير</h2>
+                <span class="rdec-pill info">تقرير</span>
+              </div>
+
+              <div class="rdec-card-body">
+                <div class="rdec-fields">
+                  <div class="rdec-field">
+                    <label class="rdec-label">تاريخ الإنشاء</label>
+                    <div class="rdec-value rdec-ltr">{{ now|date:"Y-m-d H:i" }}</div>
+                  </div>
+
+                  <div class="rdec-field">
+                    <label class="rdec-label">إجمالي النتائج</label>
+                    <div class="rdec-value">{{ total|default:"0" }}</div>
+                  </div>
+
+                  <div class="rdec-field">
+                    <label class="rdec-label">الحالة</label>
+                    <div class="rdec-value">{{ f.status|default:"الكل" }}</div>
+                  </div>
+
+                  <div class="rdec-field">
+                    <label class="rdec-label">القطاع</label>
+                    <div class="rdec-value">{{ f.sector|default:"الكل" }}</div>
+                  </div>
+
+                  <div class="rdec-field">
+                    <label class="rdec-label">الجنس</label>
+                    <div class="rdec-value">{{ f.gender|default:"الكل" }}</div>
+                  </div>
+
+                  <div class="rdec-field">
+                    <label class="rdec-label">نوع التقرير</label>
+                    <div class="rdec-value">لوحة القرار</div>
+                  </div>
+                </div>
+
+                <div class="rdec-note">
+                  <b>ملاحظة</b>
+                  <div>يعكس هذا التقرير النتائج الحالية فقط بحسب الفلاتر النشطة وقت فتح الصفحة.</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="rdec-card">
+              <div class="rdec-card-head">
+                <h2 class="rdec-head-title">الاعتماد</h2>
+                <span class="rdec-pill">إداري</span>
+              </div>
+
+              <div class="rdec-card-body">
+                <div style="display:grid;gap:8px;">
+                  <div class="rdec-mini-card">
+                    <div class="rdec-mini-label">جهة / إدارة</div>
+                    <div class="rdec-mini-value">___________________</div>
+                  </div>
+
+                  <div class="rdec-mini-card">
+                    <div class="rdec-mini-label">إعداد</div>
+                    <div class="rdec-mini-value">___________________</div>
+                  </div>
+
+                  <div class="rdec-mini-card">
+                    <div class="rdec-mini-label">اعتماد</div>
+                    <div class="rdec-mini-value">___________________</div>
+                  </div>
+                </div>
+
+                <div class="rdec-note">
+                  <b>تنبيه إداري</b>
+                  <div>هذه الصفحة معدّة للعرض الإداري والطباعة، ويُفضّل اعتمادها بعد مراجعة الفلاتر والنتائج الظاهرة.</div>
+                </div>
+              </div>
+            </section>
+
+          </aside>
+        </div>
+
+      </div>
+    </section>
   </div>
 </div>
 {% endblock %}
