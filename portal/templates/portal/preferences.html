@@ -161,64 +161,61 @@
   }
 
   .prf .timer{
+    width:fit-content;
+    max-width:100%;
     border:1px solid var(--prf-gold-line);
-    border-radius:14px;
-    background:linear-gradient(180deg,#fffdf8,#fbf6ea);
-    padding:8px 10px;
-    margin:0 0 10px;
+    border-radius:999px;
+    background:#fffaf0;
+    padding:7px 11px;
+    margin:0 0 10px auto;
+    box-shadow:none;
   }
 
-  .prf .timer-head{
-    display:flex;
+  .prf .timer-line{
+    display:inline-flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
+    justify-content:flex-start;
+    gap:7px;
     flex-wrap:wrap;
+    color:#76551f;
+    white-space:nowrap;
   }
 
   .prf .timer-title{
     margin:0;
-    color:var(--prf-green-1);
-    font-size:9.4px;
+    color:#76551f;
+    font-size:9.2px;
+    line-height:1;
     font-weight:800 !important;
     white-space:nowrap;
   }
 
-  .prf .timer-state{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    min-height:25px;
-    padding:4px 9px;
-    border-radius:999px;
-    border:1px solid var(--prf-gold-line);
-    background:#fffaf0;
-    color:#76551f;
-    font-size:8.2px;
-    font-weight:700 !important;
-    white-space:nowrap;
-  }
-
-  .prf .timer-state::before{
+  .prf .timer-title::before{
     content:"";
+    display:inline-block;
     width:7px;
     height:7px;
+    margin-inline-end:6px;
     border-radius:999px;
     background:var(--prf-gold);
     box-shadow:0 0 0 3px rgba(155,119,52,.08);
-    flex:0 0 auto;
+    vertical-align:middle;
+  }
+
+  .prf .timer-state{
+    display:none !important;
   }
 
   .prf .timer-grid{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:8px;
+    display:inline-flex;
+    align-items:baseline;
+    justify-content:flex-start;
+    gap:5px;
     color:#76551f;
-    font-size:8.6px;
+    font-size:9px;
+    line-height:1;
     font-weight:800 !important;
     white-space:nowrap;
-    flex:1 1 auto;
   }
 
   .prf .time-box{
@@ -231,19 +228,27 @@
     text-align:center;
   }
 
-  .prf .time-num{
-    display:inline;
-    color:#76551f;
-    font-size:11px;
+  .prf .timer-sep{
+    color:#b49256;
+    font-size:10px;
     line-height:1;
     font-weight:800 !important;
+  }
+
+  .prf .time-num{
+    display:inline;
+    color:#173c2f;
+    font-size:10px;
+    line-height:1;
+    font-weight:900 !important;
   }
 
   .prf .time-label{
     display:inline;
     margin:0;
     color:#76551f;
-    font-size:7.8px;
+    font-size:8px;
+    line-height:1;
     font-weight:700 !important;
   }
 
@@ -254,26 +259,23 @@
   .prf .timer.is-danger,
   .prf .timer.is-expired{
     border-color:var(--prf-danger-bd);
-    background:linear-gradient(180deg,#fffafa,#fcf5f5);
+    background:var(--prf-danger-bg);
   }
 
-  .prf .timer.is-danger .timer-state,
-  .prf .timer.is-expired .timer-state{
-    color:var(--prf-danger);
-    border-color:var(--prf-danger-bd);
-    background:#fff;
-  }
-
-  .prf .timer.is-danger .timer-state::before,
-  .prf .timer.is-expired .timer-state::before{
-    background:var(--prf-danger);
-  }
-
+  .prf .timer.is-danger .timer-title,
+  .prf .timer.is-expired .timer-title,
   .prf .timer.is-danger .time-num,
   .prf .timer.is-expired .time-num,
   .prf .timer.is-danger .time-label,
-  .prf .timer.is-expired .time-label{
+  .prf .timer.is-expired .time-label,
+  .prf .timer.is-danger .timer-sep,
+  .prf .timer.is-expired .timer-sep{
     color:var(--prf-danger);
+  }
+
+  .prf .timer.is-danger .timer-title::before,
+  .prf .timer.is-expired .timer-title::before{
+    background:var(--prf-danger);
   }
 
   .prf .workspace{
@@ -647,6 +649,64 @@
     color:#76551f;
   }
 
+
+  .prf .submit-state{
+    margin:0 0 10px;
+    padding:10px 12px;
+    border-radius:13px;
+    border:1px solid var(--prf-line-2);
+    background:linear-gradient(180deg,#ffffff,#fbfcfb);
+    display:grid;
+    gap:5px;
+  }
+
+  .prf .submit-state.is-empty{
+    border-color:var(--prf-gold-line);
+    background:var(--prf-gold-soft);
+    color:#76551f;
+  }
+
+  .prf .submit-state.is-ready{
+    border-color:var(--prf-green-line);
+    background:var(--prf-green-soft);
+    color:var(--prf-green-2);
+  }
+
+  .prf .submit-state.is-conditional{
+    border-color:#d4e2ef;
+    background:#f2f7fd;
+    color:#355c80;
+  }
+
+  .prf .submit-state-title{
+    color:var(--prf-green-1);
+    font-size:10.2px;
+    line-height:1.6;
+    font-weight:800 !important;
+  }
+
+  .prf .submit-state.is-empty .submit-state-title{color:#76551f;}
+  .prf .submit-state.is-conditional .submit-state-title{color:#274e72;}
+
+  .prf .submit-state-text{
+    color:inherit;
+    font-size:8.8px;
+    line-height:1.85;
+    font-weight:600 !important;
+  }
+
+  .prf .submit-hint{
+    margin-top:8px;
+    padding:9px 11px;
+    border-radius:12px;
+    border:1px dashed var(--prf-line-2);
+    background:#fbfcfb;
+    color:var(--prf-muted);
+    font-size:8.6px;
+    line-height:1.85;
+    font-weight:500 !important;
+  }
+
   .prf .summary-grid{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
@@ -818,16 +878,17 @@
       max-height:460px;
     }
 
-    .prf .hero-main,
-    .prf .timer-head{
+    .prf .hero-main{
       grid-template-columns:1fr;
     }
 
-    .prf .hero-actions,
-    .prf .timer-state,
-    .prf .timer-grid{
+    .prf .hero-actions{
       justify-content:flex-start;
-      justify-self:start;
+    }
+
+    .prf .timer{
+      margin-inline-start:auto;
+      margin-inline-end:auto;
     }
   }
 
@@ -888,6 +949,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const availableCountEl = document.querySelector("[data-available-count]");
   const selectedEmptyEl = document.querySelector("[data-selected-empty]");
   const submitBtn = document.querySelector("[data-submit]");
+  const submitState = document.querySelector("[data-submit-state]");
+  const submitStateTitle = document.querySelector("[data-submit-state-title]");
+  const submitStateText = document.querySelector("[data-submit-state-text]");
   const searchInput = document.querySelector("[data-search-input]");
 
   const noPrefsAck = document.querySelector("[data-no-prefs-ack]");
@@ -910,6 +974,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const hEl = document.getElementById("cdHours");
   const mEl = document.getElementById("cdMinutes");
   const sEl = document.getElementById("cdSeconds");
+  const dBox = document.querySelector("[data-days-box]");
+  const dSep = document.querySelector("[data-days-sep]");
 
   if(!form || !selectedList) return;
 
@@ -1009,8 +1075,64 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...availableList.querySelectorAll("[data-item='available']")];
   }
 
+
+  function updateSubmitState(){
+    const selectedCount = selectedItems().length;
+    const isConditionalReview = form?.dataset?.conditionalReview === "1";
+    const noPrefsMode = selectedCount === 0;
+    const noPrefsNeedsAck = noPrefsMode && availableCount > 0;
+    const prefsNeedsAck = selectedCount > 0;
+
+    if(submitState){
+      submitState.classList.toggle("is-empty", noPrefsMode);
+      submitState.classList.toggle("is-ready", prefsNeedsAck && !isConditionalReview);
+      submitState.classList.toggle("is-conditional", isConditionalReview);
+    }
+
+    if(submitStateTitle && submitStateText){
+      if(noPrefsMode){
+        submitStateTitle.textContent = availableCount > 0
+          ? "لم تختر أي رغبة حتى الآن"
+          : "لا توجد شواغر متاحة حاليًا";
+        submitStateText.textContent = availableCount > 0
+          ? "يمكنك إرسال الطلب دون رغبات، وسيُعد مستلمًا دون دخول مفاضلة الرغبات. يلزم تفعيل الإقرار أدناه قبل الإرسال."
+          : "يمكنك إكمال الإرسال دون رغبات، وسيتم توثيق الطلب وفق حالة الشواغر المتاحة وقت الإرسال.";
+      }else if(isConditionalReview){
+        submitStateTitle.textContent = "سيتم إرسال الرغبات بشكل مشروط";
+        submitStateText.textContent = "سيتم حفظ وقت الإرسال والرغبات، ولا يدخل الطلب المفاضلة النهائية حتى تراجع الإدارة ملاحظة البيانات وتعتمد ما يلزم.";
+      }else{
+        submitStateTitle.textContent = "سيتم إرسال رغباتك حسب الترتيب الظاهر";
+        submitStateText.textContent = "راجع ترتيب الرغبات جيدًا قبل الإرسال، ثم فعّل إقرار سياسة التوجيه لإتمام الإرسال النهائي.";
+      }
+    }
+
+    if(submitBtn){
+      if(portalExpired){
+        submitBtn.disabled = true;
+        submitBtn.textContent = "انتهى وقت التقديم";
+        submitBtn.classList.add("is-disabled");
+        return;
+      }
+
+      submitBtn.classList.remove("is-disabled");
+
+      if(noPrefsMode){
+        submitBtn.textContent = isConditionalReview
+          ? "إرسال الطلب دون رغبات بشكل مشروط"
+          : "إرسال الطلب دون رغبات";
+        submitBtn.disabled = noPrefsNeedsAck && noPrefsInput && !noPrefsInput.checked;
+      }else{
+        submitBtn.textContent = isConditionalReview
+          ? "إرسال الرغبات مشروطًا بمراجعة البيانات"
+          : "إرسال الرغبات نهائيًا";
+        submitBtn.disabled = policyInput && !policyInput.checked;
+      }
+    }
+  }
+
   function updateAckVisibility(){
     const selectedCount = selectedItems().length;
+    const isConditionalReview = form?.dataset?.conditionalReview === "1";
     const shouldShowNoPrefsAck = selectedCount === 0 && availableCount > 0;
     const shouldShowPolicyAck = selectedCount > 0;
 
@@ -1039,6 +1161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setCounts(){
     const selectedCount = selectedItems().length;
+    const isConditionalReview = form?.dataset?.conditionalReview === "1";
     const availableVisibleCount = availableItems().filter(el => el.style.display !== "none").length;
 
     if(selectedCountEl) selectedCountEl.textContent = String(selectedCount);
@@ -1050,9 +1173,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateAckVisibility();
 
-    if(submitBtn){
-      submitBtn.disabled = portalExpired;
-    }
+    updateSubmitState();
   }
 
   function renumberSelected(){
@@ -1308,6 +1429,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  if(noPrefsInput){
+    noPrefsInput.addEventListener("change", updateSubmitState);
+  }
+
+  if(policyInput){
+    policyInput.addEventListener("change", updateSubmitState);
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -1321,11 +1450,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateAckVisibility();
 
     const selectedCount = selectedItems().length;
+    const isConditionalReview = form?.dataset?.conditionalReview === "1";
 
     if(selectedCount === 0){
       if(availableCount > 0 && noPrefsInput && !noPrefsInput.checked){
         await showAlert(
-          "يلزم تفعيل إقرار الإرسال دون رغبات قبل الإرسال النهائي.",
+          "يلزم تفعيل إقرار الإرسال دون رغبات قبل إرسال الطلب دون رغبات.",
           "إقرار مطلوب"
         );
         try{ noPrefsInput.focus(); }catch(_){ }
@@ -1333,8 +1463,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const noPrefsMessage = availableCount > 0
-        ? "سيتم إرسال الطلب دون اختيار أي رغبة بناءً على الإقرار الذي فعّلته. هل تؤكد الإرسال النهائي؟"
-        : "لا توجد شواغر متاحة حاليًا في قطاعك. بالمتابعة سيتم تسجيل دخولك وإرسال طلبك دون رغبات مختارة. هل تؤكد ذلك؟";
+        ? "سيتم إرسال الطلب دون اختيار أي رغبة، وسيُعد مستلمًا دون دخول مفاضلة الرغبات. هل تؤكد الإرسال؟"
+        : "لا توجد شواغر متاحة حاليًا في قطاعك. بالمتابعة سيتم تسجيل طلبك دون رغبات مختارة. هل تؤكد ذلك؟";
 
       const agreedNoPrefs = await showConfirm(
         noPrefsMessage,
@@ -1357,7 +1487,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const agreed = await showConfirm(
-      "سيتم إرسال الرغبات المحددة نهائيًا، مع الإقرار بأن اختيار الرغبات لا يعني تحققها في حال وجود مرشحين أعلى درجة أو أحق في المفاضلة، وأن التوجيه يكون وفق المصلحة التعليمية واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة. هل تؤكد الإرسال؟",
+      isConditionalReview
+        ? "سيتم حفظ الرغبات ووقت الإرسال، وسيبقى الطلب مشروطًا بمراجعة البيانات قبل دخوله في المفاضلة النهائية. هل تؤكد الإرسال؟"
+        : "سيتم إرسال الرغبات المحددة نهائيًا، مع الإقرار بأن اختيار الرغبات لا يعني تحققها، وأن التوجيه يكون وفق المصلحة التعليمية واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة. هل تؤكد الإرسال؟",
       "تأكيد نهائي"
     );
 
@@ -1367,8 +1499,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
-  function pad(n){
-    return String(n).padStart(2, "0");
+  function timerNumber(n){
+    return String(Math.max(0, Number(n) || 0));
+  }
+
+  function toggleDaysVisibility(days){
+    const showDays = Number(days) > 0;
+    if(dBox) dBox.style.display = showDays ? "inline-flex" : "none";
+    if(dSep) dSep.style.display = showDays ? "inline" : "none";
   }
 
   function handleExpired(){
@@ -1381,10 +1519,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if(timerState) timerState.textContent = "انتهى الوقت";
     if(timerNote) timerNote.textContent = "تم الوصول إلى وقت إغلاق التقديم.";
-    if(dEl) dEl.textContent = "00";
-    if(hEl) hEl.textContent = "00";
-    if(mEl) mEl.textContent = "00";
-    if(sEl) sEl.textContent = "00";
+    toggleDaysVisibility(0);
+    if(dEl) dEl.textContent = "0";
+    if(hEl) hEl.textContent = "0";
+    if(mEl) mEl.textContent = "0";
+    if(sEl) sEl.textContent = "0";
 
     disablePreferencesUi();
 
@@ -1416,10 +1555,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    if(dEl) dEl.textContent = pad(days);
-    if(hEl) hEl.textContent = pad(hours);
-    if(mEl) mEl.textContent = pad(minutes);
-    if(sEl) sEl.textContent = pad(seconds);
+    toggleDaysVisibility(days);
+    if(dEl) dEl.textContent = timerNumber(days);
+    if(hEl) hEl.textContent = timerNumber(hours);
+    if(mEl) mEl.textContent = timerNumber(minutes);
+    if(sEl) sEl.textContent = timerNumber(seconds);
 
     timer.classList.remove("is-warn", "is-danger", "is-expired");
 
@@ -1486,6 +1626,16 @@ document.addEventListener("DOMContentLoaded", () => {
       </header>
 
       <div class="content">
+        {% if is_conditional_data_review and conditional_data_issue %}
+        <div class="alert warn" style="margin:0 0 12px;">
+          <b>طلب مشروط بمراجعة البيانات:</b>
+          لديك طلب تعديل بيانات مؤثر قيد مراجعة الإدارة على حقل
+          <b>{{ conditional_data_issue.get_field_name_display }}</b>.
+          يمكنك اختيار الرغبات وإرسال الطلب الآن حفظًا لحقك، وسيتم حفظ وقت الإرسال والرغبات،
+          ولا تدخل الرغبات في المفاضلة النهائية إلا بعد مراجعة الإدارة للبيانات.
+        </div>
+        {% endif %}
+
         <div class="workspace">
 
           <section class="card available-card available-area">
@@ -1595,13 +1745,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 {% if portal_show_countdown %}
                 <div class="timer submit-timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
-                  <div class="timer-head">
-                    <p class="timer-title">يغلق التقديم بعد</p>
+                  <div class="timer-line">
+                    <p class="timer-title">يغلق التقديم خلال:</p>
 
-                    <div class="timer-grid">
-                      <div class="time-box"><span class="time-num" id="cdDays">00</span><span class="time-label">يوم</span></div>
-                      <div class="time-box"><span class="time-num" id="cdHours">00</span><span class="time-label">ساعة</span></div>
-                      <div class="time-box"><span class="time-num" id="cdMinutes">00</span><span class="time-label">دقيقة</span></div>
+                    <div class="timer-grid" aria-live="polite">
+                      <span class="time-box" data-days-box><span class="time-num" id="cdDays">0</span><span class="time-label">يوم</span></span>
+                      <span class="timer-sep" data-days-sep>·</span>
+                      <span class="time-box"><span class="time-num" id="cdHours">0</span><span class="time-label">ساعة</span></span>
+                      <span class="timer-sep">·</span>
+                      <span class="time-box"><span class="time-num" id="cdMinutes">0</span><span class="time-label">دقيقة</span></span>
                     </div>
 
                     <div class="timer-state" data-timer-state>مفتوح الآن</div>
@@ -1618,7 +1770,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   </div>
                   <div class="summary-chip">
                     <span>المتاح</span>
-                    <b>{{ available_count }}</b>
+                    <b data-available-count>{{ available_count }}</b>
                   </div>
                 </div>
 
@@ -1628,10 +1780,40 @@ document.addEventListener("DOMContentLoaded", () => {
                   data-form
                   data-min-required="{{ min_required }}"
                   data-available-count="{{ available_count }}"
+                  data-conditional-review="{% if is_conditional_data_review %}1{% else %}0{% endif %}"
                 >
                   {% csrf_token %}
 
-                  <div class="note" style="margin-top:0;">
+                  <div
+                    class="submit-state {% if selected_prefs %}{% if is_conditional_data_review %}is-conditional{% else %}is-ready{% endif %}{% else %}is-empty{% endif %}"
+                    data-submit-state
+                    aria-live="polite"
+                  >
+                    <div class="submit-state-title" data-submit-state-title>
+                      {% if selected_prefs %}
+                        {% if is_conditional_data_review %}سيتم إرسال الرغبات بشكل مشروط{% else %}سيتم إرسال رغباتك حسب الترتيب الظاهر{% endif %}
+                      {% else %}
+                        {% if available_count > 0 %}لم تختر أي رغبة حتى الآن{% else %}لا توجد شواغر متاحة حاليًا{% endif %}
+                      {% endif %}
+                    </div>
+                    <div class="submit-state-text" data-submit-state-text>
+                      {% if selected_prefs %}
+                        {% if is_conditional_data_review %}
+                          سيتم حفظ وقت الإرسال والرغبات، ولا يدخل الطلب المفاضلة النهائية حتى تراجع الإدارة ملاحظة البيانات وتعتمد ما يلزم.
+                        {% else %}
+                          راجع ترتيب الرغبات جيدًا قبل الإرسال، ثم فعّل إقرار سياسة التوجيه لإتمام الإرسال النهائي.
+                        {% endif %}
+                      {% else %}
+                        {% if available_count > 0 %}
+                          يمكنك إرسال الطلب دون رغبات، وسيُعد مستلمًا دون دخول مفاضلة الرغبات. يلزم تفعيل الإقرار أدناه قبل الإرسال.
+                        {% else %}
+                          يمكنك إكمال الإرسال دون رغبات، وسيتم توثيق الطلب وفق حالة الشواغر المتاحة وقت الإرسال.
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="submit-hint">
                     {{ selection_hint }}
                   </div>
 
@@ -1674,11 +1856,18 @@ document.addEventListener("DOMContentLoaded", () => {
                   <div class="submit-actions">
                     <a class="btn secondary" data-back-btn href="{% url 'portal:confirm' %}">السابق</a>
 
-                    {% if available_count > 0 %}
-                    <button class="btn primary" data-submit type="submit">إرسال نهائي</button>
-                    {% else %}
-                    <button class="btn primary" data-submit type="submit">تأكيد دون رغبات</button>
-                    {% endif %}
+                    <button
+                      class="btn primary"
+                      data-submit
+                      type="submit"
+                      {% if available_count > 0 and not selected_prefs %}disabled{% endif %}
+                    >
+                      {% if selected_prefs %}
+                        {% if is_conditional_data_review %}إرسال الرغبات مشروطًا بمراجعة البيانات{% else %}إرسال الرغبات نهائيًا{% endif %}
+                      {% else %}
+                        {% if is_conditional_data_review %}إرسال الطلب دون رغبات بشكل مشروط{% else %}إرسال الطلب دون رغبات{% endif %}
+                      {% endif %}
+                    </button>
                   </div>
                 </form>
 

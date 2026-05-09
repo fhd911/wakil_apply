@@ -282,16 +282,20 @@
   }
 
   .confirmStep-timer{
-    display:flex;
+    justify-self:center;
+    width:fit-content;
+    max-width:100%;
+    display:inline-flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:center;
     gap:10px;
     flex-wrap:wrap;
     border:1px solid var(--cf-gold-line);
-    border-radius:14px;
-    background:var(--cf-gold-soft);
-    padding:9px 11px;
+    border-radius:999px;
+    background:rgba(251,246,234,.76);
+    padding:7px 13px;
     color:#76551f;
+    box-shadow:0 1px 4px rgba(118,85,31,.035);
   }
 
   .confirmStep-timer-title{
@@ -299,37 +303,53 @@
     font-size:9.2px;
     line-height:1.7;
     font-weight:800 !important;
+    white-space:nowrap;
   }
 
   .confirmStep-timer-values{
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    justify-content:flex-end;
+    justify-content:center;
     gap:6px;
     flex-wrap:wrap;
+    color:#76551f;
   }
 
   .confirmStep-time{
-    min-width:52px;
-    min-height:32px;
-    border:1px solid var(--cf-gold-line);
-    border-radius:10px;
-    background:#fff;
-    display:grid;
-    place-items:center;
-    padding:4px 7px;
-    line-height:1.15;
+    min-width:auto;
+    min-height:auto;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    padding:0;
+    line-height:1.2;
+    white-space:nowrap;
+  }
+
+  .confirmStep-time.is-hidden{
+    display:none !important;
+  }
+
+  .confirmStep-time:not(.is-hidden):not(:last-child)::after{
+    content:"·";
+    margin-inline-start:7px;
+    color:#b59a68;
+    font-weight:800;
   }
 
   .confirmStep-time b{
     color:#76551f;
-    font-size:11px;
+    font-size:10.5px;
     font-weight:900 !important;
   }
 
   .confirmStep-time span{
-    color:var(--cf-muted);
-    font-size:7.6px;
+    color:#7d6a45;
+    font-size:8.4px;
     font-weight:700 !important;
   }
 
@@ -341,9 +361,270 @@
   }
 
   .confirmStep-timer.is-danger .confirmStep-time b,
-  .confirmStep-timer.is-expired .confirmStep-time b{
+  .confirmStep-timer.is-expired .confirmStep-time b,
+  .confirmStep-timer.is-danger .confirmStep-time span,
+  .confirmStep-timer.is-expired .confirmStep-time span,
+  .confirmStep-timer.is-danger .confirmStep-timer-title,
+  .confirmStep-timer.is-expired .confirmStep-timer-title{
     color:var(--cf-danger);
   }
+
+  .confirmStep-timer.is-danger .confirmStep-time::after,
+  .confirmStep-timer.is-expired .confirmStep-time::after{
+    color:#d9aaa9;
+  }
+
+
+  .confirmStep-issueBox{
+    border:1px solid var(--cf-gold-line);
+    border-radius:16px;
+    background:linear-gradient(180deg,#fffdf8,#fbf6ea);
+    overflow:hidden;
+  }
+
+  .confirmStep-issueHead{
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    border-bottom:1px solid rgba(230,213,180,.72);
+    background:#fffaf1;
+  }
+
+  .confirmStep-issueTitle{
+    margin:0;
+    color:#76551f;
+    font-size:12.6px;
+    line-height:1.5;
+    font-weight:800 !important;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+
+  .confirmStep-issueTitle::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#9b7734;
+    box-shadow:0 0 0 4px rgba(155,119,52,.10);
+    flex:0 0 auto;
+  }
+
+  .confirmStep-secondaryBtn{
+    appearance:none;
+    min-height:38px;
+    border:1px solid var(--cf-gold-line);
+    border-radius:12px;
+    background:#fff;
+    color:#76551f;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:8px 14px;
+    font-size:9.6px;
+    line-height:1;
+    font-weight:800 !important;
+    text-decoration:none;
+    transition:background .14s ease,border-color .14s ease,transform .14s ease,opacity .14s ease;
+  }
+
+  .confirmStep-secondaryBtn:hover{
+    transform:translateY(-1px);
+    background:#fffaf1;
+  }
+
+  .confirmStep-issueBody{
+    padding:13px 14px 14px;
+    display:grid;
+    gap:10px;
+  }
+
+  .confirmStep-issueText{
+    margin:0;
+    color:#76551f;
+    font-size:9.4px;
+    line-height:1.9;
+    font-weight:600 !important;
+  }
+
+  .confirmStep-issueForm{
+    display:none;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    border-top:1px dashed var(--cf-gold-line);
+    padding-top:12px;
+  }
+
+  .confirmStep-issueForm.show{
+    display:grid;
+  }
+
+  .confirmStep-issueField{
+    display:grid;
+    gap:6px;
+  }
+
+  .confirmStep-issueField.full{
+    grid-column:1 / -1;
+  }
+
+  .confirmStep-issueLabel{
+    color:#76551f;
+    font-size:9px;
+    font-weight:800 !important;
+  }
+
+  .confirmStep-select,
+  .confirmStep-textarea,
+  .confirmStep-input{
+    width:100%;
+    border:1px solid var(--cf-line-2);
+    border-radius:12px;
+    background:#fff;
+    color:var(--cf-ink);
+    outline:none;
+    padding:9px 10px;
+    font-size:10px;
+    line-height:1.7;
+    font-weight:600 !important;
+  }
+
+  .confirmStep-textarea{
+    min-height:82px;
+    resize:vertical;
+  }
+
+  .confirmStep-select:focus,
+  .confirmStep-textarea:focus,
+  .confirmStep-input:focus{
+    border-color:var(--cf-green-3);
+    box-shadow:0 0 0 3px rgba(31,77,58,.08);
+  }
+
+  .confirmStep-check{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px dashed var(--cf-gold-line);
+    background:#fffaf1;
+    border-radius:12px;
+    padding:10px;
+    color:#76551f;
+    font-size:9px;
+    line-height:1.9;
+    font-weight:700 !important;
+  }
+
+  .confirmStep-check input{
+    margin-top:5px;
+    width:15px;
+    height:15px;
+    accent-color:var(--cf-green-2);
+    flex:0 0 auto;
+  }
+
+  .confirmStep-issueSubmit{
+    grid-column:1 / -1;
+    min-height:42px;
+    border-radius:13px;
+    border:1px solid var(--cf-gold-line);
+    background:#fff;
+    color:#76551f;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:800 !important;
+  }
+
+  .confirmStep-issueSubmit:hover{
+    background:#fffaf1;
+  }
+
+  .confirmStep-statusBox{
+    border-radius:14px;
+    padding:11px 12px;
+    font-size:9.4px;
+    line-height:1.9;
+    font-weight:700 !important;
+  }
+
+  .confirmStep-statusBox.ok{
+    border:1px solid var(--cf-green-line);
+    background:var(--cf-green-soft);
+    color:var(--cf-green-2);
+  }
+
+  .confirmStep-statusBox.warn{
+    border:1px solid var(--cf-gold-line);
+    background:var(--cf-gold-soft);
+    color:#76551f;
+  }
+
+  .confirmStep-statusBox.danger{
+    border:1px solid var(--cf-danger-bd);
+    background:var(--cf-danger-bg);
+    color:#7f1d1d;
+  }
+
+
+  .confirmStep-impactNotice{
+    grid-column:1 / -1;
+    display:none;
+    border-radius:12px;
+    padding:9px 10px;
+    font-size:9.2px;
+    line-height:1.85;
+    font-weight:700 !important;
+  }
+
+  .confirmStep-impactNotice.show{display:block}
+  .confirmStep-impactNotice.ok{
+    border:1px solid var(--cf-green-line);
+    background:var(--cf-green-soft);
+    color:var(--cf-green-2);
+  }
+  .confirmStep-impactNotice.danger{
+    border:1px solid var(--cf-danger-bd);
+    background:var(--cf-danger-bg);
+    color:#7f1d1d;
+  }
+
+  .confirmStep-statusActions{
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .confirmStep-statusLink{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+    padding:7px 12px;
+    border-radius:999px;
+    border:1px solid var(--cf-line-2);
+    background:#fff;
+    color:var(--cf-green-2);
+    text-decoration:none;
+    font-size:9.2px;
+    font-weight:800 !important;
+  }
+
+  .confirmStep-statusLink.warn{
+    border-color:var(--cf-gold-line);
+    color:#76551f;
+    background:#fffaf1;
+  }
+
 
   @media (max-width:720px){
     .confirmStep{
@@ -385,6 +666,10 @@
       justify-content:stretch;
     }
 
+    .confirmStep-issueForm{
+      grid-template-columns:1fr;
+    }
+
     .confirmStep-time{
       flex:1;
     }
@@ -404,6 +689,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const mEl = document.getElementById("cdMinutes");
   const sEl = document.getElementById("cdSeconds");
 
+  const dWrap = document.getElementById("cdDaysWrap");
+  const hWrap = document.getElementById("cdHoursWrap");
+  const mWrap = document.getElementById("cdMinutesWrap");
+
   if (!timer) return;
 
   const closesAtRaw = timer.getAttribute("data-closes-at");
@@ -414,8 +703,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let expiredHandled = false;
 
-  function pad(n){
-    return String(n).padStart(2, "0");
+  function numberText(n){
+    return String(Math.max(0, Number(n) || 0));
   }
 
   function handleExpired(){
@@ -425,10 +714,14 @@ document.addEventListener("DOMContentLoaded", () => {
     timer.classList.remove("is-danger");
     timer.classList.add("is-expired");
 
-    if (dEl) dEl.textContent = "00";
-    if (hEl) hEl.textContent = "00";
-    if (mEl) mEl.textContent = "00";
-    if (sEl) sEl.textContent = "00";
+    if (dEl) dEl.textContent = "0";
+    if (hEl) hEl.textContent = "0";
+    if (mEl) mEl.textContent = "0";
+    if (sEl) sEl.textContent = "0";
+
+    if (dWrap) dWrap.classList.add("is-hidden");
+    if (hWrap) hWrap.classList.remove("is-hidden");
+    if (mWrap) mWrap.classList.remove("is-hidden");
 
     if (nextBtn){
       nextBtn.disabled = true;
@@ -460,10 +753,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    if (dEl) dEl.textContent = pad(days);
-    if (hEl) hEl.textContent = pad(hours);
-    if (mEl) mEl.textContent = pad(minutes);
-    if (sEl) sEl.textContent = pad(seconds);
+    if (dEl) dEl.textContent = numberText(days);
+    if (hEl) hEl.textContent = numberText(hours);
+    if (mEl) mEl.textContent = numberText(minutes);
+    if (sEl) sEl.textContent = numberText(seconds);
+
+    if (dWrap) dWrap.classList.toggle("is-hidden", days <= 0);
+    if (hWrap) hWrap.classList.remove("is-hidden");
+    if (mWrap) mWrap.classList.remove("is-hidden");
 
     timer.classList.remove("is-danger", "is-expired");
 
@@ -474,6 +771,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateTimer();
   setInterval(updateTimer, 1000);
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector("[data-issue-toggle]");
+  const form = document.querySelector("[data-issue-form]");
+  if (!toggle || !form) return;
+
+  const fieldSelect = form.querySelector("#issueField");
+  const impactNotice = form.querySelector("[data-impact-notice]");
+
+  function updateImpactNotice(){
+    if (!fieldSelect || !impactNotice) return;
+    const option = fieldSelect.options[fieldSelect.selectedIndex];
+    const value = fieldSelect.value;
+    impactNotice.classList.remove("show", "ok", "danger");
+
+    if (!value){
+      impactNotice.textContent = "اختر الحقل محل الملاحظة، وسيظهر هنا أثر الملاحظة على مسار التقديم.";
+      impactNotice.classList.add("show", "ok");
+      return;
+    }
+
+    const isBlocking = option?.dataset?.blocking === "1";
+    if (isBlocking){
+      impactNotice.textContent = "هذه الملاحظة قد تؤثر على الشواغر أو المفاضلة. يمكنك متابعة ترتيب الرغبات وإرسال الطلب، وسيبقى الطلب مشروطًا بمراجعة الإدارة قبل الاعتماد النهائي.";
+      impactNotice.classList.add("show", "danger");
+    }else{
+      impactNotice.textContent = "هذه الملاحظة لا توقف متابعة ترتيب الرغبات غالبًا، وسيتم تنبيه الإدارة لمراجعتها مع استمرار مسار التقديم.";
+      impactNotice.classList.add("show", "ok");
+    }
+  }
+
+  toggle.addEventListener("click", () => {
+    form.classList.toggle("show");
+    const opened = form.classList.contains("show");
+    toggle.textContent = opened ? "إخفاء نموذج الملاحظة" : "لدي ملاحظة على البيانات";
+    if (opened) {
+      updateImpactNotice();
+      const first = form.querySelector("select, input, textarea");
+      if (first) first.focus();
+    }
+  });
+
+  fieldSelect?.addEventListener("change", updateImpactNotice);
 });
 </script>
 {% endblock %}
@@ -495,23 +838,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         {% if portal_show_countdown %}
         <div class="confirmStep-timer" data-portal-timer data-closes-at="{{ portal_closes_at_iso }}">
-          <p class="confirmStep-timer-title">الوقت المتبقي لإغلاق التقديم</p>
-          <div class="confirmStep-timer-values">
-            <div class="confirmStep-time">
+          <p class="confirmStep-timer-title">يغلق التقديم خلال:</p>
+          <div class="confirmStep-timer-values" aria-label="يغلق التقديم خلال">
+            <div class="confirmStep-time" id="cdDaysWrap">
               <b id="cdDays">00</b>
               <span>يوم</span>
             </div>
-            <div class="confirmStep-time">
+            <div class="confirmStep-time" id="cdHoursWrap">
               <b id="cdHours">00</b>
               <span>ساعة</span>
             </div>
-            <div class="confirmStep-time">
+            <div class="confirmStep-time" id="cdMinutesWrap">
               <b id="cdMinutes">00</b>
               <span>دقيقة</span>
-            </div>
-            <div class="confirmStep-time">
-              <b id="cdSeconds">00</b>
-              <span>ثانية</span>
             </div>
           </div>
         </div>
@@ -533,10 +872,140 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </section>
 
+
+
+        {% if active_followup_issue %}
+          <div class="confirmStep-statusBox ok">
+            <strong>تم فتح مهلة استكمال خاصة لك.</strong>
+            <span>
+              تمت مراجعة طلب تعديل البيانات المؤثر، ويمكنك الآن استكمال ترتيب الرغبات خلال المهلة الخاصة حتى
+              {{ active_followup_issue.followup_window_expires_at|date:"Y-m-d H:i" }}.
+            </span>
+          </div>
+        {% elif pending_data_issue %}
+          {% if pending_data_issue.is_blocking %}
+            <div class="confirmStep-statusBox danger">
+              <strong>لديك طلب تعديل بيانات قيد المراجعة.</strong>
+              <span>
+                تم تسجيل ملاحظة على حقل مؤثر في مسار التقديم، لذلك لا يمكن الانتقال إلى ترتيب الرغبات حتى تراجع الإدارة الملاحظة.
+                {% if pending_data_issue.protects_followup_right %}
+                  تم حفظ حقك في الاستكمال لأن الطلب رُفع أثناء فترة التقديم، وسيتم تمكينك من الاستكمال بعد قرار الإدارة عند الحاجة.
+                {% endif %}
+              </span>
+              <div class="confirmStep-statusActions">
+                <a class="confirmStep-statusLink warn" href="{% url 'portal:confirm' %}">تحديث حالة الملاحظة</a>
+              </div>
+            </div>
+          {% else %}
+            <div class="confirmStep-statusBox warn">
+              <strong>لديك طلب تعديل بيانات قيد المراجعة.</strong>
+              <span>
+                تم تنبيه الإدارة بالملاحظة، ويمكنك المتابعة إلى ترتيب الرغبات لأن الملاحظة لا توقف مسار التقديم مبدئيًا.
+              </span>
+              <div class="confirmStep-statusActions">
+                <a class="confirmStep-statusLink" href="{% url 'portal:confirm' %}">تحديث حالة الملاحظة</a>
+              </div>
+            </div>
+          {% endif %}
+        {% elif expired_followup_issue %}
+          <div class="confirmStep-statusBox danger">
+            <strong>انتهت مهلة الاستكمال الخاصة.</strong>
+            <span>
+              سبق فتح مهلة استكمال خاصة بعد مراجعة طلب تعديل البيانات، وانتهت في
+              {{ expired_followup_issue.followup_window_expires_at|date:"Y-m-d H:i" }}.
+              تواصل مع جهة الاختصاص عند الحاجة.
+            </span>
+          </div>
+        {% elif data_issue_created %}
+          {% if issue_blocks_followup %}
+            <div class="confirmStep-statusBox danger">
+              <strong>تم استلام طلب تعديل البيانات.</strong>
+              <span>
+                الملاحظة على حقل مؤثر؛ يمكنك المتابعة وترتيب الرغبات، وسيبقى الطلب مشروطًا بمراجعة الإدارة قبل المفاضلة.
+                تم حفظ حقك في الاستكمال إذا كان الطلب قد رُفع داخل فترة التقديم.
+              </span>
+              <div class="confirmStep-statusActions">
+                <a class="confirmStep-statusLink warn" href="{% url 'portal:confirm' %}">تحديث حالة الملاحظة</a>
+              </div>
+            </div>
+          {% else %}
+            <div class="confirmStep-statusBox ok">
+              <strong>تم استلام طلب تعديل البيانات.</strong>
+              <span>
+                تم تنبيه الإدارة بالملاحظة، ويمكنك المتابعة إلى ترتيب الرغبات لأن الملاحظة لا توقف مسار التقديم مبدئيًا.
+              </span>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <section class="confirmStep-issueBox">
+          <div class="confirmStep-issueHead">
+            <h2 class="confirmStep-issueTitle">لدي ملاحظة على البيانات</h2>
+            <button class="confirmStep-secondaryBtn" type="button" data-issue-toggle>لدي ملاحظة على البيانات</button>
+          </div>
+
+          <div class="confirmStep-issueBody">
+            <p class="confirmStep-issueText">
+              اختر الحقل محل الملاحظة، ثم اكتب التصحيح المقترح ووصف الملاحظة. سيظهر أثر الملاحظة بعد اختيار الحقل؛ فبعض الحقول قد تجعل الطلب مشروطًا بمراجعة الإدارة قبل الاعتماد النهائي، مع استمرار إمكانية ترتيب الرغبات وإرسال الطلب.
+            </p>
+
+            <form method="post" class="confirmStep-issueForm" data-issue-form>
+              {% csrf_token %}
+              <input type="hidden" name="form_action" value="report_data_issue">
+
+              <div class="confirmStep-issueField">
+                <label class="confirmStep-issueLabel" for="issueField">الحقل محل الملاحظة</label>
+                <select class="confirmStep-select" id="issueField" name="issue_field" required>
+                  <option value="">اختر الحقل</option>
+                  <option value="full_name" data-blocking="0">الاسم الرباعي</option>
+                  <option value="mobile" data-blocking="0">رقم الجوال</option>
+                  <option value="gender" data-blocking="1">الجنس</option>
+                  <option value="rank" data-blocking="1">الرتبة</option>
+                  <option value="sector" data-blocking="1">القطاع</option>
+                  <option value="current_job" data-blocking="1">العمل الحالي</option>
+                  <option value="current_school" data-blocking="1">المدرسة الحالية</option>
+                  <option value="start_date" data-blocking="1">تاريخ المباشرة</option>
+                  <option value="other" data-blocking="0">أخرى</option>
+                </select>
+              </div>
+
+              <div class="confirmStep-impactNotice show ok" data-impact-notice>
+                اختر الحقل محل الملاحظة، وسيظهر هنا أثر الملاحظة على مسار التقديم.
+              </div>
+
+              <div class="confirmStep-issueField">
+                <label class="confirmStep-issueLabel" for="proposedValue">التصحيح المقترح</label>
+                <input class="confirmStep-input" id="proposedValue" name="proposed_value" maxlength="255" placeholder="اكتب القيمة الصحيحة المقترحة">
+              </div>
+
+              <div class="confirmStep-issueField full">
+                <label class="confirmStep-issueLabel" for="issueNote">وصف الملاحظة</label>
+                <textarea class="confirmStep-textarea" id="issueNote" name="issue_note" maxlength="1000" required placeholder="اشرح المعلومة غير الصحيحة وما التصحيح المطلوب"></textarea>
+              </div>
+
+              <label class="confirmStep-check">
+                <input type="checkbox" name="issue_confirmed" value="1" required>
+                <span>أقر بأن الملاحظة أعلاه صحيحة بحسب علمي، وأعلم أن تسجيلها لا يعني قبول التعديل إلا بعد مراجعة الإدارة واعتماده.</span>
+              </label>
+
+              <button class="confirmStep-issueSubmit" type="submit">إرسال الملاحظة للإدارة</button>
+            </form>
+          </div>
+        </section>
+
         <form method="post" class="confirmStep-actions">
           {% csrf_token %}
+          <input type="hidden" name="form_action" value="confirm_data">
           <button class="confirmStep-btn" data-next-btn type="submit">
-            أؤكد صحة البيانات وأتابع
+            {% if pending_data_issue and pending_data_issue.is_blocking %}
+              المتابعة لترتيب الرغبات بشكل مشروط
+            {% elif active_followup_issue %}
+              المتابعة لترتيب الرغبات ضمن مهلة الاستكمال الخاصة
+            {% elif pending_data_issue %}
+              المتابعة لترتيب الرغبات مع بقاء الملاحظة قيد المراجعة
+            {% else %}
+              أؤكد صحة البيانات وأتابع
+            {% endif %}
           </button>
         </form>
 
@@ -545,7 +1014,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="confirmStep-note">
-          إذا كان هناك خطأ في البيانات أو رقم الجوال، فيرجى مراجعة الجهة المختصة قبل المتابعة.
+          تسجيل ملاحظة البيانات لا يعني قبول التعديل تلقائيًا؛ وتعتمد الإدارة القيمة النهائية أو تسمح باستمرار المسار وفق أثر الملاحظة. وإذا كانت الملاحظة مؤثرة، يمكنك ترتيب الرغبات وإرسال الطلب، وسيبقى الطلب مشروطًا بمراجعة البيانات قبل الاعتماد النهائي.
         </div>
 
       </div>

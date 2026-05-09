@@ -167,6 +167,217 @@ class Applicant(TimeStampedModel):
         return not self.is_official_agent
 
 
+class ApplicantDataIssue(TimeStampedModel):
+    """
+    ملاحظة يرفعها المتقدم عند وجود معلومة غير صحيحة في بياناته.
+    المتقدم لا يعدّل البيانات مباشرة، وإنما يرسل بلاغًا موثقًا للإدارة.
+    """
+
+    FIELD_FULL_NAME = "full_name"
+    FIELD_MOBILE = "mobile"
+    FIELD_GENDER = "gender"
+    FIELD_RANK = "rank"
+    FIELD_SECTOR = "sector"
+    FIELD_CURRENT_JOB = "current_job"
+    FIELD_CURRENT_SCHOOL = "current_school"
+    FIELD_START_DATE = "start_date"
+    FIELD_OTHER = "other"
+
+    FIELD_CHOICES = [
+        (FIELD_FULL_NAME, "الاسم الرباعي"),
+        (FIELD_MOBILE, "رقم الجوال"),
+        (FIELD_GENDER, "الجنس"),
+        (FIELD_RANK, "الرتبة"),
+        (FIELD_SECTOR, "القطاع"),
+        (FIELD_CURRENT_JOB, "العمل الحالي"),
+        (FIELD_CURRENT_SCHOOL, "المدرسة الحالية"),
+        (FIELD_START_DATE, "تاريخ المباشرة"),
+        (FIELD_OTHER, "أخرى"),
+    ]
+
+    BLOCKING_FIELDS = {
+        FIELD_GENDER,
+        FIELD_RANK,
+        FIELD_SECTOR,
+        FIELD_CURRENT_JOB,
+        FIELD_CURRENT_SCHOOL,
+        FIELD_START_DATE,
+    }
+
+    STATUS_PENDING = "pending"
+    STATUS_ALLOWED = "allowed"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_REJECTED = "rejected"
+    STATUS_CORRECTED = "corrected"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "قيد المراجعة"),
+        (STATUS_ALLOWED, "لا تؤثر على التقديم / سُمح بالمتابعة"),
+        (STATUS_ACCEPTED, "مقبولة"),
+        (STATUS_REJECTED, "مرفوضة"),
+        (STATUS_CORRECTED, "تم التصحيح"),
+    ]
+
+    applicant = models.ForeignKey(
+        "Applicant",
+        on_delete=models.CASCADE,
+        related_name="data_issues",
+        verbose_name="المتقدم",
+    )
+    application = models.ForeignKey(
+        "Application",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="data_issues",
+        verbose_name="الطلب",
+    )
+
+    field_name = models.CharField(
+        "الحقل محل الملاحظة",
+        max_length=40,
+        choices=FIELD_CHOICES,
+        db_index=True,
+    )
+    current_value = models.CharField(
+        "القيمة الحالية وقت البلاغ",
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    proposed_value = models.CharField(
+        "التصحيح المقترح",
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    note = models.TextField("وصف الملاحظة", blank=True, default="")
+
+    is_blocking = models.BooleanField(
+        "توقف المتابعة لحين المراجعة",
+        default=False,
+        db_index=True,
+        help_text="تُفعّل للحقول المؤثرة في الشواغر أو المفاضلة مثل القطاع والجنس والمدرسة الحالية.",
+    )
+
+    # =====================================================
+    # Protected completion window / حفظ حق الاستكمال
+    # =====================================================
+    protects_followup_right = models.BooleanField(
+        "يحفظ حق الاستكمال",
+        default=False,
+        db_index=True,
+        help_text=(
+            "يُفعّل عندما يرفع المتقدم ملاحظة مؤثرة أثناء فترة التقديم؛ "
+            "بحيث لا يتضرر إذا تأخرت مراجعة الإدارة إلى ما بعد إغلاق البوابة."
+        ),
+    )
+    protected_at = models.DateTimeField(
+        "وقت حفظ حق الاستكمال",
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    followup_window_granted_at = models.DateTimeField(
+        "وقت فتح مهلة الاستكمال الخاصة",
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    followup_window_expires_at = models.DateTimeField(
+        "نهاية مهلة الاستكمال الخاصة",
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    followup_window_granted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="granted_applicant_data_issue_followup_windows",
+        verbose_name="فتح مهلة الاستكمال بواسطة",
+    )
+    followup_window_note = models.TextField(
+        "ملاحظة مهلة الاستكمال",
+        blank=True,
+        default="",
+    )
+
+    status = models.CharField(
+        "حالة المراجعة",
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+        db_index=True,
+    )
+
+    applicant_snapshot = models.JSONField(
+        "لقطة بيانات المتقدم وقت البلاغ",
+        default=dict,
+        blank=True,
+    )
+    source_ip = models.GenericIPAddressField("عنوان IP", null=True, blank=True)
+    user_agent = models.TextField("المتصفح", blank=True, default="")
+
+    reviewed_at = models.DateTimeField("تاريخ المراجعة", null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_applicant_data_issues",
+        verbose_name="راجع بواسطة",
+    )
+    admin_note = models.TextField("ملاحظة الإدارة", blank=True, default="")
+
+    class Meta:
+        verbose_name = "ملاحظة بيانات"
+        verbose_name_plural = "ملاحظات البيانات"
+        ordering = ["-created_at", "-id"]
+        indexes = [
+            models.Index(fields=["status", "is_blocking"]),
+            models.Index(fields=["applicant", "status"]),
+            models.Index(fields=["field_name", "status"]),
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["protects_followup_right", "status"]),
+            models.Index(fields=["followup_window_expires_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.get_field_name_display()} - {self.applicant} - {self.get_status_display()}"
+
+    @property
+    def blocks_followup(self) -> bool:
+        return self.status == self.STATUS_PENDING and self.is_blocking
+
+    @property
+    def has_active_followup_window(self) -> bool:
+        if not self.followup_window_expires_at:
+            return False
+        if self.status not in {self.STATUS_ALLOWED, self.STATUS_CORRECTED, self.STATUS_REJECTED}:
+            return False
+        return timezone.now() <= self.followup_window_expires_at
+
+    @property
+    def followup_window_is_expired(self) -> bool:
+        if not self.followup_window_expires_at:
+            return False
+        return timezone.now() > self.followup_window_expires_at
+
+    @property
+    def followup_window_label(self) -> str:
+        if self.has_active_followup_window:
+            return "مهلة استكمال خاصة نشطة"
+        if self.followup_window_is_expired:
+            return "انتهت مهلة الاستكمال الخاصة"
+        if self.protects_followup_right and self.status == self.STATUS_PENDING:
+            return "حق الاستكمال محفوظ بانتظار المراجعة"
+        if self.protects_followup_right:
+            return "حق الاستكمال محفوظ"
+        return "—"
+
+
 class SchoolVacancy(TimeStampedModel):
     # ملف المدارس/الشواغر
     ministry_no = models.CharField(max_length=50, blank=True, default="")

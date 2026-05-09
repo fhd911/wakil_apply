@@ -473,7 +473,13 @@
   <main class="receiptCard" aria-label="إيصال استلام الطلب">
     {% if app %}
       <header class="receiptHead">
-        {% if prefs %}
+        {% if app.submission_snapshot.conditional_data_review %}
+          <span class="receiptStatus noPrefs">إيصال استلام مشروط</span>
+          <h1 class="receiptTitle">تم استلام طلبك بشكل مشروط</h1>
+          <p class="receiptSubtitle">
+            تم حفظ وقت الإرسال والرغبات، وسيبقى الطلب مشروطًا بمراجعة البيانات ولا يدخل المفاضلة النهائية حتى تعالج الإدارة طلب تعديل البيانات.
+          </p>
+        {% elif prefs %}
           <span class="receiptStatus">إيصال استلام</span>
           <h1 class="receiptTitle">تم استلام طلبك</h1>
           <p class="receiptSubtitle">
@@ -513,7 +519,9 @@
           <div class="receiptField full">
             <label>حالة الطلب</label>
             <div class="receiptValue">
-              {% if prefs %}
+              {% if app.submission_snapshot.conditional_data_review %}
+                مرسل مشروط بمراجعة البيانات / مقفل للتعديل
+              {% elif prefs %}
                 مستلم للمعالجة / مقفل للتعديل
               {% else %}
                 مستلم دون رغبات / مقفل للتعديل
@@ -522,7 +530,12 @@
           </div>
         </div>
 
-        {% if prefs %}
+        {% if app.submission_snapshot.conditional_data_review %}
+          <div class="receiptNotice noPrefs">
+            <b>تنبيه مهم:</b>
+            تم حفظ الرغبات ووقت الإرسال حفظًا لحقك، لكن الطلب لا يدخل المفاضلة النهائية حتى تراجع الإدارة طلب تعديل البيانات المؤثر وتعتمد التصحيح أو تسمح باستمرار المسار.
+          </div>
+        {% elif prefs %}
           <div class="receiptNotice">
             <b>تنبيه مهم:</b>
             اختيار الرغبات لا يعني تحقق التوجيه عليها، ويكون التوجيه النهائي وفق المصلحة التعليمية واحتياج الإدارة والضوابط المعتمدة ونتائج المفاضلة، ولا يمنح الطلب أولوية على من هو أعلى درجة أو أحق في المفاضلة.

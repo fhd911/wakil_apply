@@ -29,6 +29,13 @@ urlpatterns = [
     path("admin/import/schools/", views.admin_import_schools_view, name="admin_import_schools"),
     path("admin/dashboard/", views.admin_dashboard_view, name="admin_dashboard"),
 
+
+    # =========================
+    # ملاحظات المتقدمين على البيانات
+    # =========================
+    path("admin/data-issues/", views.admin_data_issues_view, name="admin_data_issues"),
+    path("admin/data-issues/<int:pk>/review/", views.admin_data_issue_review_view, name="admin_data_issue_review"),
+
     # =========================
     # فرز المتقدمين الجدد
     # =========================

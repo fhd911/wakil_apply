@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from urllib.parse import urlencode, quote
 
@@ -40,6 +40,7 @@ from .models import (
     Application,
     ApplicationPreference,
     PortalWindow,
+    ApplicantDataIssue,
 )
 from .services_import import import_applicants_xlsx, import_schools_xlsx
 
@@ -191,9 +192,13 @@ def _is_official_proxy(applicant: Applicant) -> bool:
 
 
 def _portal_access_for_applicant(applicant: Applicant, win: PortalWindow):
+    special_allowed, special_msg, _special_issue, _special_mode = _special_followup_access_for(applicant)
+
     open_now, msg, _ = _portal_gate()
     if not open_now:
-        return False, msg or "التقديم مغلق حالياً."
+        if special_allowed:
+            return True, special_msg
+        return False, special_msg or msg or "التقديم مغلق حالياً."
 
     phase = _normalize_portal_phase(getattr(win, "phase", "closed"))
     is_official = _is_official_proxy(applicant)
@@ -203,6 +208,8 @@ def _portal_access_for_applicant(applicant: Applicant, win: PortalWindow):
 
     if phase == "official_only":
         if not is_official:
+            if special_allowed:
+                return True, special_msg
             return False, (
                 (getattr(win, "official_only_message", "") or "").strip()
                 or "التقديم متاح حالياً للوكلاء الرسميين فقط."
@@ -211,17 +218,22 @@ def _portal_access_for_applicant(applicant: Applicant, win: PortalWindow):
 
     if phase == "new_only":
         if is_official:
+            if special_allowed:
+                return True, special_msg
             return False, (
                 (getattr(win, "new_only_message", "") or "").strip()
                 or "التقديم متاح حالياً للمتقدمين الجدد فقط."
             )
         return True, ""
 
+    if special_allowed:
+        return True, special_msg
+
     return False, (
-        (getattr(win, "closed_message", "") or "").strip()
+        special_msg
+        or (getattr(win, "closed_message", "") or "").strip()
         or "التقديم مغلق حالياً."
     )
-
 
 def _eligible_schools_for(applicant: Applicant):
     return (
@@ -437,6 +449,15 @@ def _admin_decision_display(app: Application, prefs: list[ApplicationPreference]
     """
     raw = (getattr(app, "admin_decision", "") or "").strip()
     no_prefs = _is_submitted_without_preferences(app, prefs)
+    conditional_issue = _application_conditional_data_issue(app)
+
+    if conditional_issue and not raw:
+        return {
+            "code": "conditional_data_review",
+            "label": "معلق على مراجعة البيانات",
+            "css": "red",
+            "note": "مرسل مشروط؛ لا يعتمد ولا يدخل المفاضلة النهائية حتى تراجع الإدارة طلب تعديل البيانات المؤثر.",
+        }
 
     if raw == "approved" and no_prefs:
         return {
@@ -490,6 +511,24 @@ def _application_path_info(app: Application, prefs: list[ApplicationPreference] 
     prefs_count = _application_preferences_count(app, prefs)
     status = (getattr(app, "status", "") or "").strip()
     decision = (getattr(app, "admin_decision", "") or "").strip()
+    conditional_issue = _application_conditional_data_issue(app)
+
+    if status == "submitted" and conditional_issue:
+        return {
+            "code": "conditional_data_review",
+            "label": "مرسل مشروط بمراجعة البيانات",
+            "status_label": "مرسل مشروط",
+            "brief": "تم حفظ الرغبات ووقت الإرسال، والمفاضلة معلقة حتى مراجعة طلب تعديل البيانات.",
+            "long_note": "هذا الطلب لا يدخل المفاضلة النهائية ولا يعتمد إداريًا حتى تتم معالجة ملاحظة البيانات المؤثرة.",
+            "competition_label": "يدخل المفاضلة النهائية",
+            "competition_value": "معلق",
+            "admin_processing_label": "مطلوب مراجعة بيانات",
+            "admin_processing_value": "نعم",
+            "claim_label": "الرغبات محفوظة لحين القرار",
+            "claim_value": "محفوظة",
+            "primary_action_label": "مراجعة البيانات أولًا",
+            "css": "red",
+        }
 
     if status == "submitted" and prefs_count == 0:
         return {
@@ -645,6 +684,7 @@ def _enrich_admin_application(app: Application, prefs: list[ApplicationPreferenc
     app.path_css = path_info["css"]
     app.is_no_preferences_path = path_info["code"] == "no_preferences"
     app.is_competition_path = path_info["code"] == "competition"
+    app.is_conditional_data_review_path = path_info["code"] == "conditional_data_review"
     app.admin_decision_display = decision_info["label"]
     app.admin_decision_css = decision_info["css"]
     app.admin_decision_note_display = decision_info["note"]
@@ -743,7 +783,11 @@ def _run_new_applicants_sorting(*, decided_by):
         .order_by("submitted_at", "id")
     )
 
-    applications = [app for app in base_qs if not _is_official_proxy(app.applicant)]
+    applications = [
+        app for app in base_qs
+        if not _is_official_proxy(app.applicant)
+        and not _application_is_conditional_data_review(app)
+    ]
 
     if not applications:
         return {
@@ -989,6 +1033,263 @@ def _nominations_qs(request):
     return qs
 
 
+
+# =========================================================
+# Applicant Data Issues / ملاحظات المتقدمين على البيانات
+# =========================================================
+DATA_ISSUE_BLOCKING_FIELDS = {
+    "gender",
+    "rank",
+    "sector",
+    "current_job",
+    "current_school",
+    "start_date",
+}
+
+DATA_ISSUE_ALLOWED_FIELDS = {
+    "full_name",
+    "mobile",
+    "gender",
+    "rank",
+    "sector",
+    "current_job",
+    "current_school",
+    "start_date",
+    "other",
+}
+
+# عند تأخر مراجعة الإدارة لطلب تعديل مؤثر حتى بعد إغلاق البوابة،
+# تمنح الإدارة المتقدم مهلة استكمال خاصة بعد صدور القرار.
+DATA_ISSUE_FOLLOWUP_WINDOW_HOURS = 24
+
+
+def _client_ip(request):
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR")
+
+
+def _applicant_value(applicant, field_name: str) -> str:
+    if field_name == "other":
+        return ""
+    value = getattr(applicant, field_name, "")
+    if value is None:
+        return ""
+    if hasattr(value, "strftime"):
+        try:
+            return value.strftime("%Y-%m-%d")
+        except Exception:
+            return str(value)
+    return str(value).strip()
+
+
+def _applicant_snapshot(applicant) -> dict:
+    fields = [
+        "full_name",
+        "national_id",
+        "mobile",
+        "gender",
+        "rank",
+        "sector",
+        "current_job",
+        "current_school",
+        "start_date",
+    ]
+    return {field: _applicant_value(applicant, field) for field in fields}
+
+
+def _pending_data_issue_for(applicant):
+    return (
+        ApplicantDataIssue.objects
+        .filter(applicant=applicant, status=ApplicantDataIssue.STATUS_PENDING)
+        .order_by("-is_blocking", "-created_at", "-id")
+        .first()
+    )
+
+
+def _pending_blocking_data_issue_for(applicant):
+    return (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant=applicant,
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=True,
+        )
+        .order_by("-created_at", "-id")
+        .first()
+    )
+
+
+def _conditional_data_review_issue_for(applicant):
+    """
+    طلب تعديل بيانات مؤثر قيد المراجعة.
+    لا يمنع المتقدم من تعبئة الرغبات، لكنه يجعل الطلب بعد الإرسال
+    مشروطًا بمراجعة البيانات قبل دخوله في المفاضلة النهائية.
+    """
+    return _pending_blocking_data_issue_for(applicant)
+
+
+def _application_conditional_data_issue(app: Application | None):
+    if not app or not getattr(app, "applicant_id", None):
+        return None
+    if getattr(app, "status", "") != "submitted":
+        return None
+    return _conditional_data_review_issue_for(app.applicant)
+
+
+def _application_is_conditional_data_review(app: Application | None) -> bool:
+    return bool(_application_conditional_data_issue(app))
+
+
+def _conditional_data_issue_snapshot(issue: ApplicantDataIssue | None) -> dict:
+    if not issue:
+        return {}
+    return {
+        "issue_id": issue.id,
+        "status": issue.status,
+        "field_name": issue.field_name,
+        "field_label": issue.get_field_name_display(),
+        "current_value": issue.current_value or "",
+        "proposed_value": issue.proposed_value or "",
+        "note": issue.note or "",
+        "is_blocking": bool(issue.is_blocking),
+        "protects_followup_right": bool(getattr(issue, "protects_followup_right", False)),
+        "created_at": _dt_iso(issue.created_at),
+        "meaning": (
+            "تم السماح للمتقدم باستكمال ترتيب الرغبات حفظًا لحقه، "
+            "على أن يبقى الطلب مرسلًا مشروطًا بمراجعة البيانات ولا يدخل المفاضلة النهائية حتى تراجع الإدارة الملاحظة."
+        ),
+    }
+
+
+def _pending_protected_data_issue_for(applicant):
+    return (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant=applicant,
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=True,
+            protects_followup_right=True,
+        )
+        .order_by("-protected_at", "-created_at", "-id")
+        .first()
+    )
+
+
+def _active_followup_data_issue_for(applicant):
+    now = timezone.now()
+    return (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant=applicant,
+            protects_followup_right=True,
+            followup_window_expires_at__gte=now,
+            status__in=[
+                ApplicantDataIssue.STATUS_ALLOWED,
+                ApplicantDataIssue.STATUS_CORRECTED,
+                ApplicantDataIssue.STATUS_REJECTED,
+            ],
+        )
+        .order_by("-followup_window_expires_at", "-id")
+        .first()
+    )
+
+
+def _expired_followup_data_issue_for(applicant):
+    now = timezone.now()
+    return (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant=applicant,
+            protects_followup_right=True,
+            followup_window_expires_at__lt=now,
+            status__in=[
+                ApplicantDataIssue.STATUS_ALLOWED,
+                ApplicantDataIssue.STATUS_CORRECTED,
+                ApplicantDataIssue.STATUS_REJECTED,
+            ],
+        )
+        .order_by("-followup_window_expires_at", "-id")
+        .first()
+    )
+
+
+def _special_followup_access_for(applicant):
+    """
+    يعيد استثناء الدخول الخاص بطلبات تعديل البيانات المؤثرة:
+    - pending_protected: يسمح بالدخول لصفحة التأكيد لمتابعة حالة الملاحظة فقط.
+    - active_window: يسمح باستكمال خطوات التقديم خلال مهلة خاصة بعد قرار الإدارة.
+    - expired_window: يوضح أن المهلة الخاصة انتهت.
+    """
+    active_issue = _active_followup_data_issue_for(applicant)
+    if active_issue:
+        expires = _fmt_dt(active_issue.followup_window_expires_at)
+        return True, (
+            f"لديك مهلة استكمال خاصة حتى {expires} بسبب طلب تعديل بيانات مؤثر تم رفعه أثناء فترة التقديم."
+        ), active_issue, "active_window"
+
+    pending_issue = _pending_protected_data_issue_for(applicant)
+    if pending_issue:
+        return True, (
+            "طلب تعديل بياناتك المؤثر قيد مراجعة الإدارة، وحقك في الاستكمال محفوظ لأنه رُفع أثناء فترة التقديم."
+        ), pending_issue, "pending_protected"
+
+    expired_issue = _expired_followup_data_issue_for(applicant)
+    if expired_issue:
+        return False, (
+            "انتهت مهلة الاستكمال الخاصة الممنوحة بعد مراجعة طلب تعديل البيانات."
+        ), expired_issue, "expired_window"
+
+    return False, "", None, ""
+
+
+def _maybe_unlock_for_special_followup(applicant, app: Application | None):
+    """يفتح الطلب غير المكتمل إذا كانت للمتقدم مهلة استكمال خاصة نشطة."""
+    issue = _active_followup_data_issue_for(applicant)
+    if not issue or not app:
+        return issue
+
+    if _is_incomplete_submission_locked(app):
+        update_fields = []
+        if getattr(app, "locked", False):
+            app.locked = False
+            update_fields.append("locked")
+        if getattr(app, "status", "") != "draft":
+            app.status = "draft"
+            update_fields.append("status")
+        if update_fields:
+            app.save(update_fields=update_fields)
+
+    return issue
+
+
+def _grant_followup_window_for_issue(issue: ApplicantDataIssue, user, reason: str = "") -> list[str]:
+    """يفتح مهلة استكمال خاصة بعد مراجعة طلب تعديل مؤثر محفوظ الحق."""
+    if not getattr(issue, "protects_followup_right", False):
+        return []
+    if not getattr(issue, "is_blocking", False):
+        return []
+
+    now = timezone.now()
+    expires_at = now + timedelta(hours=DATA_ISSUE_FOLLOWUP_WINDOW_HOURS)
+
+    issue.followup_window_granted_at = now
+    issue.followup_window_expires_at = expires_at
+    issue.followup_window_granted_by = user
+    issue.followup_window_note = (
+        reason
+        or f"تم فتح مهلة استكمال خاصة لمدة {DATA_ISSUE_FOLLOWUP_WINDOW_HOURS} ساعة بعد مراجعة طلب تعديل مؤثر."
+    )
+
+    return [
+        "followup_window_granted_at",
+        "followup_window_expires_at",
+        "followup_window_granted_by",
+        "followup_window_note",
+    ]
+
+
 # =========================================================
 # Portal: Closed Page
 # =========================================================
@@ -1021,9 +1322,6 @@ def login_view(request):
 
     if request.method == "POST":
         open_now, msg, win = _portal_gate()
-        if not open_now:
-            messages.error(request, msg)
-            return redirect("portal:closed")
 
         nid = (request.POST.get("national_id") or "").strip().replace(" ", "")
 
@@ -1062,7 +1360,9 @@ def login_view(request):
         if _is_final_submission_locked(app):
             return redirect("portal:done")
 
-        if _is_incomplete_submission_locked(app):
+        active_followup_issue = _maybe_unlock_for_special_followup(applicant, app)
+
+        if _is_incomplete_submission_locked(app) and not active_followup_issue:
             messages.error(
                 request,
                 "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
@@ -1089,15 +1389,18 @@ def confirm_view(request):
         return redirect("portal:closed")
 
     app = Application.objects.filter(applicant=a).first()
-    if _is_final_submission_locked(app):
-        return redirect("portal:done")
+    active_followup_issue = _maybe_unlock_for_special_followup(a, app)
+    if app:
+        if _is_final_submission_locked(app):
+            messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
+            return redirect("portal:done")
 
-    if _is_incomplete_submission_locked(app):
-        messages.error(
-            request,
-            "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
-        )
-        return redirect("portal:closed")
+        if _is_incomplete_submission_locked(app) and not active_followup_issue:
+            messages.error(
+                request,
+                "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
+            )
+            return redirect("portal:closed")
 
     def gv(attr: str, dash: str = "-"):
         v = getattr(a, attr, None)
@@ -1125,12 +1428,87 @@ def confirm_view(request):
         {"label": "تاريخ المباشرة", "value": gv("start_date")},
     ]
 
+    pending_data_issue = _pending_data_issue_for(a)
+
     if request.method == "POST":
         app, _ = Application.objects.get_or_create(applicant=a)
 
         if _is_final_submission_locked(app):
             messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
             return redirect("portal:done")
+
+        form_action = (request.POST.get("form_action") or "confirm_data").strip()
+
+        if form_action == "report_data_issue":
+            field_name = (request.POST.get("issue_field") or "").strip()
+            proposed_value = (request.POST.get("proposed_value") or "").strip()[:255]
+            note = (request.POST.get("issue_note") or "").strip()[:1000]
+            confirmed = request.POST.get("issue_confirmed") == "1"
+
+            if field_name not in DATA_ISSUE_ALLOWED_FIELDS:
+                messages.error(request, "يلزم اختيار الحقل محل الملاحظة.")
+                return redirect("portal:confirm")
+
+            if not note:
+                messages.error(request, "يلزم كتابة وصف الملاحظة.")
+                return redirect("portal:confirm")
+
+            if not confirmed:
+                messages.error(request, "يلزم الإقرار بصحة الملاحظة قبل إرسالها للإدارة.")
+                return redirect("portal:confirm")
+
+            is_blocking = field_name in DATA_ISSUE_BLOCKING_FIELDS
+            open_now_for_protection, _protection_msg, _protection_win = _portal_gate()
+            protects_followup_right = bool(is_blocking and open_now_for_protection)
+            now_for_issue = timezone.now()
+
+            issue = ApplicantDataIssue.objects.create(
+                applicant=a,
+                application=app,
+                field_name=field_name,
+                current_value=_applicant_value(a, field_name),
+                proposed_value=proposed_value,
+                note=note,
+                is_blocking=is_blocking,
+                protects_followup_right=protects_followup_right,
+                protected_at=now_for_issue if protects_followup_right else None,
+                applicant_snapshot=_applicant_snapshot(a),
+                source_ip=_client_ip(request),
+                user_agent=(request.META.get("HTTP_USER_AGENT") or "")[:1000],
+            )
+
+            if is_blocking:
+                messages.warning(
+                    request,
+                    "تم إرسال ملاحظتك للإدارة. يمكنك المتابعة وترتيب الرغبات حفظًا لحقك، وسيبقى الطلب بعد الإرسال مشروطًا بمراجعة البيانات قبل دخوله في المفاضلة النهائية."
+                )
+            else:
+                messages.success(
+                    request,
+                    "تم إرسال ملاحظتك للإدارة، ويمكنك المتابعة مع بقاء الملاحظة موثقة وقيد المراجعة."
+                )
+
+            ctx = {
+                "a": a,
+                "fields": fields,
+                "pending_data_issue": issue,
+                "data_issue_created": True,
+                "issue_blocks_followup": is_blocking,
+                "active_followup_issue": active_followup_issue,
+                "pending_protected_issue": issue if protects_followup_right else None,
+            }
+            ctx.update(_portal_timer_context(win))
+            return render(request, "portal/confirm.html", ctx)
+
+        # تأكيد البيانات والمتابعة:
+        # إذا توجد ملاحظة مؤثرة قيد المراجعة، لا نوقف تعبئة الرغبات.
+        # يسجَّل الطلب لاحقًا كطلب مشروط بمراجعة البيانات قبل المفاضلة النهائية.
+        pending_data_issue = _pending_data_issue_for(a)
+        if pending_data_issue and pending_data_issue.is_blocking:
+            messages.warning(
+                request,
+                "سيتم السماح لك بترتيب الرغبات حفظًا لحقك، وسيبقى الإرسال مشروطًا بمراجعة الإدارة لطلب تعديل البيانات."
+            )
 
         update_fields: list[str] = []
         if not app.confirmed_at:
@@ -1150,7 +1528,14 @@ def confirm_view(request):
 
         return redirect("portal:preferences")
 
-    ctx = {"a": a, "fields": fields}
+    ctx = {
+        "a": a,
+        "fields": fields,
+        "pending_data_issue": pending_data_issue,
+        "active_followup_issue": active_followup_issue,
+        "pending_protected_issue": _pending_protected_data_issue_for(a),
+        "expired_followup_issue": _expired_followup_data_issue_for(a),
+    }
     ctx.update(_portal_timer_context(win))
     return render(request, "portal/confirm.html", ctx)
 
@@ -1171,10 +1556,14 @@ def preferences_view(request):
         messages.info(request, "يلزم تأكيد البيانات أولاً قبل إدخال الرغبات.")
         return redirect("portal:confirm")
 
+    active_followup_issue = _maybe_unlock_for_special_followup(a, app)
+    pending_data_issue = _pending_data_issue_for(a)
+    conditional_data_issue = _conditional_data_review_issue_for(a)
+
     if _is_final_submission_locked(app):
         return redirect("portal:done")
 
-    if _is_incomplete_submission_locked(app):
+    if _is_incomplete_submission_locked(app) and not active_followup_issue:
         messages.error(
             request,
             "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
@@ -1198,6 +1587,9 @@ def preferences_view(request):
         selected_prefs=selected_prefs,
         selected_ids=selected_ids,
     )
+    ctx["pending_data_issue"] = pending_data_issue
+    ctx["conditional_data_issue"] = conditional_data_issue
+    ctx["is_conditional_data_review"] = bool(conditional_data_issue)
     return render(request, "portal/preferences.html", ctx)
 
 
@@ -1220,11 +1612,15 @@ def submit_view(request):
         messages.error(request, "يلزم تأكيد البيانات أولاً قبل إرسال الرغبات.")
         return redirect("portal:confirm")
 
+    active_followup_issue = _maybe_unlock_for_special_followup(a, app)
+    pending_data_issue = _pending_data_issue_for(a)
+    conditional_data_issue = _conditional_data_review_issue_for(a)
+
     if _is_final_submission_locked(app):
         messages.info(request, "تم إرسال طلبك مسبقًا ولا يمكن تعديله حالياً.")
         return redirect("portal:done")
 
-    if _is_incomplete_submission_locked(app):
+    if _is_incomplete_submission_locked(app) and not active_followup_issue:
         messages.error(
             request,
             "انتهت فترة التقديم وتم إقفال طلبك غير المكتمل، ولا يمكن استكماله بعد الإغلاق."
@@ -1348,6 +1744,16 @@ def submit_view(request):
         no_preferences_confirmed=no_preferences_acknowledged,
     )
 
+    if conditional_data_issue:
+        snapshot["conditional_data_review"] = _conditional_data_issue_snapshot(conditional_data_issue)
+        snapshot["enters_preference_competition"] = False
+        snapshot["competition_meaning"] = (
+            "مرسل مشروط بمراجعة البيانات؛ لا يدخل المفاضلة النهائية حتى تتم معالجة طلب تعديل البيانات المؤثر."
+        )
+        snapshot["administrative_meaning"] = (
+            "تم حفظ وقت الإرسال والرغبات، مع تعليق المفاضلة النهائية إلى حين مراجعة الإدارة لطلب تعديل البيانات."
+        )
+
     app.status = "submitted"
     app.locked = True
     app.submitted_at = submitted_at
@@ -1416,6 +1822,222 @@ def done_view(request):
     }
     ctx.update(_portal_timer_context(win))
     return render(request, "portal/done.html", ctx)
+
+
+
+# =========================================================
+# Admin: Applicant Data Issues
+# =========================================================
+@staff_member_required
+def admin_data_issues_view(request):
+    q = (request.GET.get("q") or "").strip()
+    mode = (request.GET.get("mode") or "pending").strip()
+    status = (request.GET.get("status") or "").strip()
+    blocking = (request.GET.get("blocking") or "").strip()
+
+    now = timezone.now()
+
+    qs = (
+        ApplicantDataIssue.objects
+        .select_related("applicant", "application", "reviewed_by")
+        .annotate(
+            review_priority=Case(
+                When(status=ApplicantDataIssue.STATUS_PENDING, is_blocking=True, then=Value(1)),
+                When(
+                    protects_followup_right=True,
+                    followup_window_expires_at__gte=now,
+                    status__in=[
+                        ApplicantDataIssue.STATUS_ALLOWED,
+                        ApplicantDataIssue.STATUS_CORRECTED,
+                        ApplicantDataIssue.STATUS_REJECTED,
+                    ],
+                    then=Value(2),
+                ),
+                When(status=ApplicantDataIssue.STATUS_PENDING, is_blocking=False, then=Value(3)),
+                default=Value(4),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("review_priority", "-created_at", "-id")
+    )
+
+    # فلاتر عملية مبنية على السؤال: ما المطلوب من الإدارة الآن؟
+    if mode == "blocking":
+        qs = qs.filter(status=ApplicantDataIssue.STATUS_PENDING, is_blocking=True)
+        status = status or ApplicantDataIssue.STATUS_PENDING
+        blocking = blocking or "yes"
+    elif mode == "active_window":
+        qs = qs.filter(
+            protects_followup_right=True,
+            followup_window_expires_at__gte=now,
+            status__in=[
+                ApplicantDataIssue.STATUS_ALLOWED,
+                ApplicantDataIssue.STATUS_CORRECTED,
+                ApplicantDataIssue.STATUS_REJECTED,
+            ],
+        )
+    elif mode == "processed":
+        qs = qs.exclude(status=ApplicantDataIssue.STATUS_PENDING)
+    elif mode == "all":
+        pass
+    else:
+        mode = "pending"
+        qs = qs.filter(status=ApplicantDataIssue.STATUS_PENDING)
+        status = status or ApplicantDataIssue.STATUS_PENDING
+
+    # توافق مع الفلاتر التفصيلية اليدوية.
+    if status and status != "all":
+        qs = qs.filter(status=status)
+
+    if blocking == "yes":
+        qs = qs.filter(is_blocking=True)
+    elif blocking == "no":
+        qs = qs.filter(is_blocking=False)
+
+    if q:
+        qs = qs.filter(
+            Q(applicant__full_name__icontains=q)
+            | Q(applicant__national_id__icontains=q)
+            | Q(applicant__mobile__icontains=q)
+            | Q(note__icontains=q)
+            | Q(proposed_value__icontains=q)
+            | Q(current_value__icontains=q)
+        )
+
+    page_obj = _paginate(request, qs, per_page=40)
+
+    active_statuses = [
+        ApplicantDataIssue.STATUS_ALLOWED,
+        ApplicantDataIssue.STATUS_CORRECTED,
+        ApplicantDataIssue.STATUS_REJECTED,
+    ]
+
+    ctx = {
+        "rows": page_obj,
+        "q": q,
+        "mode": mode,
+        "status": status,
+        "blocking": blocking,
+        "pending_count": ApplicantDataIssue.objects.filter(status=ApplicantDataIssue.STATUS_PENDING).count(),
+        "blocking_count": ApplicantDataIssue.objects.filter(
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=True,
+        ).count(),
+        "nonblocking_pending_count": ApplicantDataIssue.objects.filter(
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=False,
+        ).count(),
+        "active_followup_count": ApplicantDataIssue.objects.filter(
+            protects_followup_right=True,
+            followup_window_expires_at__gte=now,
+            status__in=active_statuses,
+        ).count(),
+        "processed_count": ApplicantDataIssue.objects.exclude(status=ApplicantDataIssue.STATUS_PENDING).count(),
+        "status_choices": ApplicantDataIssue.STATUS_CHOICES,
+        "followup_window_hours": DATA_ISSUE_FOLLOWUP_WINDOW_HOURS,
+    }
+    return render(request, "portal/admin_data_issues.html", ctx)
+
+
+@staff_member_required
+@require_POST
+def admin_data_issue_review_view(request, pk: int):
+    issue = get_object_or_404(
+        ApplicantDataIssue.objects.select_related("applicant"),
+        pk=pk,
+    )
+    action = (request.POST.get("action") or "").strip()
+    admin_note = (request.POST.get("admin_note") or "").strip()
+
+    if action == "allow":
+        # السماح بالمتابعة دون تعديل البيانات.
+        issue.status = ApplicantDataIssue.STATUS_ALLOWED
+        issue.admin_note = admin_note or (
+            "تمت مراجعة الملاحظة والسماح للمتقدم بالمتابعة دون تعديل بياناته؛ "
+            "ولا يعد ذلك قبولًا للتصحيح المقترح."
+        )
+
+    elif action == "correct":
+        # اعتماد التصحيح = تعديل بيانات المتقدم فعليًا بالقيمة المعتمدة من الإدارة.
+        if issue.field_name == "other":
+            messages.error(
+                request,
+                "لا يمكن اعتماد التصحيح التلقائي لحقل (أخرى). استخدم السماح بالمتابعة دون تعديل أو الرفض مع ملاحظة إدارية."
+            )
+            return redirect("portal:admin_data_issues")
+
+        approved_value = (request.POST.get("approved_value") or "").strip()
+        if not approved_value:
+            approved_value = (issue.proposed_value or "").strip()
+
+        if not approved_value:
+            messages.error(
+                request,
+                "يلزم إدخال القيمة المعتمدة من الإدارة قبل تحديث بيانات المتقدم."
+            )
+            return redirect("portal:admin_data_issues")
+
+        applicant_field_names = {f.name for f in issue.applicant._meta.fields}
+        if issue.field_name not in applicant_field_names:
+            messages.error(request, "الحقل المطلوب تصحيحه غير موجود في بيانات المتقدم.")
+            return redirect("portal:admin_data_issues")
+
+        old_value = getattr(issue.applicant, issue.field_name, "") or ""
+        setattr(issue.applicant, issue.field_name, approved_value)
+        update_fields = [issue.field_name]
+        if "updated_at" in applicant_field_names:
+            update_fields.append("updated_at")
+        issue.applicant.save(update_fields=update_fields)
+
+        issue.status = ApplicantDataIssue.STATUS_CORRECTED
+
+        audit_note = (
+            f"تم اعتماد التصحيح وتحديث بيانات المتقدم في حقل: {issue.get_field_name_display()}.\n"
+            f"القيمة السابقة: {old_value or '—'}\n"
+            f"التصحيح المقترح من المتقدم: {(issue.proposed_value or '—')}\n"
+            f"القيمة المعتمدة من الإدارة: {approved_value}"
+        )
+        issue.admin_note = f"{admin_note}\n\n{audit_note}".strip() if admin_note else audit_note
+
+    elif action == "reject":
+        # رفض الملاحظة = لا تعديل على بيانات المتقدم، مع توثيق سبب الإدارة.
+        issue.status = ApplicantDataIssue.STATUS_REJECTED
+        issue.admin_note = admin_note or "تم رفض الملاحظة بعد المراجعة، وتبقى البيانات الحالية معتمدة."
+
+    elif action == "accept":
+        # توافق خلفي فقط للزر القديم إن كان موجودًا في متصفح أو قالب غير محدث.
+        issue.status = ApplicantDataIssue.STATUS_ALLOWED
+        issue.admin_note = admin_note or (
+            "تمت مراجعة الملاحظة والسماح بالمتابعة دون تعديل بيانات المتقدم."
+        )
+
+    else:
+        messages.error(request, "إجراء غير معروف.")
+        return redirect("portal:admin_data_issues")
+
+    followup_update_fields = _grant_followup_window_for_issue(
+        issue,
+        request.user,
+        reason=(
+            f"تم فتح مهلة استكمال خاصة لمدة {DATA_ISSUE_FOLLOWUP_WINDOW_HOURS} ساعة بعد قرار الإدارة: {issue.get_status_display()}."
+        ),
+    )
+    if followup_update_fields:
+        window_note = (
+            f"تم حفظ حق المتقدم في الاستكمال، وفتحت له مهلة خاصة حتى "
+            f"{_fmt_dt(issue.followup_window_expires_at)}."
+        )
+        issue.admin_note = f"{issue.admin_note}\n\n{window_note}".strip()
+
+    issue.reviewed_at = timezone.now()
+    issue.reviewed_by = request.user
+    update_fields = ["status", "admin_note", "reviewed_at", "reviewed_by"] + followup_update_fields
+    issue.save(update_fields=update_fields)
+    if followup_update_fields:
+        messages.success(request, "تم تحديث القرار وفتح مهلة استكمال خاصة للمتقدم.")
+    else:
+        messages.success(request, "تم تحديث قرار مراجعة ملاحظة البيانات.")
+    return redirect("portal:admin_data_issues")
 
 
 # =========================================================
@@ -2394,6 +3016,44 @@ def admin_dashboard_view(request):
         )
     )
 
+
+
+    pending_issues_sq = (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant_id=OuterRef("applicant_id"),
+            status=ApplicantDataIssue.STATUS_PENDING,
+        )
+        .order_by()
+        .values("applicant_id")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
+    pending_blocking_issues_sq = (
+        ApplicantDataIssue.objects
+        .filter(
+            applicant_id=OuterRef("applicant_id"),
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=True,
+        )
+        .order_by()
+        .values("applicant_id")
+        .annotate(c=Count("id"))
+        .values("c")[:1]
+    )
+
+    qs = qs.annotate(
+        pending_data_issues_count=Coalesce(
+            Subquery(pending_issues_sq, output_field=IntegerField()),
+            Value(0),
+        ),
+        pending_blocking_data_issues_count=Coalesce(
+            Subquery(pending_blocking_issues_sq, output_field=IntegerField()),
+            Value(0),
+        ),
+    )
+
     rows = list(qs[:500])
     for row in rows:
         _enrich_admin_application(row)
@@ -2448,12 +3108,32 @@ def admin_dashboard_view(request):
         prefs__isnull=False,
     ).distinct().count()
 
-    # قابل للمفاضلة: مرسل، لديه رغبات، ولم يصدر عليه قرار إداري بعد.
+    # الطلبات المشروطة بمراجعة البيانات:
+    # المتقدم يستطيع إرسال رغباته حفظًا لحقه، لكن لا يدخل الطلب المفاضلة
+    # ولا يعتمد إداريًا حتى تتم مراجعة طلب تعديل البيانات المؤثر.
+    conditional_review_applicant_ids = (
+        ApplicantDataIssue.objects
+        .filter(
+            status=ApplicantDataIssue.STATUS_PENDING,
+            is_blocking=True,
+        )
+        .values("applicant_id")
+    )
+
+    count_conditional_data_review = qs.filter(
+        status="submitted",
+        applicant_id__in=conditional_review_applicant_ids,
+    ).distinct().count()
+
+    # قابل للمفاضلة: مرسل، لديه رغبات، ولم يصدر عليه قرار إداري بعد،
+    # وليس معلقًا على مراجعة بيانات مؤثرة.
     count_competition_ready = qs.filter(
         status="submitted",
         prefs__isnull=False,
     ).filter(
         Q(admin_decision__isnull=True) | Q(admin_decision__exact="")
+    ).exclude(
+        applicant_id__in=conditional_review_applicant_ids,
     ).distinct().count()
 
     sectors = list(
@@ -2464,6 +3144,33 @@ def admin_dashboard_view(request):
         .distinct()
         .order_by("sector")
     )
+
+
+    pending_data_issues_count = ApplicantDataIssue.objects.filter(
+        status=ApplicantDataIssue.STATUS_PENDING,
+    ).count()
+
+    pending_blocking_data_issues_count = ApplicantDataIssue.objects.filter(
+        status=ApplicantDataIssue.STATUS_PENDING,
+        is_blocking=True,
+    ).count()
+
+    data_issues_total_count = ApplicantDataIssue.objects.count()
+
+    protected_pending_data_issues_count = ApplicantDataIssue.objects.filter(
+        status=ApplicantDataIssue.STATUS_PENDING,
+        is_blocking=True,
+        protects_followup_right=True,
+    ).count()
+    active_followup_windows_count = ApplicantDataIssue.objects.filter(
+        protects_followup_right=True,
+        followup_window_expires_at__gte=timezone.now(),
+        status__in=[
+            ApplicantDataIssue.STATUS_ALLOWED,
+            ApplicantDataIssue.STATUS_CORRECTED,
+            ApplicantDataIssue.STATUS_REJECTED,
+        ],
+    ).count()
 
     portal_window = PortalWindow.get()
 
@@ -2485,6 +3192,12 @@ def admin_dashboard_view(request):
         "count_submitted_without_prefs": count_submitted_without_prefs,
         "count_submitted_with_prefs": count_submitted_with_prefs,
         "count_competition_ready": count_competition_ready,
+        "count_conditional_data_review": count_conditional_data_review,
+        "pending_data_issues_count": pending_data_issues_count,
+        "pending_blocking_data_issues_count": pending_blocking_data_issues_count,
+        "data_issues_total_count": data_issues_total_count,
+        "protected_pending_data_issues_count": protected_pending_data_issues_count,
+        "active_followup_windows_count": active_followup_windows_count,
         "f_q": q,
         "f_status": status,
         "f_sector": sector,
@@ -2648,6 +3361,14 @@ def admin_decide_approve_view(request, app_id: int):
     note = (request.POST.get("note") or "").strip()
     back_url = (request.GET.get("back") or "").strip()
 
+    conditional_issue = _application_conditional_data_issue(app)
+    if conditional_issue:
+        msg = "لا يمكن اعتماد الطلب قبل مراجعة طلب تعديل البيانات المؤثر. راجع طلبات التعديل أولًا."
+        if _is_ajax(request):
+            return JsonResponse({"ok": False, "error": msg}, status=400, json_dumps_params={"ensure_ascii": False})
+        messages.error(request, msg)
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
+
     is_no_prefs = _is_submitted_without_preferences(app)
     if is_no_prefs and not note:
         note = NO_PREFERENCES_ADMIN_DECISION_NOTE
@@ -2795,6 +3516,7 @@ def admin_decide_bulk_view(request):
 
     qs = Application.objects.filter(id__in=clean_ids)
 
+    skipped_conditional = 0
     with transaction.atomic():
         updated = 0
 
@@ -2806,6 +3528,9 @@ def admin_decide_bulk_view(request):
 
         elif action == "approve":
             for app in qs.select_for_update():
+                if _application_is_conditional_data_review(app):
+                    skipped_conditional += 1
+                    continue
                 note_for_app = note
                 if _is_submitted_without_preferences(app) and not note_for_app:
                     note_for_app = NO_PREFERENCES_ADMIN_DECISION_NOTE
@@ -2817,7 +3542,11 @@ def admin_decide_bulk_view(request):
                 _set_admin_decision(app, request.user, "rejected", note)
                 updated += 1
 
-    return JsonResponse({"ok": True, "updated": updated}, json_dumps_params={"ensure_ascii": False})
+    payload = {"ok": True, "updated": updated}
+    if skipped_conditional:
+        payload["skipped_conditional"] = skipped_conditional
+        payload["warning"] = f"تم تجاوز {skipped_conditional} طلبًا لأنها مرسلة مشروطة بمراجعة البيانات."
+    return JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
 
 
 # =========================================================
@@ -2920,6 +3649,14 @@ def admin_set_achieved_view(request, app_id: int):
         app.save(update_fields=["achieved_pref", "achieved_at", "achieved_by"])
 
         messages.success(request, "تم إلغاء تحديد الرغبة المتحققة.")
+        return _redirect_admin_app_detail_with_back(app.id, back_url)
+
+    conditional_issue = _application_conditional_data_issue(app)
+    if conditional_issue:
+        messages.error(
+            request,
+            "لا يمكن تحديد رغبة متحققة أو إدخال الطلب في الترشيح قبل مراجعة طلب تعديل البيانات المؤثر."
+        )
         return _redirect_admin_app_detail_with_back(app.id, back_url)
 
     try:

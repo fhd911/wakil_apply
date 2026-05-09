@@ -171,7 +171,7 @@
 
   .cd-nav{
     display:grid;
-    grid-template-columns:repeat(6,minmax(0,1fr));
+    grid-template-columns:repeat(7,minmax(0,1fr));
     gap:8px;
   }
 
@@ -198,7 +198,7 @@
 
   .cd-kpis{
     display:grid;
-    grid-template-columns:repeat(6,minmax(0,1fr));
+    grid-template-columns:repeat(7,minmax(0,1fr));
     gap:8px;
   }
 
@@ -631,6 +631,93 @@
   .cd-toast.error{border-top-color:#d27a7a}.cd-toast.warn{border-top-color:#c7a060}
   .cd-toast .t{font-size:12px;font-weight:800;color:var(--cl-text)}
   .cd-toast .s{font-size:10px;font-weight:500;color:var(--cl-muted);margin-top:4px}
+
+
+  /* =========================
+     Data Issue Alert / طلبات تعديل البيانات
+  ========================= */
+  .cd-issue-alert{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 14px;
+    border-color:#ead1a3;
+    background:linear-gradient(180deg,#fffdf7,#fff8ea);
+  }
+
+  .cd-issue-alert-main{
+    min-width:0;
+    display:grid;
+    gap:4px;
+  }
+
+  .cd-issue-alert-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#76551a;
+    font-size:12.5px;
+    font-weight:700 !important;
+  }
+
+  .cd-issue-alert-title::before{
+    content:"";
+    width:9px;
+    height:9px;
+    border-radius:999px;
+    background:#a87a25;
+    box-shadow:0 0 0 4px rgba(168,122,37,.12);
+    flex:0 0 auto;
+  }
+
+  .cd-issue-alert-note{
+    color:#7d6843;
+    font-size:10px;
+    line-height:1.6;
+    font-weight:400 !important;
+  }
+
+  .cd-nav-count{
+    min-width:20px;
+    height:20px;
+    padding:0 6px;
+    border-radius:999px;
+    border:1px solid #ead1a3;
+    background:#fff8ea;
+    color:#76551a;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:9px;
+    font-weight:700 !important;
+  }
+
+  .cd-nav a.issue-attention{
+    border-color:#ead1a3;
+    background:var(--cl-gold-soft);
+    color:#76551a;
+  }
+
+  .cd-tab.tab-issues{
+    border-color:#ead1a3;
+    background:var(--cl-gold-soft);
+    color:#76551a;
+  }
+
+  .cd-tab.tab-issues.active{
+    background:#fff1cf;
+    border-color:#d9b66c;
+    color:#6d4c16;
+  }
+
+  .cd-row[data-issue="1"] td:first-child{
+    box-shadow:inset -3px 0 0 rgba(168,122,37,.58) !important;
+  }
+
+  .cd-row[data-issue="1"] td{
+    background:linear-gradient(90deg,#fffdf7 0%,#fff 14%);
+  }
 
 
 
@@ -1102,6 +1189,10 @@
             <span class="cd-chip"><span class="cd-dot"></span>التقديم متاح للجميع</span>
           {% endif %}
         {% endif %}
+        <a class="cd-btn {% if pending_data_issues_count %}red{% else %}blue{% endif %}" href="{% url 'portal:admin_data_issues' %}">
+          طلبات التعديل
+          {% if pending_data_issues_count %}<span class="cd-badge">{{ pending_data_issues_count }}</span>{% endif %}
+        </a>
         <a class="cd-btn primary" href="{% url 'portal:admin_import' %}">استيراد البيانات</a>
         <a class="cd-btn gold" href="{% url 'portal:admin_portal_window' %}">إعدادات البوابة</a>
       </div>
@@ -1109,12 +1200,39 @@
 
     <nav class="cd-nav" aria-label="روابط الإدارة">
       <a class="active" href="{% url 'portal:admin_dashboard' %}"><span class="cd-dot"></span>لوحة القرارات</a>
+      <a class="{% if pending_data_issues_count %}issue-attention{% endif %}" href="{% url 'portal:admin_data_issues' %}">
+        <span class="cd-dot"></span>طلبات التعديل
+        {% if pending_data_issues_count %}<span class="cd-nav-count">{{ pending_data_issues_count }}</span>{% endif %}
+      </a>
       <a href="{% url 'portal:admin_applicants_list' %}"><span class="cd-dot"></span>المتقدمون</a>
       <a href="{% url 'portal:admin_vacancies_list' %}"><span class="cd-dot"></span>الشواغر</a>
       <a href="{% url 'portal:admin_new_applicants_sorting' %}"><span class="cd-dot"></span>فرز المتقدمين</a>
       <a href="{% url 'portal:admin_final_approvals' %}{% if current_query %}?{{ current_query }}{% endif %}"><span class="cd-dot"></span>المعتمدون</a>
       <a href="{{ url_school_demand_report }}"><span class="cd-dot"></span>إقبال المدارس</a>
     </nav>
+
+    {% if pending_data_issues_count %}
+    <section class="cd-issue-alert cd-card" aria-label="تنبيه طلبات تعديل البيانات">
+      <div class="cd-issue-alert-main">
+        <div class="cd-issue-alert-title">
+          يوجد {{ pending_data_issues_count }} طلب تعديل بيانات قيد المراجعة
+          {% if pending_blocking_data_issues_count %}
+            <span class="cd-pill gold">منها {{ pending_blocking_data_issues_count }} مؤثرة على التقديم</span>
+          {% endif %}
+          {% if protected_pending_data_issues_count %}
+            <span class="cd-pill blue">{{ protected_pending_data_issues_count }} تحفظ حق الاستكمال</span>
+          {% endif %}
+          {% if active_followup_windows_count %}
+            <span class="cd-pill green">{{ active_followup_windows_count }} مهلة استكمال نشطة</span>
+          {% endif %}
+        </div>
+        <div class="cd-issue-alert-note">
+          يرجى مراجعة طلبات تعديل البيانات واتخاذ الإجراء المناسب قبل اعتماد الطلبات أو متابعة المفاضلة. الطلبات المؤثرة التي رفعت أثناء فترة التقديم تحفظ حق الاستكمال، وبعد القرار تفتح مهلة خاصة للمتقدم.
+        </div>
+      </div>
+      <a class="cd-btn gold" href="{% url 'portal:admin_data_issues' %}">مراجعة طلبات التعديل</a>
+    </section>
+    {% endif %}
 
     <section class="cd-reportbar" aria-label="التقارير والتصدير">
       <div class="cd-reportbar-title">التقارير والتصدير</div>
@@ -1141,19 +1259,24 @@
         <div class="note">ضمن الفلتر الحالي</div>
       </div>
       <div class="cd-kpi blue priority">
-        <div class="label">الطلبات المرسلة</div>
-        <div class="value">{{ count_submitted|default:"0" }}</div>
-        <div class="note">قابلة للقرار الإداري</div>
-      </div>
-      <div class="cd-kpi warn attention">
-        <div class="label">المسودات</div>
-        <div class="value">{{ count_draft|default:"0" }}</div>
-        <div class="note">لم تكتمل بعد</div>
+        <div class="label">جاهز للمفاضلة</div>
+        <div class="value">{{ count_competition_ready|default:"0" }}</div>
+        <div class="note">مرسل برغبات وغير مشروط</div>
       </div>
       <div class="cd-kpi red attention">
+        <div class="label">مرسل مشروط</div>
+        <div class="value">{{ count_conditional_data_review|default:"0" }}</div>
+        <div class="note">ينتظر مراجعة البيانات</div>
+      </div>
+      <div class="cd-kpi warn attention">
         <div class="label">مرسل بلا رغبات</div>
         <div class="value">{{ count_submitted_without_prefs|default:"0" }}</div>
         <div class="note">توثيق / معالجة إدارية</div>
+      </div>
+      <div class="cd-kpi">
+        <div class="label">المسودات</div>
+        <div class="value">{{ count_draft|default:"0" }}</div>
+        <div class="note">لم تكتمل بعد</div>
       </div>
       <div class="cd-kpi green priority">
         <div class="label">ترشيح متحقق</div>
@@ -1241,6 +1364,8 @@
       <div class="cd-table-toolbar">
         <div class="cd-tabs" role="tablist" aria-label="تصنيف محلي">
           <button class="cd-tab active" type="button" onclick="setMode('all', this)">الكل <span class="count">{{ total_apps|default:"0" }}</span></button>
+          <button class="cd-tab tab-issues" type="button" onclick="setMode('issues', this)">طلبات تعديل <span class="count">{{ pending_data_issues_count|default:"0" }}</span></button>
+          <button class="cd-tab tab-issues" type="button" onclick="setMode('conditional', this)">مرسل مشروط <span class="count">{{ count_conditional_data_review|default:"0" }}</span></button>
           <button class="cd-tab" type="button" onclick="setMode('competition', this)">جاهز للمفاضلة <span class="count">{{ count_competition_ready|default:"0" }}</span></button>
           <button class="cd-tab" type="button" onclick="setMode('submitted', this)">مرسل <span class="count">{{ count_submitted|default:"0" }}</span></button>
           <button class="cd-tab tab-noprefs" type="button" onclick="setMode('noprefs', this)">بلا رغبات <span class="count">{{ count_submitted_without_prefs|default:"0" }}</span></button>
@@ -1286,11 +1411,13 @@
                 data-decision="{% if r.admin_decision %}{{ r.admin_decision }}{% else %}pending{% endif %}"
                 data-nominated="{% if ap %}1{% else %}0{% endif %}"
                 data-noprefs="{% if r.status == 'submitted' and r.prefs_count == 0 %}1{% else %}0{% endif %}"
-                data-competition="{% if r.status == 'submitted' and r.prefs_count > 0 and not r.admin_decision %}1{% else %}0{% endif %}"
+                data-competition="{% if r.status == 'submitted' and r.prefs_count > 0 and not r.admin_decision and not r.is_conditional_data_review_path %}1{% else %}0{% endif %}"
+                data-conditional="{% if r.is_conditional_data_review_path %}1{% else %}0{% endif %}"
+                data-issue="{% if r.pending_data_issues_count %}1{% else %}0{% endif %}"
                 data-approve-url="{% url 'portal:admin_approve' r.id %}"
                 data-reject-url="{% url 'portal:admin_reject' r.id %}"
                 data-unlock-url="{% url 'portal:admin_unlock' r.id %}"
-                data-search="{{ r.applicant.full_name }} {{ r.applicant.national_id }} {{ r.applicant.sector }} {{ r.applicant.gender }} {{ r.first_pref_text|default:'' }} {{ r.achieved_text|default:'' }} {{ r.admin_decision_display|default:'' }} {{ r.path_label|default:'' }}"
+                data-search="{{ r.applicant.full_name }} {{ r.applicant.national_id }} {{ r.applicant.sector }} {{ r.applicant.gender }} {{ r.first_pref_text|default:'' }} {{ r.achieved_text|default:'' }} {{ r.admin_decision_display|default:'' }} {{ r.path_label|default:'' }} {% if r.pending_data_issues_count %} طلب تعديل بيانات {% endif %}"
                 data-mode-visible="1"
                 data-local-visible="1">
               <td class="c-check"><input class="cd-check row-check" type="checkbox" value="{{ r.id }}" onchange="syncSelection()"></td>
@@ -1301,6 +1428,15 @@
                   <div class="cd-person-meta">
                     <span class="cd-pill">{{ r.applicant.national_id|default:"—" }}</span>
                     <span>{{ r.applicant.sector|default:"—" }} / {{ r.applicant.gender|default:"—" }}</span>
+                    {% if r.pending_data_issues_count %}
+                      <span class="cd-pill red">طلب تعديل {{ r.pending_data_issues_count }}</span>
+                    {% endif %}
+                    {% if r.pending_blocking_data_issues_count %}
+                      <span class="cd-pill gold">مؤثر</span>
+                    {% endif %}
+                    {% if r.is_conditional_data_review_path %}
+                      <span class="cd-pill red">مشروط بمراجعة البيانات</span>
+                    {% endif %}
                   </div>
                 </div>
               </td>
@@ -1354,7 +1490,9 @@
               <td class="c-actions">
                 <div class="cd-row-actions">
                   {% if r.status == "submitted" and not r.admin_decision %}
-                    {% if r.is_no_preferences_path %}
+                    {% if r.is_conditional_data_review_path %}
+                      <a class="cd-btn sm red" href="{% url 'portal:admin_data_issues' %}?q={{ r.applicant.national_id|urlencode }}">مراجعة طلب التعديل</a>
+                    {% elif r.is_no_preferences_path %}
                       <button class="cd-btn sm gold" type="button" onclick="rowApprove('{{ r.id }}')">{{ r.primary_action_label|default:'توثيق الاستلام' }}</button>
                     {% else %}
                       <button class="cd-btn sm primary" type="button" onclick="rowApprove('{{ r.id }}')">{{ r.primary_action_label|default:'اعتماد' }}</button>
@@ -1470,6 +1608,8 @@
     allRows().forEach(row => {
       let ok = true;
       if (mode === 'competition') ok = row.dataset.competition === '1';
+      if (mode === 'conditional') ok = row.dataset.conditional === '1';
+      if (mode === 'issues') ok = row.dataset.issue === '1';
       if (mode === 'submitted') ok = row.dataset.status === 'submitted';
       if (mode === 'pending') ok = row.dataset.status === 'submitted' && row.dataset.decision === 'pending';
       if (mode === 'noprefs') ok = row.dataset.noprefs === '1';

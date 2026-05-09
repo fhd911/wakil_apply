@@ -1,0 +1,525 @@
+{% extends "portal/base.html" %}
+{% block title %}ملاحظات البيانات{% endblock %}
+
+{% block extra_css %}
+<style>
+  .issuesPage,
+  .issuesPage *{box-sizing:border-box;font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif!important;}
+
+  .issuesPage{
+    direction:rtl;
+    min-height:calc(100vh - 54px);
+    padding:14px 12px 24px;
+    background:linear-gradient(180deg,#fbfcfb,#f6f8f6 58%,#eef3ef);
+    color:#162f25;
+  }
+
+  .issuesWrap{width:min(100%,1480px);margin:0 auto;display:grid;gap:10px;}
+
+  .issuesHero,
+  .issuesCard,
+  .issuesAlert{
+    border:1px solid #d8e2dc;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 4px 14px rgba(18,32,24,.045);
+    overflow:hidden;
+  }
+
+  .issuesHero{padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .issuesKicker{color:#6f7f76;font-size:9.6px;font-weight:600!important;}
+  .issuesTitle{margin:3px 0 0;color:#173c2f;font-size:23px;font-weight:800!important;line-height:1.25;}
+  .issuesSub{margin:4px 0 0;color:#6f7f76;font-size:10.2px;line-height:1.75;font-weight:500!important;}
+
+  .issuesBtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+  .issuesBtn,
+  .issuesChip,
+  .issuesTab{
+    min-height:31px;
+    border:1px solid #cbd8d0;
+    border-radius:999px;
+    background:#fff;
+    color:#1f4d3a;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:7px 11px;
+    font-size:9.2px;
+    font-weight:800!important;
+    line-height:1;
+    white-space:nowrap;
+    cursor:pointer;
+  }
+
+  .issuesBtn.primary{background:#1f4d3a;border-color:#1f4d3a;color:#fff;}
+  .issuesBtn.gold{background:#fbf6ea;border-color:#e6d5b4;color:#76551f;}
+  .issuesBtn.red{background:#fcf5f5;border-color:#e8caca;color:#8f2f2f;}
+
+  .issuesActionAlert{
+    border:1px solid #e6d5b4;
+    border-radius:18px;
+    background:#fbf6ea;
+    color:#76551f;
+    padding:12px 14px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+  }
+
+  .issuesActionTitle{margin:0;color:#5e4215;font-size:13px;line-height:1.5;font-weight:900!important;}
+  .issuesActionText{margin:3px 0 0;color:#76551f;font-size:9.8px;line-height:1.85;font-weight:600!important;}
+
+  .issuesStat.is-priority{
+    border-color:#e8caca;
+    background:linear-gradient(180deg,#fff,#fcf5f5);
+    box-shadow:0 6px 16px rgba(143,47,47,.055);
+  }
+  .issuesStat.is-priority span{color:#8f2f2f;}
+  .issuesStat.is-priority b{color:#8f2f2f;}
+
+  .issuesDecisionBox{
+    border:1px solid #e8caca;
+    border-radius:12px;
+    background:#fcf5f5;
+    padding:7px 9px;
+    display:grid;
+    gap:4px;
+    max-width:190px;
+  }
+  .issuesDecisionBox.soft{border-color:#e6d5b4;background:#fbf6ea;}
+  .issuesDecisionBox.ok{border-color:#cfe4d8;background:#edf7f2;}
+  .issuesDecisionTitle{color:#8f2f2f;font-size:9.4px;font-weight:900!important;line-height:1.45;}
+  .issuesDecisionBox.soft .issuesDecisionTitle{color:#76551f;}
+  .issuesDecisionBox.ok .issuesDecisionTitle{color:#1f4d3a;}
+  .issuesDecisionSub{color:#6f7f76;font-size:8.4px;font-weight:700!important;line-height:1.6;}
+
+  .issuesAfterTableNote{
+    padding:10px 12px;
+    border-top:1px solid #eaf0ec;
+    background:#fbfcfb;
+    color:#6f7f76;
+    font-size:9px;
+    line-height:1.8;
+    font-weight:700!important;
+  }
+  .issuesAfterTableNote strong{color:#173c2f;font-weight:900!important;}
+
+  .issuesStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+  .issuesStat{border:1px solid #d8e2dc;border-radius:14px;background:#fff;padding:10px 12px;display:grid;gap:4px;min-height:66px;}
+  .issuesStat span{color:#6f7f76;font-size:9px;font-weight:700!important;}
+  .issuesStat b{color:#173c2f;font-size:20px;line-height:1;font-weight:900!important;}
+  .issuesStat.warn{background:#fbf6ea;border-color:#e6d5b4;}
+  .issuesStat.warn b{color:#76551f;}
+  .issuesStat.danger{background:#fcf5f5;border-color:#e8caca;}
+  .issuesStat.danger b{color:#8f2f2f;}
+  .issuesStat.ok{background:#edf7f2;border-color:#cfe4d8;}
+  .issuesStat.ok b{color:#1f4d3a;}
+
+  .issuesFilters{padding:10px 12px;display:grid;grid-template-columns:minmax(260px,1fr) 180px 160px auto;gap:8px;align-items:end;}
+  .issuesInput,.issuesSelect,.issuesNote,.issuesApprovedValue{width:100%;border:1px solid #cbd8d0;border-radius:11px;background:#fff;padding:7px 10px;font-size:10px;color:#162f25;outline:none;}
+  .issuesInput,.issuesSelect,.issuesApprovedValue{min-height:37px;}
+  .issuesInput:focus,.issuesSelect:focus,.issuesNote:focus,.issuesApprovedValue:focus{border-color:#9eb8a8;box-shadow:0 0 0 3px rgba(31,77,58,.08);}
+
+  .issuesTabs{padding:8px 12px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;border-top:1px solid #eaf0ec;background:#fbfcfb;}
+  .issuesTab.active{background:#edf7f2;border-color:#cfe4d8;color:#1f4d3a;}
+  .issuesTab.danger{background:#fcf5f5;border-color:#e8caca;color:#8f2f2f;}
+  .issuesTab.gold{background:#fbf6ea;border-color:#e6d5b4;color:#76551f;}
+  .issuesTab.blue{background:#f2f7fd;border-color:#d4e2ef;color:#365f83;}
+
+  .issuesTableHeader{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #eaf0ec;background:linear-gradient(180deg,#fff,#fbfcfb);}
+  .issuesSectionTitle{display:flex;align-items:center;gap:8px;color:#173c2f;font-size:12.8px;font-weight:900!important;}
+  .issuesSectionTitle::before{content:"";width:8px;height:8px;border-radius:999px;background:#1f4d3a;box-shadow:0 0 0 4px rgba(31,77,58,.08);}
+
+  .issuesTableWrap{overflow:auto;max-height:calc(100vh - 324px);min-height:360px;background:#fff;}
+  .issuesTable{width:100%;border-collapse:separate;border-spacing:0;min-width:1100px;table-layout:fixed;}
+  .issuesTable th{position:sticky;top:0;z-index:5;background:#eef3ef;color:#173c2f;font-size:9.6px;font-weight:900!important;text-align:right;padding:10px 9px;border-bottom:1px solid #d8e2dc;white-space:nowrap;}
+  .issuesTable td{font-size:9.8px;color:#31483d;padding:9px;border-bottom:1px solid #eaf0ec;vertical-align:middle;background:#fff;}
+  .issuesTable tr:hover td{background:#f8fbf9;}
+  .issuesTable tr.needsDecision td:first-child{box-shadow:inset -3px 0 0 rgba(143,47,47,.45);}
+  .issuesTable tr.windowActive td:first-child{box-shadow:inset -3px 0 0 rgba(54,95,131,.42);}
+
+  .cId{width:54px;text-align:center;}
+  .cApplicant{width:260px;}
+  .cField{width:135px;}
+  .cValue{width:230px;}
+  .cMainStatus{width:170px;}
+  .cPriority{width:210px;}
+  .cDate{width:125px;}
+  .cAction{width:135px;text-align:center;}
+
+  .issuesPerson{display:grid;gap:4px;min-width:0;}
+  .issuesName{font-size:11.7px;color:#173c2f;font-weight:800!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .issuesMeta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;color:#6f7f76;font-size:8.8px;font-weight:600!important;}
+
+  .issuesValuePair{display:grid;gap:5px;min-width:0;}
+  .issuesValueText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#31483d;font-weight:700!important;}
+  .issuesValueHint{color:#6f7f76;font-size:8.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .issuesMainState{display:grid;gap:5px;align-items:start;}
+  .issuesMainNote{color:#6f7f76;font-size:8.7px;line-height:1.55;font-weight:600!important;}
+
+  .issuesBadge{display:inline-flex;min-height:24px;align-items:center;justify-content:center;border-radius:999px;border:1px solid #d8e2dc;background:#fff;padding:4px 9px;font-size:8.4px;font-weight:800!important;white-space:nowrap;}
+  .issuesBadge.warn{border-color:#e6d5b4;background:#fbf6ea;color:#76551f;}
+  .issuesBadge.danger{border-color:#e8caca;background:#fcf5f5;color:#8f2f2f;}
+  .issuesBadge.ok{border-color:#cfe4d8;background:#edf7f2;color:#1f4d3a;}
+  .issuesBadge.blue{border-color:#d4e2ef;background:#f2f7fd;color:#365f83;}
+
+  .issuesReviewBtn{min-height:30px;padding:6px 10px;border-radius:10px;border:1px solid #cbd8d0;background:#fff;color:#1f4d3a;font-size:9px;font-weight:900!important;cursor:pointer;}
+  .issuesReviewBtn.primary{background:#1f4d3a;border-color:#1f4d3a;color:#fff;}
+  .issuesReviewBtn:hover{transform:translateY(-1px);}
+
+  .issuesPager{padding:9px 12px;border-top:1px solid #eaf0ec;background:#fbfcfb;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#6f7f76;font-size:9.2px;font-weight:700!important;}
+  .issuesPagerActions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+
+  .issuesModal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,31,25,.28);backdrop-filter:blur(3px);}
+  .issuesModal.show{display:flex;}
+  .issuesDialog{width:min(100%,800px);max-height:calc(100vh - 36px);overflow:auto;border:1px solid #d8e2dc;border-radius:18px;background:#fff;box-shadow:0 28px 70px rgba(15,31,25,.20);}
+  .issuesDialogHead{padding:14px 16px;border-bottom:1px solid #eaf0ec;background:linear-gradient(180deg,#fff,#fbfcfb);display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .issuesDialogTitle{margin:0;color:#173c2f;font-size:15px;line-height:1.5;font-weight:900!important;}
+  .issuesDialogSub{margin:3px 0 0;color:#6f7f76;font-size:9.4px;line-height:1.7;font-weight:600!important;}
+  .issuesDialogBody{padding:14px 16px;display:grid;gap:12px;}
+  .issuesDetailGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .issuesDetail{border:1px solid #d8e2dc;border-radius:13px;background:#fbfcfb;padding:10px;display:grid;gap:5px;min-width:0;}
+  .issuesDetail.full{grid-column:1/-1;}
+  .issuesDetail span{color:#6f7f76;font-size:8.6px;font-weight:800!important;}
+  .issuesDetail b,.issuesDetail div{color:#173c2f;font-size:10.2px;line-height:1.8;font-weight:700!important;word-break:break-word;}
+  .issuesNote{min-height:84px;resize:vertical;line-height:1.8;}
+  .issuesApprovedHelp,.issuesDecisionHelp{color:#6f7f76;font-size:8.8px;line-height:1.8;font-weight:600!important;}
+  .issuesDecisionHelp{border:1px dashed #d8e2dc;border-radius:13px;background:#fff;padding:9px 10px;}
+  .issuesDecisionHelp.danger{border-color:#e8caca;background:#fcf5f5;color:#8f2f2f;}
+  .issuesDialogActions{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;}
+  .issuesAction{width:100%;min-height:40px;border:1px solid #cbd8d0;border-radius:12px;background:#fff;color:#1f4d3a;padding:9px 11px;font-size:9px;font-weight:900!important;cursor:pointer;line-height:1.45;}
+  .issuesAction.allow{background:#edf7f2;border-color:#cfe4d8;color:#1f4d3a;}
+  .issuesAction.reject{background:#fcf5f5;border-color:#e8caca;color:#8f2f2f;}
+  .issuesAction.correct{background:#fbf6ea;border-color:#e6d5b4;color:#76551f;}
+  .issuesAction[disabled]{opacity:.45;cursor:not-allowed;}
+  .issuesHidden{display:none!important;}
+
+  @media(max-width:900px){
+    .issuesActionAlert{grid-template-columns:1fr;}
+    .issuesFilters{grid-template-columns:1fr;}
+    .issuesStats{grid-template-columns:1fr;}
+    .issuesDetailGrid,.issuesDialogActions{grid-template-columns:1fr;}
+    .issuesTableWrap{max-height:none;}
+    .issuesHero{align-items:flex-start;}
+    .issuesTitle{font-size:21px;}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="issuesPage">
+  <div class="issuesWrap">
+    <section class="issuesHero">
+      <div>
+        <div class="issuesKicker">بوابة التقديم على شواغر وكيل</div>
+        <h1 class="issuesTitle">ملاحظات البيانات</h1>
+        <p class="issuesSub">تعرض هذه الصفحة ما يحتاج قرارًا من الإدارة أولًا، ثم التفاصيل عند فتح نافذة المراجعة فقط.</p>
+      </div>
+      <div class="issuesBtns">
+        <a class="issuesBtn" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
+        <a class="issuesBtn primary" href="{% url 'portal:admin_data_issues' %}">تحديث</a>
+      </div>
+    </section>
+
+    {% if blocking_count|default:0 %}
+    <section class="issuesActionAlert">
+      <div>
+        <h2 class="issuesActionTitle">يوجد طلب تعديل مؤثر يعلّق المفاضلة النهائية</h2>
+        <p class="issuesActionText">هذا الطلب يعلق دخول الطلب في المفاضلة النهائية حتى تتم مراجعته واتخاذ القرار المناسب.</p>
+      </div>
+      <a class="issuesBtn red" href="?mode=blocking">مراجعة الطلبات المشروطة الآن</a>
+    </section>
+    {% endif %}
+
+    <section class="issuesStats" aria-label="مؤشرات مختصرة">
+      <div class="issuesStat is-priority"><span>تعليق المفاضلة</span><b>{{ blocking_count|default:"0" }}</b></div>
+      <div class="issuesStat warn"><span>قيد المراجعة</span><b>{{ pending_count|default:"0" }}</b></div>
+      <div class="issuesStat ok"><span>مهل استكمال نشطة</span><b>{{ active_followup_count|default:"0" }}</b></div>
+      <div class="issuesStat"><span>تمت المعالجة</span><b>{{ processed_count|default:"0" }}</b></div>
+    </section>
+
+    <section class="issuesCard">
+      <form class="issuesFilters" method="get">
+        <input type="hidden" name="mode" value="{{ mode|default:'pending' }}">
+        <input class="issuesInput" type="search" name="q" value="{{ q }}" placeholder="بحث بالاسم / السجل / الجوال / نص الملاحظة">
+        <select class="issuesSelect" name="status">
+          <option value="" {% if not status or status == 'all' %}selected{% endif %}>كل الحالات</option>
+          {% for value,label in status_choices %}
+            <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select class="issuesSelect" name="blocking">
+          <option value="" {% if not blocking %}selected{% endif %}>كل الأثر</option>
+          <option value="yes" {% if blocking == 'yes' %}selected{% endif %}>تعليق المفاضلة</option>
+          <option value="no" {% if blocking == 'no' %}selected{% endif %}>لا تعليق المفاضلة</option>
+        </select>
+        <button class="issuesBtn primary" type="submit">تطبيق</button>
+      </form>
+
+      <div class="issuesTabs" aria-label="فلاتر سريعة">
+        <a class="issuesTab danger {% if mode == 'blocking' %}active{% endif %}" href="?mode=blocking">تعليق المفاضلة</a>
+        <a class="issuesTab {% if mode == 'pending' %}active{% endif %}" href="?mode=pending">قيد المراجعة</a>
+        <a class="issuesTab blue {% if mode == 'active_window' %}active{% endif %}" href="?mode=active_window">مهلة نشطة</a>
+        <a class="issuesTab gold {% if mode == 'processed' %}active{% endif %}" href="?mode=processed">تمت المعالجة</a>
+        <a class="issuesTab {% if mode == 'all' %}active{% endif %}" href="?mode=all">الكل</a>
+      </div>
+    </section>
+
+    <section class="issuesCard">
+      <div class="issuesTableHeader">
+        <div class="issuesSectionTitle">ما المطلوب من الإدارة الآن؟</div>
+        <span class="issuesChip">التفاصيل والقرار داخل زر مراجعة واتخاذ قرار</span>
+      </div>
+
+      <div class="issuesTableWrap">
+        <table class="issuesTable">
+          <thead>
+            <tr>
+              <th class="cId">#</th>
+              <th class="cApplicant">المتقدم</th>
+              <th class="cField">الحقل</th>
+              <th class="cValue">القيمة الحالية ← المقترح</th>
+              <th class="cMainStatus">القرار المطلوب</th>
+              <th class="cPriority">الأثر المختصر</th>
+              <th class="cDate">تاريخ الطلب</th>
+              <th class="cAction">مراجعة</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for issue in rows %}
+            <tr class="{% if issue.status == 'pending' and issue.is_blocking %}needsDecision{% endif %} {% if issue.has_active_followup_window %}windowActive{% endif %}" data-issue-row="{{ issue.id }}">
+              <td class="cId">{{ issue.id }}</td>
+              <td class="cApplicant">
+                <div class="issuesPerson">
+                  <div class="issuesName">{{ issue.applicant.full_name|default:"—" }}</div>
+                  <div class="issuesMeta">
+                    <span class="issuesBadge">{{ issue.applicant.national_id|default:"—" }}</span>
+                    <span>{{ issue.applicant.mobile|default:"—" }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="cField">{{ issue.get_field_name_display }}</td>
+              <td class="cValue">
+                <div class="issuesValuePair">
+                  <div class="issuesValueText">{{ issue.current_value|default:"—" }}</div>
+                  <div class="issuesValueHint">المقترح: {{ issue.proposed_value|default:"—" }}</div>
+                </div>
+              </td>
+              <td class="cMainStatus">
+                <div class="issuesMainState">
+                  {% if issue.status == 'pending' and issue.is_blocking %}
+                    <div class="issuesDecisionBox">
+                      <div class="issuesDecisionTitle">يحتاج قرار إداري</div>
+                      <div class="issuesDecisionSub">طلب مؤثر يجب مراجعته قبل المفاضلة النهائية</div>
+                    </div>
+                  {% elif issue.status == 'pending' %}
+                    <div class="issuesDecisionBox soft">
+                      <div class="issuesDecisionTitle">قيد المراجعة</div>
+                      <div class="issuesDecisionSub">ملاحظة لا توقف المسار</div>
+                    </div>
+                  {% elif issue.has_active_followup_window %}
+                    <span class="issuesBadge blue">مهلة استكمال نشطة</span>
+                    <div class="issuesMainNote">المتقدم مُمكّن من الاستكمال مؤقتًا.</div>
+                  {% elif issue.status == 'corrected' %}
+                    <span class="issuesBadge ok">تم التصحيح</span>
+                    <div class="issuesMainNote">تم تحديث بيانات المتقدم.</div>
+                  {% elif issue.status == 'allowed' %}
+                    <span class="issuesBadge ok">سُمح بالمتابعة</span>
+                    <div class="issuesMainNote">دون تعديل بيانات المتقدم.</div>
+                  {% elif issue.status == 'rejected' %}
+                    <span class="issuesBadge danger">مرفوضة</span>
+                    <div class="issuesMainNote">تبقى البيانات الحالية معتمدة.</div>
+                  {% else %}
+                    <span class="issuesBadge">{{ issue.get_status_display }}</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td class="cPriority">
+                {% if issue.is_blocking %}
+                  <span class="issuesBadge danger">يعلق المفاضلة</span>
+                {% else %}
+                  <span class="issuesBadge ok">لا يعلق المفاضلة</span>
+                {% endif %}
+                {% if issue.protects_followup_right %}
+                  <div style="margin-top:5px;"><span class="issuesBadge blue">{{ issue.followup_window_label }}</span></div>
+                {% endif %}
+              </td>
+              <td class="cDate">{{ issue.created_at|date:"Y-m-d H:i" }}</td>
+              <td class="cAction">
+                <button class="issuesReviewBtn {% if issue.status == 'pending' %}primary{% endif %}" type="button" onclick="openIssueModal('{{ issue.id }}')">
+                  {% if issue.status == 'pending' %}مراجعة واتخاذ قرار{% else %}عرض{% endif %}
+                </button>
+
+                <div class="issuesHidden" id="issue-{{ issue.id }}-applicant">{{ issue.applicant.full_name|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-nid">{{ issue.applicant.national_id|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-mobile">{{ issue.applicant.mobile|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-field">{{ issue.get_field_name_display }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-current">{{ issue.current_value|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-proposed">{{ issue.proposed_value|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-note">{{ issue.note|default:"—" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-status">{{ issue.get_status_display }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-status-raw">{{ issue.status }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-blocking">{% if issue.is_blocking %}1{% else %}0{% endif %}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-effect">{% if issue.is_blocking %}تعليق المفاضلة{% else %}لا تعليق المفاضلة{% endif %}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-followup">{{ issue.followup_window_label }}{% if issue.followup_window_expires_at %} — حتى {{ issue.followup_window_expires_at|date:"Y-m-d H:i" }}{% endif %}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-admin-note">{{ issue.admin_note|default:"" }}</div>
+                <div class="issuesHidden" id="issue-{{ issue.id }}-review-url">{% url 'portal:admin_data_issue_review' issue.id %}</div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align:center;padding:28px;color:#6f7f76;font-weight:800!important;">لا توجد ملاحظات بيانات مطابقة.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="issuesPager">
+        <div>
+          {% if rows.paginator.count %}
+            عرض صفحة {{ rows.number }} من {{ rows.paginator.num_pages }} — إجمالي النتائج: {{ rows.paginator.count }}
+          {% else %}
+            لا توجد نتائج
+          {% endif %}
+        </div>
+        {% if rows.has_other_pages %}
+        <div class="issuesPagerActions">
+          {% if rows.has_previous %}
+            <a class="issuesBtn" href="?mode={{ mode|urlencode }}&q={{ q|urlencode }}&status={{ status|urlencode }}&blocking={{ blocking|urlencode }}&page={{ rows.previous_page_number }}">السابق</a>
+          {% endif %}
+          {% if rows.has_next %}
+            <a class="issuesBtn" href="?mode={{ mode|urlencode }}&q={{ q|urlencode }}&status={{ status|urlencode }}&blocking={{ blocking|urlencode }}&page={{ rows.next_page_number }}">التالي</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="issuesAfterTableNote">
+        <strong>تنبيه إجرائي:</strong> عند اتخاذ القرار سيتم تحديث حالة المتقدم تلقائيًا، وفتح مهلة الاستكمال الخاصة عند الحاجة وفق حالة الطلب.
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="issuesModal" id="issueModal" aria-hidden="true">
+  <div class="issuesDialog" role="dialog" aria-modal="true" aria-labelledby="issueModalTitle">
+    <div class="issuesDialogHead">
+      <div>
+        <h2 class="issuesDialogTitle" id="issueModalTitle">مراجعة طلب تعديل بيانات</h2>
+        <p class="issuesDialogSub" id="issueModalSub">راجع الأثر ثم اختر القرار المناسب.</p>
+      </div>
+      <button class="issuesBtn" type="button" onclick="closeIssueModal()">إغلاق</button>
+    </div>
+
+    <form method="post" id="issueReviewForm">
+      {% csrf_token %}
+      <div class="issuesDialogBody">
+        <div class="issuesDetailGrid">
+          <div class="issuesDetail"><span>المتقدم</span><b id="mApplicant">—</b></div>
+          <div class="issuesDetail"><span>السجل المدني / الجوال</span><b id="mIdentity">—</b></div>
+          <div class="issuesDetail"><span>الحقل محل الملاحظة</span><b id="mField">—</b></div>
+          <div class="issuesDetail"><span>الأثر على المتابعة</span><b id="mEffect">—</b></div>
+          <div class="issuesDetail"><span>حفظ حق الاستكمال</span><b id="mFollowup">—</b></div>
+          <div class="issuesDetail"><span>القيمة الحالية</span><div id="mCurrent">—</div></div>
+          <div class="issuesDetail"><span>التصحيح المقترح</span><div id="mProposed">—</div></div>
+          <div class="issuesDetail full"><span>ملاحظة المتقدم</span><div id="mNote">—</div></div>
+          <div class="issuesDetail full"><span>الحالة الحالية</span><div id="mStatus">—</div></div>
+        </div>
+
+        <div>
+          <label class="issuesDetail" style="display:grid;gap:7px;">
+            <span>القيمة المعتمدة من الإدارة</span>
+            <input class="issuesApprovedValue" name="approved_value" id="mApprovedValue" type="text" placeholder="اكتب القيمة النهائية التي سيتم تحديث بيانات المتقدم بها">
+            <div class="issuesApprovedHelp">تُعبأ من التصحيح المقترح، ويمكن تعديلها قبل الاعتماد. هذه القيمة هي التي ستُحفظ فعليًا في بيانات المتقدم.</div>
+          </label>
+        </div>
+
+        <div>
+          <label class="issuesDetail" style="display:grid;gap:7px;">
+            <span>ملاحظة الإدارة / سبب القرار</span>
+            <textarea class="issuesNote" name="admin_note" id="mAdminNote" placeholder="اكتب ملاحظة الإدارة أو سبب القرار..."></textarea>
+          </label>
+        </div>
+
+        <div class="issuesDecisionHelp" id="mDecisionHelp">
+          اعتماد التصحيح يحدّث بيانات المتقدم بالقيمة المعتمدة، والسماح بالمتابعة لا يغيّر البيانات، والرفض يثبت بقاء البيانات الحالية.
+        </div>
+
+        <div class="issuesDialogActions" id="mActions">
+          <button class="issuesAction correct" name="action" value="correct" type="submit">اعتماد التصحيح وتحديث البيانات</button>
+          <button class="issuesAction allow" name="action" value="allow" type="submit">السماح بالمتابعة دون تعديل</button>
+          <button class="issuesAction reject" name="action" value="reject" type="submit">رفض الملاحظة</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function issueText(id, key){
+    const el = document.getElementById(`issue-${id}-${key}`);
+    return el ? el.textContent.trim() : '—';
+  }
+
+  function setText(id, value){
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
+  }
+
+  function openIssueModal(id){
+    const form = document.getElementById('issueReviewForm');
+    form.action = issueText(id, 'review-url');
+
+    const statusRaw = issueText(id, 'status-raw');
+    const isBlocking = issueText(id, 'blocking') === '1';
+    const proposed = issueText(id, 'proposed');
+
+    setText('mApplicant', issueText(id, 'applicant'));
+    setText('mIdentity', `${issueText(id, 'nid')} / ${issueText(id, 'mobile')}`);
+    setText('mField', issueText(id, 'field'));
+    setText('mEffect', issueText(id, 'effect'));
+    setText('mFollowup', issueText(id, 'followup'));
+    setText('mCurrent', issueText(id, 'current'));
+    setText('mProposed', proposed);
+    setText('mNote', issueText(id, 'note'));
+    setText('mStatus', issueText(id, 'status'));
+
+    const approvedValue = document.getElementById('mApprovedValue');
+    if (approvedValue) approvedValue.value = proposed === '—' ? '' : proposed;
+
+    const adminNote = document.getElementById('mAdminNote');
+    if (adminNote) adminNote.value = issueText(id, 'admin-note') === '—' ? '' : issueText(id, 'admin-note');
+
+    const help = document.getElementById('mDecisionHelp');
+    help.classList.toggle('danger', isBlocking && statusRaw === 'pending');
+    if (statusRaw === 'pending' && isBlocking){
+      help.textContent = 'هذا الطلب يعلق دخول الطلب في المفاضلة النهائية. بعد اتخاذ القرار سيتم فتح مهلة استكمال خاصة لمدة 24 ساعة إذا كان حقه محفوظًا.';
+    }else if(statusRaw === 'pending'){
+      help.textContent = 'هذه الملاحظة لا تعليق المفاضلة مبدئيًا. يمكن تصحيح البيانات أو السماح بالمتابعة دون تعديل أو رفض الملاحظة.';
+    }else{
+      help.textContent = 'هذا الطلب تمت معالجته سابقًا. يمكنك الاطلاع على التفاصيل وملاحظة الإدارة دون تنفيذ قرار جديد.';
+    }
+
+    const actions = document.querySelectorAll('#mActions button');
+    actions.forEach(btn => btn.disabled = statusRaw !== 'pending');
+
+    const modal = document.getElementById('issueModal');
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeIssueModal(){
+    const modal = document.getElementById('issueModal');
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeIssueModal(); });
+  document.getElementById('issueModal')?.addEventListener('click', function(e){ if(e.target === this) closeIssueModal(); });
+</script>
+{% endblock %}

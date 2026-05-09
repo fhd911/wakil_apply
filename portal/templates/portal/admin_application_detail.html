@@ -33,6 +33,69 @@
   .adm-select,.adm-input,.adm-textarea{width:100%;min-height:36px;border:1px solid var(--adm-line2);border-radius:11px;background:#fff;color:var(--adm-ink);padding:8px 10px;font-size:9.3px;font-weight:400;outline:none}.adm-textarea{min-height:92px;resize:vertical;line-height:1.8}.adm-select:focus,.adm-input:focus,.adm-textarea:focus{border-color:#9fb9a8;box-shadow:0 0 0 3px rgba(33,96,70,.08)}
   .adm-tabs{margin-top:9px}.adm-tab.is-active{background:var(--adm-green-soft);border-color:#cfe4d6;color:var(--adm-green);font-weight:600}.adm-panel{display:none;border:1px solid var(--adm-line);border-radius:14px;background:#fff;padding:10px;margin-top:9px}.adm-panel.is-active{display:block}.adm-panel[data-panel="return"]{background:linear-gradient(180deg,#fff,#fffdf8)}.adm-panel[data-panel="reject"]{background:linear-gradient(180deg,#fff,#fffbfb)}
   .adm-side-actions{display:grid;gap:8px;margin-top:10px}
+
+
+  /* =========================
+     Conditional Data Review Gate
+     تنبيه الطلب المرسل المشروط بمراجعة البيانات
+  ========================= */
+  .adm-conditional-alert{
+    border:1px solid #e4c58e;
+    border-inline-start:4px solid #b7791f;
+    border-radius:16px;
+    background:linear-gradient(180deg,#fffaf0,#fffdf8);
+    padding:13px 15px;
+    display:grid;
+    gap:8px;
+    box-shadow:var(--adm-shadow);
+  }
+  .adm-conditional-alert.danger{
+    border-color:#e6bebe;
+    border-inline-start-color:#a33a3a;
+    background:linear-gradient(180deg,#fff7f7,#fffdfd);
+  }
+  .adm-conditional-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#74460f;
+    font-size:13px;
+    line-height:1.7;
+    font-weight:700 !important;
+  }
+  .adm-conditional-alert.danger .adm-conditional-title{color:#7f1d1d;}
+  .adm-conditional-title::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#b7791f;
+    box-shadow:0 0 0 4px rgba(183,121,31,.10);
+  }
+  .adm-conditional-alert.danger .adm-conditional-title::before{
+    background:#a33a3a;
+    box-shadow:0 0 0 4px rgba(163,58,58,.10);
+  }
+  .adm-conditional-text{
+    margin:0;
+    color:var(--adm-ink2);
+    font-size:11.2px;
+    line-height:1.95;
+    font-weight:400 !important;
+  }
+  .adm-conditional-actions{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+  .adm-btn.is-disabled,
+  .adm-btn[disabled]{
+    opacity:.55;
+    cursor:not-allowed;
+    pointer-events:none;
+    transform:none!important;
+  }
   @media(max-width:1120px){.adm-grid{grid-template-columns:1fr}.adm-side{position:static}.adm-path{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:700px){.adm-detail{padding:7px}.adm-top{grid-template-columns:1fr}.adm-actions{justify-content:flex-start}.adm-fields,.adm-path{grid-template-columns:1fr}.adm-field.full{grid-column:auto}.adm-pref{grid-template-columns:auto 1fr}}
 
@@ -221,10 +284,27 @@
         <a class="adm-btn" href="{{ back_url|default:'' }}">رجوع</a>
         <button class="adm-btn" type="button" onclick="copyTextValue('{{ app.id|escapejs }}')">نسخ رقم الطلب</button>
         <button class="adm-btn" type="button" onclick="copyTextValue('{{ a.national_id|default:''|escapejs }}')">نسخ الهوية</button>
+        {% if app.is_conditional_data_review_path %}
+          <a class="adm-btn red" href="{% url 'portal:admin_data_issues' %}?q={{ a.national_id|urlencode }}">مراجعة طلب التعديل</a>
+        {% endif %}
         <a class="adm-btn gold" href="{% url 'portal:admin_application_print' app.id %}" target="_blank" rel="noopener">طباعة</a>
         <a class="adm-btn primary" href="{% url 'portal:admin_dashboard' %}">لوحة القرارات</a>
       </div>
     </section>
+
+    {% if app.is_conditional_data_review_path %}
+    <section class="adm-conditional-alert danger" aria-label="تنبيه طلب مشروط بمراجعة البيانات">
+      <div class="adm-conditional-title">طلب مرسل مشروط بمراجعة البيانات</div>
+      <p class="adm-conditional-text">
+        تم حفظ وقت الإرسال والرغبات، لكن لا يعتمد الطلب ولا يدخل الفرز أو الترشيح أو تحديد الرغبة المتحققة حتى تتم مراجعة طلب تعديل البيانات المؤثر.
+      </p>
+      <div class="adm-conditional-actions">
+        <a class="adm-btn red" href="{% url 'portal:admin_data_issues' %}?q={{ a.national_id|urlencode }}">مراجعة طلب التعديل</a>
+        <span class="adm-pill red">الاعتماد النهائي متوقف</span>
+        <span class="adm-pill blue">وقت الإرسال والرغبات محفوظة</span>
+      </div>
+    </section>
+    {% endif %}
 
     <section class="adm-card">
       <div class="adm-head">
@@ -301,6 +381,15 @@
             لا يدخل الطلب في المفاضلة قبل اكتمال خطوات التقديم والإرسال النهائي.
           {% endif %}
         </div>
+
+        {% if app.is_conditional_data_review_path %}
+        <div class="adm-conditional-alert" style="margin-top:10px;">
+          <div class="adm-conditional-title">الأثر الحالي للطلب</div>
+          <p class="adm-conditional-text">
+            الطلب مرسل ومحفوظ، لكنه غير جاهز للمفاضلة حتى تنتهي مراجعة البيانات. بعد قبول التصحيح أو السماح بالمتابعة دون تعديل ينتقل الطلب لمساره المناسب.
+          </p>
+        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -425,7 +514,13 @@
         <section class="adm-card">
           <div class="adm-head"><h2 class="adm-h2">تحديد الرغبة المتحققة</h2></div>
           <div class="adm-body">
-            {% if app.status == 'submitted' and not prefs %}
+            {% if app.is_conditional_data_review_path %}
+              <div class="adm-conditional-alert danger">
+                <div class="adm-conditional-title">لا يمكن تحديد رغبة متحققة الآن</div>
+                <p class="adm-conditional-text">يلزم أولًا مراجعة طلب تعديل البيانات المؤثر. بعد انتهاء المراجعة يمكن تحديد الرغبة المتحققة إذا أصبح الطلب جاهزًا للمفاضلة.</p>
+                <div class="adm-conditional-actions"><a class="adm-btn red" href="{% url 'portal:admin_data_issues' %}?q={{ a.national_id|urlencode }}">مراجعة طلب التعديل</a></div>
+              </div>
+            {% elif app.status == 'submitted' and not prefs %}
               <div class="adm-empty">هذا الطلب مرسل دون رغبات، لذلك لا توجد رغبة متحققة يمكن تحديدها.</div>
             {% else %}
               <form method="post" action="{% url 'portal:admin_set_achieved' app.id %}?back={{ back_url|urlencode }}">
@@ -455,14 +550,27 @@
             </div>
 
             <div class="adm-panel is-active" data-panel="approve">
-              <div class="adm-muted" style="margin-bottom:8px;">
-                {% if app.status == 'submitted' and not prefs %}سيتم توثيق استلام الطلب دون رغبات دون اعتباره ترشيحًا على شاغر محدد.{% else %}يمكن إضافة سبب مختصر للاعتماد عند الحاجة.{% endif %}
-              </div>
-              <form method="post" action="{% url 'portal:admin_approve' app.id %}?back={{ back_url|urlencode }}">
-                {% csrf_token %}
-                <input class="adm-input" name="note" placeholder="ملاحظة القرار (اختياري)">
-                <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn primary" type="submit">{% if app.status == 'submitted' and not prefs %}توثيق الاستلام{% else %}اعتماد الطلب{% endif %}</button></div>
-              </form>
+              {% if app.is_conditional_data_review_path %}
+                <div class="adm-conditional-alert danger">
+                  <div class="adm-conditional-title">لا يمكن اعتماد الطلب قبل مراجعة البيانات</div>
+                  <p class="adm-conditional-text">
+                    هذا الطلب مرسل مشروط بمراجعة البيانات؛ تم حفظ رغبات المتقدم ووقت الإرسال، لكن الاعتماد النهائي والفرز والترشيح متوقف حتى مراجعة طلب تعديل البيانات المؤثر.
+                  </p>
+                  <div class="adm-conditional-actions">
+                    <a class="adm-btn red" href="{% url 'portal:admin_data_issues' %}?q={{ a.national_id|urlencode }}">مراجعة طلب التعديل</a>
+                    <button class="adm-btn primary is-disabled" type="button" disabled>اعتماد الطلب غير متاح الآن</button>
+                  </div>
+                </div>
+              {% else %}
+                <div class="adm-muted" style="margin-bottom:8px;">
+                  {% if app.status == 'submitted' and not prefs %}سيتم توثيق استلام الطلب دون رغبات دون اعتباره ترشيحًا على شاغر محدد.{% else %}يمكن إضافة سبب مختصر للاعتماد عند الحاجة.{% endif %}
+                </div>
+                <form method="post" action="{% url 'portal:admin_approve' app.id %}?back={{ back_url|urlencode }}">
+                  {% csrf_token %}
+                  <input class="adm-input" name="note" placeholder="ملاحظة القرار (اختياري)">
+                  <div class="adm-submit-row" style="margin-top:9px;"><button class="adm-btn primary" type="submit">{% if app.status == 'submitted' and not prefs %}توثيق الاستلام{% else %}اعتماد الطلب{% endif %}</button></div>
+                </form>
+              {% endif %}
             </div>
 
             <div class="adm-panel" data-panel="return">

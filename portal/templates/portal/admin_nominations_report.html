@@ -3,1182 +3,386 @@
 
 {% block extra_css %}
 <style>
-  /* =========================================================
-     Decision Dashboard Report — Matched Previous Pages Style
-     - هيدر فاتح رسمي بدل الداكن
-     - مؤشرات وفلاتر وجدول طباعة بنفس هوية الصفحات السابقة
-     - الحفاظ على المتغيرات دون تعديل views.py
-  ========================================================= */
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
 
   :root{
-    --dr-bg:#f5f7f5;
-    --dr-surface:#ffffff;
-    --dr-surface-2:#fbfcfb;
-    --dr-surface-3:#f7faf8;
-
-    --dr-ink:#162f25;
-    --dr-ink-2:#31483d;
-    --dr-muted:#6f7f76;
-
-    --dr-green-1:#173c2f;
-    --dr-green-2:#1f4d3a;
-    --dr-green-3:#2e6b53;
-    --dr-green-soft:#edf7f2;
-    --dr-green-line:#cfe4d8;
-
-    --dr-gold:#9b7734;
-    --dr-gold-2:#b49256;
-    --dr-gold-soft:#fbf6ea;
-    --dr-gold-line:#e6d5b4;
-
-    --dr-blue:#496d7f;
-    --dr-blue-soft:#f1f6fa;
-    --dr-blue-line:#d5e2e9;
-
-    --dr-danger:#8f2f2f;
-    --dr-danger-bg:#fcf5f5;
-    --dr-danger-bd:#e8caca;
-
-    --dr-line:#d8e2dc;
-    --dr-line-2:#cbd8d0;
-    --dr-line-soft:#eaf0ec;
-
-    --dr-shadow:0 4px 14px rgba(18,32,24,.045);
-    --dr-shadow-soft:0 10px 26px rgba(18,32,24,.055);
+    --cl-bg:#f7f9f8;
+    --cl-surface:#ffffff;
+    --cl-surface-soft:#fbfcfb;
+    --cl-border:#dce5df;
+    --cl-border-soft:#eef2ef;
+    --cl-text:#19362b;
+    --cl-text-2:#42594f;
+    --cl-muted:#7b8a83;
+    --cl-green:#164734;
+    --cl-green-2:#216046;
+    --cl-green-soft:#edf8f1;
+    --cl-gold:#a87a25;
+    --cl-gold-soft:#fff8ea;
+    --cl-red:#9a3b3b;
+    --cl-red-soft:#fff5f5;
+    --cl-blue:#365f83;
+    --cl-blue-soft:#f2f7fd;
+    --cl-shadow:0 6px 18px rgba(25,54,43,.04);
+    --cl-shadow-sm:0 1px 6px rgba(25,54,43,.03);
+    --cl-radius:18px;
+    --cl-radius-sm:12px;
   }
 
-  .drep,
-  .drep *{
+  .cairo-report,
+  .cairo-report *{
     box-sizing:border-box;
-    font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif !important;
+    font-family:"Cairo", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif !important;
   }
 
-  .drep{
+  .cairo-report{
     direction:rtl;
-    color:var(--dr-ink);
-    background:
-      radial-gradient(circle at 94% 6%, rgba(31,77,58,.045) 0 128px, transparent 136px),
-      radial-gradient(circle at 5% 10%, rgba(180,146,86,.055) 0 118px, transparent 128px),
-      linear-gradient(180deg,#fbfcfb 0%, #f6f8f6 52%, #eef3ef 100%);
-    padding:12px 10px 22px;
-    min-height:calc(100vh - 54px);
+    background:var(--cl-bg);
+    color:var(--cl-text);
+    padding:10px 14px 16px;
+    min-height:calc(100vh - 16px);
+    font-weight:400;
   }
 
-  .drep-page{
-    width:min(100%,1460px);
+  .cr-page{
+    max-width:1560px;
     margin:0 auto;
     display:grid;
-    gap:12px;
+    gap:8px;
   }
 
-  .drep-shell,
-  .drep-hero,
-  .drep-card,
-  .drep-stat{
-    position:relative;
+  .cr-card,
+  .cr-topbar,
+  .cr-reportbar,
+  .cr-kpi{
+    background:var(--cl-surface);
+    border:1px solid var(--cl-border);
+    border-radius:var(--cl-radius);
+    box-shadow:var(--cl-shadow-sm);
     overflow:hidden;
-    border:1px solid var(--dr-line);
-    border-radius:18px;
-    background:linear-gradient(180deg,#ffffff,#fbfcfb);
-    box-shadow:var(--dr-shadow);
   }
 
-  .drep-shell{
-    border-radius:22px;
-    box-shadow:var(--dr-shadow-soft);
-  }
-
-  .drep-shell::before,
-  .drep-hero::before,
-  .drep-card::before,
-  .drep-stat::before{
-    content:"";
-    position:absolute;
-    inset:0 0 auto 0;
-    height:2px;
-    background:linear-gradient(90deg,var(--dr-green-2),var(--dr-gold-2));
-    opacity:.85;
-  }
-
-  .drep-hero{
-    border-radius:22px 22px 0 0;
-    border:0;
-    border-bottom:1px solid var(--dr-line-soft);
-    box-shadow:none;
-    background:
-      radial-gradient(circle at 8% 18%, rgba(180,146,86,.05) 0 2px, transparent 2.6px) 0 0/25px 25px,
-      linear-gradient(180deg,#ffffff 0%, #fbfcfb 100%);
-  }
-
-  .drep-hero-main{
-    padding:12px 18px 10px;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:12px;
+  .cr-topbar{
+    display:flex;
     align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    min-height:82px;
+    padding:9px 14px;
+    background:linear-gradient(180deg,#ffffff 0%,#fbfcfb 100%);
+    box-shadow:var(--cl-shadow);
   }
 
-  .drep-kicker,
-  .drep-pill,
-  .drep-tag,
-  .drep-chip{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    min-height:29px;
-    padding:5px 10px;
-    border-radius:999px;
-    border:1px solid var(--dr-line);
-    background:#fff;
-    color:var(--dr-ink-2);
-    font-size:8.8px;
-    line-height:1;
-    font-weight:700 !important;
-    white-space:nowrap;
-  }
+  .cr-title-wrap{min-width:0;display:grid;gap:2px}
+  .cr-eyebrow{color:var(--cl-muted);font-size:9.4px;font-weight:400!important}
+  .cr-title{margin:0;color:#17352b;font-size:18.5px;line-height:1.22;font-weight:700!important;letter-spacing:-.2px}
+  .cr-subtitle{margin:0;color:#6f8178;font-size:10.2px;line-height:1.45;font-weight:400!important;max-width:86ch}
 
-  .drep-kicker{
-    border-color:var(--dr-green-line);
-    background:var(--dr-green-soft);
-    color:var(--dr-green-2);
-    margin-bottom:6px;
-    min-height:27px;
-  }
-
-  .drep-kicker::before,
-  .drep-head-title::before,
-  .drep-status-main::before{
-    content:"";
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--dr-green-2);
-    box-shadow:0 0 0 4px rgba(31,77,58,.08);
-    flex:0 0 auto;
-  }
-
-  .drep-title{
-    margin:0;
-    color:var(--dr-green-1);
-    font-size:22px;
-    line-height:1.25;
-    font-weight:800 !important;
-    letter-spacing:0;
-  }
-
-  .drep-sub{
-    margin:3px 0 0;
-    color:var(--dr-muted);
-    font-size:9.8px;
-    line-height:1.75;
-    font-weight:500 !important;
-    max-width:78ch;
-  }
-
-  .drep-actions,
-  .drep-pills{
+  .cr-actions,
+  .cr-pills,
+  .cr-tabs{
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:8px;
+    gap:7px;
     flex-wrap:wrap;
   }
 
-  .drep-btn{
-    appearance:none;
+  .cr-btn,
+  .cr-chip,
+  .cr-pill{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:8px;
-    min-height:38px;
-    padding:8px 14px;
+    gap:7px;
+    min-height:30px;
+    padding:5px 10px;
     border-radius:12px;
-    border:1px solid var(--dr-line-2);
+    border:1px solid var(--cl-border);
     background:#fff;
-    color:var(--dr-green-2);
+    color:var(--cl-green);
     text-decoration:none;
+    font-size:10px;
+    font-weight:500!important;
+    line-height:1;
     cursor:pointer;
-    font-size:9.5px;
-    line-height:1;
-    font-weight:700 !important;
-    box-shadow:none;
-    transition:background .14s ease,border-color .14s ease,transform .14s ease,opacity .14s ease;
+    white-space:nowrap;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease;
   }
 
-  .drep-btn:hover{
-    transform:translateY(-1px);
-    background:#f8fbf9;
-    border-color:#b8c6bb;
-  }
+  .cr-btn:hover{background:#f8fbf9;border-color:#c8d7cf;transform:translateY(-1px);box-shadow:0 6px 14px rgba(25,54,43,.055)}
+  .cr-btn.primary{background:var(--cl-green);border-color:var(--cl-green);color:#fff}
+  .cr-btn.primary:hover{background:var(--cl-green-2);border-color:var(--cl-green-2)}
+  .cr-btn.gold{background:var(--cl-gold-soft);border-color:#ead1a3;color:#76551a}
+  .cr-btn.blue{background:var(--cl-blue-soft);border-color:#d4e2ef;color:var(--cl-blue)}
+  .cr-chip{min-height:28px;border-radius:999px;background:var(--cl-surface-soft);color:var(--cl-text-2);cursor:default}
+  .cr-dot{width:8px;height:8px;border-radius:999px;background:var(--cl-green-2);display:inline-block;flex:0 0 auto}
+  .cr-dot.gold{background:#b88a35}.cr-dot.blue{background:#4f7896}
 
-  .drep-btn.primary{
-    background:var(--dr-green-2);
-    border-color:var(--dr-green-2);
-    color:#fff;
-  }
-
-  .drep-status-strip{
+  .cr-reportbar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:12px;
     padding:8px 12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-    border-top:1px solid var(--dr-line-soft);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
+    border-radius:var(--cl-radius-sm);
+    background:linear-gradient(180deg,#fff,#fcfdfc);
   }
 
-  .drep-status-main{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-    color:var(--dr-green-1);
-    font-size:9.4px;
-    font-weight:700 !important;
-  }
-
-  .drep-chip.ok,
-  .drep-tag.ok,
-  .drep-pill.ok{
-    border-color:var(--dr-green-line);
-    background:var(--dr-green-soft);
-    color:var(--dr-green-2);
-  }
-
-  .drep-chip.warn,
-  .drep-tag.warn,
-  .drep-pill.warn{
-    border-color:var(--dr-gold-line);
-    background:var(--dr-gold-soft);
-    color:#76551f;
-  }
-
-  .drep-chip.info,
-  .drep-tag.info,
-  .drep-pill.info{
-    border-color:var(--dr-blue-line);
-    background:var(--dr-blue-soft);
-    color:var(--dr-blue);
-  }
-
-  .drep-content{
-    padding:10px 12px 12px;
-    display:grid;
-    gap:10px;
-  }
-
-  .drep-card-head{
-    padding:10px 13px;
-    border-bottom:1px solid var(--dr-line-soft);
-    background:linear-gradient(180deg,#ffffff,#f8fbf9);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .drep-head-title{
-    margin:0;
-    display:flex;
-    align-items:center;
-    gap:9px;
-    color:var(--dr-green-1);
-    font-size:12.6px;
-    line-height:1.5;
-    font-weight:800 !important;
-  }
-
-  .drep-head-sub{
-    margin-top:2px;
-    color:var(--dr-muted);
-    font-size:8.8px;
-    line-height:1.75;
-    font-weight:500 !important;
-  }
-
-  .drep-card-body{
-    padding:10px 12px;
-  }
-
-  .drep-filters{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .drep-field{
-    display:grid;
-    gap:6px;
-  }
-
-  .drep-label{
-    color:var(--dr-green-1);
-    font-size:8.8px;
-    line-height:1.5;
-    font-weight:700 !important;
-  }
-
-  .drep-value{
-    min-height:39px;
-    padding:8px 10px;
-    border-radius:11px;
-    border:1px solid var(--dr-line-2);
-    background:#fff;
-    color:var(--dr-ink);
-    font-size:9.5px;
-    line-height:1.7;
-    font-weight:600 !important;
-    display:flex;
-    align-items:center;
-  }
-
-  .drep-ltr{
-    direction:ltr;
-    unicode-bidi:embed;
-    text-align:right;
-  }
-
-  .drep-date{
-    color:var(--dr-muted);
-    font-size:8.1px;
-    font-weight:600 !important;
-    letter-spacing:-.1px;
-  }
-
-
-  .drep-filter-chips{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-
-  .drep-filter-chip{
+  .cr-reportbar-title{
     display:inline-flex;
     align-items:center;
     gap:7px;
-    min-height:34px;
-    padding:6px 11px;
-    border-radius:999px;
-    border:1px solid var(--dr-line-2);
-    background:#fff;
-    color:var(--dr-ink-2);
-    font-size:8.9px;
-    line-height:1;
-    font-weight:700 !important;
+    color:var(--cl-text);
+    font-size:10.5px;
+    font-weight:600!important;
     white-space:nowrap;
   }
 
-  .drep-filter-chip .k{
-    color:var(--dr-muted);
-    font-weight:600 !important;
-  }
+  .cr-reportbar-title::before{content:"";width:7px;height:7px;border-radius:999px;background:var(--cl-green-2)}
 
-  .drep-filter-chip .v{
-    color:var(--dr-green-1);
-    font-weight:800 !important;
-  }
-
-  .drep-filter-chip.info{
-    border-color:var(--dr-blue-line);
-    background:var(--dr-blue-soft);
-  }
-
-  .drep-filter-chip.gold{
-    border-color:var(--dr-gold-line);
-    background:var(--dr-gold-soft);
-  }
-
-
-  .drep-stats{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:8px;
-  }
-
-  .drep-stat{
-    padding:9px 10px;
-    border-radius:14px;
-    min-height:72px;
-  }
-
-  .drep-stat-top{
+  .cr-filter-chips{
     display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:10px;
-  }
-
-  .drep-stat-title{
-    color:var(--dr-muted);
-    font-size:8.4px;
-    font-weight:700 !important;
-  }
-
-  .drep-stat-chip{
-    display:inline-flex;
     align-items:center;
-    justify-content:center;
-    min-height:23px;
-    padding:3px 8px;
-    border-radius:999px;
-    border:1px solid var(--dr-line-2);
-    background:#fff;
-    color:var(--dr-green-2);
-    font-size:7.4px;
-    font-weight:700 !important;
-    white-space:nowrap;
-  }
-
-  .drep-stat-num{
-    margin-top:6px;
-    color:var(--dr-green-1);
-    font-size:18px;
-    line-height:1;
-    font-weight:800 !important;
-    letter-spacing:-.2px;
-  }
-
-  .drep-stat-sub{
-    margin-top:3px;
-    color:var(--dr-muted);
-    font-size:7.8px;
-    line-height:1.55;
-    font-weight:500 !important;
-  }
-
-  .drep-table-wrap{
-    overflow-x:hidden;
-    overflow-y:visible;
-    border:1px solid var(--dr-line);
-    border-radius:14px;
-    background:#fff;
-  }
-
-  .drep-table{
-    width:100%;
+    justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
     min-width:0;
-    border-collapse:collapse;
-    table-layout:fixed;
   }
 
-  .drep-table th,
-  .drep-table td{
-    padding:7px 7px;
-    text-align:right;
-    vertical-align:middle;
-    border-bottom:1px solid var(--dr-line-soft);
-  }
-
-  .drep-table th{
-    position:sticky;
-    top:0;
-    z-index:3;
-    background:linear-gradient(180deg,#f4f8f5 0%, #edf4ef 100%);
-    color:var(--dr-green-1);
-    font-size:8.35px;
-    font-weight:800 !important;
-    white-space:nowrap;
-  }
-
-  .drep-table td{
-    background:#fff;
-    color:var(--dr-ink);
-    font-size:8.55px;
-    font-weight:600 !important;
-    line-height:1.48;
-    overflow:hidden;
-  }
-
-  .drep-table td:nth-child(2){
-    padding-top:9px;
-    padding-bottom:9px;
-  }
-
-
-  .drep-table tbody tr:nth-child(even) td{
-    background:#fcfdfc;
-  }
-
-  .drep-table tbody tr:hover td{
-    background:#f8faf8;
-  }
-
-  .drep-table th:nth-child(1),
-  .drep-table td:nth-child(1){width:48px;text-align:center;}
-
-  .drep-table th:nth-child(2),
-  .drep-table td:nth-child(2){width:27%;}
-
-  .drep-table th:nth-child(3),
-  .drep-table td:nth-child(3){width:14%;}
-
-  .drep-table th:nth-child(4),
-  .drep-table td:nth-child(4){width:13%;}
-
-  .drep-table th:nth-child(5),
-  .drep-table td:nth-child(5){width:8%;text-align:center;}
-
-  .drep-table th:nth-child(6),
-  .drep-table td:nth-child(6){width:8%;text-align:center;}
-
-  .drep-table th:nth-child(7),
-  .drep-table td:nth-child(7){width:12%;text-align:center;}
-
-  .drep-table th:nth-child(8),
-  .drep-table td:nth-child(8){width:14%;}
-
-  .drep-name{
-    color:var(--dr-green-1);
-    font-size:10.3px;
-    line-height:1.45;
-    font-weight:900 !important;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .drep-subtxt{
-    color:var(--dr-muted);
-    font-size:8.05px;
-    line-height:1.5;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    font-weight:600 !important;
-  }
-
-  .drep-center{
-    text-align:center !important;
-  }
-
-  .drep-status{
+  .cr-filter-chip{
     display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:24px;
-    padding:4px 9px;
+    gap:7px;
+    min-height:28px;
+    padding:5px 10px;
     border-radius:999px;
+    border:1px solid var(--cl-border);
     background:#fff;
-    color:var(--dr-ink-2);
-    border:1px solid var(--dr-line-2);
-    font-size:8.15px;
-    line-height:1;
-    font-weight:800 !important;
-    white-space:nowrap;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);
+    color:var(--cl-text-2);
+    font-size:9.3px;
+    font-weight:500!important;
   }
 
-  .drep-status.ok{
-    background:var(--dr-green-soft);
-    border-color:var(--dr-green-line);
-    color:var(--dr-green-2);
+  .cr-filter-chip .k{color:var(--cl-muted);font-weight:400!important}
+  .cr-filter-chip .v{color:var(--cl-text);font-weight:600!important}
+  .cr-filter-chip.blue{background:var(--cl-blue-soft);border-color:#d4e2ef;color:var(--cl-blue)}
+  .cr-ltr{direction:ltr;unicode-bidi:embed;text-align:right}
+
+  .cr-kpis{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
   }
 
-  .drep-status.warn{
-    background:var(--dr-gold-soft);
-    border-color:var(--dr-gold-line);
-    color:#76551f;
-  }
-
-  .drep-status.info{
-    background:var(--dr-blue-soft);
-    border-color:var(--dr-blue-line);
-    color:var(--dr-blue);
-  }
-
-  .drep-empty{
-    padding:24px 12px !important;
-    text-align:center !important;
-    color:var(--dr-muted) !important;
-    font-size:9px !important;
-    font-weight:500 !important;
-    background:#fff !important;
-  }
-
-  .drep-note{
-    margin-top:8px;
+  .cr-kpi{
+    min-height:62px;
     padding:8px 11px;
-    border:1px dashed var(--dr-line-2);
-    border-radius:999px;
-    background:var(--dr-surface-2);
-    color:var(--dr-muted);
-    font-size:8.3px;
-    line-height:1.65;
-    font-weight:500 !important;
+    display:grid;
+    gap:3px;
+    border-radius:14px;
+    background:#fff;
+  }
+
+  .cr-kpi .label{color:#6f8178;font-size:9.7px;font-weight:500!important}
+  .cr-kpi .value{color:var(--cl-text);font-size:18px;line-height:1;font-weight:700!important}
+  .cr-kpi .note{color:#7d8d85;font-size:9px;line-height:1.45;font-weight:400!important}
+  .cr-kpi.green{background:var(--cl-green-soft);border-color:#cfe5d7}.cr-kpi.green .value{color:var(--cl-green)}
+  .cr-kpi.warn{background:var(--cl-gold-soft);border-color:#ead1a3}.cr-kpi.warn .value{color:#76551a}
+  .cr-kpi.blue{background:var(--cl-blue-soft);border-color:#d4e2ef}.cr-kpi.blue .value{color:var(--cl-blue)}
+
+  .cr-section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:8px 14px;
+    border-bottom:1px solid var(--cl-border-soft);
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+  }
+
+  .cr-section-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#1f3a30;
+    font-size:12.5px;
+    font-weight:600!important;
+  }
+  .cr-section-title::before{content:"";width:8px;height:8px;border-radius:99px;background:var(--cl-green-2)}
+  .cr-section-count{display:inline-flex;align-items:center;justify-content:center;min-height:23px;padding:3px 9px;border-radius:999px;border:1px solid #d7e3dc;background:#f8fbf9;color:#60766b;font-size:9.2px;font-weight:500}
+
+  .cr-table-wrap{overflow:auto;background:#fff;border-top:1px solid var(--cl-border-soft)}
+  .cr-table{width:100%;min-width:1060px;border-collapse:separate;border-spacing:0;table-layout:fixed}
+  .cr-table th{position:sticky;top:0;z-index:2;padding:8px;background:#f2f6f4;color:#183a2f;border-bottom:1px solid #ccd9d1;border-inline-start:1px solid #dfe7e2;text-align:center;font-size:10.2px;font-weight:600!important;white-space:nowrap}
+  .cr-table td{padding:8.5px 8px;background:#fff;border-bottom:1px solid #eef2ef;border-inline-start:1px solid #eef2ef;vertical-align:middle;color:#2d4138;font-size:10.8px;font-weight:400!important;line-height:1.65}
+  .cr-table th:first-child,.cr-table td:first-child{border-inline-start:none}
+  .cr-table tbody tr:nth-child(even) td{background:#fcfdfc}
+  .cr-table tbody tr:hover td{background:#f7faf8}
+
+  .c-num{width:52px;text-align:center}.c-applicant{width:300px}.c-id{width:150px}.c-sector{width:180px}.c-gender{width:86px;text-align:center}.c-prefs{width:88px;text-align:center}.c-status{width:135px;text-align:center}.c-date{width:155px}
+  .cr-person{display:grid;gap:4px;min-width:0}.cr-person-name{font-size:12.7px;font-weight:500!important;color:#243a31;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cr-person-meta{color:#7d8d85;font-size:9.5px;font-weight:400!important}
+  .cr-status{display:inline-flex;align-items:center;justify-content:center;min-height:23px;padding:3px 9px;border-radius:999px;border:1px solid var(--cl-border);background:#f8faf8;color:var(--cl-text-2);font-size:9.2px;font-weight:500!important;white-space:nowrap}
+  .cr-status.green{background:var(--cl-green-soft);border-color:#cfe5d7;color:var(--cl-green)}
+  .cr-status.gold{background:var(--cl-gold-soft);border-color:#ead1a3;color:#76551a}
+  .cr-status.blue{background:var(--cl-blue-soft);border-color:#d4e2ef;color:var(--cl-blue)}
+  .cr-empty{padding:28px!important;text-align:center!important;color:var(--cl-muted)!important;font-weight:600!important;background:#fff!important}
+
+  .cr-note{
     display:flex;
     align-items:center;
     gap:7px;
     flex-wrap:wrap;
+    padding:9px 14px;
+    border-top:1px solid var(--cl-border-soft);
+    background:#fbfcfb;
+    color:var(--cl-muted);
+    font-size:10px;
+    line-height:1.7;
+    font-weight:400!important;
   }
+  .cr-note b{color:var(--cl-text);font-weight:600!important}
 
-  .drep-note b{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    margin:0;
-    color:var(--dr-green-1);
-    font-size:8.4px;
-    font-weight:800 !important;
-    white-space:nowrap;
-  }
-
-  .drep-note b::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:999px;
-    background:var(--dr-green-2);
-    box-shadow:0 0 0 3px rgba(31,77,58,.08);
-    flex:0 0 auto;
-  }
-
-  @media (max-width:1100px){
-    .drep-filters,
-    .drep-stats{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    .drep-table-wrap{
-      overflow-x:auto;
-    }
-
-    .drep-table{
-      min-width:980px;
-    }
-  }
-
-  @media (max-width:760px){
-    .drep{
-      padding:8px;
-    }
-
-    .drep-hero-main{
-      grid-template-columns:1fr;
-      padding:15px 14px;
-    }
-
-    .drep-actions{
-      justify-content:flex-start;
-    }
-
-    .drep-title{
-      font-size:21px;
-    }
-
-    .drep-content,
-    .drep-card-body{
-      padding:10px;
-    }
-
-    .drep-filters,
-    .drep-stats{
-      grid-template-columns:1fr;
-    }
-
-    .drep-btn{
-      width:100%;
-    }
-  }
+  @media (max-width:1260px){.cr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cr-reportbar{grid-template-columns:1fr}.cr-filter-chips{justify-content:flex-start}.cr-table{min-width:980px}}
+  @media (max-width:900px){.cairo-report{padding:10px}.cr-topbar{align-items:flex-start;flex-direction:column}.cr-actions{justify-content:flex-start}.cr-kpis{grid-template-columns:1fr}}
 
   @media print{
-    @page{
-      size:A4 portrait;
-      margin:10mm;
-    }
-
-    html, body{
-      background:#fff !important;
-      margin:0 !important;
-      padding:0 !important;
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
-    }
-
-    header.topbar,
-    .drep-btn,
-    .drep-actions,
-    .drep-status-strip,
-    .sidebar,
-    .page-actions,
-    nav{
-      display:none !important;
-    }
-
-    body *{
-      visibility:hidden;
-    }
-
-    .drep, .drep *{
-      visibility:visible;
-    }
-
-    .drep{
-      background:#fff !important;
-      padding:0 !important;
-      color:#000 !important;
-      min-height:auto !important;
-    }
-
-    .drep-page{
-      max-width:none !important;
-      width:100% !important;
-      gap:6px !important;
-      margin:0 !important;
-    }
-
-    .drep-shell{
-      border:0 !important;
-      border-radius:0 !important;
-      background:#fff !important;
-      box-shadow:none !important;
-      overflow:visible !important;
-    }
-
-    .drep-shell::before,
-    .drep-card::before,
-    .drep-stat::before{
-      display:none !important;
-    }
-
-    .drep-hero{
-      background:#fff !important;
-      color:#000 !important;
-      border:1px solid #cfd7d1 !important;
-      border-radius:10px !important;
-      box-shadow:none !important;
-      padding:0 !important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .drep-hero::before{
-      display:block !important;
-      height:2px !important;
-      background:#1d4335 !important;
-    }
-
-    .drep-hero-main{
-      display:block !important;
-      padding:10px 12px 8px !important;
-    }
-
-    .drep-kicker{
-      margin:0 0 2px !important;
-      color:#666 !important;
-      font-size:7px !important;
-      background:#fff !important;
-      border:0 !important;
-      padding:0 !important;
-      min-height:auto !important;
-    }
-
-    .drep-kicker::before{
-      display:none !important;
-    }
-
-    .drep-title{
-      margin:0 !important;
-      color:#111 !important;
-      font-size:15px !important;
-      line-height:1.2 !important;
-    }
-
-    .drep-sub{
-      margin:3px 0 0 !important;
-      color:#444 !important;
-      font-size:7.2px !important;
-      line-height:1.6 !important;
-      max-width:none !important;
-    }
-
-    .drep-content{
-      padding:6px 0 0 !important;
-      gap:6px !important;
-    }
-
-    .drep-card{
-      border:1px solid #cfd7d1 !important;
-      border-radius:10px !important;
-      box-shadow:none !important;
-      background:#fff !important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .drep-card-head{
-      padding:8px 10px !important;
-      background:#fff !important;
-      border-bottom:1px solid #dde4de !important;
-    }
-
-    .drep-head-title{
-      font-size:9px !important;
-      color:#111 !important;
-    }
-
-    .drep-head-title::before{
-      width:6px !important;
-      height:6px !important;
-      box-shadow:none !important;
-      background:#1d4335 !important;
-    }
-
-    .drep-card-body{
-      padding:8px 10px !important;
-    }
-
-    .drep-filters{
-      grid-template-columns:repeat(4,minmax(0,1fr)) !important;
-      gap:6px !important;
-    }
-
-    .drep-label{
-      font-size:7px !important;
-      margin-bottom:3px !important;
-      color:#333 !important;
-    }
-
-    .drep-value{
-      min-height:28px !important;
-      padding:4px 7px !important;
-      border:1px solid #d8dfd9 !important;
-      border-radius:8px !important;
-      background:#fff !important;
-      color:#111 !important;
-      font-size:7.4px !important;
-    }
-
-    .drep-stats{
-      grid-template-columns:repeat(4,minmax(0,1fr)) !important;
-      gap:6px !important;
-    }
-
-    .drep-stat{
-      padding:7px 8px !important;
-      border:1px solid #d8dfd9 !important;
-      border-radius:8px !important;
-      box-shadow:none !important;
-      background:#fff !important;
-    }
-
-    .drep-stat-title{
-      font-size:7px !important;
-      color:#333 !important;
-    }
-
-    .drep-stat-chip{
-      min-height:18px !important;
-      padding:2px 6px !important;
-      font-size:6.4px !important;
-      background:#fff !important;
-      color:#444 !important;
-      border:1px solid #d8dfd9 !important;
-    }
-
-    .drep-stat-num{
-      margin-top:4px !important;
-      font-size:12px !important;
-      color:#111 !important;
-    }
-
-    .drep-stat-sub{
-      font-size:6.5px !important;
-      color:#666 !important;
-    }
-
-    .drep-table-wrap{
-      border:1px solid #d8dfd9 !important;
-      border-radius:8px !important;
-      overflow:visible !important;
-    }
-
-    .drep-table{
-      min-width:0 !important;
-      width:100% !important;
-      table-layout:fixed !important;
-    }
-
-    .drep-table th,
-    .drep-table td{
-      padding:6px 7px !important;
-      border-bottom:1px solid #e6ece7 !important;
-      color:#111 !important;
-      background:#fff !important;
-    }
-
-    .drep-table th{
-      font-size:6.8px !important;
-      font-weight:900 !important;
-    }
-
-    .drep-table td{
-      font-size:7px !important;
-      font-weight:700 !important;
-      line-height:1.45 !important;
-    }
-
-    .drep-name{
-      font-size:7.8px !important;
-      color:#111 !important;
-      font-weight:900 !important;
-    }
-
-    .drep-subtxt{
-      font-size:6.5px !important;
-      color:#666 !important;
-    }
-
-    .drep-status{
-      min-height:19px !important;
-      padding:2px 7px !important;
-      font-size:6.4px !important;
-      border-radius:999px !important;
-      color:#111 !important;
-      background:#fff !important;
-      border:1px solid #cfd7d1 !important;
-    }
-
-    .drep-note{
-      margin-top:6px !important;
-      padding:5px 7px !important;
-      border:1px solid #d8dfd9 !important;
-      border-radius:8px !important;
-      background:#fff !important;
-      color:#333 !important;
-      font-size:6.8px !important;
-      line-height:1.45 !important;
-      display:flex !important;
-      gap:4px !important;
-    }
-
-    .drep-note b{
-      font-size:6.8px !important;
-      color:#111 !important;
-      margin:0 !important;
-    }
-
-    .drep-note b::before{
-      display:none !important;
-    }
-
-    .drep-date{
-      font-size:6.7px !important;
-      color:#333 !important;
-    }
+    @page{size:A4 portrait;margin:10mm}
+    html,body{background:#fff!important;margin:0!important;padding:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    header.topbar,.sidebar,.page-actions,nav,.cr-actions,.cr-btn{display:none!important}
+    body *{visibility:hidden}
+    .cairo-report,.cairo-report *{visibility:visible}
+    .cairo-report{background:#fff!important;padding:0!important;color:#000!important;min-height:auto!important}
+    .cr-page{max-width:none!important;width:100%!important;gap:6px!important;margin:0!important}
+    .cr-topbar,.cr-reportbar,.cr-card,.cr-kpi{box-shadow:none!important;border-color:#cfd7d1!important;border-radius:10px!important;background:#fff!important;break-inside:avoid;page-break-inside:avoid}
+    .cr-topbar{min-height:auto!important;padding:9px 10px!important;display:block!important}
+    .cr-title{font-size:15px!important;color:#111!important}.cr-subtitle{font-size:7.4px!important;color:#444!important}.cr-eyebrow{font-size:7px!important;color:#555!important}
+    .cr-reportbar{display:block!important;padding:7px 9px!important}.cr-reportbar-title{font-size:7.5px!important;margin-bottom:5px!important}.cr-filter-chips{justify-content:flex-start!important;gap:4px!important}
+    .cr-filter-chip,.cr-chip{min-height:20px!important;padding:2px 6px!important;font-size:6.7px!important;border-color:#d8dfd9!important;background:#fff!important;color:#111!important}
+    .cr-kpis{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}.cr-kpi{min-height:48px!important;padding:6px 7px!important}.cr-kpi .label{font-size:6.8px!important;color:#333!important}.cr-kpi .value{font-size:12px!important;color:#111!important}.cr-kpi .note{font-size:6.4px!important;color:#666!important}
+    .cr-section-head{padding:7px 9px!important}.cr-section-title{font-size:8.5px!important;color:#111!important}.cr-section-count{font-size:6.8px!important;min-height:19px!important;padding:2px 6px!important;background:#fff!important}
+    .cr-table-wrap{overflow:visible!important;border-top:0!important}.cr-table{min-width:0!important;width:100%!important;table-layout:fixed!important}.cr-table th,.cr-table td{padding:5px 6px!important;background:#fff!important;color:#111!important;border-bottom:1px solid #e6ece7!important}.cr-table th{font-size:6.8px!important;font-weight:900!important}.cr-table td{font-size:7px!important;font-weight:700!important;line-height:1.45!important}.cr-person-name{font-size:7.8px!important;color:#111!important;font-weight:900!important}.cr-person-meta{font-size:6.5px!important;color:#666!important}.cr-status{min-height:18px!important;padding:2px 6px!important;font-size:6.3px!important;background:#fff!important;color:#111!important;border:1px solid #cfd7d1!important}
+    .cr-note{font-size:6.7px!important;line-height:1.45!important;padding:5px 7px!important;background:#fff!important;border-top:1px solid #d8dfd9!important;color:#333!important}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="drep">
-  <div class="drep-page">
-    <section class="drep-shell">
+<div class="cairo-report">
+  <div class="cr-page">
 
-      <div class="drep-hero">
-        <div class="drep-hero-main">
-          <div>
-            <span class="drep-kicker">لوحة القرار — تقرير الطباعة</span>
-            <h1 class="drep-title">تقرير لوحة القرار التعليمية</h1>
-            <p class="drep-sub">
-              عرض منظم ومهيأ للطباعة لنتائج الطلبات وفق الفلاتر الحالية، بنفس هوية صفحات الإدارة داخل البوابة.
-            </p>
-          </div>
-
-          <div class="drep-actions">
-            <button
-              class="drep-btn"
-              type="button"
-              onclick="if (document.referrer) { window.location.href = document.referrer; } else { window.location.href = '{% url 'portal:admin_dashboard' %}'; }"
-            >
-              العودة للوحة القرارات
-            </button>
-            <span class="drep-pill info">لوحة إدارة الطلبات والقرارات التعليمية</span>
-            <button class="drep-btn primary" type="button" onclick="window.print()">طباعة التقرير</button>
-          </div>
-        </div>
-
-        <div class="drep-status-strip">
-          <div class="drep-status-main">
-            إجمالي النتائج: {{ total|default:"0" }}
-          </div>
-          <div class="drep-pills">
-            <span class="drep-chip info">نسخة جاهزة للطباعة</span>
-            <span class="drep-chip ok">عرض داخلي منسق</span>
-          </div>
-        </div>
+    <header class="cr-topbar">
+      <div class="cr-title-wrap">
+        <div class="cr-eyebrow">بوابة التقديم على شواغر وكيل</div>
+        <h1 class="cr-title">تقرير لوحة القرار التعليمية</h1>
+        <p class="cr-subtitle">عرض منظم لنتائج الطلبات وفق الفلاتر الحالية، بنفس نمط لوحة إدارة الترشيحات.</p>
       </div>
 
-      <div class="drep-content">
+      <div class="cr-actions">
+        <button class="cr-btn" type="button" onclick="if (document.referrer) { window.location.href = document.referrer; } else { window.location.href = '{% url 'portal:admin_dashboard' %}'; }">العودة للوحة القرارات</button>
+        <span class="cr-chip"><span class="cr-dot blue"></span>نسخة جاهزة للطباعة</span>
+        <button class="cr-btn primary" type="button" onclick="window.print()">طباعة التقرير</button>
+      </div>
+    </header>
 
-        <section class="drep-card">
-          <div class="drep-card-head">
-            <div>
-              <h2 class="drep-head-title">الفلاتر والبحث</h2>
-              <div class="drep-head-sub">القيم المعروضة تمثل معايير التقرير الحالية دون إدخال مباشر.</div>
-            </div>
-            <span class="drep-tag info">معايير التقرير</span>
-          </div>
-
-          <div class="drep-card-body">
-            <div class="drep-filter-chips">
-              <span class="drep-filter-chip">
-                <span class="k">الحالة</span>
-                <span class="v">{{ f.status|default:"الكل" }}</span>
-              </span>
-
-              <span class="drep-filter-chip">
-                <span class="k">القطاع</span>
-                <span class="v">{{ f.sector|default:"الكل" }}</span>
-              </span>
-
-              <span class="drep-filter-chip">
-                <span class="k">الجنس</span>
-                <span class="v">{{ f.gender|default:"الكل" }}</span>
-              </span>
-
-              <span class="drep-filter-chip info">
-                <span class="k">تاريخ التقرير</span>
-                <span class="v drep-ltr">{{ now|date:"Y-m-d H:i" }}</span>
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <section class="drep-card">
-          <div class="drep-card-head">
-            <div>
-              <h2 class="drep-head-title">المؤشرات العامة</h2>
-              <div class="drep-head-sub">ملخص سريع لحالة الطلبات ضمن النطاق الحالي.</div>
-            </div>
-            <span class="drep-tag ok">جاهز</span>
-          </div>
-
-          <div class="drep-card-body">
-            <div class="drep-stats">
-              <div class="drep-stat">
-                <div class="drep-stat-top">
-                  <div class="drep-stat-title">إجمالي الطلبات</div>
-                  <span class="drep-stat-chip">النطاق الحالي</span>
-                </div>
-                <div class="drep-stat-num">{{ total|default:"0" }}</div>
-                <div class="drep-stat-sub">السجلات الحالية</div>
-              </div>
-
-              <div class="drep-stat">
-                <div class="drep-stat-top">
-                  <div class="drep-stat-title">الطلبات المرسلة</div>
-                  <span class="drep-stat-chip">مرسل</span>
-                </div>
-                <div class="drep-stat-num">{{ submitted_count|default:"0" }}</div>
-                <div class="drep-stat-sub">جاهزة للقرار</div>
-              </div>
-
-              <div class="drep-stat">
-                <div class="drep-stat-top">
-                  <div class="drep-stat-title">المسودات</div>
-                  <span class="drep-stat-chip">مسودة</span>
-                </div>
-                <div class="drep-stat-num">{{ draft_count|default:"0" }}</div>
-                <div class="drep-stat-sub">بانتظار الاستكمال</div>
-              </div>
-
-              <div class="drep-stat">
-                <div class="drep-stat-top">
-                  <div class="drep-stat-title">نوع المخرجات</div>
-                  <span class="drep-stat-chip">PDF / طباعة</span>
-                </div>
-                <div class="drep-stat-num">جاهز</div>
-                <div class="drep-stat-sub">عرض داخلي منسق</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="drep-card">
-          <div class="drep-card-head">
-            <div>
-              <h2 class="drep-head-title">سجل الطلبات</h2>
-              <div class="drep-head-sub">قائمة الطلبات المعروضة حسب الفلاتر الحالية.</div>
-            </div>
-            <div class="drep-pills">
-              <span class="drep-tag">عدد السجلات: {{ total|default:"0" }}</span>
-              <span class="drep-tag info">النطاق الحالي</span>
-            </div>
-          </div>
-
-          <div class="drep-card-body">
-            <div class="drep-table-wrap">
-              <table class="drep-table">
-                <thead>
-                  <tr>
-                    <th>م</th>
-                    <th>الاسم</th>
-                    <th>السجل المدني</th>
-                    <th>القطاع</th>
-                    <th>الجنس</th>
-                    <th>الرغبات</th>
-                    <th>الحالة</th>
-                    <th>التقديم</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for r in rows %}
-                  <tr>
-                    <td class="drep-center">{{ forloop.counter }}</td>
-
-                    <td>
-                      <div class="drep-name">{{ r.applicant.full_name|default:"-" }}</div>
-                      <div class="drep-subtxt">طلب رقم #{{ r.id }}</div>
-                    </td>
-
-                    <td class="drep-ltr">{{ r.applicant.national_id|default:"-" }}</td>
-                    <td>{{ r.applicant.sector|default:"-" }}</td>
-                    <td class="drep-center">{{ r.applicant.gender|default:"-" }}</td>
-                    <td class="drep-center">{{ r.prefs_count|default:"0" }}</td>
-
-                    <td class="drep-center">
-                      {% if r.status == "submitted" %}
-                        <span class="drep-status ok">مُرسل</span>
-                      {% elif r.status == "draft" %}
-                        <span class="drep-status warn">مسودة</span>
-                      {% elif r.status %}
-                        <span class="drep-status info">{{ r.status }}</span>
-                      {% else %}
-                        <span class="drep-status">-</span>
-                      {% endif %}
-                    </td>
-
-                    <td class="drep-ltr drep-date">
-                      {% if r.submitted_at %}
-                        {{ r.submitted_at|date:"Y-m-d H:i" }}
-                      {% else %}
-                        -
-                      {% endif %}
-                    </td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td colspan="8" class="drep-empty">لا توجد نتائج مطابقة للفلاتر الحالية.</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="drep-note">
-              <b>ملاحظة تنظيمية:</b>
-              <span>هذا التقرير مخصص للعرض والطباعة الداخلية، ويعكس النتائج الحالية بحسب الفلاتر المطبقة وقت إنشاء الصفحة.</span>
-            </div>
-          </div>
-        </section>
-
+    <section class="cr-reportbar" aria-label="معايير التقرير">
+      <div class="cr-reportbar-title">الفلاتر ومعايير التقرير</div>
+      <div class="cr-filter-chips">
+        <span class="cr-filter-chip"><span class="k">الحالة</span><span class="v">{{ f.status|default:"الكل" }}</span></span>
+        <span class="cr-filter-chip"><span class="k">القطاع</span><span class="v">{{ f.sector|default:"الكل" }}</span></span>
+        <span class="cr-filter-chip"><span class="k">الجنس</span><span class="v">{{ f.gender|default:"الكل" }}</span></span>
+        {% if f.q %}<span class="cr-filter-chip"><span class="k">البحث</span><span class="v">{{ f.q }}</span></span>{% endif %}
+        <span class="cr-filter-chip blue"><span class="k">تاريخ التقرير</span><span class="v cr-ltr">{{ now|date:"Y-m-d H:i" }}</span></span>
       </div>
     </section>
+
+    <section class="cr-kpis" aria-label="المؤشرات المختصرة">
+      <div class="cr-kpi">
+        <div class="label">إجمالي الطلبات</div>
+        <div class="value">{{ total|default:"0" }}</div>
+        <div class="note">ضمن الفلتر الحالي</div>
+      </div>
+      <div class="cr-kpi green">
+        <div class="label">الطلبات المرسلة</div>
+        <div class="value">{{ submitted_count|default:"0" }}</div>
+        <div class="note">قابلة للقرار الإداري</div>
+      </div>
+      <div class="cr-kpi warn">
+        <div class="label">المسودات</div>
+        <div class="value">{{ draft_count|default:"0" }}</div>
+        <div class="note">بانتظار الاستكمال</div>
+      </div>
+      <div class="cr-kpi blue">
+        <div class="label">نوع المخرج</div>
+        <div class="value">تقرير</div>
+        <div class="note">عرض وطباعة داخلية</div>
+      </div>
+    </section>
+
+    <section class="cr-card">
+      <div class="cr-section-head">
+        <div class="cr-section-title">سجل الطلبات</div>
+        <span class="cr-section-count">{{ total|default:"0" }} سجل</span>
+      </div>
+
+      <div class="cr-table-wrap">
+        <table class="cr-table">
+          <thead>
+            <tr>
+              <th class="c-num">#</th>
+              <th class="c-applicant">المتقدم</th>
+              <th class="c-id">السجل المدني</th>
+              <th class="c-sector">القطاع</th>
+              <th class="c-gender">الجنس</th>
+              <th class="c-prefs">الرغبات</th>
+              <th class="c-status">الحالة</th>
+              <th class="c-date">تاريخ التقديم</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td class="c-num">{{ forloop.counter }}</td>
+              <td class="c-applicant">
+                <div class="cr-person">
+                  <div class="cr-person-name">{{ r.applicant.full_name|default:"—" }}</div>
+                  <div class="cr-person-meta">طلب رقم #{{ r.id }}</div>
+                </div>
+              </td>
+              <td class="c-id cr-ltr">{{ r.applicant.national_id|default:"—" }}</td>
+              <td class="c-sector">{{ r.applicant.sector|default:"—" }}</td>
+              <td class="c-gender">{{ r.applicant.gender|default:"—" }}</td>
+              <td class="c-prefs">{{ r.prefs_count|default:"0" }}</td>
+              <td class="c-status">
+                {% if r.status == "submitted" %}
+                  <span class="cr-status green">مُرسل</span>
+                {% elif r.status == "draft" %}
+                  <span class="cr-status gold">مسودة</span>
+                {% elif r.status %}
+                  <span class="cr-status blue">{{ r.status }}</span>
+                {% else %}
+                  <span class="cr-status">—</span>
+                {% endif %}
+              </td>
+              <td class="c-date cr-ltr">
+                {% if r.submitted_at %}{{ r.submitted_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="cr-empty">لا توجد نتائج مطابقة للفلاتر الحالية.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cr-note">
+        <b>ملاحظة تنظيمية:</b>
+        <span>هذا التقرير مخصص للعرض والطباعة الداخلية، ويعكس النتائج الحالية بحسب الفلاتر المطبقة وقت إنشاء الصفحة.</span>
+      </div>
+    </section>
+
   </div>
 </div>
 {% endblock %}
