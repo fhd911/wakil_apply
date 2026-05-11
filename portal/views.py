@@ -1760,6 +1760,21 @@ def submit_view(request):
 
     update_fields = ["status", "locked", "submitted_at"]
 
+    # عند إعادة إرسال الطلب بعد إرجاعه للتعديل:
+    # نمسح قرار الإرجاع السابق حتى يعود الطلب إلى انتظار القرار،
+    # فيظهر إداريًا بعبارة (جاهز للمفاضلة) ومع زر (اعتماد).
+    if (getattr(app, "admin_decision", "") or "").strip() == "returned":
+        app.admin_decision = ""
+        app.admin_note = ""
+        app.admin_decided_by = None
+        app.admin_decided_at = None
+        update_fields += [
+            "admin_decision",
+            "admin_note",
+            "admin_decided_by",
+            "admin_decided_at",
+        ]
+
     _set_model_field_if_exists(app, "preferences_acknowledged", preferences_acknowledged, update_fields)
     _set_model_field_if_exists(
         app,
